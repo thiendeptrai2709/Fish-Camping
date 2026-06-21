@@ -6,7 +6,14 @@ public class RoadPainter : EditorWindow
 {
     public GameObject roadPrefab;
     public Transform roadSystemParent;
-    public float roadLength = 10f; // Chiều dài mặc định của 1 đoạn đường prefab
+    public float roadLength = 10f;
+    public float roadHeight = 2f;
+
+    [Tooltip("Xoay bù góc mặc định của Prefab nếu đường bị ngược hướng")]
+    public float rotationOffset = 0f;
+
+    public enum PaintMode { Free, Lock_X, Lock_Z, Lock_Y_Up, Lock_Y_Down }
+    public PaintMode currentMode = PaintMode.Free;
 
     private Vector3 _lastRoadPosition;
     private Quaternion _lastRoadRotation;
@@ -17,23 +24,31 @@ public class RoadPainter : EditorWindow
 
     void OnGUI()
     {
-        EditorGUILayout.HelpBox("HƯỚNG DẪN:\n1. Chọn Prefab đường và nhóm Road_System.\n2. Click 'Đặt mảnh đường đầu tiên' trên Scene.\n3. Giữ SHIFT + Click chuột trái tiếp theo để vẽ đường nối đuôi tự động!", MessageType.Info);
+        EditorGUILayout.HelpBox("SỬA LỖI XOAY MẢNH ĐƯỜNG:\nNếu các mảng đen không liền nhau (bị xoay ngang), hãy thử nhập vào ô 'Góc xoay bù Y' các giá trị là 90 hoặc -90 để đưa nó về đúng hướng thẳng tiến nhé!", MessageType.Info);
 
         roadPrefab = (GameObject)EditorGUILayout.ObjectField("Prefab Đường thẳng:", roadPrefab, typeof(GameObject), false);
         roadSystemParent = (Transform)EditorGUILayout.ObjectField("Nhóm chứa (Road_System):", roadSystemParent, typeof(Transform), true);
-        roadLength = EditorGUILayout.FloatField("Chiều dài 1 mảnh đường (m):", roadLength);
+        roadLength = EditorGUILayout.FloatField("Chiều dài mảnh X/Z (m):", roadLength);
+        roadHeight = EditorGUILayout.FloatField("Chiều cao mỗi bậc Y (m):", roadHeight);
+
+        // Ô nhập góc xoay cứu cánh
+        rotationOffset = EditorGUILayout.FloatField("Góc xoay bù Y (Độ):", rotationOffset);
+
+        GUILayout.Space(5);
+        currentMode = (PaintMode)EditorGUILayout.EnumPopup("Chế độ khóa hướng:", currentMode);
+        GUILayout.Space(5);
 
         if (GUILayout.Button("Bật chế độ vẽ đường nối đuôi"))
         {
             SceneView.duringSceneGui -= OnSceneGUI;
             SceneView.duringSceneGui += OnSceneGUI;
-            _hasLastRoad = false; // Reset lại điểm vẽ
+            _hasLastRoad = false;
         }
 
         if (GUILayout.Button("Reset điểm vẽ (Để bắt đầu đường mới)"))
         {
             _hasLastRoad = false;
-            Debug.Log("Đã reset điểm vẽ. Hãy click để đặt mảnh đầu tiên cho trục đường mới.");
+            Debug.Log("Đã reset điểm vẽ trục đường mới.");
         }
     }
 
@@ -41,7 +56,6 @@ public class RoadPainter : EditorWindow
     {
         Event e = Event.current;
 
-        // Nhấn Shift + Click chuột trái để vẽ
         if (e.type == EventType.MouseDown && e.button == 0 && e.shift && roadPrefab != null)
         {
             Ray ray = HandleUtility.GUIPointToWorldRay(e.mousePosition);
@@ -50,20 +64,52 @@ public class RoadPainter : EditorWindow
                 Vector3 spawnPos = hit.point;
                 Quaternion spawnRot = Quaternion.identity;
 
-                if (_hasLastRoad)
+                // Tính toán góc quay chuẩn kết hợp với Góc xoay bù
+                Quaternion baseOffset = Quaternion.Euler(0, rotationOffset, 0);
+
+                if (!_hasLastRoad)
                 {
-                    // Tính toán hướng từ mảnh đường cũ đến điểm vừa click mới
-                    Vector3 direction = (hit.point - _lastRoadPosition).normalized;
-                    direction.y = 0; // Giữ đường nằm phẳng trên mặt đất
+                    spawnPos = hit.point;
+                    if (currentMode == PaintMode.Lock_X)
+                        spawnRot = Quaternion.Euler(0, 90, 0) * baseOffset;
+                    else
+                        spawnRot = Quaternion.identity * baseOffset;
+                }
+                else
+                {
+                    switch (currentMode)
+                    {
+                        case PaintMode.Lock_Z:
+                            spawnRot = _lastRoadRotation;
+                            float signZ = (hit.point.z - _lastRoadPosition.z) >= 0 ? 1f : -1f;
+                            spawnPos = _lastRoadPosition + new Vector3(0, 0, roadLength * signZ);
+                            break;
 
-                    // Tính góc xoay cho khít hướng đi
-                    spawnRot = Quaternion.LookRotation(direction);
+                        case PaintMode.Lock_X:
+                            spawnRot = Quaternion.Euler(0, 90, 0) * baseOffset;
+                            float signX = (hit.point.x - _lastRoadPosition.x) >= 0 ? 1f : -1f;
+                            spawnPos = _lastRoadPosition + new Vector3(roadLength * signX, 0, 0);
+                            break;
 
-                    // Tính vị trí chính xác nối đuôi dựa trên chiều dài mảnh đường
-                    spawnPos = _lastRoadPosition + (direction * roadLength);
+                        case PaintMode.Lock_Y_Up:
+                            spawnRot = _lastRoadRotation;
+                            spawnPos = _lastRoadPosition + new Vector3(0, roadHeight, 0);
+                            break;
+
+                        case PaintMode.Lock_Y_Down:
+                            spawnRot = _lastRoadRotation;
+                            spawnPos = _lastRoadPosition + new Vector3(0, -roadHeight, 0);
+                            break;
+
+                        default:
+                            Vector3 direction = (hit.point - _lastRoadPosition).normalized;
+                            direction.y = 0;
+                            spawnRot = Quaternion.LookRotation(direction) * baseOffset;
+                            spawnPos = _lastRoadPosition + (direction * roadLength);
+                            break;
+                    }
                 }
 
-                // Tiến hành tạo mảnh đường
                 GameObject newRoad = (GameObject)PrefabUtility.InstantiatePrefab(roadPrefab);
                 newRoad.transform.position = spawnPos;
                 newRoad.transform.rotation = spawnRot;
@@ -73,7 +119,6 @@ public class RoadPainter : EditorWindow
 
                 Undo.RegisterCreatedObjectUndo(newRoad, "Paint Road");
 
-                // Lưu lại thông tin mảnh này để làm móng cho mảnh tiếp theo
                 _lastRoadPosition = spawnPos;
                 _lastRoadRotation = spawnRot;
                 _hasLastRoad = true;
