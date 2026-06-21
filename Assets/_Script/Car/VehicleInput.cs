@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System;
+using UnityEngine.InputSystem;
 
 public class VehicleInput : MonoBehaviour
 {
@@ -16,6 +17,10 @@ public class VehicleInput : MonoBehaviour
     public event Action OnQuickRepairEvent;
     public event Action OnQTEHitEvent;
     public event Action OnRefillCoolantEvent;
+    public event Action OnInteractTire1;
+    public event Action OnInteractTire2;
+    public event Action OnInteractTire3;
+    public event Action OnInteractTire4;
     private void Awake()
     {
         inputActions = new CarInputActions();
@@ -49,6 +54,14 @@ public class VehicleInput : MonoBehaviour
         {
             MoveInput = inputActions.Gameplay.Drive.ReadValue<Vector2>();
             IsBraking = inputActions.Gameplay.Brake.IsPressed();
+
+            if (Keyboard.current != null)
+            {
+                if (Keyboard.current.digit1Key.wasPressedThisFrame) OnInteractTire1?.Invoke();
+                if (Keyboard.current.digit2Key.wasPressedThisFrame) OnInteractTire2?.Invoke();
+                if (Keyboard.current.digit3Key.wasPressedThisFrame) OnInteractTire3?.Invoke();
+                if (Keyboard.current.digit4Key.wasPressedThisFrame) OnInteractTire4?.Invoke();
+            }
         }
     }
 }

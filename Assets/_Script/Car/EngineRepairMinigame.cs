@@ -25,7 +25,9 @@ public class EngineRepairMinigame : MonoBehaviour
     private Vector3 originalLocalPos;
     private Quaternion originalLocalRot;
     private bool isRepairing = false;
-    public bool IsEngineOut => isRepairing;
+    private bool isAnimating = false;
+    public bool IsEngineOut => isRepairing && !isAnimating;
+    
     private Coroutine moveCoroutine;
 
     private void Awake()
@@ -54,6 +56,8 @@ public class EngineRepairMinigame : MonoBehaviour
             return;
         }
 
+        if (isAnimating) return;
+
         if (!isRepairing)
             EnterRepairMode();
         else
@@ -63,6 +67,7 @@ public class EngineRepairMinigame : MonoBehaviour
     private void EnterRepairMode()
     {
         isRepairing = true;
+        isAnimating = true;
 
         if (hoodHinge != null)
             hoodHinge.IsLocked = true;
@@ -82,6 +87,7 @@ public class EngineRepairMinigame : MonoBehaviour
     public void ExitRepairMode()
     {
         isRepairing = false;
+        isAnimating = true;
 
         if (inspectCam != null)
             inspectCam.Priority = 1;
@@ -126,5 +132,6 @@ public class EngineRepairMinigame : MonoBehaviour
                 hoodHinge.IsLocked = false;
 
         }
+        isAnimating = false;
     }
 }
