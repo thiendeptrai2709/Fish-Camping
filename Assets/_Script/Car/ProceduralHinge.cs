@@ -9,7 +9,11 @@ public class ProceduralHinge : MonoBehaviour
 
     private Quaternion closedRotation;
     private Quaternion openedRotation;
+
     private bool isOpen = false;
+    public bool IsFullyOpen { get; private set; }
+    public bool IsLocked { get; set; } = false;
+
     private Coroutine animCoroutine;
 
     private void Awake()
@@ -20,6 +24,7 @@ public class ProceduralHinge : MonoBehaviour
 
     public void Toggle()
     {
+        if (IsLocked) return;
         isOpen = !isOpen;
         if (animCoroutine != null) StopCoroutine(animCoroutine);
         animCoroutine = StartCoroutine(Animate(isOpen ? openedRotation : closedRotation));
@@ -27,6 +32,8 @@ public class ProceduralHinge : MonoBehaviour
 
     private IEnumerator Animate(Quaternion targetRot)
     {
+        IsFullyOpen = false;
+
         Quaternion startRot = transform.localRotation;
         float time = 0f;
 
@@ -37,5 +44,7 @@ public class ProceduralHinge : MonoBehaviour
             yield return null;
         }
         transform.localRotation = targetRot;
+
+        if (isOpen) IsFullyOpen = true;
     }
 }

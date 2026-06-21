@@ -120,4 +120,9 @@ public class VehicleController : MonoBehaviour
     {
         return currentSpeedKmh;
     }
+    public void ApplyUpgradedEngine(float newMaxSpeed, float newTorque)
+    {
+        maxSpeedKmh = newMaxSpeed;
+        motorTorque = newTorque;
+    }
 }

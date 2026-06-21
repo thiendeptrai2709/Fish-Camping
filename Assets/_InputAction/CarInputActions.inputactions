@@ -8,12 +8,12 @@
             "actions": [
                 {
                     "name": "Drive",
-                    "type": "Value",
+                    "type": "Button",
                     "id": "11d54c25-9ccf-40e5-baed-14103b5ef4c1",
-                    "expectedControlType": "Vector2",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": true
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Brake",
@@ -37,6 +37,42 @@
                     "name": "ToggleHood",
                     "type": "Button",
                     "id": "4e9a1e28-0685-49c3-a6bd-5d84dab355be",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "InspectEngine",
+                    "type": "Button",
+                    "id": "dfd4ca80-fcca-41c8-844a-996ddf862ee7",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ToggleStatsUI",
+                    "type": "Button",
+                    "id": "a218e8bf-388b-43d9-88e9-2ec31b0bdefd",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "QuickRepair",
+                    "type": "Button",
+                    "id": "0a3ef217-0764-4501-8a86-dc2471edb1f7",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "QTEHit",
+                    "type": "Button",
+                    "id": "57402e1d-1b27-48bd-b4d8-26aac42e4641",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -129,6 +165,50 @@
                     "processors": "",
                     "groups": "",
                     "action": "ToggleHood",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e7d19404-c97d-4cdb-8317-ad02a582b6de",
+                    "path": "<Keyboard>/t",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "InspectEngine",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2c23b5fa-f04c-4d17-ad6c-74c83e5080e2",
+                    "path": "<Keyboard>/tab",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleStatsUI",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "89a65840-f260-4571-822a-960f0b02b300",
+                    "path": "<Keyboard>/f",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "QuickRepair",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "612728a1-1eb7-4774-9b68-643e5caa6b65",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "QTEHit",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

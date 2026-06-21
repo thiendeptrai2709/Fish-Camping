@@ -191,6 +191,37 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &3124920464126509395
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3926508800536566845}
+  m_Layer: 0
+  m_Name: Inspect_Point
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3926508800536566845
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3124920464126509395}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.010019586, y: 0.90576774, z: -0.4231085, w: -0.021535166}
+  m_LocalPosition: {x: 0.1900005, y: -0.030019283, z: 4.879984}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 761879445424364472}
+  m_LocalEulerAnglesHint: {x: 50, y: 184.237, z: 3.244}
 --- !u!1 &3407097994585728633
 GameObject:
   m_ObjectHideFlags: 0
@@ -530,6 +561,64 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &4992050752055995078
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 958602786050788181}
+  - component: {fileID: 5224876922350798403}
+  m_Layer: 0
+  m_Name: Engine_Root
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &958602786050788181
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4992050752055995078}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1388989959795392098}
+  m_Father: {fileID: 9199933778229469735}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5224876922350798403
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4992050752055995078}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f956817cbaee90f4b929617938b9999d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EngineRepairMinigame
+  vehicleInput: {fileID: 8457522825824892041}
+  hoodHinge: {fileID: 4263717819214804220}
+  engineVisualMesh: {fileID: 1388989959795392098}
+  inspectPoint: {fileID: 3926508800536566845}
+  inspectCam: {fileID: 5030120287538690424}
+  activePriority: 10
+  floatSpeed: 3
+  OnStartedRepair:
+    m_PersistentCalls:
+      m_Calls: []
+  OnFinishedRepair:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &5076049590600759153
 GameObject:
   m_ObjectHideFlags: 0
@@ -831,6 +920,7 @@ GameObject:
   - component: {fileID: 1388989959795392098}
   - component: {fileID: 7350646276959413804}
   - component: {fileID: 5309245225153252894}
+  - component: {fileID: 4004956790660651098}
   m_Layer: 0
   m_Name: Engine
   m_TagString: Untagged
@@ -847,11 +937,11 @@ Transform:
   m_GameObject: {fileID: 5790796729899917841}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.009402335, y: 2.473717, z: 2.7427535}
+  m_LocalPosition: {x: 0.009403229, y: 2.473717, z: 2.7427342}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 9199933778229469735}
+  m_Father: {fileID: 958602786050788181}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &7350646276959413804
 MeshFilter:
@@ -909,6 +999,27 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &4004956790660651098
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5790796729899917841}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.6269469, y: 0.9345819, z: 1.5094922}
+  m_Center: {x: -0.0000004172325, y: 0.17737897, z: -0.012432545}
 --- !u!1 &6037033108583849165
 GameObject:
   m_ObjectHideFlags: 0
@@ -1129,6 +1240,7 @@ GameObject:
   - component: {fileID: 1322274183290694238}
   - component: {fileID: 4872700611704513656}
   - component: {fileID: 2212866431246045977}
+  - component: {fileID: 4263717819214804220}
   m_Layer: 0
   m_Name: Hood
   m_TagString: Untagged
@@ -1207,6 +1319,20 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &4263717819214804220
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6568179342447062847}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21d1967c7387dd94fa10ddc3fc7e5120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProceduralHinge
+  openOffsetAngles: {x: -75, y: 0, z: 0}
+  speed: 4
 --- !u!1 &6715426423681580902
 GameObject:
   m_ObjectHideFlags: 0
@@ -1240,7 +1366,7 @@ Transform:
   m_Children:
   - {fileID: 3164168027835739694}
   - {fileID: 594947212067596166}
-  - {fileID: 1388989959795392098}
+  - {fileID: 958602786050788181}
   - {fileID: 519339809105771528}
   - {fileID: 1322274183290694238}
   - {fileID: 374782007085921243}
@@ -1307,6 +1433,82 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &6734672487587284790
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 761879445424364472}
+  - component: {fileID: 5030120287538690424}
+  m_Layer: 0
+  m_Name: Repair_Camera
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &761879445424364472
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6734672487587284790}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.90580845, z: -0.42368758, w: 0}
+  m_LocalPosition: {x: 0.10575104, y: 7.309998, z: 7.23999}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 3926508800536566845}
+  m_Father: {fileID: 8537560577896252487}
+  m_LocalEulerAnglesHint: {x: -230.135, y: 0, z: 180}
+--- !u!114 &5030120287538690424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6734672487587284790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9dfa5b682dcd46bda6128250e975f58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineCamera
+  Priority:
+    Enabled: 1
+    m_Value: 1
+  OutputChannel: 1
+  StandbyUpdate: 2
+  m_StreamingVersion: 20241001
+  m_LegacyPriority: 0
+  Target:
+    TrackingTarget: {fileID: 0}
+    LookAtTarget: {fileID: 0}
+    CustomLookAtTarget: 0
+  Lens:
+    FieldOfView: 60.000004
+    OrthographicSize: 5
+    NearClipPlane: 0.3
+    FarClipPlane: 1000
+    Dutch: 0
+    ModeOverride: 0
+    PhysicalProperties:
+      GateFit: 2
+      SensorSize: {x: 21.946, y: 16.002}
+      LensShift: {x: 0, y: 0}
+      FocusDistance: 10
+      Iso: 200
+      ShutterSpeed: 0.005
+      Aperture: 16
+      BladeCount: 5
+      Curvature: {x: 2, y: 11}
+      BarrelClipping: 0.25
+      Anamorphism: 0
+  BlendHint: 0
 --- !u!1 &6777645021863127769
 GameObject:
   m_ObjectHideFlags: 0
@@ -1480,6 +1682,7 @@ GameObject:
   - component: {fileID: 2254155887218864580}
   - component: {fileID: 8457522825824892041}
   - component: {fileID: 1260891777461015879}
+  - component: {fileID: 9152428824379481637}
   m_Layer: 0
   m_Name: MainCar
   m_TagString: Untagged
@@ -1505,6 +1708,7 @@ Transform:
   - {fileID: 6032996653056101308}
   - {fileID: 7551500720709943837}
   - {fileID: 6375850273234651183}
+  - {fileID: 761879445424364472}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &4814406759848952073
@@ -1583,6 +1787,8 @@ MonoBehaviour:
   motorTorque: 3800
   brakeTorque: 5000
   maxSteerAngle: 30
+  idleBrakeTorque: 400
+  lowSpeedPunch: 1.6
   frontLeftWheel: {fileID: 1275546088054282469}
   frontRightWheel: {fileID: 6839730998919547939}
   rearLeftWheel: {fileID: 4969493096541613422}
@@ -1592,6 +1798,21 @@ MonoBehaviour:
   rearLeftTransform: {fileID: 124423496851695165}
   rearRightTransform: {fileID: 93818729613292090}
   centerOfMass: {fileID: 7551500720709943837}
+--- !u!114 &9152428824379481637
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7644770541340576481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21f566c0ef502f645a9d402523482aec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::VehicleBody
+  vehicleInput: {fileID: 8457522825824892041}
+  trunkHinge: {fileID: 4263717819214804220}
+  hoodHinge: {fileID: 2340393170026331245}
 --- !u!1 &7747696078394570829
 GameObject:
   m_ObjectHideFlags: 0
@@ -1786,6 +2007,7 @@ GameObject:
   - component: {fileID: 1065322887868291382}
   - component: {fileID: 6775759926472985900}
   - component: {fileID: 2626642980671535694}
+  - component: {fileID: 2340393170026331245}
   m_Layer: 0
   m_Name: PickupAwning
   m_TagString: Untagged
@@ -1865,6 +2087,20 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &2340393170026331245
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8255171110751981243}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21d1967c7387dd94fa10ddc3fc7e5120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProceduralHinge
+  openOffsetAngles: {x: 65, y: 0, z: 0}
+  speed: 4
 --- !u!1 &8789837361731766250
 GameObject:
   m_ObjectHideFlags: 0
