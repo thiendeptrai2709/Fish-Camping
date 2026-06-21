@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 
 public class VehicleInput : MonoBehaviour
 {
@@ -6,7 +7,8 @@ public class VehicleInput : MonoBehaviour
 
     public Vector2 MoveInput { get; private set; }
     public bool IsBraking { get; private set; }
-
+    public event Action OnToggleTrunkEvent;
+    public event Action OnToggleHoodEvent;
     private void Awake()
     {
         inputActions = new CarInputActions();
@@ -21,6 +23,9 @@ public class VehicleInput : MonoBehaviour
 
         inputActions.Gameplay.Brake.performed += ctx => IsBraking = true;
         inputActions.Gameplay.Brake.canceled += ctx => IsBraking = false;
+
+        inputActions.Gameplay.ToggleTrunk.performed += _ => OnToggleTrunkEvent?.Invoke();
+        inputActions.Gameplay.ToggleHood.performed += _ => OnToggleHoodEvent?.Invoke();
     }
 
     private void OnDisable()

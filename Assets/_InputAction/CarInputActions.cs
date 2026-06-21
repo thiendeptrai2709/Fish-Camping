@@ -109,6 +109,24 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ToggleTrunk"",
+                    ""type"": ""Button"",
+                    ""id"": ""69352ab8-ff69-4627-9566-78f635c2a9c5"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ToggleHood"",
+                    ""type"": ""Button"",
+                    ""id"": ""4e9a1e28-0685-49c3-a6bd-5d84dab355be"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -177,6 +195,28 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""Brake"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""dc2e5414-ab1c-40e5-aa05-93e94df31b28"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ToggleTrunk"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b1ead8b8-c079-4618-a7c1-65dc148c7395"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ToggleHood"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -187,6 +227,8 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
         m_Gameplay = asset.FindActionMap("Gameplay", throwIfNotFound: true);
         m_Gameplay_Drive = m_Gameplay.FindAction("Drive", throwIfNotFound: true);
         m_Gameplay_Brake = m_Gameplay.FindAction("Brake", throwIfNotFound: true);
+        m_Gameplay_ToggleTrunk = m_Gameplay.FindAction("ToggleTrunk", throwIfNotFound: true);
+        m_Gameplay_ToggleHood = m_Gameplay.FindAction("ToggleHood", throwIfNotFound: true);
     }
 
     ~@CarInputActions()
@@ -269,6 +311,8 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
     private List<IGameplayActions> m_GameplayActionsCallbackInterfaces = new List<IGameplayActions>();
     private readonly InputAction m_Gameplay_Drive;
     private readonly InputAction m_Gameplay_Brake;
+    private readonly InputAction m_Gameplay_ToggleTrunk;
+    private readonly InputAction m_Gameplay_ToggleHood;
     /// <summary>
     /// Provides access to input actions defined in input action map "Gameplay".
     /// </summary>
@@ -288,6 +332,14 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Gameplay/Brake".
         /// </summary>
         public InputAction @Brake => m_Wrapper.m_Gameplay_Brake;
+        /// <summary>
+        /// Provides access to the underlying input action "Gameplay/ToggleTrunk".
+        /// </summary>
+        public InputAction @ToggleTrunk => m_Wrapper.m_Gameplay_ToggleTrunk;
+        /// <summary>
+        /// Provides access to the underlying input action "Gameplay/ToggleHood".
+        /// </summary>
+        public InputAction @ToggleHood => m_Wrapper.m_Gameplay_ToggleHood;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -320,6 +372,12 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
             @Brake.started += instance.OnBrake;
             @Brake.performed += instance.OnBrake;
             @Brake.canceled += instance.OnBrake;
+            @ToggleTrunk.started += instance.OnToggleTrunk;
+            @ToggleTrunk.performed += instance.OnToggleTrunk;
+            @ToggleTrunk.canceled += instance.OnToggleTrunk;
+            @ToggleHood.started += instance.OnToggleHood;
+            @ToggleHood.performed += instance.OnToggleHood;
+            @ToggleHood.canceled += instance.OnToggleHood;
         }
 
         /// <summary>
@@ -337,6 +395,12 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
             @Brake.started -= instance.OnBrake;
             @Brake.performed -= instance.OnBrake;
             @Brake.canceled -= instance.OnBrake;
+            @ToggleTrunk.started -= instance.OnToggleTrunk;
+            @ToggleTrunk.performed -= instance.OnToggleTrunk;
+            @ToggleTrunk.canceled -= instance.OnToggleTrunk;
+            @ToggleHood.started -= instance.OnToggleHood;
+            @ToggleHood.performed -= instance.OnToggleHood;
+            @ToggleHood.canceled -= instance.OnToggleHood;
         }
 
         /// <summary>
@@ -391,5 +455,19 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnBrake(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ToggleTrunk" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnToggleTrunk(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ToggleHood" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnToggleHood(InputAction.CallbackContext context);
     }
 }
