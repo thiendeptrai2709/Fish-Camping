@@ -163,6 +163,15 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""RefillCoolant"",
+                    ""type"": ""Button"",
+                    ""id"": ""28887b05-65e8-4d5c-b4c5-fb3322d3a70c"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -297,6 +306,17 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""QTEHit"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""64612418-03b7-492c-b51a-adad39010a0d"",
+                    ""path"": ""<Keyboard>/g"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RefillCoolant"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -313,6 +333,7 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
         m_Gameplay_ToggleStatsUI = m_Gameplay.FindAction("ToggleStatsUI", throwIfNotFound: true);
         m_Gameplay_QuickRepair = m_Gameplay.FindAction("QuickRepair", throwIfNotFound: true);
         m_Gameplay_QTEHit = m_Gameplay.FindAction("QTEHit", throwIfNotFound: true);
+        m_Gameplay_RefillCoolant = m_Gameplay.FindAction("RefillCoolant", throwIfNotFound: true);
     }
 
     ~@CarInputActions()
@@ -401,6 +422,7 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Gameplay_ToggleStatsUI;
     private readonly InputAction m_Gameplay_QuickRepair;
     private readonly InputAction m_Gameplay_QTEHit;
+    private readonly InputAction m_Gameplay_RefillCoolant;
     /// <summary>
     /// Provides access to input actions defined in input action map "Gameplay".
     /// </summary>
@@ -444,6 +466,10 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Gameplay/QTEHit".
         /// </summary>
         public InputAction @QTEHit => m_Wrapper.m_Gameplay_QTEHit;
+        /// <summary>
+        /// Provides access to the underlying input action "Gameplay/RefillCoolant".
+        /// </summary>
+        public InputAction @RefillCoolant => m_Wrapper.m_Gameplay_RefillCoolant;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -494,6 +520,9 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
             @QTEHit.started += instance.OnQTEHit;
             @QTEHit.performed += instance.OnQTEHit;
             @QTEHit.canceled += instance.OnQTEHit;
+            @RefillCoolant.started += instance.OnRefillCoolant;
+            @RefillCoolant.performed += instance.OnRefillCoolant;
+            @RefillCoolant.canceled += instance.OnRefillCoolant;
         }
 
         /// <summary>
@@ -529,6 +558,9 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
             @QTEHit.started -= instance.OnQTEHit;
             @QTEHit.performed -= instance.OnQTEHit;
             @QTEHit.canceled -= instance.OnQTEHit;
+            @RefillCoolant.started -= instance.OnRefillCoolant;
+            @RefillCoolant.performed -= instance.OnRefillCoolant;
+            @RefillCoolant.canceled -= instance.OnRefillCoolant;
         }
 
         /// <summary>
@@ -625,5 +657,12 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnQTEHit(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "RefillCoolant" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnRefillCoolant(InputAction.CallbackContext context);
     }
 }

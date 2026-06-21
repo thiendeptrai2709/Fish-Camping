@@ -9,12 +9,12 @@ public class VehicleStats : MonoBehaviour
     [SerializeField] private VehicleInput vehicleInput;       // Đọc phím Tab & F
     [SerializeField] private ProceduralHinge hoodHinge;       // Check bản lề Capo
     [SerializeField] private QTEMinigame qteMinigame;
+    [SerializeField] private BalanceMinigame balanceMinigame;
     [SerializeField] private EngineRepairMinigame engineMinigame;
 
     [Header("Link UI")]
     [SerializeField] private GameObject statsCanvasObject;    // Bảng Overview (Bật/tắt bằng Tab)
     [SerializeField] private TextMeshProUGUI engineText;
-    [SerializeField] private TextMeshProUGUI trunkText;
     [SerializeField] private TextMeshProUGUI coolantText;
 
     [Header("Chỉ số độ bền (0% - 100%)")]
@@ -22,14 +22,19 @@ public class VehicleStats : MonoBehaviour
     public float trunkHealth = 100f;
     public float coolantLevel = 100f;
 
+    [Header("Cấu hình hao hụt (Số Km để mất 1%)")]
+    [SerializeField] private float kmPerEnginePercent = 5f;
+    [SerializeField] private float kmPerCoolantPercent = 2f;
+
     public UnityEvent OnStatsChanged;
 
     private void OnEnable()
     {
         if (vehicleInput != null)
         {
-            vehicleInput.OnToggleStatsUIEvent += ToggleOverviewPanel; // Lắng nghe Tab
-            vehicleInput.OnQuickRepairEvent += TryRepairEngineByKeyF; // Lắng nghe F
+            vehicleInput.OnToggleStatsUIEvent += ToggleOverviewPanel;
+            vehicleInput.OnQuickRepairEvent += TryRepairEngineByKeyF;
+            vehicleInput.OnRefillCoolantEvent += TryRefillCoolantByKeyG;
         }
     }
 
@@ -39,6 +44,7 @@ public class VehicleStats : MonoBehaviour
         {
             vehicleInput.OnToggleStatsUIEvent -= ToggleOverviewPanel;
             vehicleInput.OnQuickRepairEvent -= TryRepairEngineByKeyF;
+            vehicleInput.OnRefillCoolantEvent -= TryRefillCoolantByKeyG;
         }
     }
 
@@ -50,26 +56,26 @@ public class VehicleStats : MonoBehaviour
 
     private void Update()
     {
-        if (qteMinigame != null && qteMinigame.IsPlaying)
-        {
-            // Bị sập nắp Capo HOẶC bấm T cất cục máy đi -> Giật sập QTE!
-            bool isCapoClosed = (hoodHinge != null && !hoodHinge.IsFullyOpen);
-            bool isEngineHidden = (engineMinigame != null && !engineMinigame.IsEngineOut);
+        bool isCapoClosed = (hoodHinge != null && !hoodHinge.IsFullyOpen);
+        bool isEngineHidden = (engineMinigame != null && !engineMinigame.IsEngineOut);
 
-            if (isCapoClosed || isEngineHidden)
-            {
-                qteMinigame.ForceAbort();
-                Debug.Log("Hủy QTE do thay đổi trạng thái khoang máy!");
-            }
+        if (isCapoClosed || isEngineHidden)
+        {
+            if (qteMinigame != null && qteMinigame.IsPlaying) qteMinigame.ForceAbort();
+            if (balanceMinigame != null && balanceMinigame.IsPlaying) balanceMinigame.ForceAbort();
         }
 
-        if (vehicleController.GetCurrentSpeedKmh() > 5f)
+        float currentSpeed = vehicleController.GetCurrentSpeedKmh();
+        if (currentSpeed > 5f)
         {
-            coolantLevel = Mathf.Clamp(coolantLevel - (Time.deltaTime * 0.5f), 0f, 100f);
+            float distanceThisFrame = (currentSpeed / 3600f) * Time.deltaTime;
 
-            float engineDamageRate = (coolantLevel <= 0f) ? 2.0f : 0.05f;
-            engineHealth = Mathf.Clamp(engineHealth - (Time.deltaTime * engineDamageRate), 0f, 100f);
-            trunkHealth = Mathf.Clamp(trunkHealth - (Time.deltaTime * 0.02f), 0f, 100f);
+            float coolantDrop = distanceThisFrame / kmPerCoolantPercent;
+            coolantLevel = Mathf.Clamp(coolantLevel - coolantDrop, 0f, 100f);
+
+            float currentKmPerEngine = (coolantLevel <= 0f) ? (kmPerEnginePercent * 0.1f) : kmPerEnginePercent;
+            float engineDrop = distanceThisFrame / currentKmPerEngine;
+            engineHealth = Mathf.Clamp(engineHealth - engineDrop, 0f, 100f);
 
             OnStatsChanged?.Invoke();
             ApplyDegradationToPhysics();
@@ -84,25 +90,35 @@ public class VehicleStats : MonoBehaviour
             statsCanvasObject.SetActive(!statsCanvasObject.activeSelf);
     }
 
-    // ================= 2. XỬ LÝ PHÍM F =================
     private void TryRepairEngineByKeyF()
     {
-        // Kiểm tra an ninh: Capo phải lật hết 100% mới cho gõ búa!
+        bool isQTEPlaying = (qteMinigame != null && qteMinigame.IsPlaying);
+        bool isBalancePlaying = (balanceMinigame != null && balanceMinigame.IsPlaying);
+
+        if (isQTEPlaying || isBalancePlaying) return;
+
         if (engineMinigame != null && engineMinigame.IsEngineOut)
         {
             StartRepairEngineQTE();
         }
-        else
-        {
-            Debug.LogWarning("Phải bấm T bốc cục máy ra trước mặt đã rồi mới gõ F được!");
-        }
     }
 
+    private void TryRefillCoolantByKeyG()
+    {
+        bool isQTEPlaying = (qteMinigame != null && qteMinigame.IsPlaying);
+        bool isBalancePlaying = (balanceMinigame != null && balanceMinigame.IsPlaying);
+
+        if (isQTEPlaying || isBalancePlaying) return;
+
+        if (engineMinigame != null && engineMinigame.IsEngineOut)
+        {
+            StartRefillCoolantMinigame();
+        }
+    }
     // ================= KÍCH HOẠT QTE =================
     public void StartRepairEngineQTE() => qteMinigame.BeginQTE("BẢO DƯỠNG ĐỘNG CƠ", RepairEngine);
     public void StartRepairTrunkQTE() => qteMinigame.BeginQTE("NẮN LẠI BẢN LỀ CỐP", RepairTrunk);
-    public void StartRefillCoolantQTE() => qteMinigame.BeginQTE("CHÂM NƯỚC MÁT", RefillCoolant);
-
+    public void StartRefillCoolantMinigame() => balanceMinigame.BeginMinigame("CHÂM NƯỚC MÁT", RefillCoolant);
     // ================= HẬU QTE (HỒI MÁU) =================
     public void RepairEngine()
     {
@@ -129,7 +145,6 @@ public class VehicleStats : MonoBehaviour
     private void UpdateUI()
     {
         if (engineText) engineText.text = $"ĐỘNG CƠ: {Mathf.RoundToInt(engineHealth)}%";
-        if (trunkText) trunkText.text = $"CỐP XE: {Mathf.RoundToInt(trunkHealth)}%";
         if (coolantText) coolantText.text = $"NƯỚC MÁT: {Mathf.RoundToInt(coolantLevel)}%";
     }
 
