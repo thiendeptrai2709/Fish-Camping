@@ -194,6 +194,15 @@ public class VehicleStats : MonoBehaviour
 
     private void TryInteractTire(int index)
     {
+        if (engineMinigame != null && engineMinigame.IsEngineOut) return;
+        if (qteMinigame != null && qteMinigame.IsPlaying) return;
+        if (balanceMinigame != null && balanceMinigame.IsPlaying) return;
+
+        for (int i = 0; i < 4; i++)
+        {
+            if (i != index && tireMinigames[i] != null && tireMinigames[i].IsActive) return;
+        }
+
         if (tireMinigames[index] != null)
         {
             tireMinigames[index].Interact();

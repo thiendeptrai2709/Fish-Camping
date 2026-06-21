@@ -27,6 +27,13 @@ public class TireRepairMinigame : MonoBehaviour
     private Coroutine moveCoroutine;
     private bool isAnimating = false;
 
+    [Header("Sự kiện Âm thanh (Smart Audio)")]
+    public UnityEvent OnPlayRemoveSound;
+    public UnityEvent OnPlayDropSound;
+    public UnityEvent OnPlayEquipSound;
+    public UnityEvent OnPlayAttachSound;
+
+    public bool IsActive => currentState != TireState.Normal || isAnimating;
     private void Awake()
     {
         originalLocalPos = tireVisualMesh.localPosition;
@@ -46,20 +53,19 @@ public class TireRepairMinigame : MonoBehaviour
                 break;
 
             case TireState.Viewing:
-                // Bấm lần 2: Bắt đầu lôi lốp hỏng ra
                 currentState = TireState.Removed;
+                OnPlayRemoveSound?.Invoke();
                 moveCoroutine = StartCoroutine(AnimateTireTo(inspectPoint.position, inspectPoint.rotation));
                 break;
 
             case TireState.Removed:
-                // Bấm lần 3: Vứt lốp xuống, lấy lốp mới lên
                 currentState = TireState.Swapped;
                 moveCoroutine = StartCoroutine(AnimateFakeSwap());
                 break;
 
             case TireState.Swapped:
-                // Bấm lần 4: Lắp lốp vào xe (Camera sẽ tự trả về khi chạy xong)
                 currentState = TireState.Normal;
+                OnPlayAttachSound?.Invoke();
                 Vector3 dockWorldPos = tireVisualMesh.parent.TransformPoint(originalLocalPos);
                 Quaternion dockWorldRot = tireVisualMesh.parent.rotation * originalLocalRot;
                 moveCoroutine = StartCoroutine(AnimateTireTo(dockWorldPos, dockWorldRot, true));
@@ -102,10 +108,14 @@ public class TireRepairMinigame : MonoBehaviour
         isAnimating = true;
         yield return StartCoroutine(AnimateTireTo(dropPoint.position, dropPoint.rotation));
 
-        isAnimating = true; // Khóa lại ngay lập tức vì AnimateTireTo ở trên vừa nhả khóa
+        OnPlayDropSound?.Invoke();
+
+        isAnimating = true;
         yield return new WaitForSeconds(0.3f);
 
+        OnPlayEquipSound?.Invoke();
+
         yield return StartCoroutine(AnimateTireTo(inspectPoint.position, inspectPoint.rotation));
-        isAnimating = false; // Mở khóa hoàn toàn khi xong chuỗi fake swap
+        isAnimating = false;
     }
 }
