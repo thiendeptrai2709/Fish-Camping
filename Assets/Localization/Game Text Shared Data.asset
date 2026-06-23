@@ -13,8 +13,16 @@ MonoBehaviour:
   m_Name: Game Text Shared Data
   m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
   m_TableCollectionName: Game Text
-  m_TableCollectionNameGuidString: 00000000000000000000000000000000
-  m_Entries: []
+  m_TableCollectionNameGuidString: f1a165d24478b5741b965a38ede7488c
+  m_Entries:
+  - m_Id: 57265807360
+    m_Key: menu_play
+    m_Metadata:
+      m_Items: []
+  - m_Id: 210693447680
+    m_Key: setting-sound
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
