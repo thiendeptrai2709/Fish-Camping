@@ -15,6 +15,24 @@ MonoBehaviour:
   m_GroupName: Localization-String-Tables-English (en)
   m_GUID: ec23192636aa7684c87219db73e1a2b4
   m_SerializeEntries:
+  - m_GUID: 66fc3a60d10c6ea4c948e9aa5a0bc7c9
+    m_Address: Ca Text_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 84152d630367dc14d8a53c56bbb0fad0
+    m_Address: Player Text_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 922a27508fc830846b0820787f8a55d5
+    m_Address: NPC Text_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e531a611701f2164aae1bfc6fcbb0310
     m_Address: Game Text_en
     m_ReadOnly: 1

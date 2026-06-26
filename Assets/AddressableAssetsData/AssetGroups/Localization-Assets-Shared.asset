@@ -15,6 +15,21 @@ MonoBehaviour:
   m_GroupName: Localization-Assets-Shared
   m_GUID: 5a70c30793ab90449ba122aad7ea6d6b
   m_SerializeEntries:
+  - m_GUID: 0fecbaabd90556a4d9030da77e91b044
+    m_Address: Assets/Localization/Ca Text Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 49b78cfdb9a289c408fd06a40ac4c173
+    m_Address: Assets/_Localization/Player Text Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 58e4accfb0b17c3488d584e4a3fd6ec4
+    m_Address: Assets/_Localization/NPC Text Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f1a165d24478b5741b965a38ede7488c
     m_Address: Assets/Localization/Game Text Shared Data.asset
     m_ReadOnly: 1
