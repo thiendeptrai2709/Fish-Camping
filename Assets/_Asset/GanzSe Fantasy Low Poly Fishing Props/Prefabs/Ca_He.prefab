@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 9027790192177481609}
   - component: {fileID: 6534107405237515075}
   m_Layer: 0
-  m_Name: FP_Fish_Type2_Color1
+  m_Name: Ca_He
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
