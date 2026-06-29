@@ -14,9 +14,18 @@ public class PlayerInteraction : MonoBehaviour
         CheckForInteractable();
 
         // Nếu phát hiện có vật thể tương tác và người chơi nhấn phím E
-        if (_currentInteractable != null && Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.E))
         {
-            _currentInteractable.Interact();
+            // Nếu khung hội thoại ĐANG BẬT, phím E sẽ dùng để tua chữ/đổi câu thoại tiếp theo
+            if (DialogueCanvasIsActive())
+            {
+                DialogueManager.Instance.DisplayNextSentence();
+            }
+            // Nếu khung hội thoại ĐANG TẮT và có NPC ở gần, tiến hành bắt đầu nói chuyện
+            else if (_currentInteractable != null)
+            {
+                _currentInteractable.Interact();
+            }
         }
     }
 
@@ -52,5 +61,10 @@ public class PlayerInteraction : MonoBehaviour
         if (interactionPoint == null) return;
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(interactionPoint.position, interactionRadius);
+    }
+    private bool DialogueCanvasIsActive()
+    {
+        // Bạn có thể kéo trực tiếp DialogueCanvas vào script này hoặc check nhanh qua Instance
+        return GameObject.Find("DialogueCanvas") != null && GameObject.Find("DialogueCanvas").activeInHierarchy;
     }
 }
