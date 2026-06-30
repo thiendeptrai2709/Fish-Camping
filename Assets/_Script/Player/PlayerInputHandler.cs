@@ -6,6 +6,8 @@ public class PlayerInputHandler : MonoBehaviour
     public Vector2 MoveInput { get; private set; }
     public Vector2 LookInput { get; private set; }
     public bool IsSprinting { get; private set; }
+    public bool InteractTriggered { get; private set; }
+
 
     private CarInputActions inputActions;
 
@@ -29,5 +31,6 @@ public class PlayerInputHandler : MonoBehaviour
         MoveInput = inputActions.Player.Move.ReadValue<Vector2>();
         LookInput = inputActions.Player.Look.ReadValue<Vector2>();
         IsSprinting = inputActions.Player.Sprint.IsPressed();
+        InteractTriggered = inputActions.Player.Interact.WasPressedThisFrame();
     }
 }
