@@ -3,19 +3,19 @@
 public class NPCBase : MonoBehaviour, IInteractable
 {
     [Header("NPC Settings")]
-    [SerializeField] private string npcName = "Dân Làng";
-    [SerializeField] private string promptMessage = "Nói chuyện";
+    [SerializeField] private string npcName = "Bác Thợ Máy";
+    [SerializeField] private string promptMessage = "Nâng cấp xe";
 
     [Header("Dialogues")]
     [SerializeField]
     [TextArea(2, 5)]
     private string[] introDialogues = new string[] {
-        "Chào cậu, hôm nay thời tiết ở Hồ Thông thật đẹp!",
-        "Cậu có câu được con cá Vược nào lớn không?"
+        "Chào cậu, muốn nâng cấp gì cho chiếc xe tải cũ này à?"
     };
 
-    [Header("Quest System Link")]
+    [Header("System Links")]
     [SerializeField] private QuestGiver _questGiver;
+    [SerializeField] private NPCOffroadUpgrade _tireUpgrader;
 
     private Animator _animator;
     private bool _isInteracting = false;
@@ -28,6 +28,11 @@ public class NPCBase : MonoBehaviour, IInteractable
         if (_questGiver == null)
         {
             _questGiver = GetComponent<QuestGiver>();
+        }
+
+        if (_tireUpgrader == null)
+        {
+            _tireUpgrader = GetComponent<NPCOffroadUpgrade>();
         }
     }
 
@@ -42,16 +47,13 @@ public class NPCBase : MonoBehaviour, IInteractable
 
         Debug.Log($"Đang tương tác với NPC: {npcName}");
 
-        // 1. Tự động xoay mặt NPC về hướng của Player
+        // Tự động xoay mặt NPC về hướng của Player
         RotateTowardsPlayer();
 
-        // 2. Chuyển Animator sang trạng thái Nghe nói chuyện (NPCState = 2)
-        if (_animator != null)
-        {
-            _animator.SetInteger("NPCState", 2);
-        }
+        // 1. Khi vừa bấm E nói chuyện: Chuyển sang trạng thái Nói chuyện (NPCState = 1)
+        SetNPCAnimationState(1);
 
-        // 3. Kiểm tra xem đây là NPC thường hay NPC có nhiệm vụ cốt truyện
+        // NHÁNH 1: Kiểm tra xem đây là NPC có nhiệm vụ cốt truyện
         if (_questGiver != null)
         {
             // Chạy logic thoại và quản lý trạng thái của QuestGiver
@@ -59,23 +61,45 @@ public class NPCBase : MonoBehaviour, IInteractable
                 ResetNPCState();
             });
         }
+        // NHÁNH 2: Nếu là NPC nâng cấp lốp xe
+        else if (_tireUpgrader != null)
+        {
+            // Chạy hội thoại chào hỏi, tư vấn trước
+            _tireUpgrader.HandleUpgradeInteraction(npcName, () => {
+
+                // Sau khi dứt lời thoại: Chuyển sang trạng thái Nâng cấp/Sửa xe (NPCState = 2)
+                SetNPCAnimationState(2);
+
+                // Mở bảng giao diện Gara lên cho người chơi thao tác
+                GarageUIManager.Instance.OpenGarage(() => {
+                    // Khi người chơi tắt UI Gara: Trả NPC về lại Đứng im (NPCState = 0)
+                    ResetNPCState();
+                });
+            });
+        }
+        // NHÁNH 3: NPC thường, chỉ chạy thoại mặc định
         else
         {
-            // Nếu không có nhiệm vụ, chạy thoại mặc định của NPCBase hiển thị lên UI Canvas
             DialogueManager.Instance.StartDialogue(npcName, introDialogues, () => {
                 ResetNPCState();
             });
         }
     }
 
+    // Hàm trung gian quản lý việc cập nhật thông số Animator
+    public void SetNPCAnimationState(int stateValue)
+    {
+        if (_animator != null)
+        {
+            _animator.SetInteger("NPCState", stateValue);
+        }
+    }
+
     private void ResetNPCState()
     {
         _isInteracting = false;
-        if (_animator != null)
-        {
-            _animator.SetInteger("NPCState", 0); // Trả NPC về lại trạng thái Đứng im mặc định (NPCState = 0)
-        }
-        Debug.Log("Hết hội thoại! NPC quay về trạng thái đứng im bình thường.");
+        SetNPCAnimationState(0); // Trả NPC về lại trạng thái Đứng im mặc định (NPCState = 0)
+        Debug.Log("Hết tương tác! NPC quay về trạng thái đứng im bình thường.");
     }
 
     // Hàm phụ xử lý xoay hướng nhìn về Player (chỉ xoay theo trục Y)
@@ -99,9 +123,10 @@ public class NPCBase : MonoBehaviour, IInteractable
     {
         if (_isInteracting) return; // Nếu đang nói chuyện thì không cho phép đổi sang di chuyển
 
+        // Tận dụng trạng thái di chuyển nếu sau này bạn làm AI di chuyển
+        // (Tạm thời map theo logic cũ của bạn, ví dụ: 1 là đi bộ nếu cần, hoặc tùy biến sau)
         if (_animator != null)
         {
-            // Trạng thái Di chuyển (NPCState = 1), Đứng im (NPCState = 0)
             _animator.SetInteger("NPCState", isWalking ? 1 : 0);
         }
     }
