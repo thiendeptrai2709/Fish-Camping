@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(PlayerInputHandler))]
@@ -56,5 +56,15 @@ public class PlayerMovement : MonoBehaviour
 
         verticalVelocity += gravity * Time.deltaTime;
         controller.Move(Vector3.up * verticalVelocity * Time.deltaTime);
+    }
+    public void FaceTarget(Vector3 targetPosition)
+    {
+        Vector3 lookDirection = targetPosition - transform.position;
+        lookDirection.y = 0f; // Triệt tiêu trục Y để nhân vật không bị ngửa mặt hay cúi đầu
+
+        if (lookDirection.sqrMagnitude > 0.01f)
+        {
+            transform.rotation = Quaternion.LookRotation(lookDirection);
+        }
     }
 }

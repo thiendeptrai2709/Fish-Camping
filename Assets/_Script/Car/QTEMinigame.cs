@@ -3,9 +3,7 @@ using TMPro;
 
 public class QTEMinigame : MonoBehaviour
 {
-    [Header("System Link")]
-    [SerializeField] private VehicleInput vehicleInput;
-
+   
     [Header("UI Elements")]
     [SerializeField] private GameObject qteCanvas;
     [SerializeField] private RectTransform pointer;
@@ -24,22 +22,7 @@ public class QTEMinigame : MonoBehaviour
     private float moveDir = 1f;
     private float barWidth = 600f;
 
-    private void OnEnable()
-    {
-        if (vehicleInput != null)
-        {
-            vehicleInput.OnQTEHitEvent += OnQTEKeyPress;
-        }
-    }
-
-    private void OnDisable()
-    {
-        if (vehicleInput != null)
-        {
-            vehicleInput.OnQTEHitEvent -= OnQTEKeyPress;
-        }
-    }
-
+    
     public void BeginQTE(string title, System.Action onWinAction)
     {
         onWinCallback = onWinAction;
@@ -64,6 +47,12 @@ public class QTEMinigame : MonoBehaviour
     {
         if (!isPlaying) return;
 
+        // QTE tự lắng nghe nút Space thay vì chờ Event từ VehicleInput
+        if (UnityEngine.InputSystem.Keyboard.current.spaceKey.wasPressedThisFrame)
+        {
+            VerifyHit();
+        }
+
         pointerX += moveDir * speed * Time.deltaTime;
         if (pointerX > barWidth / 2f || pointerX < -barWidth / 2f)
         {
@@ -72,13 +61,6 @@ public class QTEMinigame : MonoBehaviour
         }
         pointer.anchoredPosition = new Vector2(pointerX, 0f);
     }
-
-    private void OnQTEKeyPress()
-    {
-        if (!isPlaying) return;
-        VerifyHit();
-    }
-
     private void VerifyHit()
     {
         float zoneMinX = targetZone.anchoredPosition.x - (targetZone.rect.width / 2f);

@@ -14,6 +14,7 @@ public class PlayerInteraction : MonoBehaviour
 
     private PlayerInputHandler inputHandler;
     private PlayerCursor playerCursor;
+    private PlayerMovement playerMovement;
     private Transform cameraTransform;
     private IInteractable currentInteractable;
 
@@ -21,6 +22,7 @@ public class PlayerInteraction : MonoBehaviour
     {
         inputHandler = GetComponent<PlayerInputHandler>();
         playerCursor = GetComponent<PlayerCursor>();
+        playerMovement = GetComponent<PlayerMovement>();
         cameraTransform = Camera.main.transform;
     }
 
@@ -82,6 +84,13 @@ public class PlayerInteraction : MonoBehaviour
     {
         if (inputHandler.InteractTriggered && currentInteractable != null)
         {
+            // Lấy Transform của vật thể đang được ngắm trúng để ép nhân vật quay ra nhìn
+            MonoBehaviour targetObject = currentInteractable as MonoBehaviour;
+            if (targetObject != null)
+            {
+                playerMovement.FaceTarget(targetObject.transform.position);
+            }
+
             currentInteractable.Interact();
         }
     }

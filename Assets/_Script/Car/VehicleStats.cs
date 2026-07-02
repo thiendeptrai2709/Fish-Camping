@@ -9,8 +9,7 @@ public class VehicleStats : MonoBehaviour
 
     [Header("Link Hệ thống")]
     [SerializeField] private VehicleController vehicleController;
-    [SerializeField] private VehicleInput vehicleInput;       // Đọc phím Tab & F
-    [SerializeField] private ProceduralHinge hoodHinge;       // Check bản lề Capo
+    [SerializeField] private ProceduralHinge hoodHinge;
     [SerializeField] private QTEMinigame qteMinigame;
     [SerializeField] private BalanceMinigame balanceMinigame;
     [SerializeField] private EngineRepairMinigame engineMinigame;
@@ -39,36 +38,6 @@ public class VehicleStats : MonoBehaviour
     private float badRoadTimer;
 
     public UnityEvent OnStatsChanged;
-
-    private void OnEnable()
-    {
-        if (vehicleInput != null)
-        {
-            vehicleInput.OnToggleStatsUIEvent += ToggleOverviewPanel;
-            vehicleInput.OnQuickRepairEvent += TryRepairEngineByKeyF;
-            vehicleInput.OnRefillCoolantEvent += TryRefillCoolantByKeyG;
-
-            vehicleInput.OnInteractTire1 += () => TryInteractTire(0);
-            vehicleInput.OnInteractTire2 += () => TryInteractTire(1);
-            vehicleInput.OnInteractTire3 += () => TryInteractTire(2);
-            vehicleInput.OnInteractTire4 += () => TryInteractTire(3);
-        }
-    }
-
-    private void OnDisable()
-    {
-        if (vehicleInput != null)
-        {
-            vehicleInput.OnToggleStatsUIEvent -= ToggleOverviewPanel;
-            vehicleInput.OnQuickRepairEvent -= TryRepairEngineByKeyF;
-            vehicleInput.OnRefillCoolantEvent -= TryRefillCoolantByKeyG;
-
-            vehicleInput.OnInteractTire1 -= () => TryInteractTire(0);
-            vehicleInput.OnInteractTire2 -= () => TryInteractTire(1);
-            vehicleInput.OnInteractTire3 -= () => TryInteractTire(2);
-            vehicleInput.OnInteractTire4 -= () => TryInteractTire(3);
-        }
-    }
 
     private void Start()
     {
@@ -121,13 +90,13 @@ public class VehicleStats : MonoBehaviour
     }
 
     // ================= 1. XỬ LÝ PHÍM TAB =================
-    private void ToggleOverviewPanel()
+    public void ToggleOverviewPanel()
     {
         if (statsCanvasObject)
             statsCanvasObject.SetActive(!statsCanvasObject.activeSelf);
     }
 
-    private void TryRepairEngineByKeyF()
+    public void TryRepairEngine()
     {
         bool isQTEPlaying = (qteMinigame != null && qteMinigame.IsPlaying);
         bool isBalancePlaying = (balanceMinigame != null && balanceMinigame.IsPlaying);
@@ -140,7 +109,7 @@ public class VehicleStats : MonoBehaviour
         }
     }
 
-    private void TryRefillCoolantByKeyG()
+    public void TryRefillCoolant()
     {
         bool isQTEPlaying = (qteMinigame != null && qteMinigame.IsPlaying);
         bool isBalancePlaying = (balanceMinigame != null && balanceMinigame.IsPlaying);
@@ -192,7 +161,7 @@ public class VehicleStats : MonoBehaviour
         }
     }
 
-    private void TryInteractTire(int index)
+    public void TryInteractTire(int index)
     {
         if (engineMinigame != null && engineMinigame.IsEngineOut) return;
         if (qteMinigame != null && qteMinigame.IsPlaying) return;

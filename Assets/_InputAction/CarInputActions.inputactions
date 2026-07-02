@@ -25,63 +25,9 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "ToggleTrunk",
+                    "name": "ExitVehicle",
                     "type": "Button",
-                    "id": "69352ab8-ff69-4627-9566-78f635c2a9c5",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "ToggleHood",
-                    "type": "Button",
-                    "id": "4e9a1e28-0685-49c3-a6bd-5d84dab355be",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "InspectEngine",
-                    "type": "Button",
-                    "id": "dfd4ca80-fcca-41c8-844a-996ddf862ee7",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "ToggleStatsUI",
-                    "type": "Button",
-                    "id": "a218e8bf-388b-43d9-88e9-2ec31b0bdefd",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "QuickRepair",
-                    "type": "Button",
-                    "id": "0a3ef217-0764-4501-8a86-dc2471edb1f7",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "QTEHit",
-                    "type": "Button",
-                    "id": "57402e1d-1b27-48bd-b4d8-26aac42e4641",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "RefillCoolant",
-                    "type": "Button",
-                    "id": "28887b05-65e8-4d5c-b4c5-fb3322d3a70c",
+                    "id": "05494876-ceee-4925-b130-3973f51c276a",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -157,78 +103,12 @@
                 },
                 {
                     "name": "",
-                    "id": "dc2e5414-ab1c-40e5-aa05-93e94df31b28",
+                    "id": "a8361b4b-fd1c-4167-a25f-6aee044917bb",
                     "path": "<Keyboard>/e",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "ToggleTrunk",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "b1ead8b8-c079-4618-a7c1-65dc148c7395",
-                    "path": "<Keyboard>/r",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "ToggleHood",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "e7d19404-c97d-4cdb-8317-ad02a582b6de",
-                    "path": "<Keyboard>/t",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "InspectEngine",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "2c23b5fa-f04c-4d17-ad6c-74c83e5080e2",
-                    "path": "<Keyboard>/tab",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "ToggleStatsUI",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "89a65840-f260-4571-822a-960f0b02b300",
-                    "path": "<Keyboard>/f",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "QuickRepair",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "612728a1-1eb7-4774-9b68-643e5caa6b65",
-                    "path": "<Keyboard>/space",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "QTEHit",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "64612418-03b7-492c-b51a-adad39010a0d",
-                    "path": "<Keyboard>/g",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "RefillCoolant",
+                    "action": "ExitVehicle",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

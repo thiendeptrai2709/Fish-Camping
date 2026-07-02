@@ -6,7 +6,6 @@ using Unity.Cinemachine;
 public class EngineRepairMinigame : MonoBehaviour
 {
     [Header("Link Vận hành")]
-    [SerializeField] private VehicleInput vehicleInput;
     [SerializeField] private ProceduralHinge hoodHinge;
     [SerializeField] private Transform engineVisualMesh;
     [SerializeField] private Transform inspectPoint;
@@ -36,19 +35,8 @@ public class EngineRepairMinigame : MonoBehaviour
         originalLocalRot = engineVisualMesh.localRotation;
     }
 
-    private void OnEnable()
-    {
-        if (vehicleInput != null)
-            vehicleInput.OnInspectEngineEvent += TryToggleRepairMode;
-    }
-
-    private void OnDisable()
-    {
-        if (vehicleInput != null)
-            vehicleInput.OnInspectEngineEvent -= TryToggleRepairMode;
-    }
-
-    private void TryToggleRepairMode()
+  
+    public void TryToggleRepairMode()
     {
         if (hoodHinge == null || !hoodHinge.IsFullyOpen)
         {

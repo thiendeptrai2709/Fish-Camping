@@ -111,63 +111,9 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""ToggleTrunk"",
+                    ""name"": ""ExitVehicle"",
                     ""type"": ""Button"",
-                    ""id"": ""69352ab8-ff69-4627-9566-78f635c2a9c5"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""ToggleHood"",
-                    ""type"": ""Button"",
-                    ""id"": ""4e9a1e28-0685-49c3-a6bd-5d84dab355be"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""InspectEngine"",
-                    ""type"": ""Button"",
-                    ""id"": ""dfd4ca80-fcca-41c8-844a-996ddf862ee7"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""ToggleStatsUI"",
-                    ""type"": ""Button"",
-                    ""id"": ""a218e8bf-388b-43d9-88e9-2ec31b0bdefd"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""QuickRepair"",
-                    ""type"": ""Button"",
-                    ""id"": ""0a3ef217-0764-4501-8a86-dc2471edb1f7"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""QTEHit"",
-                    ""type"": ""Button"",
-                    ""id"": ""57402e1d-1b27-48bd-b4d8-26aac42e4641"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""RefillCoolant"",
-                    ""type"": ""Button"",
-                    ""id"": ""28887b05-65e8-4d5c-b4c5-fb3322d3a70c"",
+                    ""id"": ""05494876-ceee-4925-b130-3973f51c276a"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -243,78 +189,12 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""dc2e5414-ab1c-40e5-aa05-93e94df31b28"",
+                    ""id"": ""a8361b4b-fd1c-4167-a25f-6aee044917bb"",
                     ""path"": ""<Keyboard>/e"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""ToggleTrunk"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""b1ead8b8-c079-4618-a7c1-65dc148c7395"",
-                    ""path"": ""<Keyboard>/r"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""ToggleHood"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""e7d19404-c97d-4cdb-8317-ad02a582b6de"",
-                    ""path"": ""<Keyboard>/t"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""InspectEngine"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""2c23b5fa-f04c-4d17-ad6c-74c83e5080e2"",
-                    ""path"": ""<Keyboard>/tab"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""ToggleStatsUI"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""89a65840-f260-4571-822a-960f0b02b300"",
-                    ""path"": ""<Keyboard>/f"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""QuickRepair"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""612728a1-1eb7-4774-9b68-643e5caa6b65"",
-                    ""path"": ""<Keyboard>/space"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""QTEHit"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""64612418-03b7-492c-b51a-adad39010a0d"",
-                    ""path"": ""<Keyboard>/g"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""RefillCoolant"",
+                    ""action"": ""ExitVehicle"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -459,13 +339,7 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
         m_Gameplay = asset.FindActionMap("Gameplay", throwIfNotFound: true);
         m_Gameplay_Drive = m_Gameplay.FindAction("Drive", throwIfNotFound: true);
         m_Gameplay_Brake = m_Gameplay.FindAction("Brake", throwIfNotFound: true);
-        m_Gameplay_ToggleTrunk = m_Gameplay.FindAction("ToggleTrunk", throwIfNotFound: true);
-        m_Gameplay_ToggleHood = m_Gameplay.FindAction("ToggleHood", throwIfNotFound: true);
-        m_Gameplay_InspectEngine = m_Gameplay.FindAction("InspectEngine", throwIfNotFound: true);
-        m_Gameplay_ToggleStatsUI = m_Gameplay.FindAction("ToggleStatsUI", throwIfNotFound: true);
-        m_Gameplay_QuickRepair = m_Gameplay.FindAction("QuickRepair", throwIfNotFound: true);
-        m_Gameplay_QTEHit = m_Gameplay.FindAction("QTEHit", throwIfNotFound: true);
-        m_Gameplay_RefillCoolant = m_Gameplay.FindAction("RefillCoolant", throwIfNotFound: true);
+        m_Gameplay_ExitVehicle = m_Gameplay.FindAction("ExitVehicle", throwIfNotFound: true);
         // Player
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
@@ -555,13 +429,7 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
     private List<IGameplayActions> m_GameplayActionsCallbackInterfaces = new List<IGameplayActions>();
     private readonly InputAction m_Gameplay_Drive;
     private readonly InputAction m_Gameplay_Brake;
-    private readonly InputAction m_Gameplay_ToggleTrunk;
-    private readonly InputAction m_Gameplay_ToggleHood;
-    private readonly InputAction m_Gameplay_InspectEngine;
-    private readonly InputAction m_Gameplay_ToggleStatsUI;
-    private readonly InputAction m_Gameplay_QuickRepair;
-    private readonly InputAction m_Gameplay_QTEHit;
-    private readonly InputAction m_Gameplay_RefillCoolant;
+    private readonly InputAction m_Gameplay_ExitVehicle;
     /// <summary>
     /// Provides access to input actions defined in input action map "Gameplay".
     /// </summary>
@@ -582,33 +450,9 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @Brake => m_Wrapper.m_Gameplay_Brake;
         /// <summary>
-        /// Provides access to the underlying input action "Gameplay/ToggleTrunk".
+        /// Provides access to the underlying input action "Gameplay/ExitVehicle".
         /// </summary>
-        public InputAction @ToggleTrunk => m_Wrapper.m_Gameplay_ToggleTrunk;
-        /// <summary>
-        /// Provides access to the underlying input action "Gameplay/ToggleHood".
-        /// </summary>
-        public InputAction @ToggleHood => m_Wrapper.m_Gameplay_ToggleHood;
-        /// <summary>
-        /// Provides access to the underlying input action "Gameplay/InspectEngine".
-        /// </summary>
-        public InputAction @InspectEngine => m_Wrapper.m_Gameplay_InspectEngine;
-        /// <summary>
-        /// Provides access to the underlying input action "Gameplay/ToggleStatsUI".
-        /// </summary>
-        public InputAction @ToggleStatsUI => m_Wrapper.m_Gameplay_ToggleStatsUI;
-        /// <summary>
-        /// Provides access to the underlying input action "Gameplay/QuickRepair".
-        /// </summary>
-        public InputAction @QuickRepair => m_Wrapper.m_Gameplay_QuickRepair;
-        /// <summary>
-        /// Provides access to the underlying input action "Gameplay/QTEHit".
-        /// </summary>
-        public InputAction @QTEHit => m_Wrapper.m_Gameplay_QTEHit;
-        /// <summary>
-        /// Provides access to the underlying input action "Gameplay/RefillCoolant".
-        /// </summary>
-        public InputAction @RefillCoolant => m_Wrapper.m_Gameplay_RefillCoolant;
+        public InputAction @ExitVehicle => m_Wrapper.m_Gameplay_ExitVehicle;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -641,27 +485,9 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
             @Brake.started += instance.OnBrake;
             @Brake.performed += instance.OnBrake;
             @Brake.canceled += instance.OnBrake;
-            @ToggleTrunk.started += instance.OnToggleTrunk;
-            @ToggleTrunk.performed += instance.OnToggleTrunk;
-            @ToggleTrunk.canceled += instance.OnToggleTrunk;
-            @ToggleHood.started += instance.OnToggleHood;
-            @ToggleHood.performed += instance.OnToggleHood;
-            @ToggleHood.canceled += instance.OnToggleHood;
-            @InspectEngine.started += instance.OnInspectEngine;
-            @InspectEngine.performed += instance.OnInspectEngine;
-            @InspectEngine.canceled += instance.OnInspectEngine;
-            @ToggleStatsUI.started += instance.OnToggleStatsUI;
-            @ToggleStatsUI.performed += instance.OnToggleStatsUI;
-            @ToggleStatsUI.canceled += instance.OnToggleStatsUI;
-            @QuickRepair.started += instance.OnQuickRepair;
-            @QuickRepair.performed += instance.OnQuickRepair;
-            @QuickRepair.canceled += instance.OnQuickRepair;
-            @QTEHit.started += instance.OnQTEHit;
-            @QTEHit.performed += instance.OnQTEHit;
-            @QTEHit.canceled += instance.OnQTEHit;
-            @RefillCoolant.started += instance.OnRefillCoolant;
-            @RefillCoolant.performed += instance.OnRefillCoolant;
-            @RefillCoolant.canceled += instance.OnRefillCoolant;
+            @ExitVehicle.started += instance.OnExitVehicle;
+            @ExitVehicle.performed += instance.OnExitVehicle;
+            @ExitVehicle.canceled += instance.OnExitVehicle;
         }
 
         /// <summary>
@@ -679,27 +505,9 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
             @Brake.started -= instance.OnBrake;
             @Brake.performed -= instance.OnBrake;
             @Brake.canceled -= instance.OnBrake;
-            @ToggleTrunk.started -= instance.OnToggleTrunk;
-            @ToggleTrunk.performed -= instance.OnToggleTrunk;
-            @ToggleTrunk.canceled -= instance.OnToggleTrunk;
-            @ToggleHood.started -= instance.OnToggleHood;
-            @ToggleHood.performed -= instance.OnToggleHood;
-            @ToggleHood.canceled -= instance.OnToggleHood;
-            @InspectEngine.started -= instance.OnInspectEngine;
-            @InspectEngine.performed -= instance.OnInspectEngine;
-            @InspectEngine.canceled -= instance.OnInspectEngine;
-            @ToggleStatsUI.started -= instance.OnToggleStatsUI;
-            @ToggleStatsUI.performed -= instance.OnToggleStatsUI;
-            @ToggleStatsUI.canceled -= instance.OnToggleStatsUI;
-            @QuickRepair.started -= instance.OnQuickRepair;
-            @QuickRepair.performed -= instance.OnQuickRepair;
-            @QuickRepair.canceled -= instance.OnQuickRepair;
-            @QTEHit.started -= instance.OnQTEHit;
-            @QTEHit.performed -= instance.OnQTEHit;
-            @QTEHit.canceled -= instance.OnQTEHit;
-            @RefillCoolant.started -= instance.OnRefillCoolant;
-            @RefillCoolant.performed -= instance.OnRefillCoolant;
-            @RefillCoolant.canceled -= instance.OnRefillCoolant;
+            @ExitVehicle.started -= instance.OnExitVehicle;
+            @ExitVehicle.performed -= instance.OnExitVehicle;
+            @ExitVehicle.canceled -= instance.OnExitVehicle;
         }
 
         /// <summary>
@@ -884,54 +692,12 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnBrake(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "ToggleTrunk" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "ExitVehicle" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnToggleTrunk(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "ToggleHood" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnToggleHood(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "InspectEngine" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnInspectEngine(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "ToggleStatsUI" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnToggleStatsUI(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "QuickRepair" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnQuickRepair(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "QTEHit" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnQTEHit(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "RefillCoolant" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnRefillCoolant(InputAction.CallbackContext context);
+        void OnExitVehicle(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Player" which allows adding and removing callbacks.
