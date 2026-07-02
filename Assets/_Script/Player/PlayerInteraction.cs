@@ -6,11 +6,12 @@ using UnityEngine.UI;
 [RequireComponent(typeof(PlayerInputHandler))]
 public class PlayerInteraction : MonoBehaviour
 {
-    [SerializeField] private float interactDistance = 3f; // Khoảng cách tương tác tối đa
-    [SerializeField] private LayerMask interactableLayer; // Chỉ kiểm tra vật thể ở Layer này
-    [SerializeField] private Image crosshairImage; // Tham chiếu đến UI Image đã tạo
+    [SerializeField] private float interactDistance = 3f;
+    [SerializeField] private LayerMask interactableLayer;
+    [SerializeField] private Image crosshairImage;
     [SerializeField] private Color defaultCrosshairColor = Color.white;
-    [SerializeField] private Color highlightCrosshairColor = Color.yellow; // Đổi màu khi ngắm trúng
+    [SerializeField] private Color highlightCrosshairColor = Color.yellow;
+    [SerializeField] private InteractionPromptUI promptUI;
 
     private PlayerInputHandler inputHandler;
     private PlayerCursor playerCursor;
@@ -92,7 +93,11 @@ public class PlayerInteraction : MonoBehaviour
         if (crosshairImage != null)
         {
             crosshairImage.color = isTargeting ? highlightCrosshairColor : defaultCrosshairColor;
-            // TODO: Bạn có thể code thêm UI để hiện câu lệnh prompt (ví dụ: [E] Mở hòm)
+        }
+
+        if (promptUI != null)
+        {
+            promptUI.DisplayPrompt(isTargeting && !string.IsNullOrEmpty(prompt), prompt);
         }
     }
 

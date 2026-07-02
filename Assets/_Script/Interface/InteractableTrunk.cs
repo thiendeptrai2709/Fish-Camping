@@ -64,6 +64,6 @@ public class InteractableTrunk : MonoBehaviour, IInteractable
     public string GetInteractPrompt()
     {
         // Đổi câu lệnh tùy theo trạng thái đang đóng hay mở
-        return isTrunkOpen ? "[Chuột Trái] Đóng rương" : "[Chuột Trái] Mở rương của Richard";
+        return isTrunkOpen ? "[Chuột Trái] Đóng cốp " : "[Chuột Trái] Mở cốp xe ";
     }
 }
