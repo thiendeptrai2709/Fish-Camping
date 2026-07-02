@@ -8,6 +8,8 @@ public class VehicleStats : MonoBehaviour
     [SerializeField] private TireRepairMinigame[] tireMinigames = new TireRepairMinigame[4];
 
     [Header("Link Hệ thống")]
+    [SerializeField] private Transform playerTransform;
+    [SerializeField] private float maxStatsDistance = 4.5f;
     [SerializeField] private VehicleController vehicleController;
     [SerializeField] private ProceduralHinge hoodHinge;
     [SerializeField] private QTEMinigame qteMinigame;
@@ -47,6 +49,14 @@ public class VehicleStats : MonoBehaviour
 
     private void Update()
     {
+        if (statsCanvasObject != null && statsCanvasObject.activeSelf)
+        {
+            if (playerTransform != null && Vector3.Distance(transform.position, playerTransform.position) > maxStatsDistance)
+            {
+                statsCanvasObject.SetActive(false);
+            }
+        }
+
         bool isCapoClosed = (hoodHinge != null && !hoodHinge.IsFullyOpen);
         bool isEngineHidden = (engineMinigame != null && !engineMinigame.IsEngineOut);
 
