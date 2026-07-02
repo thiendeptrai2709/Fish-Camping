@@ -47,6 +47,17 @@ public class PlayerInteraction : MonoBehaviour
 
             if (interactable != null)
             {
+                if (TireRepairMinigame.ActiveTire != null)
+                {
+                    InteractableTire hitTire = hit.collider.GetComponent<InteractableTire>();
+                    if (hitTire == null || hitTire.GetComponent<IInteractable>() != currentInteractable && hitTire.gameObject != TireRepairMinigame.ActiveTire.gameObject)
+                    {
+                        // Từ chối tương tác với mọi vật thể ngoại đạo
+                        ClearCurrentInteractable();
+                        return;
+                    }
+                }
+
                 if (interactable != currentInteractable)
                 {
                     if (currentInteractable != null)
@@ -63,12 +74,17 @@ public class PlayerInteraction : MonoBehaviour
             }
         }
 
+        ClearCurrentInteractable();
+    }
+
+    // Tách đoạn xóa trạng thái ra thành hàm nhỏ cho sạch code
+    private void ClearCurrentInteractable()
+    {
         if (currentInteractable != null)
         {
             currentInteractable.OnLoseFocus();
             currentInteractable = null;
         }
-
         SetCrosshairState(false);
     }
     private void SetCrosshairState(bool isTargeting, string prompt = "")
