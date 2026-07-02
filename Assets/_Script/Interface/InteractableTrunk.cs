@@ -53,7 +53,14 @@ public class InteractableTrunk : MonoBehaviour, IInteractable
             trunkInventory.ToggleTrunkAndUI();
         }
     }
+    public void ForceClose()
+    {
+        if (!isTrunkOpen) return;
+        isTrunkOpen = false;
 
+        if (trunkHinge != null) trunkHinge.ForceClose();
+        if (trunkInventory != null) trunkInventory.ForceCloseUI();
+    }
     public string GetInteractPrompt()
     {
         // Đổi câu lệnh tùy theo trạng thái đang đóng hay mở

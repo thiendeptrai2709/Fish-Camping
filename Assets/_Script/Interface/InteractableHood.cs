@@ -36,7 +36,13 @@ public class InteractableHood : MonoBehaviour, IInteractable
             hoodHinge.Toggle();
         }
     }
+    public void ForceClose()
+    {
+        if (!isHoodOpen) return;
+        isHoodOpen = false;
 
+        if (hoodHinge != null) hoodHinge.ForceClose();
+    }
     public string GetInteractPrompt()
     {
         return isHoodOpen ? "[Chuột Trái] Đóng nắp Capo" : "[Chuột Trái] Mở nắp Capo";

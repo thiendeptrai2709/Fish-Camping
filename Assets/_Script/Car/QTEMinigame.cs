@@ -1,9 +1,11 @@
-﻿using UnityEngine;
-using TMPro;
+﻿using TMPro;
+using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class QTEMinigame : MonoBehaviour
 {
-   
+    [SerializeField] private PlayerInputHandler playerInput;
+
     [Header("UI Elements")]
     [SerializeField] private GameObject qteCanvas;
     [SerializeField] private RectTransform pointer;
@@ -47,8 +49,7 @@ public class QTEMinigame : MonoBehaviour
     {
         if (!isPlaying) return;
 
-        // QTE tự lắng nghe nút Space thay vì chờ Event từ VehicleInput
-        if (UnityEngine.InputSystem.Keyboard.current.spaceKey.wasPressedThisFrame)
+        if (playerInput != null && playerInput.MinigameTriggered)
         {
             VerifyHit();
         }

@@ -13,6 +13,11 @@ public class VehicleEnterExit : MonoBehaviour
     [SerializeField] private GameObject carCamera; // Cinemachine Camera riêng của xe
     [SerializeField] private GameObject playerUI;
 
+    [Header("Các bộ phận cần tự động đóng")]
+    [SerializeField] private InteractableHood interactableHood;
+    [SerializeField] private InteractableTrunk interactableTrunk;
+    [SerializeField] private EngineRepairMinigame engineRepair;
+
     private CarInputActions inputActions;
     private Transform currentExitPoint;
     private bool isInCar = false;
@@ -43,6 +48,13 @@ public class VehicleEnterExit : MonoBehaviour
     public void EnterVehicle(Transform doorExitPoint)
     {
         if (isInCar) return;
+
+        if (engineRepair != null && engineRepair.IsEngineOut)
+        {
+            engineRepair.ExitRepairMode();
+        }
+        if (interactableHood != null) interactableHood.ForceClose();
+        if (interactableTrunk != null) interactableTrunk.ForceClose();
 
         currentExitPoint = doorExitPoint;
         isInCar = true;

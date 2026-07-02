@@ -1,10 +1,11 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
-using TMPro;
 
 public class BalanceMinigame : MonoBehaviour
 {
-    [SerializeField] private VehicleInput vehicleInput;
+    [SerializeField] private PlayerInputHandler playerInput;
     [Header("UI Elements")]
     [SerializeField] private GameObject minigameCanvas;
     [SerializeField] private RectTransform needle;
@@ -75,7 +76,7 @@ public class BalanceMinigame : MonoBehaviour
     }
     private void HandleNeedleMovement()
     {
-        if (vehicleInput != null && vehicleInput.IsPushing)
+        if (playerInput != null && playerInput.IsMinigameHeld)
         {
             currentNeedlePos += pushForce * Time.deltaTime;
         }

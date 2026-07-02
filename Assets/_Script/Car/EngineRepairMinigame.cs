@@ -10,6 +10,10 @@ public class EngineRepairMinigame : MonoBehaviour
     [SerializeField] private Transform engineVisualMesh;
     [SerializeField] private Transform inspectPoint;
 
+    [Header("Link Người Chơi")]
+    [SerializeField] private PlayerMovement playerMovement;
+    [SerializeField] private GameObject crosshairUI;
+
     [Header("Cinemachine Priority Override")]
     [SerializeField] private CinemachineCamera inspectCam;
     [SerializeField] private int activePriority = 10;
@@ -63,6 +67,9 @@ public class EngineRepairMinigame : MonoBehaviour
         if (inspectCam != null)
             inspectCam.Priority = activePriority;
 
+        if (playerMovement != null) playerMovement.enabled = false;
+        if (crosshairUI != null) crosshairUI.SetActive(false);
+
         if (moveCoroutine != null) StopCoroutine(moveCoroutine);
         moveCoroutine = StartCoroutine(AnimateEngineTo(inspectPoint.position, inspectPoint.rotation, true));
 
@@ -79,6 +86,12 @@ public class EngineRepairMinigame : MonoBehaviour
 
         if (inspectCam != null)
             inspectCam.Priority = 1;
+
+        if (playerMovement != null) playerMovement.enabled = true;
+        if (crosshairUI != null) crosshairUI.SetActive(true);
+
+        if (hoodHinge != null)
+            hoodHinge.IsLocked = false;
 
         Vector3 dockWorldPos = engineVisualMesh.parent.TransformPoint(originalLocalPos);
         Quaternion dockWorldRot = engineVisualMesh.parent.rotation * originalLocalRot;
@@ -115,9 +128,6 @@ public class EngineRepairMinigame : MonoBehaviour
         {
             engineVisualMesh.localPosition = originalLocalPos;
             engineVisualMesh.localRotation = originalLocalRot;
-            
-            if (hoodHinge != null)
-                hoodHinge.IsLocked = false;
 
         }
         isAnimating = false;

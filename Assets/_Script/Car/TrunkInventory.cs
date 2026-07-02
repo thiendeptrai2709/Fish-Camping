@@ -12,4 +12,11 @@ public class TrunkInventory : MonoBehaviour
             trunkInventoryPanel.SetActive(!trunkInventoryPanel.activeSelf);
         }
     }
+    public void ForceCloseUI()
+    {
+        if (trunkInventoryPanel != null)
+        {
+            trunkInventoryPanel.SetActive(false);
+        }
+    }
 }

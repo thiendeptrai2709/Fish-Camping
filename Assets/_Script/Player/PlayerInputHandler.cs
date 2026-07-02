@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerInputHandler : MonoBehaviour
@@ -7,7 +7,8 @@ public class PlayerInputHandler : MonoBehaviour
     public Vector2 LookInput { get; private set; }
     public bool IsSprinting { get; private set; }
     public bool InteractTriggered { get; private set; }
-
+    public bool MinigameTriggered { get; private set; } // Dùng cho QTE (bấm 1 lần)
+    public bool IsMinigameHeld { get; private set; }
 
     private CarInputActions inputActions;
 
@@ -32,5 +33,8 @@ public class PlayerInputHandler : MonoBehaviour
         LookInput = inputActions.Player.Look.ReadValue<Vector2>();
         IsSprinting = inputActions.Player.Sprint.IsPressed();
         InteractTriggered = inputActions.Player.Interact.WasPressedThisFrame();
+
+        MinigameTriggered = inputActions.Player.MinigameAction.WasPressedThisFrame();
+        IsMinigameHeld = inputActions.Player.MinigameAction.IsPressed();
     }
 }
