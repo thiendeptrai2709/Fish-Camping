@@ -18,6 +18,10 @@ public class VehicleEnterExit : MonoBehaviour
     [SerializeField] private InteractableTrunk interactableTrunk;
     [SerializeField] private EngineRepairMinigame engineRepair;
 
+    [Header("Sự kiện ra vào xe")]
+    public UnityEngine.Events.UnityEvent OnEnteredVehicle;
+    public UnityEngine.Events.UnityEvent OnExitedVehicle;
+
     private CarInputActions inputActions;
     private Transform currentExitPoint;
     private bool isInCar = false;
@@ -65,6 +69,8 @@ public class VehicleEnterExit : MonoBehaviour
 
         carCamera.SetActive(true);
         vehicleInput.enabled = true;
+
+        OnEnteredVehicle?.Invoke();
     }
 
     // Hàm này chạy khi bấm phím E lúc đang ngồi trên xe
@@ -90,5 +96,7 @@ public class VehicleEnterExit : MonoBehaviour
         playerObject.SetActive(true);
         playerCamera.SetActive(true);
         if (playerUI != null) playerUI.SetActive(true);
+
+        OnExitedVehicle?.Invoke();
     }
 }

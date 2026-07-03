@@ -248,6 +248,24 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Backpack"",
+                    ""type"": ""Button"",
+                    ""id"": ""b5a40a86-270a-4048-a392-813920fc09f3"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""RotateItem"",
+                    ""type"": ""Value"",
+                    ""id"": ""6ee42560-4f66-49c7-a63d-4b12d0a843b6"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -349,6 +367,28 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""MinigameAction"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""025c594a-fc9d-4adf-a163-0a6cd4e505aa"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Backpack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ea4890e3-1e65-4966-a8f3-b07d569d143b"",
+                    ""path"": ""<Mouse>/scroll"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RotateItem"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -367,6 +407,8 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
         m_Player_Sprint = m_Player.FindAction("Sprint", throwIfNotFound: true);
         m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
         m_Player_MinigameAction = m_Player.FindAction("MinigameAction", throwIfNotFound: true);
+        m_Player_Backpack = m_Player.FindAction("Backpack", throwIfNotFound: true);
+        m_Player_RotateItem = m_Player.FindAction("RotateItem", throwIfNotFound: true);
     }
 
     ~@CarInputActions()
@@ -571,6 +613,8 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Sprint;
     private readonly InputAction m_Player_Interact;
     private readonly InputAction m_Player_MinigameAction;
+    private readonly InputAction m_Player_Backpack;
+    private readonly InputAction m_Player_RotateItem;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -602,6 +646,14 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/MinigameAction".
         /// </summary>
         public InputAction @MinigameAction => m_Wrapper.m_Player_MinigameAction;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Backpack".
+        /// </summary>
+        public InputAction @Backpack => m_Wrapper.m_Player_Backpack;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/RotateItem".
+        /// </summary>
+        public InputAction @RotateItem => m_Wrapper.m_Player_RotateItem;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -643,6 +695,12 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
             @MinigameAction.started += instance.OnMinigameAction;
             @MinigameAction.performed += instance.OnMinigameAction;
             @MinigameAction.canceled += instance.OnMinigameAction;
+            @Backpack.started += instance.OnBackpack;
+            @Backpack.performed += instance.OnBackpack;
+            @Backpack.canceled += instance.OnBackpack;
+            @RotateItem.started += instance.OnRotateItem;
+            @RotateItem.performed += instance.OnRotateItem;
+            @RotateItem.canceled += instance.OnRotateItem;
         }
 
         /// <summary>
@@ -669,6 +727,12 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
             @MinigameAction.started -= instance.OnMinigameAction;
             @MinigameAction.performed -= instance.OnMinigameAction;
             @MinigameAction.canceled -= instance.OnMinigameAction;
+            @Backpack.started -= instance.OnBackpack;
+            @Backpack.performed -= instance.OnBackpack;
+            @Backpack.canceled -= instance.OnBackpack;
+            @RotateItem.started -= instance.OnRotateItem;
+            @RotateItem.performed -= instance.OnRotateItem;
+            @RotateItem.canceled -= instance.OnRotateItem;
         }
 
         /// <summary>
@@ -773,5 +837,19 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnMinigameAction(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Backpack" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnBackpack(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "RotateItem" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnRotateItem(InputAction.CallbackContext context);
     }
 }
