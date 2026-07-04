@@ -20,7 +20,23 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     private int gridX;
     private int gridY;
     private bool isRotated = false;
+    private bool isEquipped = false;
+    private bool isHandledBySlot = false;
+    private EquipmentSlotUI currentSlot = null;
 
+    public void SetEquippedState(bool equipped, EquipmentSlotUI slot = null)
+    {
+        isEquipped = equipped;
+        currentSlot = slot;
+    }
+
+    public void SetHandledBySlot(bool handled)
+    {
+        isHandledBySlot = handled;
+    }
+
+    public bool IsEquipped() => isEquipped;
+    public EquipmentSlotUI GetCurrentSlot() => currentSlot;
     private void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
@@ -112,7 +128,33 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         lastDragPosition = eventData.position;
         canvasGroup.blocksRaycasts = false;
         canvasGroup.alpha = 0.4f;
-        minigameUI.OnItemBeginDrag(this, eventData.position);
+
+        if (isEquipped && currentSlot != null)
+        {
+            currentSlot.RemoveEquippedItem();
+
+            Canvas rootCanvas = currentSlot.GetComponentInParent<Canvas>();
+            if (rootCanvas != null)
+            {
+                transform.SetParent(rootCanvas.transform);
+            }
+            else
+            {
+                transform.SetParent(currentSlot.transform.root);
+            }
+
+            RectTransform rect = GetComponent<RectTransform>();
+            rect.pivot = new Vector2(0, 1);
+            rect.anchorMin = new Vector2(0, 1);
+            rect.anchorMax = new Vector2(0, 1);
+
+            transform.SetAsLastSibling();
+            minigameUI.OnItemBeginDragFromExternal(this, eventData.position);
+        }
+        else
+        {
+            minigameUI.OnItemBeginDrag(this, eventData.position);
+        }
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -128,6 +170,28 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         isDragging = false;
         canvasGroup.blocksRaycasts = true;
         canvasGroup.alpha = 1f;
+
+        if (isHandledBySlot)
+        {
+            isHandledBySlot = false;
+            if (minigameUI != null) minigameUI.HideHighlight();
+            return;
+        }
+
+        if (isEquipped)
+        {
+            bool placedInGrid = minigameUI.TryPlaceItemFromExternal(this, eventData.position);
+            if (!placedInGrid)
+            {
+                if (currentSlot != null)
+                {
+                    currentSlot.ReturnItemToSlot(this);
+                }
+            }
+            if (minigameUI != null) minigameUI.HideHighlight();
+            return;
+        }
+
         minigameUI.OnItemEndDrag(this, eventData.position);
     }
 
