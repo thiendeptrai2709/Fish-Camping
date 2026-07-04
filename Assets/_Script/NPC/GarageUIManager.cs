@@ -13,12 +13,15 @@ public class GarageUIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI costText;
     [SerializeField] private Button upgradeButton;
 
-    [Header("Data Config")]
+    [Header("Upgrade Data Files")]
     [SerializeField] private VehicleUpgradeSO tireUpgradeData;
+    [SerializeField] private VehicleUpgradeSO trunkUpgradeData;
 
-    // Giả lập lưu trữ cấp độ hiện tại của xe (MVP tạm thời)
-    // Sau này bạn chuyển biến này sang GameManager hoặc VehicleSystem thực tế
+    // Lưu trữ cấp độ giả lập cho MVP (Sau này chuyển qua VehicleSystem)
     private int _currentTireLevel = 1;
+    private int _currentTrunkLevel = 1;
+
+    private VehicleUpgradeSO _selectedData; // Dữ liệu của bộ phận đang được chọn xem
     private System.Action _onCloseCallback;
 
     private void Awake()
@@ -29,33 +32,47 @@ public class GarageUIManager : MonoBehaviour
         garagePanel.SetActive(false);
     }
 
+    // Hàm mở Gara (Mặc định khi mở sẽ hiển thị tab Lốp xe trước)
     public void OpenGarage(System.Action onClose)
     {
         garagePanel.SetActive(true);
         _onCloseCallback = onClose;
-        UpdateGarageUI();
+        SelectTireTab(); // Mặc định chọn Lốp
     }
 
-    public void UpdateGarageUI()
+    // Nút bấm Tab Lốp xe gọi hàm này
+    public void SelectTireTab()
     {
-        partNameText.text = tireUpgradeData.partName;
+        _selectedData = tireUpgradeData;
+        UpdateGarageUI(_currentTireLevel);
+    }
 
-        // Tìm thông tin của cấp độ hiện tại
-        UpgradeLevel currentData = GetUpgradeLevelData(_currentTireLevel);
+    // Nút bấm Tab Cốp chứa gọi hàm này
+    public void SelectTrunkTab()
+    {
+        _selectedData = trunkUpgradeData;
+        UpdateGarageUI(_currentTrunkLevel);
+    }
 
-        // Tìm thông tin của cấp độ tiếp theo
-        int nextLevel = _currentTireLevel + 1;
-        bool hasNextLevel = nextLevel <= tireUpgradeData.upgradeLevels.Length;
+    private void UpdateGarageUI(int currentLevel)
+    {
+        if (_selectedData == null) return;
+
+        partNameText.text = _selectedData.partName;
+
+        UpgradeLevel currentData = GetUpgradeLevelData(_selectedData, currentLevel);
+        int nextLevel = currentLevel + 1;
+        bool hasNextLevel = nextLevel <= _selectedData.upgradeLevels.Length;
 
         if (hasNextLevel)
         {
-            UpgradeLevel nextData = GetUpgradeLevelData(nextLevel);
+            UpgradeLevel nextData = GetUpgradeLevelData(_selectedData, nextLevel);
             currentInfoText.text = $"Hiện tại: {currentData.upgradeName}\n👉 Tiếp theo: {nextData.upgradeName}\n({nextData.description})";
             costText.text = $"Chi phí: {nextData.cost}G";
 
             upgradeButton.interactable = true;
             upgradeButton.onClick.RemoveAllListeners();
-            upgradeButton.onClick.AddListener(() => TryUpgradeTire(nextData));
+            upgradeButton.onClick.AddListener(() => TryUpgradePart(nextLevel));
         }
         else
         {
@@ -65,26 +82,30 @@ public class GarageUIManager : MonoBehaviour
         }
     }
 
-    private UpgradeLevel GetUpgradeLevelData(int level)
+    private UpgradeLevel GetUpgradeLevelData(VehicleUpgradeSO data, int level)
     {
-        foreach (var data in tireUpgradeData.upgradeLevels)
+        foreach (var lvl in data.upgradeLevels)
         {
-            if (data.level == level) return data;
+            if (lvl.level == level) return lvl;
         }
-        return tireUpgradeData.upgradeLevels[0];
+        return data.upgradeLevels[0];
     }
 
-    private void TryUpgradeTire(UpgradeLevel nextData)
+    public void TryUpgradePart(int nextLevel)
     {
-        // GIẢ LẬP CHECK TIỀN: Ở đây coi như người chơi luôn đủ tiền cho MVP
-        // Sau này bạn kết hợp với hệ thống ví tiền của Player: if (PlayerWallet.Gold >= nextData.cost)
-
-        _currentTireLevel = nextData.level;
-        Debug.Log($"[Gara] Nâng cấp thành công lên: {nextData.upgradeName}!");
-
-        // Phát tiếng động lanh canh sửa xe (ASMR) tại đây theo GDD
-
-        UpdateGarageUI();
+        // Kiểm tra xem đang nâng cấp cho loại nào để lưu cấp độ vào loại đó
+        if (_selectedData == tireUpgradeData)
+        {
+            _currentTireLevel = nextLevel;
+            Debug.Log($"[Gara] Đã nâng cấp thành công Lốp xe lên cấp {nextLevel}!");
+            UpdateGarageUI(_currentTireLevel);
+        }
+        else if (_selectedData == trunkUpgradeData)
+        {
+            _currentTrunkLevel = nextLevel;
+            Debug.Log($"[Gara] Đã nâng cấp thành công Cốp xe lên cấp {nextLevel}!");
+            UpdateGarageUI(_currentTrunkLevel);
+        }
     }
 
     public void CloseGarage()

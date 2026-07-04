@@ -6,6 +6,7 @@ public struct UpgradeLevel
     public int level;
     public string upgradeName;
     public int cost;
+    [TextArea(2, 4)]
     public string description;
 }
 
