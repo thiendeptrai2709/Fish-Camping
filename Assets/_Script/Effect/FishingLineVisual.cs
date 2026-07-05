@@ -13,7 +13,7 @@ public class FishingLineVisual : MonoBehaviour
     private Transform startPoint;
     private Transform endPoint;
     private bool isFlying = false;
-
+    private bool isBiting = false;
     private void Awake()
     {
         lineRenderer = GetComponent<LineRenderer>();
@@ -34,6 +34,12 @@ public class FishingLineVisual : MonoBehaviour
     public void SetFlyingState(bool flying)
     {
         isFlying = flying;
+        if (flying) isBiting = false;
+    }
+
+    public void SetBitingState(bool biting)
+    {
+        isBiting = biting;
     }
 
     public void ClearLine()
@@ -41,6 +47,7 @@ public class FishingLineVisual : MonoBehaviour
         lineRenderer.enabled = false;
         startPoint = null;
         endPoint = null;
+        isBiting = false;
     }
 
     private void LateUpdate()
@@ -51,19 +58,23 @@ public class FishingLineVisual : MonoBehaviour
         Vector3 p2 = endPoint.position;
         Vector3 midPoint = (p0 + p2) * 0.5f;
 
-        /*
-         * Tính toán điểm uốn (Control Point) cho đường cong Bezier 3 điểm.
-         * Khi phao đang bay trên không, dây bị kéo căng nên độ chùng (sag) rất nhỏ.
-         * Khi phao rớt xuống nước, trọng lực kéo dây chùng xuống dưới tạo đường cong tự nhiên,
-         * kết hợp với hàm Sin để tạo độ dao động nhẹ như đang trôi trên sóng nước.
-         */
         float currentSag = isFlying ? flyingSag : defaultSag;
+        if (isBiting) currentSag = -0.02f;
+
         float distance = Vector3.Distance(p0, p2);
         Vector3 p1 = midPoint + Vector3.down * (currentSag * (distance * 0.3f));
 
-        if (!isFlying)
+        if (!isFlying && !isBiting)
         {
             p1.y += Mathf.Sin(Time.time * waveFrequency) * waveAmplitude;
+        }
+        else if (isBiting)
+        {
+            float jitterX = Mathf.Sin(Time.time * 35f) * 0.15f;
+            float jitterY = Mathf.Cos(Time.time * 45f) * 0.1f;
+            float jitterZ = Mathf.Sin(Time.time * 25f) * 0.15f;
+            p1 += new Vector3(jitterX, jitterY, jitterZ);
+            p2 += new Vector3(jitterX * 0.5f, -0.1f + jitterY * 0.5f, jitterZ * 0.5f);
         }
 
         for (int i = 0; i < linePoints; i++)

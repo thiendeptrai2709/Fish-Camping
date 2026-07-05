@@ -7,6 +7,7 @@ public class PlayerInputHandler : MonoBehaviour
     public Vector2 LookInput { get; private set; }
     public bool IsSprinting { get; private set; }
     public bool InteractTriggered { get; private set; }
+    public bool IsInteractHeld { get; private set; }
     public bool MinigameTriggered { get; private set; } // Dùng cho QTE (bấm 1 lần)
     public bool IsMinigameHeld { get; private set; }
     public bool BackpackTriggered { get; private set; }
@@ -35,6 +36,7 @@ public class PlayerInputHandler : MonoBehaviour
         LookInput = IsUIOpen ? Vector2.zero : inputActions.Player.Look.ReadValue<Vector2>();
         IsSprinting = inputActions.Player.Sprint.IsPressed();
         InteractTriggered = inputActions.Player.Interact.WasPressedThisFrame();
+        IsInteractHeld = inputActions.Player.Interact.IsPressed();
 
         MinigameTriggered = inputActions.Player.MinigameAction.WasPressedThisFrame();
         IsMinigameHeld = inputActions.Player.MinigameAction.IsPressed();

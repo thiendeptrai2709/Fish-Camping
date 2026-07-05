@@ -8,8 +8,12 @@ public class FishingController : MonoBehaviour
     [SerializeField] private EquipmentSlotUI baitSlot;
     [SerializeField] private EquipmentSlotUI bobberSlot;
     [SerializeField] private CastingMinigameUI castingUI;
-
     [SerializeField] private GameObject fishingLinePrefab;
+    [SerializeField] private BalanceMinigameUI balanceMinigameUI;
+
+
+    [SerializeField] private float minBiteWaitTime = 3f;
+    [SerializeField] private float maxBiteWaitTime = 8f;
 
     private PlayerAnimation playerAnimation;
     private PlayerInputHandler inputHandler;
@@ -20,8 +24,13 @@ public class FishingController : MonoBehaviour
     private BobberSO currentBobber;
     private BobberEntity activeBobberEntity;
     private FishingLineVisual activeLineVisual;
+
+
     private float currentThrowDistance;
     private int currentCastZone;
+    private float biteTimer;
+    private bool isWaitingForBite;
+    private bool isFishBiting;
 
     private void Awake()
     {
@@ -35,6 +44,17 @@ public class FishingController : MonoBehaviour
     }
     private void Update()
     {
+        if (inputHandler != null && inputHandler.IsUIOpen) return;
+
+        if (isWaitingForBite && currentState == FishingState.Fishing)
+        {
+            biteTimer -= Time.deltaTime;
+            if (biteTimer <= 0f)
+            {
+                TriggerFishBitingEvent();
+            }
+        }
+
         if (inputHandler != null && inputHandler.InteractTriggered)
         {
             HandleLeftClick();
@@ -83,9 +103,62 @@ public class FishingController : MonoBehaviour
         }
         else if (currentState == FishingState.Fishing)
         {
-            Debug.Log("<color=yellow>[Fishing Controller] Người chơi chủ động thu cần về ban đầu.</color>");
+            if (isFishBiting)
+            {
+                return;
+            }
+            else
+            {
+                Debug.Log("<color=yellow>[Fishing Controller] Thu cần sớm khi cá chưa cắn!</color>");
+            }
             ResetToIdle();
         }
+    }
+
+    private void TriggerFishBitingEvent()
+    {
+        isWaitingForBite = false;
+        isFishBiting = true;
+
+        Debug.Log("<color=red>[Fishing Controller] CÁ CẮN CÂU! Kích hoạt Balance Minigame.</color>");
+
+        if (playerAnimation != null)
+        {
+            playerAnimation.TriggerFishBite();
+        }
+
+        if (activeLineVisual != null)
+        {
+            activeLineVisual.SetBitingState(true);
+        }
+
+        if (activeBobberEntity != null)
+        {
+            activeBobberEntity.StartBiting();
+        }
+
+        if (balanceMinigameUI != null)
+        {
+            balanceMinigameUI.StartMinigame(inputHandler, this);
+        }
+        else
+        {
+            Invoke(nameof(ResetToIdle), 3.5f);
+        }
+    }
+
+    public void OnMinigameEnd(bool isSuccess)
+    {
+        if (isSuccess)
+        {
+            Debug.Log("<color=green>[Fishing Controller] CÂN BẰNG THÀNH CÔNG! Bạn đã câu được cá!</color>");
+        }
+        else
+        {
+            Debug.Log("<color=red>[Fishing Controller] CÂN BẰNG THẤT BẠI! Cá đã xổng mất!</color>");
+        }
+
+        ResetToIdle();
     }
 
     private void StartWindUp()
@@ -217,12 +290,27 @@ public class FishingController : MonoBehaviour
 
             activeBobberEntity.Cast(startPos, targetPos, dynamicDuration, dynamicHeight, activeLineVisual);
         }
+        isFishBiting = false;
+        isWaitingForBite = true;
+        biteTimer = Random.Range(minBiteWaitTime, maxBiteWaitTime);
+        if (currentRod != null && currentRod.waitTimeReductionPercentage > 0f)
+        {
+            biteTimer *= (1f - Mathf.Clamp01(currentRod.waitTimeReductionPercentage / 100f));
+        }
+        Debug.Log($"<color=cyan>[Fishing Controller] Đã thả phao! Thời gian chờ cá cắn ngẫu nhiên: {biteTimer:F1} giây.</color>");
     }
-
     private void ResetToIdle()
     {
+        CancelInvoke(nameof(ResetToIdle));
+        isWaitingForBite = false;
+        isFishBiting = false;
         currentState = FishingState.Idle;
         Debug.Log("<color=white>[Fishing Controller] Về trạng thái ban đầu: IDLE.</color>");
+
+        if (balanceMinigameUI != null)
+        {
+            balanceMinigameUI.ForceStopMinigame();
+        }
 
         if (activeLineVisual != null)
         {

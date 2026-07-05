@@ -12,6 +12,8 @@ public class PlayerAnimation : MonoBehaviour
     private readonly int isHoldingItemHash = Animator.StringToHash("IsHoldingItem");
     private readonly int castTriggerHash = Animator.StringToHash("Cast");
     private readonly int isFishingHash = Animator.StringToHash("IsFishing");
+    private readonly int fishBiteHash = Animator.StringToHash("FishBite");
+
     private FishingController fishingController;
 
 
@@ -96,6 +98,13 @@ public class PlayerAnimation : MonoBehaviour
         if (fishingController != null)
         {
             fishingController.OnAnimationCastRelease();
+        }
+    }
+    public void TriggerFishBite()
+    {
+        if (animator != null)
+        {
+            animator.SetTrigger(fishBiteHash);
         }
     }
 }
