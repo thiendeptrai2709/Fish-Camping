@@ -12,6 +12,7 @@ public class PlayerMovement : MonoBehaviour
     private CharacterController controller;
     private PlayerInputHandler inputHandler;
     private Transform cameraTransform;
+    private FishingController fishingController;
 
     private float currentVelocity;
     private float verticalVelocity;
@@ -21,10 +22,17 @@ public class PlayerMovement : MonoBehaviour
         controller = GetComponent<CharacterController>();
         inputHandler = GetComponent<PlayerInputHandler>();
         cameraTransform = Camera.main.transform;
+        fishingController = GetComponent<FishingController>();
     }
 
     private void Update()
     {
+        if (fishingController != null && fishingController.IsBusyFishing())
+        {
+            HandleGravity();
+            return;
+        }
+
         HandleMovement();
         HandleGravity();
     }

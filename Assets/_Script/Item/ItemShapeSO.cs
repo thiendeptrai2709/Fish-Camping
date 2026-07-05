@@ -6,6 +6,7 @@ public class ItemShapeSO : ScriptableObject
     public string itemID;
     public string itemName;
     public Sprite itemIcon;
+    public GameObject equippedModelPrefab;
     public int width = 1;
     public int height = 1;
     public bool[] shapeCells;

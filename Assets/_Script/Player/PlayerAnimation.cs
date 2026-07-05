@@ -9,6 +9,12 @@ public class PlayerAnimation : MonoBehaviour
     private PlayerMovement playerMovement;
 
     private readonly int speedHash = Animator.StringToHash("Speed");
+    private readonly int isHoldingItemHash = Animator.StringToHash("IsHoldingItem");
+    private readonly int castTriggerHash = Animator.StringToHash("Cast");
+    private readonly int isFishingHash = Animator.StringToHash("IsFishing");
+    private FishingController fishingController;
+
+
     private float currentAnimationSpeed;
 
     private void Awake()
@@ -16,8 +22,53 @@ public class PlayerAnimation : MonoBehaviour
         animator = GetComponent<Animator>();
         inputHandler = GetComponent<PlayerInputHandler>();
         playerMovement = GetComponent<PlayerMovement>();
+        fishingController = GetComponent<FishingController>();
     }
 
+    public void SetHoldingItemState(bool isHolding)
+    {
+        if (animator != null)
+        {
+            animator.SetBool(isHoldingItemHash, isHolding);
+        }
+    }
+
+    public void TriggerCastAnimation()
+    {
+        if (animator != null)
+        {
+            animator.speed = 1f;
+            animator.SetTrigger(castTriggerHash);
+        }
+    }
+
+    public void ResumeAnimation()
+    {
+        if (animator != null)
+        {
+            animator.speed = 1f;
+        }
+    }
+
+    public void ResetAnimationSpeed()
+    {
+        if (animator != null)
+        {
+            animator.speed = 1f;
+        }
+    }
+
+    public void OnCastWindUpComplete()
+    {
+        if (animator != null)
+        {
+            animator.speed = 0f;
+        }
+        if (fishingController != null)
+        {
+            fishingController.OnWindUpPaused();
+        }
+    }
     private void Update()
     {
         float targetSpeed = 0f;
@@ -32,5 +83,19 @@ public class PlayerAnimation : MonoBehaviour
 
         currentAnimationSpeed = Mathf.Lerp(currentAnimationSpeed, targetSpeed, Time.deltaTime * 10f);
         animator.SetFloat(speedHash, currentAnimationSpeed);
+    }
+    public void SetFishingState(bool isFishing)
+    {
+        if (animator != null)
+        {
+            animator.SetBool(isFishingHash, isFishing);
+        }
+    }
+    public void OnCastRelease()
+    {
+        if (fishingController != null)
+        {
+            fishingController.OnAnimationCastRelease();
+        }
     }
 }

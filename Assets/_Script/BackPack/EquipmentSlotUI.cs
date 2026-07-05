@@ -4,12 +4,13 @@ using UnityEngine.EventSystems;
 
 public class EquipmentSlotUI : MonoBehaviour, IDropHandler
 {
-    public enum SlotRequirement { OnlyFishingRod, OnlyBait, Universal }
+    public enum SlotRequirement { OnlyFishingRod, OnlyBait, OnlyBobber, Universal }
     public enum SlotOrientation { KeepItemOrientation, ForceVertical, ForceHorizontal }
 
     [SerializeField] private SlotRequirement slotRequirement;
     [SerializeField] private BackpackMinigameUI minigameUI;
     [SerializeField] private Image placeholderIcon;
+    [SerializeField] private CharacterHandVisual handVisual;
 
     [Header("Visual Auto-Resize Settings")]
     [SerializeField] private bool autoResizeSlotToFitItem = true;
@@ -28,6 +29,7 @@ public class EquipmentSlotUI : MonoBehaviour, IDropHandler
         if (itemShape == null) return false;
         if (slotRequirement == SlotRequirement.OnlyFishingRod) return itemShape is FishingRodSO;
         if (slotRequirement == SlotRequirement.OnlyBait) return itemShape is BaitSO;
+        if (slotRequirement == SlotRequirement.OnlyBobber) return itemShape is BobberSO;
         return true;
     }
 
@@ -102,6 +104,11 @@ public class EquipmentSlotUI : MonoBehaviour, IDropHandler
         itemUI.SetHandledBySlot(true);
 
         if (placeholderIcon != null) placeholderIcon.enabled = false;
+
+        if (handVisual != null && itemUI.GetItemShape() != null)
+        {
+            handVisual.EquipItemVisual(itemUI.GetItemShape());
+        }
     }
 
     public void EquipItemDirectly(InventoryItemUI itemUI)
@@ -133,10 +140,20 @@ public class EquipmentSlotUI : MonoBehaviour, IDropHandler
         itemUI.SetEquippedState(true, this);
 
         if (placeholderIcon != null) placeholderIcon.enabled = false;
+
+        if (handVisual != null && itemUI.GetItemShape() != null)
+        {
+            handVisual.EquipItemVisual(itemUI.GetItemShape());
+        }
     }
 
     public void RemoveEquippedItem()
     {
+        if (handVisual != null && equippedItem != null)
+        {
+            handVisual.RemoveItemVisual(equippedItem.GetItemShape());
+        }
+
         equippedItem = null;
         if (placeholderIcon != null) placeholderIcon.enabled = true;
 
@@ -145,7 +162,6 @@ public class EquipmentSlotUI : MonoBehaviour, IDropHandler
             GetComponent<RectTransform>().sizeDelta = originalSlotSize;
         }
     }
-
     public void ReturnItemToSlot(InventoryItemUI itemUI)
     {
         EquipItemDirectly(itemUI);

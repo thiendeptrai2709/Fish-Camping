@@ -17,6 +17,7 @@ public class PlayerInteraction : MonoBehaviour
     private PlayerCursor playerCursor;
     private PlayerMovement playerMovement;
     private Transform cameraTransform;
+    private FishingController fishingController;
     private IInteractable currentInteractable;
 
     private void Awake()
@@ -25,10 +26,17 @@ public class PlayerInteraction : MonoBehaviour
         playerCursor = GetComponent<PlayerCursor>();
         playerMovement = GetComponent<PlayerMovement>();
         cameraTransform = Camera.main.transform;
+        fishingController = GetComponent<FishingController>();
     }
 
     private void Update()
     {
+        if (fishingController != null && fishingController.IsBusyFishing())
+        {
+            ClearCurrentInteractable();
+            return;
+        }
+
         CheckForInteractable();
         HandleInteractInput();
     }

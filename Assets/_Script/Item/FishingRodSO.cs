@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewFishingRod", menuName = "Inventory/Fishing Rod SO")]
 public class FishingRodSO : ItemShapeSO
@@ -9,7 +9,10 @@ public class FishingRodSO : ItemShapeSO
 
     [Header("Fishing Performance")]
     public float fishingPower = 15f;
-    public float castDistance = 5f;
+    [Tooltip("Khoảng cách ném tối đa của cần (tính bằng mét/đơn vị Unity)")]
+    public float castDistance = 15f;
+    [Tooltip("Hệ số nhân độ xa cho từng Zone (0: Xịt, 1: Nhẹ, 2: Vừa, 3: Mạnh)")]
+    public float[] zoneDistanceMultipliers = new float[] { 0f, 0.35f, 0.7f, 1.0f };
     public float waitTimeReductionPercentage = 0f;
     public int maxCatchableRarity = 1;
 
