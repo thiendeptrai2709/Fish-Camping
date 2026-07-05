@@ -14,6 +14,9 @@ public class PlayerAnimation : MonoBehaviour
     private readonly int isFishingHash = Animator.StringToHash("IsFishing");
     private readonly int fishBiteHash = Animator.StringToHash("FishBite");
 
+    private readonly int catchSuccessHash = Animator.StringToHash("CatchSuccess");
+    private readonly int catchFailHash = Animator.StringToHash("CatchFail");
+
     private FishingController fishingController;
 
 
@@ -105,6 +108,35 @@ public class PlayerAnimation : MonoBehaviour
         if (animator != null)
         {
             animator.SetTrigger(fishBiteHash);
+        }
+    }
+    public void TriggerCatchSuccess()
+    {
+        if (animator != null)
+        {
+            animator.SetTrigger(catchSuccessHash);
+        }
+    }
+
+    public void TriggerCatchFail()
+    {
+        if (animator != null)
+        {
+            animator.SetTrigger(catchFailHash);
+        }
+    }
+    public void OnCatchFailAnimationComplete()
+    {
+        if (fishingController != null)
+        {
+            fishingController.OnCatchFailComplete();
+        }
+    }
+    public void OnCatchSuccessIntroComplete()
+    {
+        if (fishingController != null)
+        {
+            fishingController.OnCatchSuccessIntroComplete();
         }
     }
 }

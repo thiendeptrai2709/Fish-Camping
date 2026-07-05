@@ -12,7 +12,11 @@ public class BobberEntity : MonoBehaviour
     private bool isBiting;
     private Vector3 landedPosition;
     private FishingLineVisual connectedLine;
-
+    private BobberEffectController effectController;
+    private void Awake()
+    {
+        effectController = GetComponentInChildren<BobberEffectController>();
+    }
     public void Cast(Vector3 startPoint, Vector3 targetPoint, float duration, float height, FishingLineVisual lineVisual = null)
     {
         startPosition = startPoint;
@@ -69,5 +73,9 @@ public class BobberEntity : MonoBehaviour
     public void StartBiting()
     {
         isBiting = true;
+        if (effectController != null)
+        {
+            effectController.PlayBiteEffect();
+        }
     }
 }

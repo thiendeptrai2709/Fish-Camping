@@ -266,6 +266,15 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Screenshot"",
+                    ""type"": ""Button"",
+                    ""id"": ""c9fe51b6-30a5-4266-88e3-9d0f6e0c20cc"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -389,6 +398,17 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""RotateItem"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c7f372e8-8c1d-4e1c-a1e4-d177a8cb2f91"",
+                    ""path"": ""<Keyboard>/f12"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Screenshot"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -409,6 +429,7 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
         m_Player_MinigameAction = m_Player.FindAction("MinigameAction", throwIfNotFound: true);
         m_Player_Backpack = m_Player.FindAction("Backpack", throwIfNotFound: true);
         m_Player_RotateItem = m_Player.FindAction("RotateItem", throwIfNotFound: true);
+        m_Player_Screenshot = m_Player.FindAction("Screenshot", throwIfNotFound: true);
     }
 
     ~@CarInputActions()
@@ -615,6 +636,7 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_MinigameAction;
     private readonly InputAction m_Player_Backpack;
     private readonly InputAction m_Player_RotateItem;
+    private readonly InputAction m_Player_Screenshot;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -654,6 +676,10 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/RotateItem".
         /// </summary>
         public InputAction @RotateItem => m_Wrapper.m_Player_RotateItem;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Screenshot".
+        /// </summary>
+        public InputAction @Screenshot => m_Wrapper.m_Player_Screenshot;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -701,6 +727,9 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
             @RotateItem.started += instance.OnRotateItem;
             @RotateItem.performed += instance.OnRotateItem;
             @RotateItem.canceled += instance.OnRotateItem;
+            @Screenshot.started += instance.OnScreenshot;
+            @Screenshot.performed += instance.OnScreenshot;
+            @Screenshot.canceled += instance.OnScreenshot;
         }
 
         /// <summary>
@@ -733,6 +762,9 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
             @RotateItem.started -= instance.OnRotateItem;
             @RotateItem.performed -= instance.OnRotateItem;
             @RotateItem.canceled -= instance.OnRotateItem;
+            @Screenshot.started -= instance.OnScreenshot;
+            @Screenshot.performed -= instance.OnScreenshot;
+            @Screenshot.canceled -= instance.OnScreenshot;
         }
 
         /// <summary>
@@ -851,5 +883,12 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnRotateItem(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Screenshot" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnScreenshot(InputAction.CallbackContext context);
     }
 }

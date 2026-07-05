@@ -12,6 +12,7 @@ public class PlayerInputHandler : MonoBehaviour
     public bool IsMinigameHeld { get; private set; }
     public bool BackpackTriggered { get; private set; }
     public bool RotateItemTriggered { get; private set; }
+    public bool ScreenshotTriggered { get; private set; }
     public bool IsUIOpen { get; set; }
     private CarInputActions inputActions;
 
@@ -42,5 +43,6 @@ public class PlayerInputHandler : MonoBehaviour
         IsMinigameHeld = inputActions.Player.MinigameAction.IsPressed();
         BackpackTriggered = inputActions.Player.Backpack.WasPressedThisFrame();
         RotateItemTriggered = Mathf.Abs(inputActions.Player.RotateItem.ReadValue<Vector2>().y) > 0.1f;
+        ScreenshotTriggered = inputActions.Player.Screenshot.WasPressedThisFrame();
     }
 }

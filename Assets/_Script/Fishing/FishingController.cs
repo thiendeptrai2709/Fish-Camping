@@ -2,15 +2,14 @@
 
 public class FishingController : MonoBehaviour
 {
-    private enum FishingState { Idle, WindingUp, WaitingForPower, Casting, Fishing }
-
+    private enum FishingState { Idle, WindingUp, WaitingForPower, Casting, Fishing, Catching }
     [SerializeField] private EquipmentSlotUI hotbarSlot;
     [SerializeField] private EquipmentSlotUI baitSlot;
     [SerializeField] private EquipmentSlotUI bobberSlot;
     [SerializeField] private CastingMinigameUI castingUI;
     [SerializeField] private GameObject fishingLinePrefab;
     [SerializeField] private BalanceMinigameUI balanceMinigameUI;
-
+    [SerializeField] private GameObject caughtFishPrefab;
 
     [SerializeField] private float minBiteWaitTime = 3f;
     [SerializeField] private float maxBiteWaitTime = 8f;
@@ -31,12 +30,16 @@ public class FishingController : MonoBehaviour
     private float biteTimer;
     private bool isWaitingForBite;
     private bool isFishBiting;
-
+    private float reelInCooldown;
+    private GameObject activeCaughtFish;
+    [SerializeField] private Transform leftHandFishSocket;
+    private CharacterHandVisual handVisual;
     private void Awake()
     {
         playerAnimation = GetComponent<PlayerAnimation>();
         inputHandler = GetComponent<PlayerInputHandler>();
         playerInteraction = GetComponent<PlayerInteraction>();
+        handVisual = GetComponentInChildren<CharacterHandVisual>();
     }
     public bool IsBusyFishing()
     {
@@ -45,6 +48,11 @@ public class FishingController : MonoBehaviour
     private void Update()
     {
         if (inputHandler != null && inputHandler.IsUIOpen) return;
+
+        if (reelInCooldown > 0f)
+        {
+            reelInCooldown -= Time.deltaTime;
+        }
 
         if (isWaitingForBite && currentState == FishingState.Fishing)
         {
@@ -58,6 +66,11 @@ public class FishingController : MonoBehaviour
         if (inputHandler != null && inputHandler.InteractTriggered)
         {
             HandleLeftClick();
+        }
+        if (currentState == FishingState.Catching && inputHandler != null && inputHandler.MinigameTriggered)
+        {
+            Debug.Log("<color=yellow>[Fishing Controller] Bấm Space -> Thả cá đi!</color>");
+            ResetToIdle();
         }
     }
 
@@ -103,7 +116,7 @@ public class FishingController : MonoBehaviour
         }
         else if (currentState == FishingState.Fishing)
         {
-            if (isFishBiting)
+            if (isFishBiting || reelInCooldown > 0f)
             {
                 return;
             }
@@ -111,6 +124,11 @@ public class FishingController : MonoBehaviour
             {
                 Debug.Log("<color=yellow>[Fishing Controller] Thu cần sớm khi cá chưa cắn!</color>");
             }
+            ResetToIdle();
+        }
+        else if (currentState == FishingState.Catching)
+        {
+            Debug.Log("<color=green>[Fishing Controller] Bấm Chuột Trái -> Cất cá vào Balo!</color>");
             ResetToIdle();
         }
     }
@@ -149,18 +167,65 @@ public class FishingController : MonoBehaviour
 
     public void OnMinigameEnd(bool isSuccess)
     {
+        // Dọn dẹp phao và dây câu trước khi chạy animation kết quả
+        if (activeLineVisual != null)
+        {
+            Destroy(activeLineVisual.gameObject);
+            activeLineVisual = null;
+        }
+        if (activeBobberEntity != null)
+        {
+            Destroy(activeBobberEntity.gameObject);
+            activeBobberEntity = null;
+        }
+
         if (isSuccess)
         {
-            Debug.Log("<color=green>[Fishing Controller] CÂN BẰNG THÀNH CÔNG! Bạn đã câu được cá!</color>");
+            Debug.Log("<color=green>[Fishing Controller] CÂN BẰNG THÀNH CÔNG! Chuyển sang animation dâng cá.</color>");
+            currentState = FishingState.Catching;
+            if (playerAnimation != null)
+            {
+                playerAnimation.TriggerCatchSuccess();
+            }
         }
         else
         {
-            Debug.Log("<color=red>[Fishing Controller] CÂN BẰNG THẤT BẠI! Cá đã xổng mất!</color>");
+            Debug.Log("<color=red>[Fishing Controller] CÂN BẰNG THẤT BẠI! Chuyển sang animation câu hụt.</color>");
+            if (playerAnimation != null)
+            {
+                playerAnimation.SetFishingState(false);
+                playerAnimation.TriggerCatchFail();
+            }
         }
-
-        ResetToIdle();
     }
+    public void OnCatchSuccessIntroComplete()
+    {
+        if (currentState == FishingState.Catching)
+        {
+            if (activeCaughtFish != null) return;
 
+            Transform targetSocket = leftHandFishSocket;
+            if (targetSocket == null && handVisual != null)
+            {
+                targetSocket = handVisual.GetTipSocketTransform();
+            }
+
+            if (targetSocket != null && caughtFishPrefab != null)
+            {
+                activeCaughtFish = Instantiate(caughtFishPrefab, targetSocket.position, Quaternion.identity, targetSocket);
+                activeCaughtFish.transform.localPosition = Vector3.zero;
+                activeCaughtFish.transform.localRotation = Quaternion.identity;
+            }
+        }
+    }
+    public void OnCatchFailComplete()
+    {
+        if (currentState == FishingState.Fishing)
+        {
+            Debug.Log("<color=yellow>[Fishing Controller] Animation buồn đã diễn xong -> Reset về Idle!</color>");
+            ResetToIdle();
+        }
+    }
     private void StartWindUp()
     {
         currentState = FishingState.WindingUp;
@@ -242,7 +307,6 @@ public class FishingController : MonoBehaviour
             playerAnimation.SetFishingState(true);
         }
 
-        CharacterHandVisual handVisual = GetComponentInChildren<CharacterHandVisual>();
         if (handVisual != null)
         {
             handVisual.SetBobberVisualActive(false);
@@ -292,7 +356,9 @@ public class FishingController : MonoBehaviour
         }
         isFishBiting = false;
         isWaitingForBite = true;
+        reelInCooldown = 1.0f;
         biteTimer = Random.Range(minBiteWaitTime, maxBiteWaitTime);
+
         if (currentRod != null && currentRod.waitTimeReductionPercentage > 0f)
         {
             biteTimer *= (1f - Mathf.Clamp01(currentRod.waitTimeReductionPercentage / 100f));
@@ -324,12 +390,17 @@ public class FishingController : MonoBehaviour
             activeBobberEntity = null;
         }
 
+        if (activeCaughtFish != null)
+        {
+            Destroy(activeCaughtFish);
+            activeCaughtFish = null;
+        }
+
         if (playerAnimation != null)
         {
             playerAnimation.SetFishingState(false);
         }
 
-        CharacterHandVisual handVisual = GetComponentInChildren<CharacterHandVisual>();
         if (handVisual != null)
         {
             handVisual.SetBobberVisualActive(true);

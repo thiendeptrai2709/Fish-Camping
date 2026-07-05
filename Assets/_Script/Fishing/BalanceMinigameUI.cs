@@ -9,16 +9,17 @@ public class BalanceMinigameUI : MonoBehaviour
     [SerializeField] private RectTransform catchZone;
     [SerializeField] private Slider progressBar;
 
-    [SerializeField] private float fishMoveSpeed = 3f;
-    [SerializeField] private float fishRandomTimeMin = 0.5f;
-    [SerializeField] private float fishRandomTimeMax = 1.5f;
+    [SerializeField] private float fishMoveSpeed = 1.2f; // Giảm tốc độ cá bơi xuống cho êm hơn
+    [SerializeField] private float fishRandomTimeMin = 1.0f; // Cá đứng yên lâu hơn một chút
+    [SerializeField] private float fishRandomTimeMax = 2.5f;
 
-    [SerializeField] private float gravity = 400f;
-    [SerializeField] private float liftPower = 600f;
-    [SerializeField] private float maxSpeed = 300f;
+    [SerializeField] private float gravity = 800f; // Tăng trọng lực để rơi đầm tay hơn
+    [SerializeField] private float liftPower = 1200f; // Tăng lực nâng để nháy chuột nhạy hơn
+    [SerializeField] private float maxSpeed = 450f;
+    [SerializeField] private float zoneDrag = 5f; // Lực cản giúp thanh không bị trơn tuột
 
-    [SerializeField] private float progressGainSpeed = 0.25f;
-    [SerializeField] private float progressLossSpeed = 0.2f;
+    [SerializeField] private float progressGainSpeed = 0.35f; // Tăng tốc độ lên điểm
+    [SerializeField] private float progressLossSpeed = 0.15f; // Giảm tốc độ tụt điểm khi trượt
 
     private PlayerInputHandler inputHandler;
     private FishingController controller;
@@ -113,8 +114,12 @@ public class BalanceMinigameUI : MonoBehaviour
             zoneVelocity -= gravity * Time.deltaTime;
         }
 
+        // Áp dụng lực cản (Drag) để giảm quán tính, giúp thanh dừng lại mượt mà khi nhấp nhả chuột
+        zoneVelocity -= zoneVelocity * zoneDrag * Time.deltaTime;
+
         zoneVelocity = Mathf.Clamp(zoneVelocity, -maxSpeed, maxSpeed);
         zonePosition += zoneVelocity * Time.deltaTime;
+
 
         float maxZonePos = Mathf.Max(0f, barBackground.rect.height - catchZone.rect.height);
         if (zonePosition < 0f)
@@ -125,7 +130,7 @@ public class BalanceMinigameUI : MonoBehaviour
         else if (zonePosition > maxZonePos)
         {
             zonePosition = maxZonePos;
-            zoneVelocity = 0f;
+            zoneVelocity = -zoneVelocity * 0.3f; // Tạo độ nảy nhẹ (bounce) khi va vào đỉnh thay vì khựng lại
         }
     }
 

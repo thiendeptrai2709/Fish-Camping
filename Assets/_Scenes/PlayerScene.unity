@@ -735,6 +735,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4164918743624052080, guid: 813fcddce83a2e5499f3a2d39b8dfa41, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1165386533}
+    - targetCorrespondingSourceObject: {fileID: 5043821349620790043, guid: 813fcddce83a2e5499f3a2d39b8dfa41, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 952658369}
     - targetCorrespondingSourceObject: {fileID: 9141824553266408991, guid: 813fcddce83a2e5499f3a2d39b8dfa41, type: 3}
       insertIndex: -1
       addedObject: {fileID: 892137913}
@@ -769,6 +772,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8249473588253293859, guid: 813fcddce83a2e5499f3a2d39b8dfa41, type: 3}
       insertIndex: -1
       addedObject: {fileID: 107866351}
+    - targetCorrespondingSourceObject: {fileID: 8249473588253293859, guid: 813fcddce83a2e5499f3a2d39b8dfa41, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 107866353}
   m_SourcePrefab: {fileID: 100100000, guid: 813fcddce83a2e5499f3a2d39b8dfa41, type: 3}
 --- !u!1 &107866336 stripped
 GameObject:
@@ -938,8 +944,22 @@ MonoBehaviour:
   castingUI: {fileID: 958547064}
   fishingLinePrefab: {fileID: 3324567581849269287, guid: 1e3287ccfeecd424e9e59ba6d4c83af3, type: 3}
   balanceMinigameUI: {fileID: 1354209776}
+  caughtFishPrefab: {fileID: 585159940412984651, guid: 31a11d7402b580c4ba93bf51319dbca7, type: 3}
   minBiteWaitTime: 5
-  maxBiteWaitTime: 12
+  maxBiteWaitTime: 10
+  leftHandFishSocket: {fileID: 952658369}
+--- !u!114 &107866353
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 107866336}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54ee52a738860434ab6d4228a15af683, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScreenshotManager
 --- !u!1 &133311534
 GameObject:
   m_ObjectHideFlags: 0
@@ -1201,6 +1221,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 201423139}
   m_CullTransparentMesh: 1
+--- !u!4 &230125875 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5043821349620790043, guid: 813fcddce83a2e5499f3a2d39b8dfa41, type: 3}
+  m_PrefabInstance: {fileID: 107866335}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &240471497
 GameObject:
   m_ObjectHideFlags: 0
@@ -4409,6 +4434,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 899903046}
   m_CullTransparentMesh: 1
+--- !u!1 &952658368
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 952658369}
+  m_Layer: 2
+  m_Name: LeftHand
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &952658369
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 952658368}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.001, y: 0.078, z: -0.001}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 230125875}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &958547063
 GameObject:
   m_ObjectHideFlags: 0
@@ -6660,14 +6716,15 @@ MonoBehaviour:
   fishIcon: {fileID: 73529458}
   catchZone: {fileID: 1011403937}
   progressBar: {fileID: 964144076}
-  fishMoveSpeed: 3
-  fishRandomTimeMin: 0.5
-  fishRandomTimeMax: 1.5
-  gravity: 400
-  liftPower: 600
-  maxSpeed: 300
-  progressGainSpeed: 0.25
-  progressLossSpeed: 0.2
+  fishMoveSpeed: 1.2
+  fishRandomTimeMin: 1
+  fishRandomTimeMax: 2.5
+  gravity: 1200
+  liftPower: 1500
+  maxSpeed: 700
+  zoneDrag: 5
+  progressGainSpeed: 0.35
+  progressLossSpeed: 0.1
 --- !u!4 &1354209777
 Transform:
   m_ObjectHideFlags: 0
@@ -8875,8 +8932,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 73529458}
   - {fileID: 1011403937}
+  - {fileID: 73529458}
   m_Father: {fileID: 1900527395}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
