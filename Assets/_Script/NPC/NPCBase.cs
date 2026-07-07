@@ -16,6 +16,7 @@ public class NPCBase : MonoBehaviour, IInteractable
     [Header("System Links")]
     [SerializeField] private QuestGiver _questGiver;
     [SerializeField] private NPCOffroadUpgrade _tireUpgrader;
+    [SerializeField] private NPCFishingShop _fishingShop; // Thêm liên kết tới Shop mua bán cá, đồ câu
 
     private Animator _animator;
     private bool _isInteracting = false;
@@ -34,6 +35,12 @@ public class NPCBase : MonoBehaviour, IInteractable
         {
             _tireUpgrader = GetComponent<NPCOffroadUpgrade>();
         }
+
+        // Tự động tìm linh kiện Shop cá trên cùng GameObject NPC nếu có
+        if (_fishingShop == null)
+        {
+            _fishingShop = GetComponent<NPCFishingShop>();
+        }
     }
 
     // Thực hiện thuộc tính từ Interface để trả về nội dung hiển thị trên UI
@@ -50,8 +57,8 @@ public class NPCBase : MonoBehaviour, IInteractable
         // Tự động xoay mặt NPC về hướng của Player
         RotateTowardsPlayer();
 
-        // 1. Khi vừa bấm E nói chuyện: Chuyển sang trạng thái Nói chuyện (NPCState = 1)
-        SetNPCAnimationState(1);
+        // 1. Khi vừa bấm E nói chuyện: Chuyển sang trạng thái Nói chuyện (NPCState = 2 đối với con NPC mới này)
+        SetNPCAnimationState(2);
 
         // NHÁNH 1: Kiểm tra xem đây là NPC có nhiệm vụ cốt truyện
         if (_questGiver != null)
@@ -67,7 +74,7 @@ public class NPCBase : MonoBehaviour, IInteractable
             // Chạy hội thoại chào hỏi, tư vấn trước
             _tireUpgrader.HandleUpgradeInteraction(npcName, () => {
 
-                // Sau khi dứt lời thoại: Chuyển sang trạng thái Nâng cấp/Sửa xe (NPCState = 2)
+                // Đối với ông thợ máy cũ, giữ nguyên trạng thái sửa xe (NPCState = 2) khi mở Gara
                 SetNPCAnimationState(2);
 
                 // Mở bảng giao diện Gara lên cho người chơi thao tác
@@ -77,7 +84,15 @@ public class NPCBase : MonoBehaviour, IInteractable
                 });
             });
         }
-        // NHÁNH 3: NPC thường, chỉ chạy thoại mặc định
+        // NHÁNH 3: Nếu là NPC Thuyền trưởng mua bán cá, đồ câu
+        else if (_fishingShop != null)
+        {
+            // Gọi logic của hệ thống Shop cá
+            _fishingShop.HandleShopInteraction(npcName, () => {
+                ResetNPCState();
+            });
+        }
+        // NHÁNH 4: NPC thường, chỉ chạy thoại mặc định
         else
         {
             DialogueManager.Instance.StartDialogue(npcName, introDialogues, () => {
@@ -118,15 +133,14 @@ public class NPCBase : MonoBehaviour, IInteractable
         }
     }
 
-    // Hàm mở rộng: Dùng để bật trạng thái di chuyển/đứng im cho AI tuần tra sau này
+    // Hàm di chuyển/đứng im cho AI tuần tra (NPCState = 1 là đi bộ/chạy như sơ đồ Animator của bạn)
     public void SetWalkingState(bool isWalking)
     {
         if (_isInteracting) return; // Nếu đang nói chuyện thì không cho phép đổi sang di chuyển
 
-        // Tận dụng trạng thái di chuyển nếu sau này bạn làm AI di chuyển
-        // (Tạm thời map theo logic cũ của bạn, ví dụ: 1 là đi bộ nếu cần, hoặc tùy biến sau)
         if (_animator != null)
         {
+            // Đi bộ tuần tra -> NPCState = 1, Đứng im -> NPCState = 0
             _animator.SetInteger("NPCState", isWalking ? 1 : 0);
         }
     }
