@@ -10,13 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 23632e1e5a212b046b74a1944649fe94, type: 3}
-  m_Name: Rod_Carbon
+  m_Name: Rod
   m_EditorClassIdentifier: Assembly-CSharp::ShopItemSO
-  itemID: 1
-  itemName: "C\u1EA7n Carbon"
+  itemID: 
+  itemName: 
   itemType: 0
-  price: 100
-  requiredLevel: 3
-  description: "C\u1EA7n c\xE2u l\xE0m b\u1EB1ng s\u1EE3i carbon si\xEAu nh\u1EB9,
-    t\u0103ng t\u1EC9 l\u1EC7 gi\u1EADt tr\xFAng c\xE1c lo\xE0i c\xE1 l\u1EDBn nh\u01B0
-    c\xE1 V\u01B0\u1EE3c."
+  price: 0
+  requiredLevel: 0
+  description: 
