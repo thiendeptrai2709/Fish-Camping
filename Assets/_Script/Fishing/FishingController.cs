@@ -13,8 +13,10 @@ public class FishingController : MonoBehaviour
 
     [SerializeField] private float minBiteWaitTime = 3f;
     [SerializeField] private float maxBiteWaitTime = 8f;
+    [SerializeField] private float energyCostPerCast = 10f; // Lượng năng lượng tiêu hao mỗi lần quăng câu
 
     private PlayerAnimation playerAnimation;
+    private ActivityEnergyController energyController;
     private PlayerInputHandler inputHandler;
     private PlayerInteraction playerInteraction;
     private FishingState currentState = FishingState.Idle;
@@ -34,12 +36,15 @@ public class FishingController : MonoBehaviour
     private GameObject activeCaughtFish;
     [SerializeField] private Transform leftHandFishSocket;
     private CharacterHandVisual handVisual;
+
+
     private void Awake()
     {
         playerAnimation = GetComponent<PlayerAnimation>();
         inputHandler = GetComponent<PlayerInputHandler>();
         playerInteraction = GetComponent<PlayerInteraction>();
         handVisual = GetComponentInChildren<CharacterHandVisual>();
+        energyController = GetComponent<ActivityEnergyController>();
     }
     public bool IsBusyFishing()
     {
@@ -78,6 +83,8 @@ public class FishingController : MonoBehaviour
     {
         if (currentState == FishingState.Idle)
         {
+            if (playerInteraction != null && playerInteraction.HasActiveInteractable()) return;
+
             currentRod = (hotbarSlot != null && hotbarSlot.GetEquippedItem() != null)
                 ? hotbarSlot.GetEquippedItem().GetItemShape() as FishingRodSO : null;
 
@@ -91,6 +98,16 @@ public class FishingController : MonoBehaviour
 
             if (currentBait != null && currentBobber != null)
             {
+                if (energyController != null)
+                {
+                    CharacterStatsManager statsManager = energyController.statsManager;
+                    if (statsManager != null && statsManager.GetStatValue(StatType.Energy) <= 0)
+                    {
+                        Debug.Log("<color=red>[Fishing Controller] Bạn đã cạn kiệt thể lực, không thể tiếp tục câu!</color>");
+                        return;
+                    }
+                }
+
                 Vector3 lookDir = Camera.main.transform.forward;
                 lookDir.y = 0f;
                 if (lookDir.sqrMagnitude > 0.01f)
@@ -253,7 +270,12 @@ public class FishingController : MonoBehaviour
 
         castingUI.StopMinigame(out int zone, out float powerRatio);
 
-        // --- DEBUG LOG CHUNG ---
+        if (energyController != null)
+        {
+            energyController.TryConsumeEnergy(energyCostPerCast);
+            Debug.Log($"<color=orange>[Fishing Controller] Đã tiêu hao {energyCostPerCast} Năng lượng cho cú quăng câu!</color>");
+        }
+
         Debug.Log($"<color=cyan>[Casting Minigame] Kim dừng ở ZONE: {zone} | Tỷ lệ lực bấm: {(powerRatio * 100f):F1}%</color>");
 
         if (zone == 0)
@@ -274,6 +296,7 @@ public class FishingController : MonoBehaviour
         }
 
         float finalPower = currentRod != null ? currentRod.CalculateDamageToFish() * powerRatio : 0f;
+
         currentCastZone = zone;
 
         // Tính khoảng cách dựa theo hệ số của Zone trong Data Cần Câu

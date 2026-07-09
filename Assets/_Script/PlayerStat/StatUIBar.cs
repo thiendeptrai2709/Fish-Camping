@@ -9,12 +9,12 @@ public class StatUIBar : MonoBehaviour
     public float lerpSpeed = 10f;
 
     private float targetPercentage = 1f;
+    private float initialMaxValue = 100f;
 
     private void Update()
     {
         if (statSlider != null)
         {
-            // Hiệu ứng thanh chạy mượt mà (Lerp) thay vì giật cục khi thay đổi giá trị
             statSlider.value = Mathf.Lerp(statSlider.value, targetPercentage, Time.deltaTime * lerpSpeed);
         }
     }
@@ -23,7 +23,8 @@ public class StatUIBar : MonoBehaviour
     {
         if (maxValue > 0)
         {
-            targetPercentage = currentValue / maxValue;
+            initialMaxValue = maxValue;
+            targetPercentage = currentValue / initialMaxValue;
             if (statSlider != null)
             {
                 statSlider.value = targetPercentage;
@@ -33,9 +34,9 @@ public class StatUIBar : MonoBehaviour
 
     public void UpdateStat(float currentValue, float maxValue)
     {
-        if (maxValue > 0)
+        if (initialMaxValue > 0)
         {
-            targetPercentage = currentValue / maxValue;
+            targetPercentage = currentValue / initialMaxValue;
         }
     }
 }
