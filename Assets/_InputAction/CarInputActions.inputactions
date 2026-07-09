@@ -25,63 +25,9 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "ToggleTrunk",
+                    "name": "ExitVehicle",
                     "type": "Button",
-                    "id": "69352ab8-ff69-4627-9566-78f635c2a9c5",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "ToggleHood",
-                    "type": "Button",
-                    "id": "4e9a1e28-0685-49c3-a6bd-5d84dab355be",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "InspectEngine",
-                    "type": "Button",
-                    "id": "dfd4ca80-fcca-41c8-844a-996ddf862ee7",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "ToggleStatsUI",
-                    "type": "Button",
-                    "id": "a218e8bf-388b-43d9-88e9-2ec31b0bdefd",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "QuickRepair",
-                    "type": "Button",
-                    "id": "0a3ef217-0764-4501-8a86-dc2471edb1f7",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "QTEHit",
-                    "type": "Button",
-                    "id": "57402e1d-1b27-48bd-b4d8-26aac42e4641",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "RefillCoolant",
-                    "type": "Button",
-                    "id": "28887b05-65e8-4d5c-b4c5-fb3322d3a70c",
+                    "id": "05494876-ceee-4925-b130-3973f51c276a",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -157,78 +103,224 @@
                 },
                 {
                     "name": "",
-                    "id": "dc2e5414-ab1c-40e5-aa05-93e94df31b28",
+                    "id": "a8361b4b-fd1c-4167-a25f-6aee044917bb",
                     "path": "<Keyboard>/e",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "ToggleTrunk",
+                    "action": "ExitVehicle",
                     "isComposite": false,
                     "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Player",
+            "id": "b72bac33-20d3-43a8-b2d7-5b8330591e88",
+            "actions": [
+                {
+                    "name": "Move",
+                    "type": "Value",
+                    "id": "5f485617-c967-4a0a-8d8f-7b9b0fa8cfcd",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 },
                 {
-                    "name": "",
-                    "id": "b1ead8b8-c079-4618-a7c1-65dc148c7395",
-                    "path": "<Keyboard>/r",
+                    "name": "Look",
+                    "type": "Value",
+                    "id": "f6dc6b5c-19ed-4689-b9ee-5252f14b57b4",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Sprint",
+                    "type": "Button",
+                    "id": "aacd68a3-5654-45bb-ae74-55eb01fbf6d2",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Interact",
+                    "type": "Button",
+                    "id": "71b6354c-3cbe-4730-8d63-a58e3e6939c1",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "MinigameAction",
+                    "type": "Button",
+                    "id": "6a2604cd-7542-4e8c-9b05-f35f42e2ec83",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Backpack",
+                    "type": "Button",
+                    "id": "b5a40a86-270a-4048-a392-813920fc09f3",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "RotateItem",
+                    "type": "Value",
+                    "id": "6ee42560-4f66-49c7-a63d-4b12d0a843b6",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Screenshot",
+                    "type": "Button",
+                    "id": "c9fe51b6-30a5-4266-88e3-9d0f6e0c20cc",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "2D Vector",
+                    "id": "679a2274-9993-4b9d-b1dd-1b8b5cd6932d",
+                    "path": "2DVector",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "ToggleHood",
-                    "isComposite": false,
+                    "action": "Move",
+                    "isComposite": true,
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "",
-                    "id": "e7d19404-c97d-4cdb-8317-ad02a582b6de",
-                    "path": "<Keyboard>/t",
+                    "name": "up",
+                    "id": "18396e05-dcef-4b97-a5a5-02a65627f2c6",
+                    "path": "<Keyboard>/w",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "InspectEngine",
+                    "action": "Move",
                     "isComposite": false,
-                    "isPartOfComposite": false
+                    "isPartOfComposite": true
                 },
                 {
-                    "name": "",
-                    "id": "2c23b5fa-f04c-4d17-ad6c-74c83e5080e2",
-                    "path": "<Keyboard>/tab",
+                    "name": "down",
+                    "id": "c919e16f-5b85-40c9-a019-096f5a63fe68",
+                    "path": "<Keyboard>/s",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "ToggleStatsUI",
+                    "action": "Move",
                     "isComposite": false,
-                    "isPartOfComposite": false
+                    "isPartOfComposite": true
                 },
                 {
-                    "name": "",
-                    "id": "89a65840-f260-4571-822a-960f0b02b300",
-                    "path": "<Keyboard>/f",
+                    "name": "left",
+                    "id": "7b4516e4-a802-4421-8e4b-2a95ab81f59b",
+                    "path": "<Keyboard>/a",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "QuickRepair",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "right",
+                    "id": "b60ac05c-e95b-4493-9090-814f69e4d219",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "311a4871-5a9c-405c-9a84-1690f02730be",
+                    "path": "<Mouse>/delta",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Look",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "612728a1-1eb7-4774-9b68-643e5caa6b65",
+                    "id": "8065eb50-643f-40e6-a476-c086119e3993",
+                    "path": "<Keyboard>/leftShift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Sprint",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "10141099-a51f-46ee-a7d7-d75ee8ebe860",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Interact",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c7ea7886-378a-4bb4-b72c-fcf19514edcd",
                     "path": "<Keyboard>/space",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "QTEHit",
+                    "action": "MinigameAction",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "64612418-03b7-492c-b51a-adad39010a0d",
-                    "path": "<Keyboard>/g",
+                    "id": "025c594a-fc9d-4adf-a163-0a6cd4e505aa",
+                    "path": "<Keyboard>/tab",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "RefillCoolant",
+                    "action": "Backpack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ea4890e3-1e65-4966-a8f3-b07d569d143b",
+                    "path": "<Mouse>/scroll",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RotateItem",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c7f372e8-8c1d-4e1c-a1e4-d177a8cb2f91",
+                    "path": "<Keyboard>/f12",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Screenshot",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

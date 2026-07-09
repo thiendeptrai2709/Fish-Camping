@@ -29,7 +29,13 @@ public class ProceduralHinge : MonoBehaviour
         if (animCoroutine != null) StopCoroutine(animCoroutine);
         animCoroutine = StartCoroutine(Animate(isOpen ? openedRotation : closedRotation));
     }
-
+    public void ForceClose()
+    {
+        if (!isOpen || IsLocked) return;
+        isOpen = false;
+        if (animCoroutine != null) StopCoroutine(animCoroutine);
+        animCoroutine = StartCoroutine(Animate(closedRotation));
+    }
     private IEnumerator Animate(Quaternion targetRot)
     {
         IsFullyOpen = false;

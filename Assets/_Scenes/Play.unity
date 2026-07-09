@@ -403,7 +403,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc119f744d43cfa45b416a3a1768a5fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BalanceMinigame
-  vehicleInput: {fileID: 1896419272}
+  playerInput: {fileID: 0}
   minigameCanvas: {fileID: 663306160}
   needle: {fileID: 1576964225}
   safeZone: {fileID: 528521805}
@@ -654,7 +654,7 @@ Transform:
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
   m_LocalRotation: {x: 0.10746387, y: 0, z: 0, w: 0.994209}
-  m_LocalPosition: {x: 16.934248, y: 7.8670187, z: -986.25116}
+  m_LocalPosition: {x: 16.934248, y: 4.747019, z: -980.4512}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2260,7 +2260,7 @@ Transform:
   m_GameObject: {fileID: 897624663}
   serializedVersion: 2
   m_LocalRotation: {x: 0.10746399, y: 0, z: 0, w: 0.994209}
-  m_LocalPosition: {x: 16.934248, y: 7.8670187, z: -986.25116}
+  m_LocalPosition: {x: 16.934248, y: 4.747019, z: -980.4512}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2898,6 +2898,40 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1576964224}
   m_CullTransparentMesh: 1
+--- !u!114 &1699996098
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1896419259}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68977fd82318e4b4893bb909790318f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractableTire
+  tireRepairMinigame: {fileID: 1896419255}
+--- !u!65 &1699996099
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1896419259}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.9979851, y: 2.0464554, z: 2.046489}
+  m_Center: {x: 0.00835447, y: 0.0029585361, z: -0.0020788908}
 --- !u!1 &1710248743
 GameObject:
   m_ObjectHideFlags: 0
@@ -3004,7 +3038,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9a3b22953eff1343b1d267e0e825b5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::QTEMinigame
-  vehicleInput: {fileID: 1896419272}
+  playerInput: {fileID: 0}
   qteCanvas: {fileID: 1522160796}
   pointer: {fileID: 714595400}
   targetZone: {fileID: 386113968}
@@ -3196,8 +3230,198 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6037033108583849165, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1896419268}
+    - targetCorrespondingSourceObject: {fileID: 6037033108583849165, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1896419267}
+    - targetCorrespondingSourceObject: {fileID: 2798392271993424207, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1896419266}
+    - targetCorrespondingSourceObject: {fileID: 2798392271993424207, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1896419265}
+    - targetCorrespondingSourceObject: {fileID: 6221342522028352847, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1896419264}
+    - targetCorrespondingSourceObject: {fileID: 6221342522028352847, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1896419263}
+    - targetCorrespondingSourceObject: {fileID: 3407097994585728633, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1699996099}
+    - targetCorrespondingSourceObject: {fileID: 3407097994585728633, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1699996098}
   m_SourcePrefab: {fileID: 100100000, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+--- !u!114 &1896419255 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2630722091706659865, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+  m_PrefabInstance: {fileID: 1896419254}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1896419259}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3505e1f9fcd3bcd47a9b675ac4849ea4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TireRepairMinigame
+--- !u!1 &1896419256 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6221342522028352847, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+  m_PrefabInstance: {fileID: 1896419254}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1896419257 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2798392271993424207, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+  m_PrefabInstance: {fileID: 1896419254}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1896419258 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6037033108583849165, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+  m_PrefabInstance: {fileID: 1896419254}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1896419259 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3407097994585728633, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+  m_PrefabInstance: {fileID: 1896419254}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1896419260 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6588371454107864548, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+  m_PrefabInstance: {fileID: 1896419254}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1896419256}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3505e1f9fcd3bcd47a9b675ac4849ea4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TireRepairMinigame
+--- !u!114 &1896419261 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8499663215935644365, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+  m_PrefabInstance: {fileID: 1896419254}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1896419257}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3505e1f9fcd3bcd47a9b675ac4849ea4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TireRepairMinigame
+--- !u!114 &1896419262 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6788558138562238416, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+  m_PrefabInstance: {fileID: 1896419254}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1896419258}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3505e1f9fcd3bcd47a9b675ac4849ea4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TireRepairMinigame
+--- !u!114 &1896419263
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1896419256}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68977fd82318e4b4893bb909790318f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractableTire
+  tireRepairMinigame: {fileID: 1896419260}
+--- !u!65 &1896419264
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1896419256}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.9979851, y: 2.0464554, z: 2.046489}
+  m_Center: {x: -0.0053921193, y: -0.0029585361, z: 0.002075553}
+--- !u!114 &1896419265
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1896419257}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68977fd82318e4b4893bb909790318f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractableTire
+  tireRepairMinigame: {fileID: 1896419261}
+--- !u!65 &1896419266
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1896419257}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.9979851, y: 2.0464554, z: 2.046489}
+  m_Center: {x: 0.015584111, y: 0.00013715029, z: 0.000016570091}
+--- !u!114 &1896419267
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1896419258}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68977fd82318e4b4893bb909790318f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractableTire
+  tireRepairMinigame: {fileID: 1896419262}
+--- !u!65 &1896419268
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1896419258}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.9979851, y: 2.0464554, z: 2.046489}
+  m_Center: {x: -0.0053898543, y: -0.0029585361, z: 0.002075553}
 --- !u!114 &1896419271 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1260891777461015879, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
@@ -3209,17 +3433,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37185c75e58350642a79c713bc853f14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::VehicleController
---- !u!114 &1896419272 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8457522825824892041, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
-  m_PrefabInstance: {fileID: 1896419254}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9c9698c4afeae714099aa592775e8f29, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::VehicleInput
 --- !u!1 &1960238430
 GameObject:
   m_ObjectHideFlags: 0

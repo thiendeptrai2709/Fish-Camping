@@ -2,37 +2,40 @@
 
 public class TrunkInventory : MonoBehaviour
 {
-    [Header("Link Hệ thống")]
-    [SerializeField] private VehicleInput vehicleInput;
-
     [Header("Link UI")]
     [SerializeField] private GameObject trunkInventoryPanel;
 
-    private void OnEnable()
+    [Header("Link Cốp & Người Chơi")]
+    [SerializeField] private InteractableTrunk interactableTrunk;
+    [SerializeField] private Transform playerTransform;
+    [SerializeField] private float maxDistance = 3.5f;
+
+    private void Update()
     {
-        if (vehicleInput != null)
+        if (trunkInventoryPanel != null && trunkInventoryPanel.activeSelf)
         {
-            vehicleInput.OnToggleHoodEvent += ToggleTrunkAndUI;
+            if (playerTransform != null && Vector3.Distance(transform.position, playerTransform.position) > maxDistance)
+            {
+                if (interactableTrunk != null)
+                    interactableTrunk.ForceClose();
+                else
+                    ForceCloseUI();
+            }
         }
     }
 
-    private void OnDisable()
+    public void ToggleTrunkAndUI()
     {
-        if (vehicleInput != null)
-        {
-            vehicleInput.OnToggleHoodEvent -= ToggleTrunkAndUI;
-        }
-    }
-
-    private void ToggleTrunkAndUI()
-    {
-
         if (trunkInventoryPanel != null)
         {
             trunkInventoryPanel.SetActive(!trunkInventoryPanel.activeSelf);
         }
-        else
+    }
+    public void ForceCloseUI()
+    {
+        if (trunkInventoryPanel != null)
         {
+            trunkInventoryPanel.SetActive(false);
         }
     }
 }

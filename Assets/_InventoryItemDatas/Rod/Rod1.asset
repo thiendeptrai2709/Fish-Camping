@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91cd9200d02b21742a0b3e53aead6a3b, type: 3}
+  m_Name: Rod1
+  m_EditorClassIdentifier: Assembly-CSharp::FishingRodSO
+  itemID: rod1
+  itemName: "C\u1EA7n g\u1ED7 \u0111\u1EC3u"
+  itemIcon: {fileID: 21300000, guid: e47070be1e2fb06488a00ba3e9c10d30, type: 3}
+  equippedModelPrefab: {fileID: 3017937692658407651, guid: 66a442a323ed74b438133c9b3d5cd525, type: 3}
+  width: 1
+  height: 3
+  shapeCells: 
+  rodTier: 1
+  maxDurability: 100
+  fishingPower: 15
+  castDistance: 20
+  zoneDistanceMultipliers:
+  - 0
+  - 0.35
+  - 0.7
+  - 1
+  waitTimeReductionPercentage: 0
+  maxCatchableRarity: 1
+  lineBreakResistance: 20
+  reelSpeed: 2

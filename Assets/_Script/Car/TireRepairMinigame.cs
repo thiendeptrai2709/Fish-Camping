@@ -4,8 +4,9 @@ using UnityEngine.Events;
 using Unity.Cinemachine;
 public class TireRepairMinigame : MonoBehaviour
 {
-    public enum TireState { Normal, Viewing, Removed, Swapped }
+    public enum TireState { Normal, Viewing, Swapped }
 
+    public static TireRepairMinigame ActiveTire { get; private set; }
 
     [Header("Tham chiếu Transform")]
     [SerializeField] private Transform tireVisualMesh;
@@ -42,25 +43,19 @@ public class TireRepairMinigame : MonoBehaviour
 
     public void Interact()
     {
-        if (isAnimating) return; // Khóa chặt không cho bấm láo khi lốp đang bay
+        if (isAnimating) return;
 
         switch (currentState)
         {
             case TireState.Normal:
-                // Bấm lần 1: Chỉ chuyển Camera, lốp nằm im
                 currentState = TireState.Viewing;
+                ActiveTire = this; // Khóa hệ thống, đánh dấu chiếc lốp này đang được sửa
                 if (inspectCam != null) inspectCam.Priority = activePriority;
                 break;
 
             case TireState.Viewing:
-                currentState = TireState.Removed;
-                OnPlayRemoveSound?.Invoke();
-                moveCoroutine = StartCoroutine(AnimateTireTo(inspectPoint.position, inspectPoint.rotation));
-                break;
-
-            case TireState.Removed:
                 currentState = TireState.Swapped;
-                moveCoroutine = StartCoroutine(AnimateFakeSwap());
+                moveCoroutine = StartCoroutine(AnimateRemoveAndSwap());
                 break;
 
             case TireState.Swapped:
@@ -97,24 +92,37 @@ public class TireRepairMinigame : MonoBehaviour
             tireVisualMesh.localPosition = originalLocalPos;
             tireVisualMesh.localRotation = originalLocalRot;
             if (inspectCam != null) inspectCam.Priority = 1; // Tự động nhả Camera về gốc khi lốp đã vào khớp
+            ActiveTire = null; // Mở khóa hệ thống khi lốp đã lắp xong về chỗ cũ
             OnFinishedRepair?.Invoke();
         }
 
         isAnimating = false;
     }
 
-    private IEnumerator AnimateFakeSwap()
+    public string GetCurrentPrompt()
     {
+        switch (currentState)
+        {
+            case TireState.Normal: return "[Chuột Trái] Kiểm tra lốp";
+            case TireState.Viewing: return "[Chuột Trái] Tháo & Thay lốp mới";
+            case TireState.Swapped: return "[Chuột Trái] Lắp lốp vào xe";
+            default: return "";
+        }
+    }
+    private IEnumerator AnimateRemoveAndSwap()
+    {
+        isAnimating = true;
+        OnPlayRemoveSound?.Invoke();
+        yield return StartCoroutine(AnimateTireTo(inspectPoint.position, inspectPoint.rotation));
+
         isAnimating = true;
         yield return StartCoroutine(AnimateTireTo(dropPoint.position, dropPoint.rotation));
 
         OnPlayDropSound?.Invoke();
-
         isAnimating = true;
         yield return new WaitForSeconds(0.3f);
 
         OnPlayEquipSound?.Invoke();
-
         yield return StartCoroutine(AnimateTireTo(inspectPoint.position, inspectPoint.rotation));
         isAnimating = false;
     }

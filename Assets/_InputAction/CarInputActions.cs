@@ -111,63 +111,9 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""ToggleTrunk"",
+                    ""name"": ""ExitVehicle"",
                     ""type"": ""Button"",
-                    ""id"": ""69352ab8-ff69-4627-9566-78f635c2a9c5"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""ToggleHood"",
-                    ""type"": ""Button"",
-                    ""id"": ""4e9a1e28-0685-49c3-a6bd-5d84dab355be"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""InspectEngine"",
-                    ""type"": ""Button"",
-                    ""id"": ""dfd4ca80-fcca-41c8-844a-996ddf862ee7"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""ToggleStatsUI"",
-                    ""type"": ""Button"",
-                    ""id"": ""a218e8bf-388b-43d9-88e9-2ec31b0bdefd"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""QuickRepair"",
-                    ""type"": ""Button"",
-                    ""id"": ""0a3ef217-0764-4501-8a86-dc2471edb1f7"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""QTEHit"",
-                    ""type"": ""Button"",
-                    ""id"": ""57402e1d-1b27-48bd-b4d8-26aac42e4641"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""RefillCoolant"",
-                    ""type"": ""Button"",
-                    ""id"": ""28887b05-65e8-4d5c-b4c5-fb3322d3a70c"",
+                    ""id"": ""05494876-ceee-4925-b130-3973f51c276a"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -243,78 +189,224 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""dc2e5414-ab1c-40e5-aa05-93e94df31b28"",
+                    ""id"": ""a8361b4b-fd1c-4167-a25f-6aee044917bb"",
                     ""path"": ""<Keyboard>/e"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""ToggleTrunk"",
+                    ""action"": ""ExitVehicle"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""Player"",
+            ""id"": ""b72bac33-20d3-43a8-b2d7-5b8330591e88"",
+            ""actions"": [
+                {
+                    ""name"": ""Move"",
+                    ""type"": ""Value"",
+                    ""id"": ""5f485617-c967-4a0a-8d8f-7b9b0fa8cfcd"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 },
                 {
-                    ""name"": """",
-                    ""id"": ""b1ead8b8-c079-4618-a7c1-65dc148c7395"",
-                    ""path"": ""<Keyboard>/r"",
+                    ""name"": ""Look"",
+                    ""type"": ""Value"",
+                    ""id"": ""f6dc6b5c-19ed-4689-b9ee-5252f14b57b4"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Sprint"",
+                    ""type"": ""Button"",
+                    ""id"": ""aacd68a3-5654-45bb-ae74-55eb01fbf6d2"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Interact"",
+                    ""type"": ""Button"",
+                    ""id"": ""71b6354c-3cbe-4730-8d63-a58e3e6939c1"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""MinigameAction"",
+                    ""type"": ""Button"",
+                    ""id"": ""6a2604cd-7542-4e8c-9b05-f35f42e2ec83"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Backpack"",
+                    ""type"": ""Button"",
+                    ""id"": ""b5a40a86-270a-4048-a392-813920fc09f3"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""RotateItem"",
+                    ""type"": ""Value"",
+                    ""id"": ""6ee42560-4f66-49c7-a63d-4b12d0a843b6"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Screenshot"",
+                    ""type"": ""Button"",
+                    ""id"": ""c9fe51b6-30a5-4266-88e3-9d0f6e0c20cc"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": ""2D Vector"",
+                    ""id"": ""679a2274-9993-4b9d-b1dd-1b8b5cd6932d"",
+                    ""path"": ""2DVector"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""ToggleHood"",
-                    ""isComposite"": false,
+                    ""action"": ""Move"",
+                    ""isComposite"": true,
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": """",
-                    ""id"": ""e7d19404-c97d-4cdb-8317-ad02a582b6de"",
-                    ""path"": ""<Keyboard>/t"",
+                    ""name"": ""up"",
+                    ""id"": ""18396e05-dcef-4b97-a5a5-02a65627f2c6"",
+                    ""path"": ""<Keyboard>/w"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""InspectEngine"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
-                    ""isPartOfComposite"": false
+                    ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": """",
-                    ""id"": ""2c23b5fa-f04c-4d17-ad6c-74c83e5080e2"",
-                    ""path"": ""<Keyboard>/tab"",
+                    ""name"": ""down"",
+                    ""id"": ""c919e16f-5b85-40c9-a019-096f5a63fe68"",
+                    ""path"": ""<Keyboard>/s"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""ToggleStatsUI"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
-                    ""isPartOfComposite"": false
+                    ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": """",
-                    ""id"": ""89a65840-f260-4571-822a-960f0b02b300"",
-                    ""path"": ""<Keyboard>/f"",
+                    ""name"": ""left"",
+                    ""id"": ""7b4516e4-a802-4421-8e4b-2a95ab81f59b"",
+                    ""path"": ""<Keyboard>/a"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""QuickRepair"",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""b60ac05c-e95b-4493-9090-814f69e4d219"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""311a4871-5a9c-405c-9a84-1690f02730be"",
+                    ""path"": ""<Mouse>/delta"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Look"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
-                    ""id"": ""612728a1-1eb7-4774-9b68-643e5caa6b65"",
+                    ""id"": ""8065eb50-643f-40e6-a476-c086119e3993"",
+                    ""path"": ""<Keyboard>/leftShift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Sprint"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""10141099-a51f-46ee-a7d7-d75ee8ebe860"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Interact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c7ea7886-378a-4bb4-b72c-fcf19514edcd"",
                     ""path"": ""<Keyboard>/space"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""QTEHit"",
+                    ""action"": ""MinigameAction"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
-                    ""id"": ""64612418-03b7-492c-b51a-adad39010a0d"",
-                    ""path"": ""<Keyboard>/g"",
+                    ""id"": ""025c594a-fc9d-4adf-a163-0a6cd4e505aa"",
+                    ""path"": ""<Keyboard>/tab"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""RefillCoolant"",
+                    ""action"": ""Backpack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ea4890e3-1e65-4966-a8f3-b07d569d143b"",
+                    ""path"": ""<Mouse>/scroll"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RotateItem"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c7f372e8-8c1d-4e1c-a1e4-d177a8cb2f91"",
+                    ""path"": ""<Keyboard>/f12"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Screenshot"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -327,18 +419,23 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
         m_Gameplay = asset.FindActionMap("Gameplay", throwIfNotFound: true);
         m_Gameplay_Drive = m_Gameplay.FindAction("Drive", throwIfNotFound: true);
         m_Gameplay_Brake = m_Gameplay.FindAction("Brake", throwIfNotFound: true);
-        m_Gameplay_ToggleTrunk = m_Gameplay.FindAction("ToggleTrunk", throwIfNotFound: true);
-        m_Gameplay_ToggleHood = m_Gameplay.FindAction("ToggleHood", throwIfNotFound: true);
-        m_Gameplay_InspectEngine = m_Gameplay.FindAction("InspectEngine", throwIfNotFound: true);
-        m_Gameplay_ToggleStatsUI = m_Gameplay.FindAction("ToggleStatsUI", throwIfNotFound: true);
-        m_Gameplay_QuickRepair = m_Gameplay.FindAction("QuickRepair", throwIfNotFound: true);
-        m_Gameplay_QTEHit = m_Gameplay.FindAction("QTEHit", throwIfNotFound: true);
-        m_Gameplay_RefillCoolant = m_Gameplay.FindAction("RefillCoolant", throwIfNotFound: true);
+        m_Gameplay_ExitVehicle = m_Gameplay.FindAction("ExitVehicle", throwIfNotFound: true);
+        // Player
+        m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
+        m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
+        m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
+        m_Player_Sprint = m_Player.FindAction("Sprint", throwIfNotFound: true);
+        m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
+        m_Player_MinigameAction = m_Player.FindAction("MinigameAction", throwIfNotFound: true);
+        m_Player_Backpack = m_Player.FindAction("Backpack", throwIfNotFound: true);
+        m_Player_RotateItem = m_Player.FindAction("RotateItem", throwIfNotFound: true);
+        m_Player_Screenshot = m_Player.FindAction("Screenshot", throwIfNotFound: true);
     }
 
     ~@CarInputActions()
     {
         UnityEngine.Debug.Assert(!m_Gameplay.enabled, "This will cause a leak and performance issues, CarInputActions.Gameplay.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Player.enabled, "This will cause a leak and performance issues, CarInputActions.Player.Disable() has not been called.");
     }
 
     /// <summary>
@@ -416,13 +513,7 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
     private List<IGameplayActions> m_GameplayActionsCallbackInterfaces = new List<IGameplayActions>();
     private readonly InputAction m_Gameplay_Drive;
     private readonly InputAction m_Gameplay_Brake;
-    private readonly InputAction m_Gameplay_ToggleTrunk;
-    private readonly InputAction m_Gameplay_ToggleHood;
-    private readonly InputAction m_Gameplay_InspectEngine;
-    private readonly InputAction m_Gameplay_ToggleStatsUI;
-    private readonly InputAction m_Gameplay_QuickRepair;
-    private readonly InputAction m_Gameplay_QTEHit;
-    private readonly InputAction m_Gameplay_RefillCoolant;
+    private readonly InputAction m_Gameplay_ExitVehicle;
     /// <summary>
     /// Provides access to input actions defined in input action map "Gameplay".
     /// </summary>
@@ -443,33 +534,9 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @Brake => m_Wrapper.m_Gameplay_Brake;
         /// <summary>
-        /// Provides access to the underlying input action "Gameplay/ToggleTrunk".
+        /// Provides access to the underlying input action "Gameplay/ExitVehicle".
         /// </summary>
-        public InputAction @ToggleTrunk => m_Wrapper.m_Gameplay_ToggleTrunk;
-        /// <summary>
-        /// Provides access to the underlying input action "Gameplay/ToggleHood".
-        /// </summary>
-        public InputAction @ToggleHood => m_Wrapper.m_Gameplay_ToggleHood;
-        /// <summary>
-        /// Provides access to the underlying input action "Gameplay/InspectEngine".
-        /// </summary>
-        public InputAction @InspectEngine => m_Wrapper.m_Gameplay_InspectEngine;
-        /// <summary>
-        /// Provides access to the underlying input action "Gameplay/ToggleStatsUI".
-        /// </summary>
-        public InputAction @ToggleStatsUI => m_Wrapper.m_Gameplay_ToggleStatsUI;
-        /// <summary>
-        /// Provides access to the underlying input action "Gameplay/QuickRepair".
-        /// </summary>
-        public InputAction @QuickRepair => m_Wrapper.m_Gameplay_QuickRepair;
-        /// <summary>
-        /// Provides access to the underlying input action "Gameplay/QTEHit".
-        /// </summary>
-        public InputAction @QTEHit => m_Wrapper.m_Gameplay_QTEHit;
-        /// <summary>
-        /// Provides access to the underlying input action "Gameplay/RefillCoolant".
-        /// </summary>
-        public InputAction @RefillCoolant => m_Wrapper.m_Gameplay_RefillCoolant;
+        public InputAction @ExitVehicle => m_Wrapper.m_Gameplay_ExitVehicle;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -502,27 +569,9 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
             @Brake.started += instance.OnBrake;
             @Brake.performed += instance.OnBrake;
             @Brake.canceled += instance.OnBrake;
-            @ToggleTrunk.started += instance.OnToggleTrunk;
-            @ToggleTrunk.performed += instance.OnToggleTrunk;
-            @ToggleTrunk.canceled += instance.OnToggleTrunk;
-            @ToggleHood.started += instance.OnToggleHood;
-            @ToggleHood.performed += instance.OnToggleHood;
-            @ToggleHood.canceled += instance.OnToggleHood;
-            @InspectEngine.started += instance.OnInspectEngine;
-            @InspectEngine.performed += instance.OnInspectEngine;
-            @InspectEngine.canceled += instance.OnInspectEngine;
-            @ToggleStatsUI.started += instance.OnToggleStatsUI;
-            @ToggleStatsUI.performed += instance.OnToggleStatsUI;
-            @ToggleStatsUI.canceled += instance.OnToggleStatsUI;
-            @QuickRepair.started += instance.OnQuickRepair;
-            @QuickRepair.performed += instance.OnQuickRepair;
-            @QuickRepair.canceled += instance.OnQuickRepair;
-            @QTEHit.started += instance.OnQTEHit;
-            @QTEHit.performed += instance.OnQTEHit;
-            @QTEHit.canceled += instance.OnQTEHit;
-            @RefillCoolant.started += instance.OnRefillCoolant;
-            @RefillCoolant.performed += instance.OnRefillCoolant;
-            @RefillCoolant.canceled += instance.OnRefillCoolant;
+            @ExitVehicle.started += instance.OnExitVehicle;
+            @ExitVehicle.performed += instance.OnExitVehicle;
+            @ExitVehicle.canceled += instance.OnExitVehicle;
         }
 
         /// <summary>
@@ -540,27 +589,9 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
             @Brake.started -= instance.OnBrake;
             @Brake.performed -= instance.OnBrake;
             @Brake.canceled -= instance.OnBrake;
-            @ToggleTrunk.started -= instance.OnToggleTrunk;
-            @ToggleTrunk.performed -= instance.OnToggleTrunk;
-            @ToggleTrunk.canceled -= instance.OnToggleTrunk;
-            @ToggleHood.started -= instance.OnToggleHood;
-            @ToggleHood.performed -= instance.OnToggleHood;
-            @ToggleHood.canceled -= instance.OnToggleHood;
-            @InspectEngine.started -= instance.OnInspectEngine;
-            @InspectEngine.performed -= instance.OnInspectEngine;
-            @InspectEngine.canceled -= instance.OnInspectEngine;
-            @ToggleStatsUI.started -= instance.OnToggleStatsUI;
-            @ToggleStatsUI.performed -= instance.OnToggleStatsUI;
-            @ToggleStatsUI.canceled -= instance.OnToggleStatsUI;
-            @QuickRepair.started -= instance.OnQuickRepair;
-            @QuickRepair.performed -= instance.OnQuickRepair;
-            @QuickRepair.canceled -= instance.OnQuickRepair;
-            @QTEHit.started -= instance.OnQTEHit;
-            @QTEHit.performed -= instance.OnQTEHit;
-            @QTEHit.canceled -= instance.OnQTEHit;
-            @RefillCoolant.started -= instance.OnRefillCoolant;
-            @RefillCoolant.performed -= instance.OnRefillCoolant;
-            @RefillCoolant.canceled -= instance.OnRefillCoolant;
+            @ExitVehicle.started -= instance.OnExitVehicle;
+            @ExitVehicle.performed -= instance.OnExitVehicle;
+            @ExitVehicle.canceled -= instance.OnExitVehicle;
         }
 
         /// <summary>
@@ -594,6 +625,179 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="GameplayActions" /> instance referencing this action map.
     /// </summary>
     public GameplayActions @Gameplay => new GameplayActions(this);
+
+    // Player
+    private readonly InputActionMap m_Player;
+    private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
+    private readonly InputAction m_Player_Move;
+    private readonly InputAction m_Player_Look;
+    private readonly InputAction m_Player_Sprint;
+    private readonly InputAction m_Player_Interact;
+    private readonly InputAction m_Player_MinigameAction;
+    private readonly InputAction m_Player_Backpack;
+    private readonly InputAction m_Player_RotateItem;
+    private readonly InputAction m_Player_Screenshot;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "Player".
+    /// </summary>
+    public struct PlayerActions
+    {
+        private @CarInputActions m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public PlayerActions(@CarInputActions wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Move".
+        /// </summary>
+        public InputAction @Move => m_Wrapper.m_Player_Move;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Look".
+        /// </summary>
+        public InputAction @Look => m_Wrapper.m_Player_Look;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Sprint".
+        /// </summary>
+        public InputAction @Sprint => m_Wrapper.m_Player_Sprint;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Interact".
+        /// </summary>
+        public InputAction @Interact => m_Wrapper.m_Player_Interact;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/MinigameAction".
+        /// </summary>
+        public InputAction @MinigameAction => m_Wrapper.m_Player_MinigameAction;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Backpack".
+        /// </summary>
+        public InputAction @Backpack => m_Wrapper.m_Player_Backpack;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/RotateItem".
+        /// </summary>
+        public InputAction @RotateItem => m_Wrapper.m_Player_RotateItem;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Screenshot".
+        /// </summary>
+        public InputAction @Screenshot => m_Wrapper.m_Player_Screenshot;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_Player; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="PlayerActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(PlayerActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="PlayerActions" />
+        public void AddCallbacks(IPlayerActions instance)
+        {
+            if (instance == null || m_Wrapper.m_PlayerActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_PlayerActionsCallbackInterfaces.Add(instance);
+            @Move.started += instance.OnMove;
+            @Move.performed += instance.OnMove;
+            @Move.canceled += instance.OnMove;
+            @Look.started += instance.OnLook;
+            @Look.performed += instance.OnLook;
+            @Look.canceled += instance.OnLook;
+            @Sprint.started += instance.OnSprint;
+            @Sprint.performed += instance.OnSprint;
+            @Sprint.canceled += instance.OnSprint;
+            @Interact.started += instance.OnInteract;
+            @Interact.performed += instance.OnInteract;
+            @Interact.canceled += instance.OnInteract;
+            @MinigameAction.started += instance.OnMinigameAction;
+            @MinigameAction.performed += instance.OnMinigameAction;
+            @MinigameAction.canceled += instance.OnMinigameAction;
+            @Backpack.started += instance.OnBackpack;
+            @Backpack.performed += instance.OnBackpack;
+            @Backpack.canceled += instance.OnBackpack;
+            @RotateItem.started += instance.OnRotateItem;
+            @RotateItem.performed += instance.OnRotateItem;
+            @RotateItem.canceled += instance.OnRotateItem;
+            @Screenshot.started += instance.OnScreenshot;
+            @Screenshot.performed += instance.OnScreenshot;
+            @Screenshot.canceled += instance.OnScreenshot;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="PlayerActions" />
+        private void UnregisterCallbacks(IPlayerActions instance)
+        {
+            @Move.started -= instance.OnMove;
+            @Move.performed -= instance.OnMove;
+            @Move.canceled -= instance.OnMove;
+            @Look.started -= instance.OnLook;
+            @Look.performed -= instance.OnLook;
+            @Look.canceled -= instance.OnLook;
+            @Sprint.started -= instance.OnSprint;
+            @Sprint.performed -= instance.OnSprint;
+            @Sprint.canceled -= instance.OnSprint;
+            @Interact.started -= instance.OnInteract;
+            @Interact.performed -= instance.OnInteract;
+            @Interact.canceled -= instance.OnInteract;
+            @MinigameAction.started -= instance.OnMinigameAction;
+            @MinigameAction.performed -= instance.OnMinigameAction;
+            @MinigameAction.canceled -= instance.OnMinigameAction;
+            @Backpack.started -= instance.OnBackpack;
+            @Backpack.performed -= instance.OnBackpack;
+            @Backpack.canceled -= instance.OnBackpack;
+            @RotateItem.started -= instance.OnRotateItem;
+            @RotateItem.performed -= instance.OnRotateItem;
+            @RotateItem.canceled -= instance.OnRotateItem;
+            @Screenshot.started -= instance.OnScreenshot;
+            @Screenshot.performed -= instance.OnScreenshot;
+            @Screenshot.canceled -= instance.OnScreenshot;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="PlayerActions.UnregisterCallbacks(IPlayerActions)" />.
+        /// </summary>
+        /// <seealso cref="PlayerActions.UnregisterCallbacks(IPlayerActions)" />
+        public void RemoveCallbacks(IPlayerActions instance)
+        {
+            if (m_Wrapper.m_PlayerActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="PlayerActions.AddCallbacks(IPlayerActions)" />
+        /// <seealso cref="PlayerActions.RemoveCallbacks(IPlayerActions)" />
+        /// <seealso cref="PlayerActions.UnregisterCallbacks(IPlayerActions)" />
+        public void SetCallbacks(IPlayerActions instance)
+        {
+            foreach (var item in m_Wrapper.m_PlayerActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_PlayerActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="PlayerActions" /> instance referencing this action map.
+    /// </summary>
+    public PlayerActions @Player => new PlayerActions(this);
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Gameplay" which allows adding and removing callbacks.
     /// </summary>
@@ -616,53 +820,75 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnBrake(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "ToggleTrunk" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "ExitVehicle" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnToggleTrunk(InputAction.CallbackContext context);
+        void OnExitVehicle(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Player" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="PlayerActions.AddCallbacks(IPlayerActions)" />
+    /// <seealso cref="PlayerActions.RemoveCallbacks(IPlayerActions)" />
+    public interface IPlayerActions
+    {
         /// <summary>
-        /// Method invoked when associated input action "ToggleHood" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "Move" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnToggleHood(InputAction.CallbackContext context);
+        void OnMove(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "InspectEngine" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "Look" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnInspectEngine(InputAction.CallbackContext context);
+        void OnLook(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "ToggleStatsUI" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "Sprint" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnToggleStatsUI(InputAction.CallbackContext context);
+        void OnSprint(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "QuickRepair" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "Interact" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnQuickRepair(InputAction.CallbackContext context);
+        void OnInteract(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "QTEHit" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "MinigameAction" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnQTEHit(InputAction.CallbackContext context);
+        void OnMinigameAction(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "RefillCoolant" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "Backpack" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnRefillCoolant(InputAction.CallbackContext context);
+        void OnBackpack(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "RotateItem" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnRotateItem(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Screenshot" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnScreenshot(InputAction.CallbackContext context);
     }
 }
