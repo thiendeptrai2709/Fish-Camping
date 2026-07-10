@@ -12,12 +12,14 @@ public class WeatherSystem : MonoBehaviour
     [Header("Rain Settings")]
     public ParticleSystem rainParticleSystem;
     public Transform playerTransform;
-    public float rainCheckInterval = 30f;
+    public float rainCheckInterval = 60f;
+    public float rainDuration = 240f;
     [Range(0f, 100f)]
     public float rainChance = 30f;
 
     private bool isRaining = false;
     private float nextRainCheckTime;
+    private float rainEndTime;
     private bool positionInitialized = false;
 
     void Start()
@@ -45,9 +47,9 @@ public class WeatherSystem : MonoBehaviour
         float time = dayNightSystem.currentTime;
         float fogFactor = 0f;
 
-        if (time >= 0f && time < 0.25f)
+        if (time >= 0.20f && time < 0.25f)
         {
-            fogFactor = Mathf.InverseLerp(0f, 0.2f, time);
+            fogFactor = Mathf.InverseLerp(0.20f, 0.25f, time);
         }
         else if (time >= 0.25f && time < 0.35f)
         {
@@ -64,17 +66,22 @@ public class WeatherSystem : MonoBehaviour
 
     void UpdateRainLogic()
     {
-        if (Time.time >= nextRainCheckTime)
+        if (!isRaining && Time.time >= nextRainCheckTime)
         {
             nextRainCheckTime = Time.time + rainCheckInterval;
 
-            bool oldRainState = isRaining;
-            isRaining = Random.Range(0f, 100f) < rainChance;
-
-            if (isRaining && !oldRainState)
+            if (Random.Range(0f, 100f) < rainChance)
             {
+                isRaining = true;
+                rainEndTime = Time.time + rainDuration;
                 positionInitialized = false;
             }
+        }
+
+        if (isRaining && Time.time >= rainEndTime)
+        {
+            isRaining = false;
+            nextRainCheckTime = Time.time + rainCheckInterval;
         }
 
         if (rainParticleSystem != null)

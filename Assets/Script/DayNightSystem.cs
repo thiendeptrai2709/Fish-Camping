@@ -3,7 +3,7 @@
 public class DayNightSystem : MonoBehaviour
 {
     [Header("Time Settings")]
-    public float dayLengthInSeconds = 120f;
+    public float dayLengthInSeconds = 720f;
     [Range(0f, 1f)]
     public float currentTime = 0.25f;
 
