@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23632e1e5a212b046b74a1944649fe94, type: 3}
   m_Name: Rod 6
   m_EditorClassIdentifier: Assembly-CSharp::ShopItemSO
-  itemID: 
-  itemName: 
-  itemType: 0
-  price: 0
+  itemID: 7
+  itemName: "M\u1ED3i Lure"
+  itemType: 1
+  price: 150
   requiredLevel: 0
-  description: 
+  description: "Kh\xF4ng b\u1ECB ti\xEAu hao khi c\xE2u tr\u01B0\u1EE3t. Chuy\xEAn
+    thu h\xFAt c\xE1 s\u0103n m\u1ED3i."

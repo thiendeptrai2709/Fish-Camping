@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23632e1e5a212b046b74a1944649fe94, type: 3}
   m_Name: Rod 2
   m_EditorClassIdentifier: Assembly-CSharp::ShopItemSO
-  itemID: 
-  itemName: 
-  itemType: 0
-  price: 0
-  requiredLevel: 0
-  description: 
+  itemID: 4
+  itemName: "C\u1EA7n C\xE2u Th\u01B0\u1EE3ng H\u1EA1ng"
+  itemType: 2
+  price: 2000
+  requiredLevel: 13
+  description: "C\xE2u nh\u1EEFng lo\xE0i c\xE1 th\u01B0\u1EE3ng h\u1EA1ng."
