@@ -4,6 +4,8 @@ using UnityEngine.EventSystems;
 
 public class BackpackMinigameUI : MonoBehaviour
 {
+    public static BackpackMinigameUI Instance { get; private set; } // Thêm dòng này
+
     [SerializeField] private InventoryGridData gridData;
     [SerializeField] private RectTransform gridRootRect;
     [SerializeField] private RectTransform itemsContainer;
@@ -17,6 +19,11 @@ public class BackpackMinigameUI : MonoBehaviour
     private bool startDragRotated;
     private int dragGridOffsetX;
     private int dragGridOffsetY;
+    private void Awake()
+    {
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
+    }
     private void Start()
     {
         // Đảm bảo lưới logic được khởi tạo trước mọi thao tác vẽ UI và spawn item
@@ -196,6 +203,14 @@ public class BackpackMinigameUI : MonoBehaviour
             highlightOverlay.gameObject.SetActive(false);
         }
 
+        Canvas rootCanvas = gridRootRect.GetComponentInParent<Canvas>();
+        if (rootCanvas != null)
+        {
+            // Bắt buộc dùng "true"
+            itemUI.transform.SetParent(rootCanvas.transform, true);
+            itemUI.transform.SetAsLastSibling();
+        }
+
         OnItemDragging(itemUI, screenPosition);
     }
 
@@ -203,15 +218,12 @@ public class BackpackMinigameUI : MonoBehaviour
     {
         if (gridRootRect == null || gridData == null) return;
 
-        // Kiểm tra xem con trỏ chuột có đang nằm bên trong phạm vi 64 ô lưới hay không
         if (GetGridIndexFromScreenPosition(screenPosition, out int rawX, out int rawY))
         {
-            // --- KHI CHUỘT Ở TRONG LƯỚI: Snap vào ô, đặt trong container của balo và hiện Highlight ---
             if (GetClampedGridIndex(screenPosition, itemUI.GetItemShape(), itemUI.IsRotated(), out int targetX, out int targetY))
             {
                 bool canPlace = gridData.CanPlaceItem(targetX, targetY, itemUI.GetItemShape(), itemUI.IsRotated());
 
-                // Nếu không đặt được vào chỗ trống, kiểm tra xem có đổi chỗ (Swap) được với vật phẩm cùng kích thước không
                 if (!canPlace && !itemUI.IsEquipped())
                 {
                     canPlace = CanSwapItems(itemUI, targetX, targetY);
@@ -231,7 +243,8 @@ public class BackpackMinigameUI : MonoBehaviour
 
                 if (itemUI.transform.parent != itemsContainer)
                 {
-                    itemUI.transform.SetParent(itemsContainer);
+                    // Chú ý "false" để khóa tỷ lệ ảnh khi bay vào lưới balo
+                    itemUI.transform.SetParent(itemsContainer, false);
                     itemUI.transform.SetAsLastSibling();
                 }
                 itemUI.GetComponent<RectTransform>().anchoredPosition = snappedPosition;
@@ -239,7 +252,7 @@ public class BackpackMinigameUI : MonoBehaviour
         }
         else
         {
-            // --- KHI CHUỘT KÉO RA NGOÀI LƯỚI: Tắt Highlight, cho ảnh bay tự do theo chuột để nhét vào Hotbar / Mồi ---
+            // --- KHI CHUỘT KÉO RA NGOÀI LƯỚI: Tắt Highlight, cho ảnh bay tự do theo chuột ---
             if (highlightOverlay != null)
             {
                 highlightOverlay.gameObject.SetActive(false);
@@ -248,14 +261,20 @@ public class BackpackMinigameUI : MonoBehaviour
             Canvas rootCanvas = gridRootRect.GetComponentInParent<Canvas>();
             if (rootCanvas != null)
             {
-                // Nhấc vật phẩm ra làm con của Canvas tổng để không bị kẹt bởi viền cắt của lưới (RectMask2D)
                 if (itemUI.transform.parent != rootCanvas.transform)
                 {
-                    itemUI.transform.SetParent(rootCanvas.transform);
+                    itemUI.transform.SetParent(rootCanvas.transform, true); // true!
                     itemUI.transform.SetAsLastSibling();
                 }
 
-                Camera pressCamera = (rootCanvas != null && rootCanvas.renderMode != RenderMode.ScreenSpaceOverlay) ? rootCanvas.worldCamera : null;
+                // Cứu mạng: Tự động gán Camera.main nếu Canvas của ông chưa setup World Camera
+                Camera pressCamera = null;
+                if (rootCanvas.renderMode != RenderMode.ScreenSpaceOverlay)
+                {
+                    pressCamera = rootCanvas.worldCamera;
+                    if (pressCamera == null) pressCamera = Camera.main;
+                }
+
                 if (RectTransformUtility.ScreenPointToWorldPointInRectangle(rootCanvas.GetComponent<RectTransform>(), screenPosition, pressCamera, out Vector3 worldPoint))
                 {
                     itemUI.transform.position = worldPoint;
@@ -591,5 +610,70 @@ public class BackpackMinigameUI : MonoBehaviour
         gridData.PlaceItem(targetItem.GetGridX(), targetItem.GetGridY(), targetItem.GetItemShape(), targetItem.IsRotated());
 
         return (canPlaceDragged && canPlaceTarget);
+    }
+    public bool TryAutoAddFromCooking(InventoryItemUI itemUI)
+    {
+        if (gridData == null) return false;
+        int width = gridData.GetGridWidth();
+        int height = gridData.GetGridHeight();
+        ItemShapeSO shape = itemUI.GetItemShape();
+
+        // Quét lưới từ trên xuống dưới, từ trái sang phải
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                // Thử đặt thẳng
+                if (gridData.CanPlaceItem(x, y, shape, false))
+                {
+                    PlaceItemDirectlyToGrid(itemUI, x, y, false);
+                    itemUI.SetFromCooking(false); // Biến nó thành đồ Balo bình thường
+                    return true;
+                }
+                // Thử đặt xoay ngang (nếu đặt thẳng không vừa)
+                if (gridData.CanPlaceItem(x, y, shape, true))
+                {
+                    PlaceItemDirectlyToGrid(itemUI, x, y, true);
+                    itemUI.SetFromCooking(false); // Biến nó thành đồ Balo bình thường
+                    return true;
+                }
+            }
+        }
+        return false; // Trả về false nếu Balo đã hết sạch chỗ trống
+    }
+    public bool TryAutoAddItem(ItemShapeSO itemShape)
+    {
+        if (gridData == null) return false;
+
+        int width = gridData.GetGridWidth();
+        int height = gridData.GetGridHeight();
+
+        // Ưu tiên 1: Quét từ trên xuống dưới, trái sang phải, thử nhét thẳng (không xoay)
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                if (gridData.CanPlaceItem(x, y, itemShape, false))
+                {
+                    SpawnItem(itemShape, x, y, false);
+                    return true; // Nhét thành công
+                }
+            }
+        }
+
+        // Ưu tiên 2: Nếu không có chỗ thẳng, thử xoay ngang lại và quét tìm chỗ trống
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                if (gridData.CanPlaceItem(x, y, itemShape, true))
+                {
+                    SpawnItem(itemShape, x, y, true);
+                    return true; // Nhét xoay thành công
+                }
+            }
+        }
+
+        return false; // Trả về false nếu Balo đã hết sạch chỗ
     }
 }

@@ -3,7 +3,8 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(Image))]
-public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
+// Thêm IPointerDownHandler vào đây để bắt được phát click đầu tiên
+public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler, IPointerDownHandler
 {
     [SerializeField] private Image itemImage;
 
@@ -16,18 +17,24 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     private Vector2 lastDragPosition;
     private Vector2 dragOffset;
 
-
     private int gridX;
     private int gridY;
     private bool isRotated = false;
     private bool isEquipped = false;
     private bool isHandledBySlot = false;
+    private bool isFromCooking = false;
     private EquipmentSlotUI currentSlot = null;
+
 
     public void SetEquippedState(bool equipped, EquipmentSlotUI slot = null)
     {
         isEquipped = equipped;
         currentSlot = slot;
+    }
+
+    public void SetFromCooking(bool fromCooking)
+    {
+        isFromCooking = fromCooking;
     }
 
     public void SetHandledBySlot(bool handled)
@@ -37,6 +44,7 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     public bool IsEquipped() => isEquipped;
     public EquipmentSlotUI GetCurrentSlot() => currentSlot;
+
     private void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
@@ -51,6 +59,7 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         }
         inputHandler = FindFirstObjectByType<PlayerInputHandler>();
     }
+
     private void Update()
     {
         if (isDragging && inputHandler != null && inputHandler.RotateItemTriggered)
@@ -58,11 +67,11 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             ToggleRotate();
             if (minigameUI != null)
             {
-                // Khi bấm xoay lúc kéo, gọi thẳng OnItemDragging để ảnh xoay ngay tại ô chuột đang đứng
                 minigameUI.OnItemDragging(this, lastDragPosition);
             }
         }
     }
+
     public void Setup(ItemShapeSO shape, BackpackMinigameUI uiController, int startX, int startY, bool rotated = false)
     {
         if (rectTransform == null) rectTransform = GetComponent<RectTransform>();
@@ -88,6 +97,9 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         if (canvasGroup != null)
         {
             canvasGroup.alpha = 1f;
+            // Ép buộc nó phải nhận va chạm chuột, phòng trường hợp đẻ ra từ nồi bị lỗi
+            canvasGroup.blocksRaycasts = true;
+            canvasGroup.interactable = true;
         }
         UpdateVisualSize();
     }
@@ -101,9 +113,7 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
         if (rectTransform != null)
         {
-            // Luôn giữ sizeDelta theo kích thước gốc của vật phẩm (không được tráo đổi)
             rectTransform.sizeDelta = new Vector2(itemShape.width * cellSize, itemShape.height * cellSize);
-            // Kỹ thuật chuyển Pivot: Khi xoay -90 độ, Pivot (0,0) giúp góc trên-trái trực quan khớp tuyệt đối với tọa độ ô lưới
             rectTransform.pivot = isRotated ? new Vector2(0, 0) : new Vector2(0, 1);
             rectTransform.localRotation = Quaternion.Euler(0f, 0f, isRotated ? -90f : 0f);
         }
@@ -121,9 +131,33 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         UpdateVisualSize();
     }
 
+    // --- LOGIC BẮT CHUỘT MỚI ---
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        if (eventData.button != PointerEventData.InputButton.Left) return;
+
+        // Nếu là cá chín từ Nồi: BẤM LÀ THU HOẠCH LUÔN
+        if (isFromCooking)
+        {
+            if (minigameUI != null && minigameUI.TryAutoAddFromCooking(this))
+            {
+                Debug.Log("<color=green>[THU HOẠCH] Đã click lấy đồ ăn thẳng vào Balo thành công!</color>");
+                if (CookingUIManager.Instance != null) CookingUIManager.Instance.OnFoodCollectedSuccessfully();
+            }
+            else
+            {
+                Debug.Log("<color=red>[THU HOẠCH LỖI] Balo đã đầy, dọn bớt đồ đi!</color>");
+            }
+        }
+    }
+
     public void OnBeginDrag(PointerEventData eventData)
     {
+        // Nếu là đồ từ nồi, CẤM TUYỆT ĐỐI kéo thả để né lỗi Unity
+        if (isFromCooking) return;
+
         if (eventData.button != PointerEventData.InputButton.Left || minigameUI == null) return;
+
         isDragging = true;
         lastDragPosition = eventData.position;
         canvasGroup.blocksRaycasts = false;
@@ -134,19 +168,14 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             currentSlot.RemoveEquippedItem();
 
             Canvas rootCanvas = currentSlot.GetComponentInParent<Canvas>();
-            if (rootCanvas != null)
-            {
-                transform.SetParent(rootCanvas.transform);
-            }
-            else
-            {
-                transform.SetParent(currentSlot.transform.root);
-            }
+            if (rootCanvas != null) transform.SetParent(rootCanvas.transform, true);
+            else transform.SetParent(currentSlot.transform.root, true);
 
-            RectTransform rect = GetComponent<RectTransform>();
-            rect.pivot = new Vector2(0, 1);
-            rect.anchorMin = new Vector2(0, 1);
-            rect.anchorMax = new Vector2(0, 1);
+            // --- BẮT BUỘC THÊM ĐOẠN NÀY ĐỂ TRỊ BỆNH LỆCH Ô XANH ---
+            // Trả Anchor về (0, 1) và gọi UpdateVisualSize để set lại Pivot chuẩn của Balo
+            rectTransform.anchorMin = new Vector2(0, 1);
+            rectTransform.anchorMax = new Vector2(0, 1);
+            UpdateVisualSize();
 
             transform.SetAsLastSibling();
             minigameUI.OnItemBeginDragFromExternal(this, eventData.position);
@@ -171,9 +200,27 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         canvasGroup.blocksRaycasts = true;
         canvasGroup.alpha = 1f;
 
+        Debug.Log($"<color=lime>[DEBUG KÉO] ĐÃ THẢ TAY!</color>");
+
         if (isHandledBySlot)
         {
             isHandledBySlot = false;
+            if (minigameUI != null) minigameUI.HideHighlight();
+            return;
+        }
+
+        if (isFromCooking)
+        {
+            bool placedInGrid = minigameUI.TryPlaceItemFromExternal(this, eventData.position);
+            if (placedInGrid)
+            {
+                isFromCooking = false;
+                if (CookingUIManager.Instance != null) CookingUIManager.Instance.OnFoodCollectedSuccessfully();
+            }
+            else
+            {
+                if (CookingUIManager.Instance != null) CookingUIManager.Instance.ReturnFoodToSlot(this);
+            }
             if (minigameUI != null) minigameUI.HideHighlight();
             return;
         }

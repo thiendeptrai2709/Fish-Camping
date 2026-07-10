@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Item_Campfire
   m_EditorClassIdentifier: Assembly-CSharp::BuildableItemSO
   itemName: Campfire
-  prefab: {fileID: 6142612170202667068, guid: 58f966f9264a67e4cbeda0046649e95b, type: 3}
-  previewPrefab: {fileID: 7275424706712206515, guid: 5faafafaa8cf7f4488aa651da6a9dad5, type: 3}
+  prefab: {fileID: 6380870496816681766, guid: 5c79d86b4a6458e40b8ef64a5ccb349e, type: 3}
+  previewPrefab: {fileID: 6380870496816681766, guid: 5c79d86b4a6458e40b8ef64a5ccb349e, type: 3}
   energyCost: 3
   comfortBonus: 10

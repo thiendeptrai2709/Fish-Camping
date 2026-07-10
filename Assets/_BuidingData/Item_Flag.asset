@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9ea01fcc30ed744d923b41a9a7efa3a, type: 3}
+  m_Name: Item_Flag
+  m_EditorClassIdentifier: Assembly-CSharp::BuildableItemSO
+  itemName: Flag
+  prefab: {fileID: 9116486672434615755, guid: 3a8af1d5bdb9915438835c600c60b9f4, type: 3}
+  previewPrefab: {fileID: 9116486672434615755, guid: 3a8af1d5bdb9915438835c600c60b9f4, type: 3}
+  energyCost: 5
+  comfortBonus: 10

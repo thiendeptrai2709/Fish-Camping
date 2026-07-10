@@ -35,10 +35,12 @@ public class BuildingUIManager : MonoBehaviour
         {
             if (playerCursor != null) playerCursor.SetCursorState(false);
             if (placementController != null) placementController.CancelPlacement();
+            if (CampBuildZone.Instance != null) CampBuildZone.Instance.ToggleZoneVisual(true);
         }
         else
         {
             if (playerCursor != null) playerCursor.SetCursorState(true);
+            if (CampBuildZone.Instance != null) CampBuildZone.Instance.ToggleZoneVisual(false);
         }
     }
 

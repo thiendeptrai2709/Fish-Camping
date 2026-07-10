@@ -39,6 +39,8 @@ public class BuildingPlacementController : MonoBehaviour
         {
             col.enabled = false;
         }
+
+        if (CampBuildZone.Instance != null) CampBuildZone.Instance.ToggleZoneVisual(true);
     }
 
     public void CancelPlacement()
@@ -50,6 +52,8 @@ public class BuildingPlacementController : MonoBehaviour
             Destroy(currentPreview);
             currentPreview = null;
         }
+
+        if (CampBuildZone.Instance != null) CampBuildZone.Instance.ToggleZoneVisual(false);
     }
 
     private void UpdatePreviewPositionAndRotation()
