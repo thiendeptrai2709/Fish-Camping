@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 6cc4153bdc2324f4195eb7f691873a81
+guid: 2ff690f39cb592e46a554139edfe6daa
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -97,23 +97,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Box_Mask_0
+      name: Rod3-removebg-preview_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 132
-        height: 117
+        width: 287
+        height: 869
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 24, y: 16, z: 22, w: 20}
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a431027fcff6e4e44a9fdc506e6d8bfa
-      internalID: -1677139332
+      spriteID: b5a96034074e6624a8726aa7e89c5110
+      internalID: -1157567589
       vertices: []
       indices: 
       edges: []
@@ -122,7 +122,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: c62bc0fa82f1a8649a5acc3116640437
+    spriteID: 64a0ccf2467ad884f9d386344a1ec0da
     internalID: 0
     vertices: []
     indices: 
@@ -132,7 +132,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Box_Mask_0: -1677139332
+      Rod3-removebg-preview_0: -1157567589
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
