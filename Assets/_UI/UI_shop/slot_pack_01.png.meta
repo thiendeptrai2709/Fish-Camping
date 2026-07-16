@@ -1,7 +1,10 @@
 fileFormatVersion: 2
-guid: 5e2d7f04126fead4c82d40e2bae1c36d
+guid: 04a292221a3995d4bb6acc2350c36d4a
 TextureImporter:
-  internalIDToNameTable: []
+  internalIDToNameTable:
+  - first:
+      213: 2293433962117547930
+    second: slot_pack_01_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -39,7 +42,7 @@ TextureImporter:
     mipBias: 0
     wrapU: 1
     wrapV: 1
-    wrapW: 0
+    wrapW: 1
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -93,27 +96,40 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Rod3_0
+      name: slot_pack_01_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 1184
-        height: 3584
+        width: 256
+        height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 57, y: 37, z: 42, w: 36}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: e18f32c952096a44bbf04a574f02ffe4
-      internalID: 361804216
+      spriteID: a9745d3990ae3df10800000000000000
+      internalID: 2293433962117547930
       vertices: []
       indices: 
       edges: []
@@ -122,7 +138,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 281dd0787842dcc47bf9f35e21c7ca49
     internalID: 0
     vertices: []
     indices: 
@@ -132,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Rod3_0: 361804216
+      slot_pack_01_0: 2293433962117547930
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

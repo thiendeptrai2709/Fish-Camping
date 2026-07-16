@@ -1,7 +1,10 @@
 fileFormatVersion: 2
-guid: 5e2d7f04126fead4c82d40e2bae1c36d
+guid: 48f86348df641e047bc1d13354100a59
 TextureImporter:
-  internalIDToNameTable: []
+  internalIDToNameTable:
+  - first:
+      213: 475601448147138593
+    second: popup_pack_04_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -39,7 +42,7 @@ TextureImporter:
     mipBias: 0
     wrapU: 1
     wrapV: 1
-    wrapW: 0
+    wrapW: 1
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -93,27 +96,40 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Rod3_0
+      name: popup_pack_04_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 1184
-        height: 3584
+        width: 484
+        height: 484
       alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 165, y: 133, z: 143, w: 72}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: e18f32c952096a44bbf04a574f02ffe4
-      internalID: 361804216
+      spriteID: 128b87b4ffca99600800000000000000
+      internalID: 475601448147138593
       vertices: []
       indices: 
       edges: []
@@ -122,7 +138,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 8c20307452a2efe4daef4e3c7adf3336
     internalID: 0
     vertices: []
     indices: 
@@ -132,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Rod3_0: 361804216
+      popup_pack_04_0: 475601448147138593
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

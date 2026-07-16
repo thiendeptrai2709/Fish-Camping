@@ -1,7 +1,10 @@
 fileFormatVersion: 2
-guid: 5e2d7f04126fead4c82d40e2bae1c36d
+guid: a6189fbaf731c244680584b78c6ca02b
 TextureImporter:
-  internalIDToNameTable: []
+  internalIDToNameTable:
+  - first:
+      213: -7459415238522247253
+    second: icon_currency_coin_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -39,7 +42,7 @@ TextureImporter:
     mipBias: 0
     wrapU: 1
     wrapV: 1
-    wrapW: 0
+    wrapW: 1
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -93,27 +96,40 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Rod3_0
+      name: icon_currency_coin_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 1184
-        height: 3584
+        x: 21
+        y: 19
+        width: 86
+        height: 89
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: e18f32c952096a44bbf04a574f02ffe4
-      internalID: 361804216
+      spriteID: ba7eebbbc55da7890800000000000000
+      internalID: -7459415238522247253
       vertices: []
       indices: 
       edges: []
@@ -122,7 +138,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -132,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Rod3_0: 361804216
+      icon_currency_coin_0: -7459415238522247253
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

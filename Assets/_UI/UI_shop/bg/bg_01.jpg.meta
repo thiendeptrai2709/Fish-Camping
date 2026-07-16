@@ -1,7 +1,10 @@
 fileFormatVersion: 2
-guid: 5e2d7f04126fead4c82d40e2bae1c36d
+guid: 09301a6b190e20e45a4d3979def93419
 TextureImporter:
-  internalIDToNameTable: []
+  internalIDToNameTable:
+  - first:
+      213: -3998073677068660129
+    second: bg_01_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,8 +40,8 @@ TextureImporter:
     filterMode: 1
     aniso: 1
     mipBias: 0
-    wrapU: 1
-    wrapV: 1
+    wrapU: 0
+    wrapV: 0
     wrapW: 0
   nPOTScale: 0
   lightmap: 0
@@ -93,27 +96,40 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Rod3_0
+      name: bg_01_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 1184
-        height: 3584
+        width: 2024
+        height: 2024
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: e18f32c952096a44bbf04a574f02ffe4
-      internalID: 361804216
+      spriteID: f529b746c2df388c0800000000000000
+      internalID: -3998073677068660129
       vertices: []
       indices: 
       edges: []
@@ -122,7 +138,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -132,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Rod3_0: 361804216
+      bg_01_0: -3998073677068660129
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

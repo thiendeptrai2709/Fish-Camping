@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 5e2d7f04126fead4c82d40e2bae1c36d
+guid: 3cfb17b84836e0142a1b4ba1ffa04d44
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -97,13 +97,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Rod3_0
+      name: Rod2-removebg-preview_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 1184
-        height: 3584
+        width: 287
+        height: 869
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -112,8 +112,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e18f32c952096a44bbf04a574f02ffe4
-      internalID: 361804216
+      spriteID: 4065ab53dc4b84b4fabd384f13eb161c
+      internalID: -182989
       vertices: []
       indices: 
       edges: []
@@ -122,7 +122,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 36752551250732548ac483b4d9a5bc68
     internalID: 0
     vertices: []
     indices: 
@@ -132,7 +132,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Rod3_0: 361804216
+      Rod2-removebg-preview_0: -182989
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

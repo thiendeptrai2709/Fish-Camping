@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 5e2d7f04126fead4c82d40e2bae1c36d
+guid: 8f9fd49f1a83bf048835748ff77a0742
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -97,23 +97,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Rod3_0
+      name: bt_yellow_02_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 1184
-        height: 3584
+        width: 370
+        height: 154
       alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 65, y: 68, z: 81, w: 58}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e18f32c952096a44bbf04a574f02ffe4
-      internalID: 361804216
+      spriteID: 74f97456b3d1f054da0835356768e5c8
+      internalID: -1914270881
       vertices: []
       indices: 
       edges: []
@@ -122,7 +122,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: afde57be68db3c649b031f594aaf7baa
     internalID: 0
     vertices: []
     indices: 
@@ -132,7 +132,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Rod3_0: 361804216
+      bt_yellow_02_0: -1914270881
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
