@@ -97,3 +97,18 @@ InitTestScene*.unity*
 
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
+# =======================================================
+# CẤU HÌNH BỔ SUNG CHO FIREBASE (Tránh lỗi file >100MB)
+# =======================================================
+# Chặn toàn bộ thư mục Plugins của Firebase
+/[Aa]ssets/Firebase/Plugins/
+
+# Chặn các file định dạng nặng đặc thù của thư viện mã nguồn đóng
+*.bundle
+*.aar
+# Ignore Firebase SDK components
+/[Aa]ssets/Firebase/
+/[Aa]ssets/Plugins/
+*.dll
+*.so
+*.bundle
