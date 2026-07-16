@@ -181,6 +181,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ShopManager
   tongTien: 100000
   txtHienThiTien: {fileID: 608954073}
+  shopPanel: {fileID: 0}
+  thoiGianDemSo: 0.5
 --- !u!1 &11878965
 GameObject:
   m_ObjectHideFlags: 0
@@ -6851,7 +6853,7 @@ GameObject:
   - component: {fileID: 324465012}
   - component: {fileID: 324465011}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: Supper_canvas*********
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
