@@ -207,7 +207,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 1581111740}
     m_Modifications:
     - target: {fileID: 3034373643497335216, guid: 7ee328feae54bc84cb567a695f15aee3, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
@@ -219,15 +219,15 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: d1216300d972b2e4f924bc00c5ca8bd0, type: 2}
     - target: {fileID: 5215887287527150619, guid: 7ee328feae54bc84cb567a695f15aee3, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 98.91439
+      value: 62.41439
       objectReference: {fileID: 0}
     - target: {fileID: 5215887287527150619, guid: 7ee328feae54bc84cb567a695f15aee3, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 5.95
+      value: -35.649998
       objectReference: {fileID: 0}
     - target: {fileID: 5215887287527150619, guid: 7ee328feae54bc84cb567a695f15aee3, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 67.17197
+      value: -75.01901
       objectReference: {fileID: 0}
     - target: {fileID: 5215887287527150619, guid: 7ee328feae54bc84cb567a695f15aee3, type: 3}
       propertyPath: m_LocalRotation.w
@@ -266,6 +266,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7ee328feae54bc84cb567a695f15aee3, type: 3}
+--- !u!4 &6676159 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5215887287527150619, guid: 7ee328feae54bc84cb567a695f15aee3, type: 3}
+  m_PrefabInstance: {fileID: 6676158}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &13303068
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -709,6 +714,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 639058957}
     m_Modifications:
+    - target: {fileID: 451615062586771786, guid: 6660894281dc05043aa2954e1ff3cd4f, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 8828962688773733849, guid: c8efccd6fa8cc4b468a8c28cac6efec4, type: 3}
     - target: {fileID: 1589587449865876005, guid: 6660894281dc05043aa2954e1ff3cd4f, type: 3}
       propertyPath: m_LocalScale.x
       value: 1
@@ -765,6 +774,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: mountain_snow_1 (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 2423080396618186112, guid: 6660894281dc05043aa2954e1ff3cd4f, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: -6369634725896708539, guid: c8efccd6fa8cc4b468a8c28cac6efec4, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -4404,7 +4417,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1883998665}
-  - {fileID: 945694027}
   - {fileID: 13303069}
   - {fileID: 807697660}
   - {fileID: 209141022}
@@ -6405,11 +6417,6 @@ MeshCollider:
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2901851639390942340, guid: 00e3c3c8595aa9d42831fa9739a86cd5, type: 3}
   m_PrefabInstance: {fileID: 1470245811}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &945694027 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 5944075551762388290, guid: 8e5d5d1ae06bb9d42a7bc631a379433d, type: 3}
-  m_PrefabInstance: {fileID: 1214991414}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &976216093
 PrefabInstance:
@@ -9485,75 +9492,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7046241242767255820, guid: bc4c98111a1d3884f9fcec8d2c53a76b, type: 3}
   m_PrefabInstance: {fileID: 1209584061}
   m_PrefabAsset: {fileID: 0}
---- !u!1001 &1214991414
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 639058957}
-    m_Modifications:
-    - target: {fileID: 5944075551762388290, guid: 8e5d5d1ae06bb9d42a7bc631a379433d, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5944075551762388290, guid: 8e5d5d1ae06bb9d42a7bc631a379433d, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5944075551762388290, guid: 8e5d5d1ae06bb9d42a7bc631a379433d, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5944075551762388290, guid: 8e5d5d1ae06bb9d42a7bc631a379433d, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 72.6
-      objectReference: {fileID: 0}
-    - target: {fileID: 5944075551762388290, guid: 8e5d5d1ae06bb9d42a7bc631a379433d, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -46
-      objectReference: {fileID: 0}
-    - target: {fileID: 5944075551762388290, guid: 8e5d5d1ae06bb9d42a7bc631a379433d, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 216.4
-      objectReference: {fileID: 0}
-    - target: {fileID: 5944075551762388290, guid: 8e5d5d1ae06bb9d42a7bc631a379433d, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: -0.054442298
-      objectReference: {fileID: 0}
-    - target: {fileID: 5944075551762388290, guid: 8e5d5d1ae06bb9d42a7bc631a379433d, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5944075551762388290, guid: 8e5d5d1ae06bb9d42a7bc631a379433d, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0.9985169
-      objectReference: {fileID: 0}
-    - target: {fileID: 5944075551762388290, guid: 8e5d5d1ae06bb9d42a7bc631a379433d, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5944075551762388290, guid: 8e5d5d1ae06bb9d42a7bc631a379433d, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5944075551762388290, guid: 8e5d5d1ae06bb9d42a7bc631a379433d, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: -186.242
-      objectReference: {fileID: 0}
-    - target: {fileID: 5944075551762388290, guid: 8e5d5d1ae06bb9d42a7bc631a379433d, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5944075551762388291, guid: 8e5d5d1ae06bb9d42a7bc631a379433d, type: 3}
-      propertyPath: m_Name
-      value: Waterfall_Particle_VFX
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 8e5d5d1ae06bb9d42a7bc631a379433d, type: 3}
 --- !u!1001 &1215126706
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13766,6 +13704,7 @@ Transform:
   - {fileID: 1627543448}
   - {fileID: 1373219080}
   - {fileID: 1133045431}
+  - {fileID: 6676159}
   m_Father: {fileID: 1923611687}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1586826939
@@ -13976,6 +13915,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 639058957}
     m_Modifications:
+    - target: {fileID: 451615062586771786, guid: 6660894281dc05043aa2954e1ff3cd4f, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 8828962688773733849, guid: c8efccd6fa8cc4b468a8c28cac6efec4, type: 3}
     - target: {fileID: 1589587449865876005, guid: 6660894281dc05043aa2954e1ff3cd4f, type: 3}
       propertyPath: m_LocalScale.x
       value: 2
@@ -14032,6 +13975,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: mountain_snow_1 (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 2423080396618186112, guid: 6660894281dc05043aa2954e1ff3cd4f, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: -6369634725896708539, guid: c8efccd6fa8cc4b468a8c28cac6efec4, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -16011,6 +15958,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 639058957}
     m_Modifications:
+    - target: {fileID: 451615062586771786, guid: 6660894281dc05043aa2954e1ff3cd4f, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 8828962688773733849, guid: c8efccd6fa8cc4b468a8c28cac6efec4, type: 3}
     - target: {fileID: 1589587449865876005, guid: 6660894281dc05043aa2954e1ff3cd4f, type: 3}
       propertyPath: m_LocalScale.x
       value: 3
@@ -16033,7 +15984,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1589587449865876005, guid: 6660894281dc05043aa2954e1ff3cd4f, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 241
+      value: 270.2
       objectReference: {fileID: 0}
     - target: {fileID: 1589587449865876005, guid: 6660894281dc05043aa2954e1ff3cd4f, type: 3}
       propertyPath: m_LocalRotation.w
@@ -16067,6 +16018,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: mountain_snow_1 (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 2423080396618186112, guid: 6660894281dc05043aa2954e1ff3cd4f, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: -6369634725896708539, guid: c8efccd6fa8cc4b468a8c28cac6efec4, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -17012,6 +16967,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 639058957}
     m_Modifications:
+    - target: {fileID: 451615062586771786, guid: 6660894281dc05043aa2954e1ff3cd4f, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 8828962688773733849, guid: c8efccd6fa8cc4b468a8c28cac6efec4, type: 3}
     - target: {fileID: 1589587449865876005, guid: 6660894281dc05043aa2954e1ff3cd4f, type: 3}
       propertyPath: m_LocalScale.x
       value: 3
@@ -17068,6 +17027,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: mountain_snow_1 (5)
       objectReference: {fileID: 0}
+    - target: {fileID: 2423080396618186112, guid: 6660894281dc05043aa2954e1ff3cd4f, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: -6369634725896708539, guid: c8efccd6fa8cc4b468a8c28cac6efec4, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -18021,6 +17984,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 639058957}
     m_Modifications:
+    - target: {fileID: 451615062586771786, guid: 6660894281dc05043aa2954e1ff3cd4f, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 8828962688773733849, guid: c8efccd6fa8cc4b468a8c28cac6efec4, type: 3}
     - target: {fileID: 1589587449865876005, guid: 6660894281dc05043aa2954e1ff3cd4f, type: 3}
       propertyPath: m_LocalScale.x
       value: 2
@@ -18077,6 +18044,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: mountain_snow_1 (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 2423080396618186112, guid: 6660894281dc05043aa2954e1ff3cd4f, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: -6369634725896708539, guid: c8efccd6fa8cc4b468a8c28cac6efec4, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -19416,6 +19387,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 639058957}
     m_Modifications:
+    - target: {fileID: 451615062586771786, guid: 6660894281dc05043aa2954e1ff3cd4f, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 8828962688773733849, guid: c8efccd6fa8cc4b468a8c28cac6efec4, type: 3}
     - target: {fileID: 1589587449865876005, guid: 6660894281dc05043aa2954e1ff3cd4f, type: 3}
       propertyPath: m_LocalScale.x
       value: 3
@@ -19434,7 +19409,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1589587449865876005, guid: 6660894281dc05043aa2954e1ff3cd4f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -35.765816
+      value: -47
       objectReference: {fileID: 0}
     - target: {fileID: 1589587449865876005, guid: 6660894281dc05043aa2954e1ff3cd4f, type: 3}
       propertyPath: m_LocalPosition.z
@@ -19472,6 +19447,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: mountain_snow_1
       objectReference: {fileID: 0}
+    - target: {fileID: 2423080396618186112, guid: 6660894281dc05043aa2954e1ff3cd4f, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: -6369634725896708539, guid: c8efccd6fa8cc4b468a8c28cac6efec4, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -19765,4 +19744,3 @@ SceneRoots:
   - {fileID: 1645916718}
   - {fileID: 1923611687}
   - {fileID: 1417387863}
-  - {fileID: 6676158}
