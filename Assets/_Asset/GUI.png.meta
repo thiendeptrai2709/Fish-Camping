@@ -1,0 +1,322 @@
+fileFormatVersion: 2
+guid: 7efab53796662be4eb94b2af5f10c47d
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 0
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: GUI_0
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 293
+        width: 47
+        height: 7
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 13ddcb7aa824ff145ad02ad334166c03
+      internalID: 737539861
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GUI_1
+      rect:
+        serializedVersion: 2
+        x: 6
+        y: 277
+        width: 51
+        height: 5
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a73f88e5aa54e684186f41a8e2278dc3
+      internalID: -1481749429
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GUI_2
+      rect:
+        serializedVersion: 2
+        x: 135
+        y: 277
+        width: 52
+        height: 7
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 94ae2f94cf561fb4db06e47b3131eda4
+      internalID: -1167389061
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GUI_85
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 20
+        width: 25
+        height: 24
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8cabade35d4419a4faf6fcb64f45999d
+      internalID: 1845672074
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GUI_4
+      rect:
+        serializedVersion: 2
+        x: 133
+        y: 293
+        width: 52
+        height: 7
+      alignment: 9
+      pivot: {x: 0.4999997, y: 0.9428929}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6236fbc0dc252874e8e57a720eaf573d
+      internalID: -822512555
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 00946c8a325347f469d171ce81908d30
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      GUI_0: 737539861
+      GUI_1: -1481749429
+      GUI_10: -2108659136
+      GUI_11: 1223435137
+      GUI_12: -1511128365
+      GUI_13: -1078848050
+      GUI_14: 442648173
+      GUI_15: 716126200
+      GUI_16: 1274749835
+      GUI_17: -867316966
+      GUI_18: -1567266958
+      GUI_19: 746493749
+      GUI_2: -1167389061
+      GUI_20: -1360161282
+      GUI_21: -366547866
+      GUI_22: -1463452161
+      GUI_23: 505641140
+      GUI_24: -1102452617
+      GUI_25: -1390314738
+      GUI_26: 1752027911
+      GUI_27: -2102276524
+      GUI_28: 1301716089
+      GUI_29: 259520534
+      GUI_3: -194933227
+      GUI_30: -1659693541
+      GUI_31: -601727874
+      GUI_32: -989989650
+      GUI_33: -366564233
+      GUI_34: -202239871
+      GUI_35: 299110268
+      GUI_36: 1805348272
+      GUI_37: 347977622
+      GUI_38: -572128585
+      GUI_39: 332944177
+      GUI_4: -822512555
+      GUI_40: -396349558
+      GUI_41: 642931387
+      GUI_42: 724461182
+      GUI_43: -1973524703
+      GUI_44: -1406523182
+      GUI_45: 988987965
+      GUI_46: -635612179
+      GUI_47: -829640490
+      GUI_48: -1000050034
+      GUI_49: 2091975945
+      GUI_5: -42157419
+      GUI_50: 733159236
+      GUI_51: -860730053
+      GUI_52: -553296195
+      GUI_53: 860036018
+      GUI_54: -831211462
+      GUI_55: -285121893
+      GUI_56: -1028566373
+      GUI_57: -79937653
+      GUI_58: 857872060
+      GUI_59: 756231081
+      GUI_6: 1256682958
+      GUI_60: 522301338
+      GUI_61: -1208908291
+      GUI_62: 1128654424
+      GUI_63: -664214916
+      GUI_64: 2037002520
+      GUI_65: -2106050688
+      GUI_66: 1974671315
+      GUI_67: 1190931654
+      GUI_68: 1429796320
+      GUI_69: -323699630
+      GUI_7: -892117759
+      GUI_70: -1131032069
+      GUI_71: 654073048
+      GUI_72: -607693203
+      GUI_73: 1185767787
+      GUI_74: 564197696
+      GUI_75: 79375370
+      GUI_76: -2127351079
+      GUI_77: 1195220464
+      GUI_78: 490492843
+      GUI_79: 1873638578
+      GUI_8: -1952583972
+      GUI_80: 1592010762
+      GUI_81: -1472247162
+      GUI_82: -1882612665
+      GUI_83: -392263817
+      GUI_84: -2050342370
+      GUI_85: 1845672074
+      GUI_86: 1913612916
+      GUI_87: 1450775733
+      GUI_88: -722357812
+      GUI_89: 577121822
+      GUI_9: -1209111357
+      GUI_90: 1919126417
+      GUI_91: 1519299024
+      GUI_92: -466045632
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

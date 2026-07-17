@@ -3,18 +3,21 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags: []
+  tags:
+  - Map_PineLake
+  - Map_Swamp
+  - Map_Ocean
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - Interactable
+  - 
   - Water
   - UI
-  - Outlined
-  - Ground
-  - BuildableSurface
-  - Campfire
+  - Water
+  - 
+  - 
+  - 
   - 
   - 
   - 
