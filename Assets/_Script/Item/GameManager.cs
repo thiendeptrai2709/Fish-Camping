@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro; // BẮT BUỘC PHẢI CÓ DÒNG NÀY ĐỂ DÙNG TEXTMESHPRO
 
 public class GameManager : MonoBehaviour
 {
@@ -9,15 +10,15 @@ public class GameManager : MonoBehaviour
     public GameObject panelMiniGame;
     public Transform gridChuaThe;
     public GameObject mauThePrefab;
+    public TextMeshProUGUI txtSoLanSai; // Biến chứa chữ hiển thị số lần sai
+    public GameObject panelGameOver;    // Biến chứa màn hình Thua Cuộc
 
     [Header("Hình Ảnh")]
     public Sprite hinhMatSau;
     public Sprite[] danhSachHinhMatTruoc;
 
     [Header("Cài Đặt Game")]
-    [Tooltip("Tổng số thẻ trên màn hình. BẮT BUỘC PHẢI LÀ SỐ CHẴN!")]
-    public int tongSoThe = 60; // Thêm biến này để lấp đầy màn hình
-
+    public int tongSoThe = 60;
     public float thoiGianGhiNho = 10f;
     public int soLanSaiToiDa = 10;
 
@@ -39,15 +40,28 @@ public class GameManager : MonoBehaviour
     public void TatGame()
     {
         panelMiniGame.SetActive(false);
+        panelGameOver.SetActive(false); // Ẩn luôn bảng thua nếu đang bật
+    }
+
+    // Hàm gọi khi bấm nút Chơi Lại
+    public void ChoiLai()
+    {
+        KhoiTaoGameMoi();
     }
 
     private void KhoiTaoGameMoi()
     {
+        // Ẩn bảng Game Over nếu nó đang hiện
+        panelGameOver.SetActive(false);
+
         choPhepClick = false;
         soCapDaTimThay = 0;
         soLanSaiHienTai = 0;
         theThuNhat = null;
         theThuHai = null;
+
+        // Cập nhật text số lần sai ngay từ đầu
+        CapNhatUITextSai();
 
         foreach (Transform child in gridChuaThe)
         {
@@ -55,24 +69,18 @@ public class GameManager : MonoBehaviour
         }
         danhSachThe.Clear();
 
-        // Đảm bảo tổng số thẻ luôn là số chẵn
         if (tongSoThe % 2 != 0) tongSoThe += 1;
 
         int soCapCanTao = tongSoThe / 2;
         List<int> danhSachID = new List<int>();
 
-        // TẠO CÁC CẶP THẺ (Hình ảnh lặp lại thoải mái)
         for (int i = 0; i < soCapCanTao; i++)
         {
-            // Chọn ngẫu nhiên 1 hình từ danh sách ảnh có sẵn
             int idHinhNgauNhien = Random.Range(0, danhSachHinhMatTruoc.Length);
-
-            // Thêm 2 thẻ giống nhau (1 cặp)
             danhSachID.Add(idHinhNgauNhien);
             danhSachID.Add(idHinhNgauNhien);
         }
 
-        // Xáo trộn vị trí thẻ
         for (int i = 0; i < danhSachID.Count; i++)
         {
             int temp = danhSachID[i];
@@ -81,7 +89,6 @@ public class GameManager : MonoBehaviour
             danhSachID[r] = temp;
         }
 
-        // Sinh thẻ ra màn hình
         for (int i = 0; i < danhSachID.Count; i++)
         {
             GameObject theMoi = Instantiate(mauThePrefab, gridChuaThe);
@@ -93,6 +100,13 @@ public class GameManager : MonoBehaviour
         }
 
         StartCoroutine(ChoGhiNhoRoutine());
+    }
+
+    private void CapNhatUITextSai()
+    {
+        // Hiển thị số lần còn lại = Số tối đa - Số lần đã sai
+        int soLanConLai = soLanSaiToiDa - soLanSaiHienTai;
+        txtSoLanSai.text = "Số lần sai còn lại: " + soLanConLai.ToString();
     }
 
     private IEnumerator ChoGhiNhoRoutine()
@@ -129,22 +143,26 @@ public class GameManager : MonoBehaviour
             theThuHai.AnTheDi();
             soCapDaTimThay++;
 
-            // Sửa lại điều kiện thắng: dựa vào tổng số cặp
             if (soCapDaTimThay == (tongSoThe / 2))
             {
                 Debug.Log("CHÚC MỪNG! BẠN ĐÃ CHIẾN THẮNG!");
+                // Nếu muốn làm bảng Thắng thì làm tương tự bảng Thua nhé
             }
         }
         else
         {
             theThuNhat.LatUp();
             theThuHai.LatUp();
+
+            // CỘNG THÊM 1 LẦN SAI VÀ CẬP NHẬT CHỮ TRÊN MÀN HÌNH
             soLanSaiHienTai++;
+            CapNhatUITextSai();
 
             if (soLanSaiHienTai >= soLanSaiToiDa)
             {
                 Debug.Log("THẤT BẠI! BẠN ĐÃ SAI QUÁ SỐ LẦN!");
-                TatGame();
+                // Hiện bảng Game Over thay vì tắt game ngay
+                panelGameOver.SetActive(true);
             }
         }
 
