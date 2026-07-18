@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23632e1e5a212b046b74a1944649fe94, type: 3}
+  m_Name: Rod 4
+  m_EditorClassIdentifier: Assembly-CSharp::ShopItemSO
+  itemID: 6
+  itemName: "C\u1EA7n C\xE2u H\u1EA1ng N\u1EB7ng"
+  itemType: 2
+  price: 3000
+  requiredLevel: 30
+  description: "Chuy\xEAn c\xE2u c\xE1 m\u1EADp, c\xE1 ki\u1EBFm."
