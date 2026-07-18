@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
 
-public interface IInteractable 
+public interface INpcInteractable
 {
-    string InteractionPrompt { get; } // Câu lệnh hiện lên UI (Ví dụ: "Nhấn E để nói chuyện")
-    void Interact(); // Hành động xảy ra khi nhấn nút tương tác
+    void Interact();
+    string GetInteractPrompt();
+    void OnFocus();
+    void OnLoseFocus();
 }

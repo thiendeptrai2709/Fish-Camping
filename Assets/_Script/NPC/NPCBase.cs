@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class NPCBase : MonoBehaviour, IInteractable
+public class NPCBase : MonoBehaviour, INpcInteractable
 {
     [Header("NPC Settings")]
     [SerializeField] private string npcName = "Bác Thợ Máy";
@@ -126,5 +126,19 @@ public class NPCBase : MonoBehaviour, IInteractable
             // Đi bộ tuần tra -> NPCState = 1, Đứng im nghỉ mệt -> NPCState = 0
             _animator.SetInteger("NPCState", isWalking ? 1 : 0);
         }
+    }
+    public string GetInteractPrompt()
+    {
+        return InteractionPrompt;
+    }
+
+    public void OnFocus()
+    {
+        // Logic khi Player nhìn vào NPC (ví dụ: hiện viền sáng)
+    }
+
+    public void OnLoseFocus()
+    {
+        // Logic khi Player quay đầu đi chỗ khác (ví dụ: tắt viền sáng)
     }
 }

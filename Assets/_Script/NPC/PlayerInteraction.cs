@@ -1,70 +1,106 @@
 ﻿using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
-public class PlayerInteraction : MonoBehaviour
+[RequireComponent(typeof(PlayerInputHandler))]
+public class PlayerNpcInteraction : MonoBehaviour
 {
-    [Header("Interaction Settings")]
-    [SerializeField] private Transform interactionPoint; // Điểm tâm để quét (thường đặt ở trước ngực/chân Player)
-    [SerializeField] private float interactionRadius = 2f; // Bán kính quét tương tác (mét)
-    [SerializeField] private LayerMask interactableLayer; // Chỉ quét các Object thuộc Layer này (đặt Layer là "Interactable")
+    [Header("NPC Raycast Settings")]
+    [SerializeField] private float interactDistance = 3f;
+    [SerializeField] private LayerMask npcLayer; // Ông nên đặt riêng 1 Layer cho NPC (Ví dụ: Layer "NPC" hoặc chung "Interactable")
+    [SerializeField] private Image crosshairImage;
+    [SerializeField] private Color highlightCrosshairColor = Color.yellow;
+    [SerializeField] private Color defaultCrosshairColor = Color.white;
+    [SerializeField] private InteractionPromptUI promptUI;
 
-    private IInteractable _currentInteractable;
+    private PlayerInputHandler inputHandler;
+    private PlayerMovement playerMovement;
+    private Transform cameraTransform;
+    private INpcInteractable currentNpcInteractable;
 
-    void Update()
+    private void Awake()
     {
-        CheckForInteractable();
-
-        // Nếu phát hiện có vật thể tương tác và người chơi nhấn phím E
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            // Nếu khung hội thoại ĐANG BẬT, phím E sẽ dùng để tua chữ/đổi câu thoại tiếp theo
-            if (DialogueCanvasIsActive())
-            {
-                DialogueManager.Instance.DisplayNextSentence();
-            }
-            // Nếu khung hội thoại ĐANG TẮT và có NPC ở gần, tiến hành bắt đầu nói chuyện
-            else if (_currentInteractable != null)
-            {
-                _currentInteractable.Interact();
-            }
-        }
+        inputHandler = GetComponent<PlayerInputHandler>();
+        playerMovement = GetComponent<PlayerMovement>();
+        cameraTransform = Camera.main.transform;
     }
 
-    private void CheckForInteractable()
+    private void Update()
     {
-        // Quét tất cả các Collider trong bán kính xung quanh điểm tương tác
-        Collider[] colliders = Physics.OverlapSphere(interactionPoint.position, interactionRadius, interactableLayer);
+        CheckForNpc();
+        HandleNpcInput();
+    }
 
-        if (colliders.Length > 0)
+    private void CheckForNpc()
+    {
+        if (Cursor.lockState != CursorLockMode.Locked) return;
+
+        Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, interactDistance, npcLayer))
         {
-            // Lấy vật thể đầu tiên quét trúng có chứa Interface IInteractable
-            IInteractable interactable = colliders[0].GetComponent<IInteractable>();
+            INpcInteractable npcInteractable = hit.collider.GetComponent<INpcInteractable>();
 
-            if (interactable != null)
+            if (npcInteractable != null)
             {
-                if (_currentInteractable != interactable)
+                if (npcInteractable != currentNpcInteractable)
                 {
-                    _currentInteractable = interactable;
-                    // Log ra màn hình câu lệnh nhắc nhở
-                    Debug.Log(_currentInteractable.InteractionPrompt);
+                    if (currentNpcInteractable != null)
+                    {
+                        currentNpcInteractable.OnLoseFocus();
+                    }
+
+                    currentNpcInteractable = npcInteractable;
+                    currentNpcInteractable.OnFocus();
                 }
+
+                if (crosshairImage != null) crosshairImage.color = highlightCrosshairColor;
+                if (promptUI != null) promptUI.DisplayPrompt(true, currentNpcInteractable.GetInteractPrompt());
                 return;
             }
         }
 
-        // Nếu không có vật thể nào trong vùng quét, reset tương tác
-        _currentInteractable = null;
+        ClearCurrentNpc();
     }
 
-    // Vẽ hình cầu trong không gian Scene để bạn dễ căn chỉnh bán kính quét bằng mắt
-    private void OnDrawGizmosSelected()
+    private void ClearCurrentNpc()
     {
-        if (interactionPoint == null) return;
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(interactionPoint.position, interactionRadius);
+        if (currentNpcInteractable != null)
+        {
+            currentNpcInteractable.OnLoseFocus();
+            currentNpcInteractable = null;
+            if (crosshairImage != null) crosshairImage.color = defaultCrosshairColor;
+            if (promptUI != null) promptUI.DisplayPrompt(false, "");
+        }
     }
-    private bool DialogueCanvasIsActive()
+
+    private void HandleNpcInput()
     {
-        // Bạn có thể kéo trực tiếp DialogueCanvas vào script này hoặc check nhanh qua Instance
-        return GameObject.Find("DialogueCanvas") != null && GameObject.Find("DialogueCanvas").activeInHierarchy;
+        // Kiểm tra xem Dialogue Canvas có đang mở sẵn không (nếu có thì dùng phím E để tua chữ tiếp theo)
+        bool dialogueActive = GameObject.Find("DialogueCanvas") != null && GameObject.Find("DialogueCanvas").activeInHierarchy;
+
+        if (inputHandler.InteractTriggered)
+        {
+            if (dialogueActive)
+            {
+                DialogueManager.Instance.DisplayNextSentence();
+            }
+            else if (currentNpcInteractable != null)
+            {
+                MonoBehaviour targetNpc = currentNpcInteractable as MonoBehaviour;
+                if (targetNpc != null)
+                {
+                    playerMovement.FaceTarget(targetNpc.transform.position);
+                }
+
+                currentNpcInteractable.Interact();
+            }
+        }
+    }
+
+    public bool HasActiveNpc()
+    {
+        return currentNpcInteractable != null;
     }
 }

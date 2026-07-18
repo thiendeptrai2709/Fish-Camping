@@ -41,7 +41,6 @@ public class PlayerInteraction : MonoBehaviour
         HandleInteractInput();
     }
 
-    // Bắn tia Raycast từ giữa camera về phía trước
     private void CheckForInteractable()
     {
         if (Cursor.lockState != CursorLockMode.Locked) return;
@@ -59,9 +58,8 @@ public class PlayerInteraction : MonoBehaviour
                 if (TireRepairMinigame.ActiveTire != null)
                 {
                     InteractableTire hitTire = hit.collider.GetComponent<InteractableTire>();
-                    if (hitTire == null || hitTire.GetComponent<IInteractable>() != currentInteractable && hitTire.gameObject != TireRepairMinigame.ActiveTire.gameObject)
+                    if (hitTire == null || (hitTire.GetComponent<IInteractable>() != currentInteractable && hitTire.gameObject != TireRepairMinigame.ActiveTire.gameObject))
                     {
-                        // Từ chối tương tác với mọi vật thể ngoại đạo
                         ClearCurrentInteractable();
                         return;
                     }
@@ -86,7 +84,6 @@ public class PlayerInteraction : MonoBehaviour
         ClearCurrentInteractable();
     }
 
-    // Tách đoạn xóa trạng thái ra thành hàm nhỏ cho sạch code
     private void ClearCurrentInteractable()
     {
         if (currentInteractable != null)
@@ -96,6 +93,7 @@ public class PlayerInteraction : MonoBehaviour
         }
         SetCrosshairState(false);
     }
+
     private void SetCrosshairState(bool isTargeting, string prompt = "")
     {
         if (crosshairImage != null)
