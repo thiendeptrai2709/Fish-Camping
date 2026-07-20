@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee5761ef775b3024d89014e42013c78e, type: 3}
+  m_Name: TrunkUpgradeData
+  m_EditorClassIdentifier: Assembly-CSharp::VehicleUpgradeSO
+  partName: "C\u1ED1p Ch\u1EE9a"
+  upgradeLevels:
+  - level: 1
+    upgradeName: "C\u1ED1p xe m\u1EB7c \u0111\u1ECBnh"
+    cost: 0
+    description: "L\u01B0\u1EDBi Inventory 4x4 \xF4 vu\xF4ng"
+  - level: 2
+    upgradeName: "Gi\xE1 n\xF3c xe"
+    cost: 500
+    description: "M\u1EDF r\u1ED9ng th\xEAm 4x8 \xF4 vu\xF4ng, ch\u1EDF l\u1EC1u
+      l\u1EDBn ho\u1EB7c b\xECnh x\u0103ng ph\u1EE5"
