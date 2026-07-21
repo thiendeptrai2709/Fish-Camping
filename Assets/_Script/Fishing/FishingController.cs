@@ -9,7 +9,10 @@ public class FishingController : MonoBehaviour
     [SerializeField] private CastingMinigameUI castingUI;
     [SerializeField] private GameObject fishingLinePrefab;
     [SerializeField] private BalanceMinigameUI balanceMinigameUI;
-    [SerializeField] private GameObject caughtFishPrefab;
+
+    [Header("--- FISHING DATA & INVENTORY ---")]
+    [SerializeField] private FishSO[] availableFishes; // Danh sách các loại cá có thể câu được ở vùng này
+
 
     [SerializeField] private float minBiteWaitTime = 3f;
     [SerializeField] private float maxBiteWaitTime = 8f;
@@ -34,6 +37,7 @@ public class FishingController : MonoBehaviour
     private bool isFishBiting;
     private float reelInCooldown;
     private GameObject activeCaughtFish;
+    private FishSO currentCaughtFishData;
     [SerializeField] private Transform leftHandFishSocket;
     private CharacterHandVisual handVisual;
 
@@ -145,7 +149,23 @@ public class FishingController : MonoBehaviour
         }
         else if (currentState == FishingState.Catching)
         {
-            Debug.Log("<color=green>[Fishing Controller] Bấm Chuột Trái -> Cất cá vào Balo!</color>");
+            if (currentCaughtFishData != null && BackpackMinigameUI.Instance != null)
+            {
+                // Gọi thẳng hàm tự động tìm chỗ trống và xếp đồ trong BackpackMinigameUI
+                bool added = BackpackMinigameUI.Instance.TryAutoAddItem(currentCaughtFishData);
+                if (added)
+                {
+                    Debug.Log($"<color=green>[Fishing Controller] Đã cất [{currentCaughtFishData.itemName}] vào Balo!</color>");
+                }
+                else
+                {
+                    Debug.Log("<color=red>[Fishing Controller] Balo đầy! Không thể cất cá, đã thả đi.</color>");
+                }
+            }
+            else
+            {
+                Debug.Log("<color=yellow>[Fishing Controller] Thiếu data cá hoặc chưa có BackpackMinigameUI trong Scene -> Thả cá đi!</color>");
+            }
             ResetToIdle();
         }
     }
@@ -155,7 +175,19 @@ public class FishingController : MonoBehaviour
         isWaitingForBite = false;
         isFishBiting = true;
 
-        Debug.Log("<color=red>[Fishing Controller] CÁ CẮN CÂU! Kích hoạt Balance Minigame.</color>");
+        // Random ngẫu nhiên 1 con cá từ danh sách
+        if (availableFishes != null && availableFishes.Length > 0)
+        {
+            int randomIndex = Random.Range(0, availableFishes.Length);
+            currentCaughtFishData = availableFishes[randomIndex];
+        }
+        else
+        {
+            currentCaughtFishData = null;
+        }
+
+        string fishName = currentCaughtFishData != null ? currentCaughtFishData.itemName : "Cá bí ẩn";
+        Debug.Log($"<color=red>[Fishing Controller] {fishName.ToUpper()} CẮN CÂU! Kích hoạt Balance Minigame.</color>");
 
         if (playerAnimation != null)
         {
@@ -227,9 +259,12 @@ public class FishingController : MonoBehaviour
                 targetSocket = handVisual.GetTipSocketTransform();
             }
 
-            if (targetSocket != null && caughtFishPrefab != null)
+            GameObject prefabToSpawn = (currentCaughtFishData != null && currentCaughtFishData.caughtFishPrefab != null)
+                  ? currentCaughtFishData.caughtFishPrefab : null;
+
+            if (targetSocket != null && prefabToSpawn != null)
             {
-                activeCaughtFish = Instantiate(caughtFishPrefab, targetSocket.position, Quaternion.identity, targetSocket);
+                activeCaughtFish = Instantiate(prefabToSpawn, targetSocket.position, Quaternion.identity, targetSocket);
                 activeCaughtFish.transform.localPosition = Vector3.zero;
                 activeCaughtFish.transform.localRotation = Quaternion.identity;
             }
@@ -345,7 +380,7 @@ public class FishingController : MonoBehaviour
 
             Vector3 startPos = tipTransform.position;
 
-            Vector3 castDirection = Camera.main.transform.forward;
+            Vector3 castDirection = transform.forward;
             castDirection.y = 0f;
             castDirection.Normalize();
 
@@ -393,6 +428,7 @@ public class FishingController : MonoBehaviour
         CancelInvoke(nameof(ResetToIdle));
         isWaitingForBite = false;
         isFishBiting = false;
+        currentCaughtFishData = null; // Xóa data cá cũ
         currentState = FishingState.Idle;
         Debug.Log("<color=white>[Fishing Controller] Về trạng thái ban đầu: IDLE.</color>");
 
