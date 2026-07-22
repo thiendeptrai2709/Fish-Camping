@@ -11,7 +11,8 @@ public class FishingController : MonoBehaviour
     [SerializeField] private BalanceMinigameUI balanceMinigameUI;
 
     [Header("--- FISHING DATA & INVENTORY ---")]
-    [SerializeField] private FishSO[] availableFishes; // Danh sách các loại cá có thể câu được ở vùng này
+    [SerializeField] private LayerMask waterLayer; // Layer để nhận diện mặt nước
+    private FishingZone currentFishingZone;
 
 
     [SerializeField] private float minBiteWaitTime = 3f;
@@ -176,10 +177,9 @@ public class FishingController : MonoBehaviour
         isFishBiting = true;
 
         // Random ngẫu nhiên 1 con cá từ danh sách
-        if (availableFishes != null && availableFishes.Length > 0)
+        if (currentFishingZone != null)
         {
-            int randomIndex = Random.Range(0, availableFishes.Length);
-            currentCaughtFishData = availableFishes[randomIndex];
+            currentCaughtFishData = currentFishingZone.GetRandomFish();
         }
         else
         {
@@ -385,8 +385,33 @@ public class FishingController : MonoBehaviour
             castDirection.Normalize();
 
             Vector3 targetPos = transform.position + castDirection * currentThrowDistance;
-            targetPos.y = transform.position.y;
 
+            // --- KIỂM TRA ĐIỂM RƠI VÀ LAYER ---
+            bool isWaterHit = false;
+            Vector3 rayStart = new Vector3(targetPos.x, transform.position.y + 10f, targetPos.z);
+
+            // Quét để tìm chiều cao mặt đất/mặt nước tại điểm rơi
+            if (Physics.Raycast(rayStart, Vector3.down, out RaycastHit hit, 20f))
+            {
+                targetPos.y = hit.point.y;
+
+                // Kiểm tra xem vật thể phao sắp rơi trúng có nằm trong Water Layer không
+                if ((waterLayer.value & (1 << hit.collider.gameObject.layer)) > 0)
+                {
+                    isWaterHit = true;
+                    currentFishingZone = hit.collider.GetComponent<FishingZone>();
+                    if (currentFishingZone == null)
+                    {
+                        currentFishingZone = hit.collider.GetComponentInParent<FishingZone>();
+                    }
+                }
+            }
+            else
+            {
+                targetPos.y = transform.position.y; // Nếu ném ra khỏi map
+            }
+
+            // Vẫn cứ sinh phao và cho bay ra ngoài như bình thường
             GameObject bobberObj = Instantiate(currentBobber.bobberPrefab, startPos, Quaternion.identity);
             activeBobberEntity = bobberObj.GetComponent<BobberEntity>();
             if (activeBobberEntity == null)
@@ -403,7 +428,6 @@ public class FishingController : MonoBehaviour
                 if (activeLineVisual != null)
                 {
                     activeLineVisual.Setup(tipTransform, activeBobberEntity.transform);
-                    Debug.Log($"<color=cyan>[Fishing Line] Đã nối dây từ: {tipTransform.name} ({tipTransform.position}) tới Phao ({activeBobberEntity.transform.position})</color>");
                 }
             }
 
@@ -411,17 +435,35 @@ public class FishingController : MonoBehaviour
             float dynamicHeight = Mathf.Max(1f, currentThrowDistance * 0.2f * (currentCastZone * 0.5f));
 
             activeBobberEntity.Cast(startPos, targetPos, dynamicDuration, dynamicHeight, activeLineVisual);
-        }
-        isFishBiting = false;
-        isWaitingForBite = true;
-        reelInCooldown = 1.0f;
-        biteTimer = Random.Range(minBiteWaitTime, maxBiteWaitTime);
 
-        if (currentRod != null && currentRod.waitTimeReductionPercentage > 0f)
-        {
-            biteTimer *= (1f - Mathf.Clamp01(currentRod.waitTimeReductionPercentage / 100f));
+            // --- XỬ LÝ LOGIC SAU KHI QUĂNG DÂY ---
+            if (isWaterHit)
+            {
+                // Rơi trúng nước -> Set thời gian chờ cá cắn
+                isFishBiting = false;
+                isWaitingForBite = true;
+                reelInCooldown = 1.0f;
+                biteTimer = Random.Range(minBiteWaitTime, maxBiteWaitTime);
+
+                if (currentRod != null && currentRod.waitTimeReductionPercentage > 0f)
+                {
+                    biteTimer *= (1f - Mathf.Clamp01(currentRod.waitTimeReductionPercentage / 100f));
+                }
+                Debug.Log($"<color=cyan>[Fishing Controller] Đã thả phao xuống nước! Đợi cá cắn: {biteTimer:F1}s.</color>");
+            }
+            else
+            {
+                // Rơi trúng bờ cạn -> Vẫn bay nhưng sẽ tự thu cần khi chạm đất
+                isFishBiting = false;
+                isWaitingForBite = false;
+                reelInCooldown = dynamicDuration + 0.5f; // Khóa chuột trong lúc phao đang bay để tránh bug click sớm
+
+                Debug.Log("<color=orange>[Fishing Controller] Phao rơi trên cạn! Tự động thu hồi...</color>");
+
+                // Hẹn giờ: đợi phao bay hết thời gian dynamicDuration (+ 0.2s để người chơi kịp nhìn nó rơi đất) thì gọi hàm ResetToIdle
+                Invoke(nameof(ResetToIdle), dynamicDuration + 0.2f);
+            }
         }
-        Debug.Log($"<color=cyan>[Fishing Controller] Đã thả phao! Thời gian chờ cá cắn ngẫu nhiên: {biteTimer:F1} giây.</color>");
     }
     private void ResetToIdle()
     {
@@ -429,7 +471,9 @@ public class FishingController : MonoBehaviour
         isWaitingForBite = false;
         isFishBiting = false;
         currentCaughtFishData = null; // Xóa data cá cũ
+        currentFishingZone = null; // Xóa lưu trữ vùng nước
         currentState = FishingState.Idle;
+
         Debug.Log("<color=white>[Fishing Controller] Về trạng thái ban đầu: IDLE.</color>");
 
         if (balanceMinigameUI != null)

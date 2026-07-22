@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(Image))]
 // Thêm IPointerDownHandler vào đây để bắt được phát click đầu tiên
-public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler, IPointerDownHandler
+public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler
 {
     [SerializeField] private Image itemImage;
 
@@ -163,6 +163,12 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         canvasGroup.blocksRaycasts = false;
         canvasGroup.alpha = 0.4f;
 
+        // Ẩn bảng thông tin khi bắt đầu nhấc đồ lên kéo đi
+        if (ItemInfoPanelUI.Instance != null)
+        {
+            ItemInfoPanelUI.Instance.ClearInfo();
+        }
+
         if (isEquipped && currentSlot != null)
         {
             currentSlot.RemoveEquippedItem();
@@ -244,6 +250,29 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        // Hỗ trợ hiển thị khi click chuột trực tiếp vào vật phẩm
+        if (ItemInfoPanelUI.Instance != null && itemShape != null)
+        {
+            ItemInfoPanelUI.Instance.ShowInfo(itemShape);
+        }
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        // Khi di chuột vào item (và không trong trạng thái đang kéo đồ) -> Hiện thông tin
+        if (!isDragging && ItemInfoPanelUI.Instance != null && itemShape != null)
+        {
+            ItemInfoPanelUI.Instance.ShowInfo(itemShape);
+        }
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        // Khi rời chuột khỏi item -> Xóa sạch thông tin trên bảng
+        if (ItemInfoPanelUI.Instance != null)
+        {
+            ItemInfoPanelUI.Instance.ClearInfo();
+        }
     }
 
     public ItemShapeSO GetItemShape() => itemShape;
