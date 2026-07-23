@@ -1029,13 +1029,15 @@ GameObject:
   - component: {fileID: 4524230572266977975}
   - component: {fileID: 198670906253895986}
   - component: {fileID: 1015501703878488284}
+  - component: {fileID: 3397649858159807927}
+  - component: {fileID: 4689365296443985255}
   m_Layer: 3
   m_Name: NPC_MuaBan
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7999134902122421057
 Transform:
   m_ObjectHideFlags: 0
@@ -1044,9 +1046,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7674358910981184705}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 11.501, y: -43.94, z: 190.71}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.3, y: 1.3, z: 1.3}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2427487671976464919}
@@ -1127,6 +1129,46 @@ MonoBehaviour:
   - "Ho\u1EB7c n\u1EBFu c\xE2u \u0111\u01B0\u1EE3c con c\xE1 n\xE0o t\u01B0\u01A1i
     ngon, c\u1EE9 \u0111em h\u1EBFt l\u1EA1i \u0111\xE2y ta thu mua gi\xE1 t\u1ED1t
     cho nh\xE9!"
+--- !u!195 &3397649858159807927
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7674358910981184705}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
+--- !u!114 &4689365296443985255
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7674358910981184705}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac702e782332fc6439bdcd7dc9532490, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NPCPatrol
+  patrolPoints:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  movementSpeed: 2
+  stopDuration: 2
 --- !u!1 &8234321613670647311
 GameObject:
   m_ObjectHideFlags: 0
