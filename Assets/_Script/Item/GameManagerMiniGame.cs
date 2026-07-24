@@ -7,6 +7,78 @@ using TMPro;
 
 public class GameManagerMiniGame : MonoBehaviour
 {
+    #region PHẦN 0: QUẢN LÝ ÂM THANH (AUDIO MANAGER)
+    [Header("---- QUẢN LÝ ÂM THANH (AUDIO) ----")]
+    public AudioSource bgmAudioSource;      // AudioSource dùng để phát nhạc nền (Loop = true)
+    public AudioSource sfxAudioSource;      // AudioSource dùng để phát âm thanh hiệu ứng (SFX)
+
+    [Header("---- BẢN NHẠC NỀN (BGM) ----")]
+    public AudioClip bgmGameNemDa;          // Nhạc nền Game Ném Đá
+    public AudioClip bgmGameLatThe;         // Nhạc nền Game Lật Thẻ
+
+    [Header("---- ÂM THANH HIỆU ỨNG (SFX) ----")]
+    public AudioClip sfxLatTheDung;         // Âm thanh lật đúng (+Điểm)
+    public AudioClip sfxLatTheSai;          // Âm thanh lật sai
+    public AudioClip sfxNemDaTrung;         // Âm thanh ném đá trúng bia (+Điểm)
+
+    [Header("---- UI NÚT TẮT/BẬT NHẠC (2 GAME SEPARATE) ----")]
+    public Button btnToggleMusicLatThe;     // Nút Tắt/Bật nhạc nằm trong Panel Game Lật Thẻ
+    public Button btnToggleMusicNemDa;      // Nút Tắt/Bật nhạc nằm trong Panel Game Ném Đá
+    public Sprite iconMusicOn;              // Icon loa Bật
+    public Sprite iconMusicOff;             // Icon loa Tắt
+    private bool isMusicMuted = false;
+
+    // Chức năng bật/tắt nhạc nền khi bấm nút ở bất kỳ game nào
+    public void ToggleMusic()
+    {
+        isMusicMuted = !isMusicMuted;
+        if (bgmAudioSource != null)
+        {
+            bgmAudioSource.mute = isMusicMuted;
+        }
+
+        // Cập nhật trạng thái Icon cho CẢ 2 NÚT để giữ đồng bộ
+        CapNhatSpriteNut(btnToggleMusicLatThe);
+        CapNhatSpriteNut(btnToggleMusicNemDa);
+    }
+
+    private void CapNhatSpriteNut(Button btn)
+    {
+        if (btn != null)
+        {
+            Image btnImg = btn.GetComponent<Image>();
+            if (btnImg != null && iconMusicOn != null && iconMusicOff != null)
+            {
+                btnImg.sprite = isMusicMuted ? iconMusicOff : iconMusicOn;
+            }
+        }
+    }
+
+    private void PlayBGM(AudioClip clip)
+    {
+        if (bgmAudioSource == null || clip == null) return;
+        bgmAudioSource.clip = clip;
+        bgmAudioSource.mute = isMusicMuted; // Đảm bảo giữ đúng trạng thái Mute hiện tại
+        bgmAudioSource.Play();
+    }
+
+    private void StopBGM()
+    {
+        if (bgmAudioSource != null)
+        {
+            bgmAudioSource.Stop();
+        }
+    }
+
+    public void PlaySFX(AudioClip clip)
+    {
+        if (sfxAudioSource != null && clip != null)
+        {
+            sfxAudioSource.PlayOneShot(clip);
+        }
+    }
+    #endregion
+
     #region PHẦN 1: QUẢN LÝ MENU SẢNH
     [Header("---- QUẢN LÝ LUỒNG UI MENU ----")]
     public GameObject panelMenuMiniGame;
@@ -27,10 +99,19 @@ public class GameManagerMiniGame : MonoBehaviour
         if (panelGameOverNemDa != null) panelGameOverNemDa.SetActive(false);
         if (panelGameWinNemDa != null) panelGameWinNemDa.SetActive(false);
 
+        // Ẩn cả 2 nút âm thanh khi ở Menu chính
+        AnTatCaNutMusic();
+
+        StopBGM(); // Tắt nhạc khi vào Menu sảnh
         ChonGameOMenu(0);
     }
 
-    public void DongMenuHoanToan() => panelMenuMiniGame.SetActive(false);
+    public void DongMenuHoanToan()
+    {
+        StopBGM();
+        AnTatCaNutMusic();
+        panelMenuMiniGame.SetActive(false);
+    }
 
     public void ChonGameOMenu(int idGame)
     {
@@ -49,11 +130,23 @@ public class GameManagerMiniGame : MonoBehaviour
         if (idGameDangChon == 0) // ID 0: Game Ném Đá
         {
             if (panelGameNemDa != null) panelGameNemDa.SetActive(true);
+
+            // Hiển thị nút nhạc của Game Ném Đá
+            if (btnToggleMusicNemDa != null) btnToggleMusicNemDa.gameObject.SetActive(true);
+            if (btnToggleMusicLatThe != null) btnToggleMusicLatThe.gameObject.SetActive(false);
+
+            PlayBGM(bgmGameNemDa); // Mở nhạc nền Ném Đá
             KhoiTaoGameNemDa();
         }
         else if (idGameDangChon == 1) // ID 1: Game Lật Thẻ
         {
             if (panelMiniGame != null) panelMiniGame.SetActive(true);
+
+            // Hiển thị nút nhạc của Game Lật Thẻ
+            if (btnToggleMusicLatThe != null) btnToggleMusicLatThe.gameObject.SetActive(true);
+            if (btnToggleMusicNemDa != null) btnToggleMusicNemDa.gameObject.SetActive(false);
+
+            PlayBGM(bgmGameLatThe); // Mở nhạc nền Lật Thẻ
             KhoiTaoGameMoi();
         }
         else
@@ -72,7 +165,15 @@ public class GameManagerMiniGame : MonoBehaviour
         if (panelGameOverNemDa != null) panelGameOverNemDa.SetActive(false);
         if (panelGameWinNemDa != null) panelGameWinNemDa.SetActive(false);
 
+        AnTatCaNutMusic();
+        StopBGM(); // Tắt nhạc khi thoát khỏi game
         MoMenuMiniGame();
+    }
+
+    private void AnTatCaNutMusic()
+    {
+        if (btnToggleMusicLatThe != null) btnToggleMusicLatThe.gameObject.SetActive(false);
+        if (btnToggleMusicNemDa != null) btnToggleMusicNemDa.gameObject.SetActive(false);
     }
     #endregion
 
@@ -181,6 +282,7 @@ public class GameManagerMiniGame : MonoBehaviour
 
         if (theThuNhat.id_the == theThuHai.id_the)
         {
+            PlaySFX(sfxLatTheDung); // SFX: Lật đúng (+Điểm)
             theThuNhat.AnTheDi();
             theThuHai.AnTheDi();
             soCapDaTimThay++;
@@ -192,6 +294,7 @@ public class GameManagerMiniGame : MonoBehaviour
         }
         else
         {
+            PlaySFX(sfxLatTheSai); // SFX: Lật sai
             theThuNhat.LatUp();
             theThuHai.LatUp();
             soLanSaiHienTai++;
@@ -206,7 +309,7 @@ public class GameManagerMiniGame : MonoBehaviour
     }
     #endregion
 
-    #region PHẦN 3: LOGIC GAME NÉM ĐÁ (ĐÃ FIX LỖI ẨN BIA KHI CHƠI LẠI)
+    #region PHẦN 3: LOGIC GAME NÉM ĐÁ
     [Header("---- GIAO DIỆN & ĐỐI TƯỢNG (Ném Đá) ----")]
     public GameObject panelGameNemDa;
     public GameObject stonePrefab;
@@ -220,7 +323,7 @@ public class GameManagerMiniGame : MonoBehaviour
     [Header("---- CÀI ĐẶT GAME (Ném Đá) ----")]
     public int soDaToiDa = 10;
     public int tongSoBia = 5;
-    public GameObject[] danhSachTatCaBia; // <-- THÊM MỚI: Kéo thả 5 tấm bia gỗ vào đây trong Inspector để quản lý cố định
+    public GameObject[] danhSachTatCaBia;
 
     private int diemNemDa = 0;
     private float lucBan = 0f;
@@ -241,7 +344,6 @@ public class GameManagerMiniGame : MonoBehaviour
     }
     private List<ThongTinVienDa> danhSachVienDaDangBay = new List<ThongTinVienDa>();
 
-    // Tự động tìm bia khi bắt đầu chạy game (Phòng trường hợp bạn quên kéo thả trong Inspector)
     private void Awake()
     {
         if (danhSachTatCaBia == null || danhSachTatCaBia.Length == 0)
@@ -257,7 +359,6 @@ public class GameManagerMiniGame : MonoBehaviour
         soDaConLai = soDaToiDa;
         gameNemDaKetThuc = false;
 
-        // BẬT LẠI TOÀN BỘ BIA: Fix lỗi biến mất hoàn toàn ở vòng trước
         if (danhSachTatCaBia != null && danhSachTatCaBia.Length > 0)
         {
             foreach (GameObject bia in danhSachTatCaBia)
@@ -269,7 +370,6 @@ public class GameManagerMiniGame : MonoBehaviour
         CapNhatUIDiemNemDa();
         CapNhatUISoDaConLai();
 
-        // Hủy toàn bộ đá cũ còn sót lại trên màn hình tránh lỗi
         foreach (var da in danhSachVienDaDangBay)
         {
             if (da.objVienDa != null) Destroy(da.objVienDa);
@@ -289,7 +389,6 @@ public class GameManagerMiniGame : MonoBehaviour
 
     private void Update()
     {
-        // 1. Cập nhật vị trí và xử lý đạn bay / va chạm
         for (int i = danhSachVienDaDangBay.Count - 1; i >= 0; i--)
         {
             var da = danhSachVienDaDangBay[i];
@@ -302,7 +401,6 @@ public class GameManagerMiniGame : MonoBehaviour
             da.objVienDa.transform.position += (Vector3)(da.huongBay * da.tocDo * Time.deltaTime);
             da.thoiGianSong -= Time.deltaTime;
 
-            // Kiểm tra va chạm qua danh sách bia cố định
             bool daTrungBia = false;
             if (danhSachTatCaBia != null)
             {
@@ -313,6 +411,7 @@ public class GameManagerMiniGame : MonoBehaviour
                         float khoangCach = Vector2.Distance(da.objVienDa.transform.position, bia.transform.position);
                         if (khoangCach < 50f)
                         {
+                            PlaySFX(sfxNemDaTrung); // SFX: Ném đá trúng bia (+Điểm)
                             CongDiemNemDa(10);
                             bia.SetActive(false);
                             Destroy(da.objVienDa);
@@ -341,7 +440,6 @@ public class GameManagerMiniGame : MonoBehaviour
             }
         }
 
-        // ĐIỀU KIỆN THUA CUỘC
         if (panelGameNemDa != null && panelGameNemDa.activeSelf && !gameNemDaKetThuc)
         {
             if (soDaConLai <= 0 && danhSachVienDaDangBay.Count == 0 && soBiaDaPha < tongSoBia)
@@ -351,7 +449,6 @@ public class GameManagerMiniGame : MonoBehaviour
             }
         }
 
-        // 2. Logic điều khiển lực ném bằng chuột
         if (panelGameNemDa != null && panelGameNemDa.activeSelf && !gameNemDaKetThuc)
         {
             var mouse = Mouse.current;
