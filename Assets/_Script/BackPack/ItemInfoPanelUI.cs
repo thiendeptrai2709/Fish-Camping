@@ -24,14 +24,15 @@ public class ItemInfoPanelUI : MonoBehaviour
         ClearInfo();
     }
 
-    public void ShowInfo(ItemShapeSO itemShape)
+    public void ShowInfo(InventoryItemUI itemUI)
     {
-        if (itemShape == null)
+        if (itemUI == null || itemUI.GetItemShape() == null)
         {
             ClearInfo();
             return;
         }
 
+        ItemShapeSO itemShape = itemUI.GetItemShape();
         if (contentGroup != null) contentGroup.SetActive(true);
 
         if (itemIconImage != null)
@@ -40,14 +41,39 @@ public class ItemInfoPanelUI : MonoBehaviour
             itemIconImage.enabled = (itemShape.itemIcon != null);
         }
 
-        if (itemNameText != null)
-        {
-            itemNameText.text = itemShape.itemName;
-        }
+        if (itemNameText != null) itemNameText.text = itemShape.itemName;
 
-        if (itemStatsText != null)
+        // HIỂN THỊ DỮ LIỆU PHÂN LOẠI
+        if (itemShape is FishSO fishData)
         {
-            itemStatsText.text = itemShape.GetFormattedStats();
+            // Nếu là Cá -> Sử dụng dữ liệu động được sinh ra lúc mới câu
+            string rarityColor = fishData.rarity == FishRarity.Common ? "#FFFFFF" :
+                                 fishData.rarity == FishRarity.Uncommon ? "#00FF00" : // Xanh lá
+                                 fishData.rarity == FishRarity.Rare ? "#00BFFF" : "#FF00FF"; // Xanh dương hoặc Tím
+
+            string gradeString = "";
+            string gradeColor = "#FFFFFF";
+            switch (itemUI.GetGrade())
+            {
+                case FishGrade.Normal: gradeString = "Hạng Thường"; gradeColor = "#FFFFFF"; break;
+                case FishGrade.Bronze: gradeString = "Hạng Đồng"; gradeColor = "#CD7F32"; break;
+                case FishGrade.Silver: gradeString = "Hạng Bạc"; gradeColor = "#C0C0C0"; break;
+                case FishGrade.Gold: gradeString = "Hạng Vàng"; gradeColor = "#FFD700"; break;
+            }
+
+            if (itemStatsText != null)
+            {
+                itemStatsText.text = $"<color={rarityColor}>Độ hiếm: {fishData.rarity}</color>\n" +
+                                     $"<color={gradeColor}>Cấp độ: {gradeString}</color>\n" +
+                                     $"Dài: {itemUI.GetLength():F1}cm\n" +
+                                     $"Nặng: {itemUI.GetWeight():F1}kg\n" +
+                                     $"Giá cơ bản: {fishData.basePrice} Vàng";
+            }
+        }
+        else
+        {
+            // Nếu là Mồi/Cần câu/Phao -> Sử dụng Data tĩnh gốc
+            if (itemStatsText != null) itemStatsText.text = itemShape.GetFormattedStats();
         }
 
         if (itemDescriptionText != null)

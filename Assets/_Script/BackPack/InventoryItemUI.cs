@@ -24,7 +24,20 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     private bool isHandledBySlot = false;
     private bool isFromCooking = false;
     private EquipmentSlotUI currentSlot = null;
+    private float currentLength = 0f;
+    private float currentWeight = 0f;
+    private FishGrade currentGrade = FishGrade.Normal;
 
+    public void SetFishInstanceData(float length, float weight, FishGrade grade)
+    {
+        currentLength = length;
+        currentWeight = weight;
+        currentGrade = grade;
+    }
+
+    public float GetLength() => currentLength;
+    public float GetWeight() => currentWeight;
+    public FishGrade GetGrade() => currentGrade;
 
     public void SetEquippedState(bool equipped, EquipmentSlotUI slot = null)
     {
@@ -248,21 +261,20 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         minigameUI.OnItemEndDrag(this, eventData.position);
     }
 
-    public void OnPointerClick(PointerEventData eventData)
+   public void OnPointerClick(PointerEventData eventData)
     {
-        // Hỗ trợ hiển thị khi click chuột trực tiếp vào vật phẩm
+        // Truyền "this" (chứa toàn bộ data động) thay vì chỉ truyền itemShape (dữ liệu tĩnh)
         if (ItemInfoPanelUI.Instance != null && itemShape != null)
         {
-            ItemInfoPanelUI.Instance.ShowInfo(itemShape);
+            ItemInfoPanelUI.Instance.ShowInfo(this);
         }
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        // Khi di chuột vào item (và không trong trạng thái đang kéo đồ) -> Hiện thông tin
         if (!isDragging && ItemInfoPanelUI.Instance != null && itemShape != null)
         {
-            ItemInfoPanelUI.Instance.ShowInfo(itemShape);
+            ItemInfoPanelUI.Instance.ShowInfo(this);
         }
     }
 

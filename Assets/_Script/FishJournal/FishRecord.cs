@@ -1,9 +1,9 @@
-[System.Serializable]
+﻿[System.Serializable]
 public class FishRecord
 {
     public string fishID;
     public bool isUnlocked;
-    public int totalCaught;
+    public FishGrade highestGrade; // Lưu cấp độ cao nhất từng câu được
     public float maxLength;
     public float maxWeight;
 
@@ -11,7 +11,7 @@ public class FishRecord
     {
         fishID = id;
         isUnlocked = false;
-        totalCaught = 0;
+        highestGrade = FishGrade.Normal; // Mặc định là Normal
         maxLength = 0f;
         maxWeight = 0f;
     }

@@ -41,7 +41,8 @@ public class FishJournalManager : MonoBehaviour
         }
     }
 
-    public bool RecordCatch(string fishID, float length, float weight)
+    // Thêm FishGrade vào hàm ghi nhận
+    public bool RecordCatch(string fishID, float length, float weight, FishGrade grade)
     {
         if (!journalData.ContainsKey(fishID)) return false;
 
@@ -49,7 +50,12 @@ public class FishJournalManager : MonoBehaviour
         FishRecord record = journalData[fishID];
 
         record.isUnlocked = true;
-        record.totalCaught++;
+
+        // So sánh hạng mới với hạng kỷ lục cũ, nếu cao hơn thì ghi đè
+        if ((int)grade > (int)record.highestGrade)
+        {
+            record.highestGrade = grade;
+        }
 
         if (length > record.maxLength)
         {
@@ -108,6 +114,7 @@ public class FishJournalManager : MonoBehaviour
     {
         public List<FishRecord> records;
     }
+
     [ContextMenu("XÓA DỮ LIỆU SỔ TAY (RESET)")]
     public void DeleteSaveData()
     {
@@ -116,7 +123,6 @@ public class FishJournalManager : MonoBehaviour
             File.Delete(savePath);
             Debug.Log("<color=red>[Fish Journal] Đã xóa file save thành công! Hãy tắt Play và bật lại game.</color>");
 
-            // Làm sạch data hiện tại trên RAM
             journalData.Clear();
             InitJournal();
         }

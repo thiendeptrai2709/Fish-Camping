@@ -42,7 +42,9 @@ public class FishingController : MonoBehaviour
     [SerializeField] private Transform leftHandFishSocket;
     private CharacterHandVisual handVisual;
 
-
+    private float caughtFishLength;
+    private float caughtFishWeight;
+    private FishGrade caughtFishGrade;
     private void Awake()
     {
         playerAnimation = GetComponent<PlayerAnimation>();
@@ -152,8 +154,8 @@ public class FishingController : MonoBehaviour
         {
             if (currentCaughtFishData != null && BackpackMinigameUI.Instance != null)
             {
-                // Gọi thẳng hàm tự động tìm chỗ trống và xếp đồ trong BackpackMinigameUI
-                bool added = BackpackMinigameUI.Instance.TryAutoAddItem(currentCaughtFishData);
+                // Gọi hàm mới và truyền toàn bộ dữ liệu động vào Balo
+                bool added = BackpackMinigameUI.Instance.TryAutoAddFish(currentCaughtFishData, caughtFishLength, caughtFishWeight, caughtFishGrade);
                 if (added)
                 {
                     Debug.Log($"<color=green>[Fishing Controller] Đã cất [{currentCaughtFishData.itemName}] vào Balo!</color>");
@@ -235,19 +237,20 @@ public class FishingController : MonoBehaviour
             // --- GHI NHẬN VÀO SỔ TAY CÁ ---
             if (currentCaughtFishData != null && FishJournalManager.Instance != null)
             {
-                // Random kích thước cá dựa trên Data
-                currentCaughtFishData.GenerateRandomSize(out float length, out float weight);
+                // Random và gán thông số trực tiếp vào biến lưu tạm
+                currentCaughtFishData.GenerateRandomSize(out caughtFishLength, out caughtFishWeight);
+                caughtFishGrade = currentCaughtFishData.GenerateRandomGrade();
 
                 // Ghi vào sổ và kiểm tra kỷ lục
-                bool isNewRecord = FishJournalManager.Instance.RecordCatch(currentCaughtFishData.itemID, length, weight);
+                bool isNewRecord = FishJournalManager.Instance.RecordCatch(currentCaughtFishData.itemID, caughtFishLength, caughtFishWeight, caughtFishGrade);
 
                 if (isNewRecord)
                 {
-                    Debug.Log($"<color=yellow>[Sổ Tay] KỶ LỰC MỚI! {currentCaughtFishData.itemName} - Dài: {length:F1}cm | Nặng: {weight:F1}kg</color>");
+                    Debug.Log($"<color=yellow>[Sổ Tay] KỶ LỰC MỚI! {currentCaughtFishData.itemName} ({caughtFishGrade}) - Dài: {caughtFishLength:F1}cm | Nặng: {caughtFishWeight:F1}kg</color>");
                 }
                 else
                 {
-                    Debug.Log($"<color=white>[Sổ Tay] Đã ghi nhận {currentCaughtFishData.itemName} - Dài: {length:F1}cm | Nặng: {weight:F1}kg</color>");
+                    Debug.Log($"<color=white>[Sổ Tay] Đã câu được {currentCaughtFishData.itemName} ({caughtFishGrade}) - Dài: {caughtFishLength:F1}cm | Nặng: {caughtFishWeight:F1}kg</color>");
                 }
             }
 

@@ -676,4 +676,41 @@ public class BackpackMinigameUI : MonoBehaviour
 
         return false; // Trả về false nếu Balo đã hết sạch chỗ
     }
+    public bool TryAutoAddFish(FishSO fishShape, float length, float weight, FishGrade grade)
+    {
+        if (gridData == null) return false;
+
+        int width = gridData.GetGridWidth();
+        int height = gridData.GetGridHeight();
+
+        // Quét để nhét thẳng
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                if (gridData.CanPlaceItem(x, y, fishShape, false))
+                {
+                    InventoryItemUI spawned = SpawnItem(fishShape, x, y, false);
+                    if (spawned != null) spawned.SetFishInstanceData(length, weight, grade);
+                    return true;
+                }
+            }
+        }
+
+        // Quét để nhét xoay ngang
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                if (gridData.CanPlaceItem(x, y, fishShape, true))
+                {
+                    InventoryItemUI spawned = SpawnItem(fishShape, x, y, true);
+                    if (spawned != null) spawned.SetFishInstanceData(length, weight, grade);
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 }
