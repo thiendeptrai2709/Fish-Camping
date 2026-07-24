@@ -231,6 +231,26 @@ public class FishingController : MonoBehaviour
         if (isSuccess)
         {
             Debug.Log("<color=green>[Fishing Controller] CÂN BẰNG THÀNH CÔNG! Chuyển sang animation dâng cá.</color>");
+
+            // --- GHI NHẬN VÀO SỔ TAY CÁ ---
+            if (currentCaughtFishData != null && FishJournalManager.Instance != null)
+            {
+                // Random kích thước cá dựa trên Data
+                currentCaughtFishData.GenerateRandomSize(out float length, out float weight);
+
+                // Ghi vào sổ và kiểm tra kỷ lục
+                bool isNewRecord = FishJournalManager.Instance.RecordCatch(currentCaughtFishData.itemID, length, weight);
+
+                if (isNewRecord)
+                {
+                    Debug.Log($"<color=yellow>[Sổ Tay] KỶ LỰC MỚI! {currentCaughtFishData.itemName} - Dài: {length:F1}cm | Nặng: {weight:F1}kg</color>");
+                }
+                else
+                {
+                    Debug.Log($"<color=white>[Sổ Tay] Đã ghi nhận {currentCaughtFishData.itemName} - Dài: {length:F1}cm | Nặng: {weight:F1}kg</color>");
+                }
+            }
+
             currentState = FishingState.Catching;
             if (playerAnimation != null)
             {
