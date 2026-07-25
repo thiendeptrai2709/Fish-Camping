@@ -2,28 +2,26 @@
 
 public class KeepCabinUpright : MonoBehaviour
 {
-    [Header("Cấu hình Đung Đưa (Fake Vật Lý)")]
-    [SerializeField] private float swingAngle = 5f;    // Độ đung đưa (độ)
-    [SerializeField] private float swingSpeed = 2f;    // Tốc độ lắc
+    [Header("Cấu hình Đung Đưa")]
+    [SerializeField] private float swingAngle = 3f;    // Độ đung đưa nhẹ
+    [SerializeField] private float swingSpeed = 1.5f;  // Tốc độ đung đưa
 
     private Quaternion initialWorldRotation;
     private float randomOffset;
 
     void Start()
     {
-        // 1. Lưu lại chính xác góc quay ban đầu trong World Space của từng buồng 
+        // Lưu lại chính xác hướng đứng ban đầu của buồng
         initialWorldRotation = transform.rotation;
-
-        // 2. Tạo độ trễ ngẫu nhiên cho hiệu ứng đung đưa
         randomOffset = Random.Range(0f, 100f);
     }
 
     void LateUpdate()
     {
-        // 3. Tính độ lắc đung đưa nhẹ
+        // Tính nhịp đung đưa tự nhiên
         float swing = Mathf.Sin((Time.time + randomOffset) * swingSpeed) * swingAngle;
 
-        // 4. Giữ nguyên góc World chuẩn ban đầu + cộng thêm độ lắc swing
+        // Giữ nguyên tư thế thẳng đứng ban đầu + lắc nhẹ
         transform.rotation = initialWorldRotation * Quaternion.Euler(0f, 0f, swing);
     }
 }
