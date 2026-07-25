@@ -10,11 +10,11 @@ public class CardScript : MonoBehaviour
 
     private Sprite matTruoc;
     private Sprite matSau;
-    private GameManager gameManager;
+    private GameManagerMiniGame gameManager;
     private bool dangNgua = false;
 
     // Hàm này GameManager sẽ gọi khi sinh thẻ ra
-    public void CaiDatThe(int id, Sprite truoc, Sprite sau, GameManager gm)
+    public void CaiDatThe(int id, Sprite truoc, Sprite sau, GameManagerMiniGame gm)
     {
         id_the = id;
         matTruoc = truoc;
