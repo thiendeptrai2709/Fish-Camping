@@ -35,4 +35,12 @@ public class FishingRodSO : ItemShapeSO
     {
         return fishingPower + playerBonusPower;
     }
+    public override string GetFormattedStats()
+    {
+        return $"• Cấp độ: Tier {rodTier}\n" +
+               $"• Lực kéo cá: {fishingPower}\n" +
+               $"• Tầm ném tối đa: {castDistance}m\n" +
+               $"• Giảm thời gian chờ: {waitTimeReductionPercentage}%\n" +
+               $"• Độ bền: {maxDurability}";
+    }
 }
