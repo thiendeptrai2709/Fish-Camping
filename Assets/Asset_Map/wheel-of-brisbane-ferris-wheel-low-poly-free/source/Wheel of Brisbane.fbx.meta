@@ -1,0 +1,394 @@
+fileFormatVersion: 2
+guid: 57d39a42cc17910449cb3af8ee2c8988
+ModelImporter:
+  serializedVersion: 24200
+  internalIDToNameTable: []
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: wheel_of_brisbane
+    second: {fileID: 2100000, guid: 354cc83c9ee52994cbdccc6c4b78b962, type: 2}
+  materials:
+    materialImportMode: 2
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 3
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Scene
+      takeName: Scene
+      internalID: -623603649343465320
+      firstFrame: 1
+      lastFrame: 1500
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0.96
+    isReadable: 0
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importPhysicalCameras: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    nodeNameCollisionStrategy: 1
+    fileIdsGeneration: 2
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    keepQuads: 0
+    weldVertices: 1
+    bakeAxisConversion: 0
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    generateMeshLods: 0
+    meshLodGenerationFlags: 0
+    maximumMeshLod: -1
+    meshOptimizationFlags: -1
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 1
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    strictVertexDataChecks: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
+  importAnimation: 1
+  humanDescription:
+    serializedVersion: 3
+    human: []
+    skeleton:
+    - name: Wheel of Brisbane(Clone)
+      parentName: 
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: 7logo
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: -0.7071069, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 1, y: 1, z: 1}
+    - name: 7logo.001
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: -0.00000009415696, y: 0.7071069, z: 0.7071067, w: 0.00000009415697}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Circle
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: -0.00000028247086, y: 0.7071069, z: 0.7071067, w: 0.00000028247092}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Circle.003
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: 0.000011468777, y: 33.331985, z: 2.1271873e-13}
+      rotation: {x: -0.0014814882, y: 0.70710516, z: 0.7071053, w: -0.001480876}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Pipe
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: 0.0000072600715, y: 33.331993, z: 1.8340884e-13}
+      rotation: {x: -0.00000009670149, y: -0.0000000064175754, z: 0.09222606, w: 0.9957381}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Pipe.007
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: 0.0000072385124, y: 33.331993, z: 1.8296475e-13}
+      rotation: {x: -0.00000015662765, y: -0.0000000046851665, z: 0.048704736, w: 0.9988132}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Pla_k52m5y_
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: -23.193964, y: 18.848501, z: 0.00016882704}
+      rotation: {x: -0.7071069, y: -0.0000000030383633, z: -0.0000000030383633, w: 0.7071067}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Pla_k52m5y_.001
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: -20.776257, y: 15.553393, z: 0.00016884496}
+      rotation: {x: -0.7071069, y: -0.0000000032487861, z: -0.0000000029195142, w: 0.7071067}
+      scale: {x: 0.9999999, y: 1, z: 0.9999999}
+    - name: Pla_k52m5y_.002
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: -17.89444, y: 12.655423, z: 0.00016886723}
+      rotation: {x: -0.7071069, y: -0.000000003131639, z: -0.0000000031316392, w: 0.7071067}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Pla_k52m5y_.003
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: -14.612891, y: 10.219339, z: 0.00016889331}
+      rotation: {x: -0.7071069, y: -0.000000003183262, z: -0.000000003183262, w: 0.7071067}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Pla_k52m5y_.004
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: -11.004915, y: 8.299553, z: 0.00016868423}
+      rotation: {x: -0.7071069, y: -0.0000000032423273, z: -0.000000003242328, w: 0.7071067}
+      scale: {x: 1.0000001, y: 1, z: 1.0000001}
+    - name: Pla_k52m5y_.005
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: -7.1511087, y: 6.938947, z: 0.00016871616}
+      rotation: {x: -0.7071069, y: -0.000000003314002, z: -0.0000000033140022, w: 0.7071067}
+      scale: {x: 1.0000001, y: 1, z: 1.0000001}
+    - name: Pla_k52m5y_.006
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: -3.137557, y: 6.1679206, z: 0.00016874999}
+      rotation: {x: -0.7071069, y: -0.0000000034074523, z: -0.0000000034074523, w: 0.7071067}
+      scale: {x: 1.0000001, y: 1, z: 1.0000001}
+    - name: Pla_k52m5y_.007
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: 0.9460836, y: 6.003693, z: 0.00016878491}
+      rotation: {x: -0.7071069, y: -0.0000000035413972, z: -0.0000000035413974, w: 0.7071067}
+      scale: {x: 1.0000001, y: 1, z: 1.0000001}
+    - name: Pla_k52m5y_.008
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: 5.0085883, y: 6.44994, z: 0.0001688202}
+      rotation: {x: -0.7071069, y: -0.0000000037619485, z: -0.0000000037619485, w: 0.7071067}
+      scale: {x: 1.0000001, y: 1, z: 1.0000001}
+    - name: Pla_k52m5y_.009
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: 8.959208, y: 7.496679, z: 0.00016885504}
+      rotation: {x: -0.7071069, y: -0.000000004388168, z: -0.0000000040588963, w: 0.7071067}
+      scale: {x: 0.9999999, y: 1, z: 0.9999999}
+    - name: Pla_k52m5y_.010
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: 12.709692, y: 9.120541, z: 0.00016888866}
+      rotation: {x: -0.7071069, y: -0.0000000059681784, z: -0.000000005968179, w: 0.7071067}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Pla_k52m5y_.011
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: 16.176268, y: 11.285245, z: 0.00016868189}
+      rotation: {x: -0.7071069, y: 0.0000000036327186, z: 0.0000000036327175, w: 0.7071067}
+      scale: {x: 1.0000001, y: 1, z: 1.0000001}
+    - name: Pla_k52m5y_.012
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: 19.281487, y: 13.94244, z: 0.00016871085}
+      rotation: {x: -0.7071069, y: -0.0000000016700656, z: -0.0000000013407935, w: 0.7071067}
+      scale: {x: 0.9999999, y: 1, z: 0.9999999}
+    - name: Pla_k52m5y_.013
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: 21.955996, y: 17.032764, z: 0.00016873649}
+      rotation: {x: -0.7071069, y: -0.0000000021984423, z: -0.0000000021984423, w: 0.7071067}
+      scale: {x: 1.0000001, y: 1, z: 1.0000001}
+    - name: Pla_k52m5y_.014
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: 24.140034, y: 20.487186, z: 0.00016875821}
+      rotation: {x: -0.7071069, y: -0.0000000024817308, z: -0.0000000024817308, w: 0.7071067}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Pla_k52m5y_.015
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: 25.784828, y: 24.228542, z: 0.00016877557}
+      rotation: {x: -0.7071069, y: -0.0000000026412157, z: -0.0000000026412155, w: 0.7071067}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Pla_k52m5y_.016
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: 26.853634, y: 28.173254, z: 0.00016878814}
+      rotation: {x: -0.7071069, y: -0.000000002912008, z: -0.0000000025827358, w: 0.7071067}
+      scale: {x: 0.9999999, y: 1, z: 0.9999999}
+    - name: Pla_k52m5y_.017
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: 27.322567, y: 32.233196, z: 0.0001687957}
+      rotation: {x: -0.7071069, y: -0.000000002990748, z: -0.000000002661476, w: 0.7071067}
+      scale: {x: 0.9999999, y: 1, z: 0.9999999}
+    - name: Pla_k52m5y_.018
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: 27.181171, y: 36.317688, z: 0.00016879798}
+      rotation: {x: -0.7071069, y: -0.0000000028893308, z: -0.0000000028893306, w: 0.7071067}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Pla_k52m5y_.019
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: 26.432583, y: 40.335487, z: 0.00016879503}
+      rotation: {x: -0.7071069, y: -0.000000002943392, z: -0.0000000029433922, w: 0.7071067}
+      scale: {x: 1.0000001, y: 1, z: 1.0000001}
+    - name: Pla_k52m5y_.020
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: 25.093536, y: 44.19683, z: 0.00016878686}
+      rotation: {x: -0.7071069, y: -0.0000000031568068, z: -0.0000000028275349, w: 0.7071067}
+      scale: {x: 0.9999999, y: 1, z: 0.9999999}
+    - name: Pla_k52m5y_.021
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: 23.19394, y: 47.815487, z: 0.00016877367}
+      rotation: {x: -0.7071069, y: -0.0000000030383633, z: -0.0000000030383633, w: 0.7071067}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Pla_k52m5y_.022
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: 20.77623, y: 51.110584, z: 0.00016875574}
+      rotation: {x: -0.7071069, y: -0.0000000032487864, z: -0.0000000029195146, w: 0.7071067}
+      scale: {x: 0.9999999, y: 1, z: 0.9999999}
+    - name: Pla_k52m5y_.023
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: 17.894417, y: 54.00856, z: 0.00016873346}
+      rotation: {x: -0.7071069, y: -0.0000000031316387, z: -0.0000000031316387, w: 0.7071067}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Pla_k52m5y_.024
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: 14.6128645, y: 56.44465, z: 0.00016870738}
+      rotation: {x: -0.7071069, y: -0.000000003183262, z: -0.000000003183262, w: 0.7071067}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Pla_k52m5y_.025
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: 11.004892, y: 58.364437, z: 0.00016891646}
+      rotation: {x: -0.7071069, y: -0.0000000032423273, z: -0.0000000032423273, w: 0.7071067}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Pla_k52m5y_.026
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: 7.15108, y: 59.725044, z: 0.00016888454}
+      rotation: {x: -0.7071069, y: -0.0000000033140017, z: -0.0000000033140017, w: 0.7071067}
+      scale: {x: 1.0000001, y: 1, z: 1.0000001}
+    - name: Pla_k52m5y_.027
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: 3.1375241, y: 60.496063, z: 0.00016885072}
+      rotation: {x: -0.7071069, y: -0.000000003407452, z: -0.000000003407452, w: 0.7071067}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Pla_k52m5y_.028
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: -0.94611233, y: 60.660286, z: 0.0001688158}
+      rotation: {x: -0.7071069, y: -0.0000000035413976, z: -0.0000000035413976, w: 0.7071067}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Pla_k52m5y_.029
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: -5.008614, y: 60.214058, z: 0.00016878049}
+      rotation: {x: -0.7071069, y: -0.0000000037619485, z: -0.0000000037619485, w: 0.7071067}
+      scale: {x: 1.0000001, y: 1, z: 1.0000001}
+    - name: Pla_k52m5y_.030
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: -8.959231, y: 59.167313, z: 0.00016874567}
+      rotation: {x: -0.7071069, y: -0.000000004388168, z: -0.0000000040588977, w: 0.7071067}
+      scale: {x: 0.9999999, y: 1, z: 0.9999999}
+    - name: Pla_k52m5y_.031
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: -12.709714, y: 57.543446, z: 0.00016871204}
+      rotation: {x: -0.7071069, y: -0.000000005968172, z: -0.000000005968172, w: 0.7071067}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Pla_k52m5y_.032
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: -16.176296, y: 55.37874, z: 0.00016891882}
+      rotation: {x: -0.7071069, y: 0.0000000034680525, z: 0.0000000037973256, w: 0.7071067}
+      scale: {x: 0.9999999, y: 1, z: 0.9999999}
+    - name: Pla_k52m5y_.033
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: -19.281515, y: 52.721546, z: 0.00016888985}
+      rotation: {x: -0.7071069, y: -0.0000000015054301, z: -0.0000000015054304, w: 0.7071067}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Pla_k52m5y_.034
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: -21.95602, y: 49.631226, z: 0.00016886422}
+      rotation: {x: -0.7071069, y: -0.0000000021984425, z: -0.000000002198443, w: 0.7071067}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Pla_k52m5y_.035
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: -24.14006, y: 46.1768, z: 0.00016884248}
+      rotation: {x: -0.7071069, y: -0.0000000024817302, z: -0.0000000024817306, w: 0.7071067}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Pla_k52m5y_.036
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: -25.78486, y: 42.43545, z: 0.00016882512}
+      rotation: {x: -0.7071069, y: -0.000000002641216, z: -0.0000000026412161, w: 0.7071067}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Pla_k52m5y_.037
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: -26.853664, y: 38.49073, z: 0.00016881255}
+      rotation: {x: -0.7071069, y: -0.0000000027473712, z: -0.000000002747371, w: 0.7071067}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Pla_k52m5y_.038
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: -27.3226, y: 34.430782, z: 0.00016880501}
+      rotation: {x: -0.7071069, y: -0.0000000028261127, z: -0.000000002826113, w: 0.7071067}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Pla_k52m5y_.039
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: -27.181192, y: 30.3463, z: 0.00016880271}
+      rotation: {x: -0.7071069, y: -0.0000000030539675, z: -0.0000000027246951, w: 0.7071067}
+      scale: {x: 0.9999999, y: 1, z: 0.9999999}
+    - name: Pla_k52m5y_.040
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: -26.432611, y: 26.328503, z: 0.00016880568}
+      rotation: {x: -0.7071069, y: -0.000000002943392, z: -0.0000000029433922, w: 0.7071067}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Pla_k52m5y_.041
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: -25.093563, y: 22.467155, z: 0.00016881383}
+      rotation: {x: -0.7071069, y: -0.0000000029921718, z: -0.0000000029921718, w: 0.7071067}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Support
+      parentName: Wheel of Brisbane(Clone)
+      position: {x: 0.00000006787541, y: 0.0000030459864, z: 0}
+      rotation: {x: -0.7071069, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 1, y: 1, z: 1}
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    globalScale: 1
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 1
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
+  animationType: 2
+  humanoidOversampling: 1
+  avatarSetup: 1
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 1
+  importBlendShapeDeformPercent: 1
+  remapMaterialsIfMaterialImportModeIsNone: 0
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
