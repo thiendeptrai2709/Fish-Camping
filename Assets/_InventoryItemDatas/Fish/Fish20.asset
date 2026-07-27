@@ -10,18 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cb1fcb52c1731174380101c455e3b15e, type: 3}
-  m_Name: Fish1
+  m_Name: Fish20
   m_EditorClassIdentifier: Assembly-CSharp::FishSO
-  itemID: fish1
-  itemName: 'Fish 1 '
-  itemIcon: {fileID: 21300000, guid: 4fbc901dcbf008847a3bcd37713dc066, type: 3}
+  itemID: fish20
+  itemName: Fish 20
+  itemIcon: {fileID: 21300000, guid: 624b333d2e761ee45a3088bcc7b815e5, type: 3}
   itemDescription: 
-  equippedModelPrefab: {fileID: 585159940412984651, guid: 31a11d7402b580c4ba93bf51319dbca7, type: 3}
+  equippedModelPrefab: {fileID: 3451173662540354820, guid: ec114fe04e673014886549566150ceea, type: 3}
   width: 2
   height: 2
   shapeCells: 
   rarity: 0
-  caughtFishPrefab: {fileID: 585159940412984651, guid: 31a11d7402b580c4ba93bf51319dbca7, type: 3}
+  caughtFishPrefab: {fileID: 3451173662540354820, guid: ec114fe04e673014886549566150ceea, type: 3}
   difficulty: 1
   basePrice: 50
   minLength: 10
