@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &969412749361613101
+--- !u!1 &1117766066475923497
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,9 +8,89 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 7126717822930960270}
-  - component: {fileID: 8591061664047156411}
-  - component: {fileID: 3656164758879487340}
+  - component: {fileID: 6316238159748203361}
+  - component: {fileID: 2578819013751960410}
+  m_Layer: 0
+  m_Name: Effects
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6316238159748203361
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1117766066475923497}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2179564738234401194}
+  m_Father: {fileID: 2735178420651859663}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2578819013751960410
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1117766066475923497}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 813522d235d718449a355f1cf626ad63, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BobberEffectController
+  waterSplashParticle: {fileID: 5693108345267400771}
+  alertIcon: {fileID: 0}
+  alertDuration: 1.5
+--- !u!1 &3693312397776357791
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1992153767891639524}
+  m_Layer: 0
+  m_Name: Bobber8
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1992153767891639524
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3693312397776357791}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 472.2511, y: 0, z: 582.0028}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2735178420651859663}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4553823402769180365
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2179564738234401194}
+  - component: {fileID: 5693108345267400771}
+  - component: {fileID: 1141249391999023239}
   m_Layer: 0
   m_Name: WaterSplashParticle
   m_TagString: Untagged
@@ -18,28 +98,28 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &7126717822930960270
+--- !u!4 &2179564738234401194
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 969412749361613101}
+  m_GameObject: {fileID: 4553823402769180365}
   serializedVersion: 2
   m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2018046044728587170}
+  m_Father: {fileID: 6316238159748203361}
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
---- !u!198 &8591061664047156411
+--- !u!198 &5693108345267400771
 ParticleSystem:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 969412749361613101}
+  m_GameObject: {fileID: 4553823402769180365}
   serializedVersion: 8
   lengthInSec: 1
   simulationSpeed: 1
@@ -4814,14 +4894,14 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
---- !u!199 &3656164758879487340
+--- !u!199 &1141249391999023239
 ParticleSystemRenderer:
   serializedVersion: 6
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 969412749361613101}
+  m_GameObject: {fileID: 4553823402769180365}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -4894,148 +4974,68 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
---- !u!1 &2560556136780092609
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4454407862984677348}
-  m_Layer: 0
-  m_Name: Bobber1
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &4454407862984677348
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2560556136780092609}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 472.2511, y: 0, z: 582.0028}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 828968642026654782}
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &4637085334298107822
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2018046044728587170}
-  - component: {fileID: 1567879119712336569}
-  m_Layer: 0
-  m_Name: Effects
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2018046044728587170
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4637085334298107822}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 7126717822930960270}
-  m_Father: {fileID: 828968642026654782}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1567879119712336569
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4637085334298107822}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 813522d235d718449a355f1cf626ad63, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BobberEffectController
-  waterSplashParticle: {fileID: 8591061664047156411}
-  alertIcon: {fileID: 0}
-  alertDuration: 1.5
---- !u!1001 &2808771463639316147
+--- !u!1001 &4766301387467789940
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 4454407862984677348}
+    m_TransformParent: {fileID: 1992153767891639524}
     m_Modifications:
-    - target: {fileID: 2751704840456773687, guid: bf3cffbc3b688e846949a7e4cdf9b84e, type: 3}
-      propertyPath: m_Name
-      value: FP_FishingFloat_Type1_Color1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3277446618543454861, guid: bf3cffbc3b688e846949a7e4cdf9b84e, type: 3}
+    - target: {fileID: 7480482914518206651, guid: c64b6e73f68968944877e4d607534b60, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3277446618543454861, guid: bf3cffbc3b688e846949a7e4cdf9b84e, type: 3}
+    - target: {fileID: 7480482914518206651, guid: c64b6e73f68968944877e4d607534b60, type: 3}
       propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3277446618543454861, guid: bf3cffbc3b688e846949a7e4cdf9b84e, type: 3}
+    - target: {fileID: 7480482914518206651, guid: c64b6e73f68968944877e4d607534b60, type: 3}
       propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3277446618543454861, guid: bf3cffbc3b688e846949a7e4cdf9b84e, type: 3}
+    - target: {fileID: 7480482914518206651, guid: c64b6e73f68968944877e4d607534b60, type: 3}
       propertyPath: m_LocalRotation.w
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 3277446618543454861, guid: bf3cffbc3b688e846949a7e4cdf9b84e, type: 3}
+    - target: {fileID: 7480482914518206651, guid: c64b6e73f68968944877e4d607534b60, type: 3}
       propertyPath: m_LocalRotation.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3277446618543454861, guid: bf3cffbc3b688e846949a7e4cdf9b84e, type: 3}
+    - target: {fileID: 7480482914518206651, guid: c64b6e73f68968944877e4d607534b60, type: 3}
       propertyPath: m_LocalRotation.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3277446618543454861, guid: bf3cffbc3b688e846949a7e4cdf9b84e, type: 3}
+    - target: {fileID: 7480482914518206651, guid: c64b6e73f68968944877e4d607534b60, type: 3}
       propertyPath: m_LocalRotation.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3277446618543454861, guid: bf3cffbc3b688e846949a7e4cdf9b84e, type: 3}
+    - target: {fileID: 7480482914518206651, guid: c64b6e73f68968944877e4d607534b60, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3277446618543454861, guid: bf3cffbc3b688e846949a7e4cdf9b84e, type: 3}
+    - target: {fileID: 7480482914518206651, guid: c64b6e73f68968944877e4d607534b60, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3277446618543454861, guid: bf3cffbc3b688e846949a7e4cdf9b84e, type: 3}
+    - target: {fileID: 7480482914518206651, guid: c64b6e73f68968944877e4d607534b60, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7826081046340620801, guid: c64b6e73f68968944877e4d607534b60, type: 3}
+      propertyPath: m_Name
+      value: FP_FishingFloat_Type8_Color1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 3277446618543454861, guid: bf3cffbc3b688e846949a7e4cdf9b84e, type: 3}
+    - targetCorrespondingSourceObject: {fileID: 7480482914518206651, guid: c64b6e73f68968944877e4d607534b60, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 2018046044728587170}
+      addedObject: {fileID: 6316238159748203361}
     m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: bf3cffbc3b688e846949a7e4cdf9b84e, type: 3}
---- !u!4 &828968642026654782 stripped
+  m_SourcePrefab: {fileID: 100100000, guid: c64b6e73f68968944877e4d607534b60, type: 3}
+--- !u!4 &2735178420651859663 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 3277446618543454861, guid: bf3cffbc3b688e846949a7e4cdf9b84e, type: 3}
-  m_PrefabInstance: {fileID: 2808771463639316147}
+  m_CorrespondingSourceObject: {fileID: 7480482914518206651, guid: c64b6e73f68968944877e4d607534b60, type: 3}
+  m_PrefabInstance: {fileID: 4766301387467789940}
   m_PrefabAsset: {fileID: 0}

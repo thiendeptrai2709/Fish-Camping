@@ -10,11 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c90e64aca90aab04599b665247943d37, type: 3}
-  m_Name: Bait_Shrimp
+  m_Name: Bait3
   m_EditorClassIdentifier: Assembly-CSharp::BaitSO
-  itemID: bait1
-  itemName: Bait_Shrimp
-  itemIcon: {fileID: 21300000, guid: fc8323b4aef37314da8e13bf9467633d, type: 3}
+  itemID: bait3
+  itemName: Bait3
+  itemIcon: {fileID: 21300000, guid: 22d6d3b9d79abbb4384f4a17741ffaca, type: 3}
+  itemDescription: 
+  equippedModelPrefab: {fileID: 0}
   width: 1
   height: 1
   shapeCells: 
