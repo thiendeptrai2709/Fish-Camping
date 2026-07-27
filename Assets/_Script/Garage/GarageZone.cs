@@ -1,36 +1,42 @@
 ﻿using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using System.Collections;
 
 public class GarageZone : MonoBehaviour
 {
     [Header("=== GIAO DIỆN CHUNG ===")]
-    public GameObject pressBPrompt;      // UI thông báo "Bấm B để vào Gara"
-    public GameObject garageUIPanel;     // Bảng UI Gara
-    public TMP_Text playerMoneyText;     // Text hiển thị tiền người chơi
-    public int playerMoney = 5000;       // Tiền hiện có (Demo)
+    public GameObject pressBPrompt;
+    public GameObject garageUIPanel;
+    public TMP_Text playerMoneyText;
+    public int playerMoney = 5000;
 
-    [Header("=== HỆ THỐNG THAY LỐP XE ===")]
-    public Transform wheelFL;            // Vị trí Trước-Trái (Tire_FL_Root)
-    public Transform wheelFR;            // Vị trí Trước-Phải (Tire_FR_Root)
-    public Transform wheelRL;            // Vị trí Sau-Trái (Tire_BL_Root)
-    public Transform wheelRR;            // Vị trí Sau-Phải (Tire_BR_Root)
-    public GameObject[] wheelPrefabs;    // Danh sách Prefab Lốp (wheel_01 -> wheel_12)
-    public int wheelChangeCost = 500;    // Giá mỗi lần thay lốp
+    // Biến dùng cho hiệu ứng nhảy số tiền
+    private float displayedMoney;
+    private Coroutine moneyAnimCoroutine;
+
+    [Header("=== HỆ THỐNG THAY LỐP XE (3D Model) ===")]
+    public Transform wheelFL;
+    public Transform wheelFR;
+    public Transform wheelRL;
+    public Transform wheelRR;
+    public GameObject[] wheelPrefabs;
+
+    [Header("=== HỆ THỐNG UI TỰ ĐỘNG (LỐP XE) ===")]
+    public TireData[] allTires;
+    public GameObject tireUIPrefab;
+    public Transform tireContentParent;
 
     [Header("=== HỆ THỐNG NÂNG CẤP CỐP XE ===")]
-    public int currentTrunkLevel = 1;
-    public int maxTrunkLevel = 5;
-    // Sức chứa tương ứng từ Level 1 đến Level 5
-    public int[] trunkCapacities = new int[5] { 10, 20, 35, 50, 70 };
-    // Giá tiền nâng cấp cho từng Level (Lvl 1->2, 2->3, 3->4, 4->5)
-    public int[] trunkUpgradeCosts = new int[4] { 200, 500, 1000, 2000 };
+    public int currentTrunkLevel = 0;
+    public int[] trunkCapacities = new int[3] { 10, 20, 35 };
+    public int[] trunkUpgradeCosts = new int[3] { 200, 500, 1000 };
 
-    [Header("=== UI CỐP XE ===")]
-    public TMP_Text trunkLevelText;            // Hiển thị: "Cốp Level: 1/5"
-    public TMP_Text trunkCapacityText;         // Hiển thị: "Sức chứa: 10 ô"
-    public TMP_Text trunkCostText;             // Hiển thị: "Giá: $200"
-    public Button upgradeTrunkBtn;             // Nút nâng cấp trên UI
+    [Header("=== UI CỐP XE (3 NÚT) ===")]
+    public Button[] trunkButtons = new Button[3];
+
+    [Header("=== THÔNG BÁO (NOTIFICATION) ===")]
+    public TMP_Text notificationText;
 
     private bool isInsideGara = false;
     private bool isUIOpen = false;
@@ -39,10 +45,15 @@ public class GarageZone : MonoBehaviour
     {
         if (pressBPrompt != null) pressBPrompt.SetActive(false);
         if (garageUIPanel != null) garageUIPanel.SetActive(false);
+        if (notificationText != null) notificationText.gameObject.SetActive(false);
 
-        // Load lại Level cốp xe đã lưu (mặc định là 1 nếu chưa mua gì)
-        currentTrunkLevel = PlayerPrefs.GetInt("SavedTrunkLevel", 1);
+        currentTrunkLevel = PlayerPrefs.GetInt("SavedTrunkLevel", 0);
 
+        // Đặt số tiền hiển thị ban đầu bằng với tiền thực tế
+        displayedMoney = playerMoney;
+        SetMoneyText(displayedMoney);
+
+        LoadTireUI();
         UpdateAllUI();
     }
 
@@ -54,7 +65,21 @@ public class GarageZone : MonoBehaviour
         }
     }
 
-    // --- XỬ LÝ VÙNG CẢM ỨNG (TRIGGER) ---
+    void LoadTireUI()
+    {
+        foreach (Transform child in tireContentParent)
+        {
+            Destroy(child.gameObject);
+        }
+
+        for (int i = 0; i < allTires.Length; i++)
+        {
+            GameObject newObj = Instantiate(tireUIPrefab, tireContentParent);
+            TireUIItem uiItem = newObj.GetComponent<TireUIItem>();
+            if (uiItem != null) uiItem.SetupUI(allTires[i], i, this);
+        }
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player") || other.name.Contains("Car") || other.GetComponentInParent<Rigidbody>() != null)
@@ -74,7 +99,6 @@ public class GarageZone : MonoBehaviour
         }
     }
 
-    // --- BẬT / TẮT GIAO DIỆN ---
     void ToggleGarageUI()
     {
         isUIOpen = !isUIOpen;
@@ -90,102 +114,180 @@ public class GarageZone : MonoBehaviour
         if (pressBPrompt != null && isInsideGara) pressBPrompt.SetActive(true);
     }
 
-    // --- CHỨC NĂNG 1: THAY LỐP XE ---
-    public void ChangeWheel(int wheelIndex)
+    [Header("=== CĂN CHỈNH BÁNH XE (CHỐNG LỖI 3D) ===")]
+    public Vector3 wheelRotationOffset = new Vector3(0, 0, 90); // Trục bẻ lái (Thử 90 hoặc -90 vào X, Y hoặc Z)
+    public float wheelScaleMultiplier = 2f; // Độ phóng to bánh xe (Thử 2, 5, 10...)
+
+    public void ChangeWheel(int wheelIndex, int tirePrice)
     {
         if (wheelIndex < 0 || wheelIndex >= wheelPrefabs.Length) return;
-
-        if (playerMoney < wheelChangeCost)
+        if (playerMoney < tirePrice)
         {
-            Debug.Log("Không đủ tiền thay lốp!");
+            ShowNotify("Không đủ tiền mua lốp!");
             return;
         }
 
-        playerMoney -= wheelChangeCost;
+        playerMoney -= tirePrice;
         UpdateAllUI();
 
         Transform[] roots = new Transform[] { wheelFL, wheelFR, wheelRL, wheelRR };
 
-        foreach (Transform root in roots)
+        // Đã thay đổi thành vòng lặp FOR để phân biệt bánh Trái - Phải
+        for (int i = 0; i < roots.Length; i++)
         {
+            Transform root = roots[i];
             if (root == null) continue;
+            foreach (Transform child in root) Destroy(child.gameObject);
 
-            // Xóa toàn bộ lốp cũ đang nằm trong Root này
-            foreach (Transform child in root)
+            // Sinh bánh xe mới
+            GameObject newWheel = Instantiate(wheelPrefabs[wheelIndex], root);
+            newWheel.transform.localPosition = Vector3.zero;
+
+            // Xử lý góc xoay và lật bánh xe bên phải
+            Vector3 finalRotation = wheelRotationOffset;
+
+            // KIỂM TRA BÁNH BÊN PHẢI (Vị trí số 1 là FR, số 3 là RR)
+            if (i == 1 || i == 3)
             {
-                Destroy(child.gameObject);
+                // Xoay thêm 180 độ để lật mặt bánh ra ngoài
+                finalRotation.y += 180f;
             }
 
-            // Spawn lốp mới vào đúng Root
-            GameObject newWheel = Instantiate(wheelPrefabs[wheelIndex], root);
-
-            // Đặt lại tọa độ cho chuẩn tâm bánh xe
-            newWheel.transform.localPosition = Vector3.zero;
-            newWheel.transform.localRotation = Quaternion.identity;
-            newWheel.transform.localScale = Vector3.one;
+            newWheel.transform.localEulerAngles = finalRotation;
+            newWheel.transform.localScale = wheelPrefabs[wheelIndex].transform.localScale * wheelScaleMultiplier;
         }
 
-        Debug.Log("Đã thay lốp thành công!");
+        ShowNotify($"Đã trang bị lốp mới!");
     }
 
-    // --- CHỨC NĂNG 2: NÂNG CẤP CỐP XE ---
-    public void UpgradeTrunk()
+    public void BuyTrunkLevel(int targetLevel)
     {
-        if (currentTrunkLevel >= maxTrunkLevel)
+        if (targetLevel > currentTrunkLevel + 1)
         {
-            Debug.Log("Cốp xe đã đạt cấp tối đa (Level 5)!");
+            ShowNotify("Hãy nâng cấp Level trước đó!");
             return;
         }
 
-        int cost = trunkUpgradeCosts[currentTrunkLevel - 1];
-
+        int cost = trunkUpgradeCosts[targetLevel - 1];
         if (playerMoney >= cost)
         {
             playerMoney -= cost;
-            currentTrunkLevel++;
+            currentTrunkLevel = targetLevel;
 
-            // Lưu lại Level mới vào máy tính
             PlayerPrefs.SetInt("SavedTrunkLevel", currentTrunkLevel);
             PlayerPrefs.Save();
 
-            // Lấy sức chứa mới
-            int newCapacity = trunkCapacities[currentTrunkLevel - 1];
-
-            // GHI CHÚ: Truyền newCapacity này sang script Inventory của bồ ở dòng dưới
-            // Ví dụ: FindObjectOfType<CarInventory>().maxSlots = newCapacity;
-
             UpdateAllUI();
-            Debug.Log($"Nâng cấp Cốp thành công! Level: {currentTrunkLevel}, Sức chứa mới: {newCapacity} ô");
+            ShowNotify($"Nâng cấp Cốp Level {targetLevel} thành công!");
         }
         else
         {
-            Debug.Log("Không đủ tiền nâng cấp Cốp!");
+            ShowNotify("Không đủ tiền nâng cấp!");
         }
     }
 
-    // --- CẬP NHẬT TẤT CẢ GIAO DIỆN ---
-    void UpdateAllUI()
+    public void UpdateAllUI()
     {
-        if (playerMoneyText != null)
-            playerMoneyText.text = $"Tiền: ${playerMoney}";
+        // Kích hoạt hiệu ứng nhảy số tiền
+        if (moneyAnimCoroutine != null) StopCoroutine(moneyAnimCoroutine);
+        moneyAnimCoroutine = StartCoroutine(CountMoneyRoutine());
 
-        // Cập nhật thông số Cốp xe
-        if (trunkLevelText != null)
-            trunkLevelText.text = $"Cốp Level: {currentTrunkLevel}/{maxTrunkLevel}";
-
-        if (trunkCapacityText != null)
-            trunkCapacityText.text = $"Sức chứa: {trunkCapacities[currentTrunkLevel - 1]} ô";
-
-        if (currentTrunkLevel >= maxTrunkLevel)
+        // Logic tự động Khóa/Mở 3 nút cốp xe
+        for (int i = 0; i < trunkButtons.Length; i++)
         {
-            if (trunkCostText != null) trunkCostText.text = "MAX LEVEL";
-            if (upgradeTrunkBtn != null) upgradeTrunkBtn.interactable = false;
+            if (trunkButtons[i] == null) continue;
+
+            int buttonLevel = i + 1;
+
+            if (buttonLevel <= currentTrunkLevel)
+            {
+                trunkButtons[i].interactable = false;
+            }
+            else if (buttonLevel == currentTrunkLevel + 1)
+            {
+                trunkButtons[i].interactable = true;
+            }
+            else
+            {
+                trunkButtons[i].interactable = false;
+            }
+        }
+    }
+
+    // ==========================================
+    // HỆ THỐNG HIỂN THỊ VÀ NHẢY SỐ TIỀN MƯỢT MÀ
+    // ==========================================
+    private IEnumerator CountMoneyRoutine()
+    {
+        float duration = 0.5f; // Thời gian chạy hiệu ứng (0.5 giây)
+        float startAmount = displayedMoney;
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            // Cho số tiền hiển thị chạy từ từ tới số tiền thật
+            displayedMoney = Mathf.Lerp(startAmount, playerMoney, elapsed / duration);
+            SetMoneyText(displayedMoney);
+            yield return null;
+        }
+
+        displayedMoney = playerMoney;
+        SetMoneyText(displayedMoney);
+    }
+
+    private void SetMoneyText(float amount)
+    {
+        if (playerMoneyText == null) return;
+
+        if (amount >= 1000)
+        {
+            // Chuyển format thành K (VD: 3750 -> 3.8K, 5000 -> 5K)
+            playerMoneyText.text = (amount / 1000f).ToString("0.#") + "K";
         }
         else
         {
-            int nextCost = trunkUpgradeCosts[currentTrunkLevel - 1];
-            if (trunkCostText != null) trunkCostText.text = $"Giá: ${nextCost}";
-            if (upgradeTrunkBtn != null) upgradeTrunkBtn.interactable = true;
+            // Dưới 1000 thì hiện nguyên số (VD: 850)
+            playerMoneyText.text = Mathf.RoundToInt(amount).ToString();
         }
+    }
+
+    // ==========================================
+    // HỆ THỐNG XỬ LÝ THÔNG BÁO (HIỆN LÊN RỒI MỜ ĐI)
+    // ==========================================
+    public void ShowNotify(string message)
+    {
+        if (notificationText == null) return;
+        StopAllCoroutines();
+        // Đảm bảo Coroutine nhảy tiền vẫn tiếp tục chạy nếu bị ngắt
+        if (moneyAnimCoroutine != null) StopCoroutine(moneyAnimCoroutine);
+        moneyAnimCoroutine = StartCoroutine(CountMoneyRoutine());
+
+        StartCoroutine(FadeOutNotifyRoutine(message));
+    }
+
+    private IEnumerator FadeOutNotifyRoutine(string msg)
+    {
+        notificationText.text = msg;
+        notificationText.gameObject.SetActive(true);
+
+        Color c = notificationText.color;
+        c.a = 1f;
+        notificationText.color = c;
+
+        yield return new WaitForSeconds(1.5f);
+
+        float fadeDuration = 1f;
+        float currentTime = 0f;
+
+        while (currentTime < fadeDuration)
+        {
+            currentTime += Time.deltaTime;
+            c.a = Mathf.Lerp(1f, 0f, currentTime / fadeDuration);
+            notificationText.color = c;
+            yield return null;
+        }
+
+        notificationText.gameObject.SetActive(false);
     }
 }
