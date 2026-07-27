@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 139c7d5e91bc2bc4f89a0ad7be9e4c23, type: 3}
+  m_Name: Bobber7
+  m_EditorClassIdentifier: Assembly-CSharp::BobberSO
+  itemID: bobber7
+  itemName: Bobber7
+  itemIcon: {fileID: 21300000, guid: 64406bef18fd01141b8eb16bacf1f8e1, type: 3}
+  itemDescription: 
+  equippedModelPrefab: {fileID: 0}
+  width: 1
+  height: 1
+  shapeCells: 
+  attractivenessBonus: 5
+  buoyancy: 1
+  bobberPrefab: {fileID: 8545445965590915483, guid: f14545d1cc1cc53439d682e77d78c0ee, type: 3}
+  weight: 0.5

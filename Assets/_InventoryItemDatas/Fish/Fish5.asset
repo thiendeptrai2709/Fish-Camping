@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb1fcb52c1731174380101c455e3b15e, type: 3}
+  m_Name: Fish5
+  m_EditorClassIdentifier: Assembly-CSharp::FishSO
+  itemID: fish5
+  itemName: Fish 5
+  itemIcon: {fileID: 21300000, guid: 0115f9d595be706498dc597a24551c40, type: 3}
+  itemDescription: 
+  equippedModelPrefab: {fileID: 3303966350102610267, guid: e563dcb19133bd849876eee846c5c930, type: 3}
+  width: 2
+  height: 2
+  shapeCells: 
+  rarity: 0
+  caughtFishPrefab: {fileID: 3303966350102610267, guid: e563dcb19133bd849876eee846c5c930, type: 3}
+  difficulty: 1
+  basePrice: 50
+  minLength: 10
+  maxLength: 30
+  minWeight: 0.5
+  maxWeight: 2
+  normalChance: 60
+  bronzeChance: 25
+  silverChance: 10
+  goldChance: 5

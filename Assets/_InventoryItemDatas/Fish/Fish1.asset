@@ -14,10 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FishSO
   itemID: fish1
   itemName: 'Fish 1 '
-  itemIcon: {fileID: 21300000, guid: ed31da223461d664ca1d76a3a0c3c967, type: 3}
+  itemIcon: {fileID: 21300000, guid: 4fbc901dcbf008847a3bcd37713dc066, type: 3}
+  itemDescription: 
   equippedModelPrefab: {fileID: 585159940412984651, guid: 31a11d7402b580c4ba93bf51319dbca7, type: 3}
-  width: 1
-  height: 1
+  width: 2
+  height: 2
   shapeCells: 
   rarity: 0
   caughtFishPrefab: {fileID: 585159940412984651, guid: 31a11d7402b580c4ba93bf51319dbca7, type: 3}
@@ -27,3 +28,7 @@ MonoBehaviour:
   maxLength: 30
   minWeight: 0.5
   maxWeight: 2
+  normalChance: 60
+  bronzeChance: 25
+  silverChance: 10
+  goldChance: 5
