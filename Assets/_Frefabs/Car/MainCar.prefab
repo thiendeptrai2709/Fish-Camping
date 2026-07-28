@@ -1208,10 +1208,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f956817cbaee90f4b929617938b9999d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EngineRepairMinigame
-  vehicleInput: {fileID: 8457522825824892041}
   hoodHinge: {fileID: 4263717819214804220}
   engineVisualMesh: {fileID: 1388989959795392098}
   inspectPoint: {fileID: 3926508800536566845}
+  playerMovement: {fileID: 0}
+  crosshairUI: {fileID: 0}
   inspectCam: {fileID: 5030120287538690424}
   activePriority: 10
   floatSpeed: 3
@@ -2475,6 +2476,7 @@ GameObject:
   - component: {fileID: 9152428824379481637}
   - component: {fileID: 6911055058645893938}
   - component: {fileID: 2880476957763468156}
+  - component: {fileID: -4432883697066076862}
   m_Layer: 0
   m_Name: MainCar
   m_TagString: Untagged
@@ -2609,9 +2611,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21f566c0ef502f645a9d402523482aec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::VehicleBody
-  vehicleInput: {fileID: 8457522825824892041}
-  trunkHinge: {fileID: 4263717819214804220}
-  hoodHinge: {fileID: 2340393170026331245}
 --- !u!114 &6911055058645893938
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2629,8 +2628,9 @@ MonoBehaviour:
   - {fileID: 8499663215935644365}
   - {fileID: 6588371454107864548}
   - {fileID: 2630722091706659865}
+  playerTransform: {fileID: 0}
+  maxStatsDistance: 4.5
   vehicleController: {fileID: 1260891777461015879}
-  vehicleInput: {fileID: 8457522825824892041}
   hoodHinge: {fileID: 4263717819214804220}
   qteMinigame: {fileID: 0}
   balanceMinigame: {fileID: 0}
@@ -2679,6 +2679,22 @@ MonoBehaviour:
   minPitch: 0.8
   maxPitch: 2.5
   speedToPitchRatio: 80
+--- !u!114 &-4432883697066076862
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7644770541340576481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad258242fc3447c41bfd59b0f4da7a2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CarFuel
+  maxFuel: 100
+  currentFuel: 100
+  consumptionRate: 1
+  fuelSlider: {fileID: 0}
 --- !u!1 &7659384282325513410
 GameObject:
   m_ObjectHideFlags: 0
@@ -3210,8 +3226,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0123ea484f5371c42837e62f6f97903e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TrunkInventory
-  vehicleInput: {fileID: 8457522825824892041}
   trunkInventoryPanel: {fileID: 0}
+  interactableTrunk: {fileID: 0}
+  playerTransform: {fileID: 0}
+  maxDistance: 3.5
 --- !u!1 &8387264529292031677
 GameObject:
   m_ObjectHideFlags: 0
