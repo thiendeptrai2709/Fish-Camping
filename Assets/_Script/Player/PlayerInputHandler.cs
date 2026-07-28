@@ -15,6 +15,7 @@ public class PlayerInputHandler : MonoBehaviour
     public float RotateItemValue { get; private set; }
     public bool ScreenshotTriggered { get; private set; }
     public bool BuildTriggered { get; private set; } // Thêm nút B để mở UI xây dựng
+    public bool JournalTriggered { get; private set; }
     public bool IsUIOpen { get; set; }
     private CarInputActions inputActions;
 
@@ -50,5 +51,6 @@ public class PlayerInputHandler : MonoBehaviour
         RotateItemTriggered = Mathf.Abs(rotateY) > 0.1f;
         RotateItemValue = rotateY;
         ScreenshotTriggered = inputActions.Player.Screenshot.WasPressedThisFrame();
+        JournalTriggered = inputActions.Player.Journal.WasPressedThisFrame();
     }
 }

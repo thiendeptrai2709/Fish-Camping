@@ -14,4 +14,10 @@ public class BobberSO : ItemShapeSO
     [Header("Bobber Physics")]
     [Tooltip("Trọng lượng của phao (ảnh hưởng đến tốc độ bay khi ném)")]
     public float weight = 0.5f;
+    public override string GetFormattedStats()
+    {
+        return $"• Độ nổi: {buoyancy}\n" +
+               $"• Tăng thu hút: +{attractivenessBonus}%\n" +
+               $"• Trọng lượng ném: {weight}kg";
+    }
 }
