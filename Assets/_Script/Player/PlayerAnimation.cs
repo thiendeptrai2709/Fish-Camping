@@ -19,6 +19,10 @@ public class PlayerAnimation : MonoBehaviour
 
     private FishingController fishingController;
 
+    private readonly int isDrivingBoolHash = Animator.StringToHash("IsDriving");
+
+    public System.Action onEnterCarComplete;
+    public System.Action onExitCarComplete;
 
     private float currentAnimationSpeed;
 
@@ -138,5 +142,9 @@ public class PlayerAnimation : MonoBehaviour
         {
             fishingController.OnCatchSuccessIntroComplete();
         }
+    }
+    public void SetDrivingState(bool isDriving)
+    {
+        if (animator != null) animator.SetBool(isDrivingBoolHash, isDriving);
     }
 }

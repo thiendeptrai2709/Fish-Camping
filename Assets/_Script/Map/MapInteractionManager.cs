@@ -77,7 +77,14 @@ public class MapInteractionManager : MonoBehaviour
     {
         if (!string.IsNullOrEmpty(targetSceneName))
         {
-            SceneManager.LoadScene(targetSceneName);
+            if (LoadingScreenManager.Instance != null)
+            {
+                LoadingScreenManager.Instance.LoadScene(targetSceneName);
+            }
+            else
+            {
+                SceneManager.LoadScene(targetSceneName);
+            }
         }
     }
 

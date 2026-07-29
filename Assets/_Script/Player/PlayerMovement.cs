@@ -27,6 +27,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        // Chốt an toàn: Nếu CharacterController bị tắt (ví dụ lúc đang ngồi trên xe) thì dừng toàn bộ tính toán di chuyển/trọng lực
+        if (controller == null || !controller.enabled) return;
+
         if (fishingController != null && fishingController.IsBusyFishing())
         {
             HandleGravity();

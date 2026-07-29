@@ -28,7 +28,10 @@ public class PlayerInteraction : MonoBehaviour
         cameraTransform = Camera.main.transform;
         fishingController = GetComponent<FishingController>();
     }
-
+    private void OnDisable()
+    {
+        ClearCurrentInteractable(); // Tự động xóa focus, tắt UI chữ và tắt tâm ngắm
+    }
     private void Update()
     {
         if (inputHandler.IsUIOpen != wasUIOpen)
