@@ -1494,7 +1494,7 @@ RectTransform:
   m_Father: {fileID: 421673195}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -4515,9 +4515,9 @@ RectTransform:
   m_Father: {fileID: 1090606943}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: -17, y: -17}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &479300960
 MonoBehaviour:
@@ -4919,7 +4919,7 @@ RectTransform:
   m_Father: {fileID: 1649558770}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -7689,7 +7689,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &862152851
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8677,7 +8677,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -10.698425, y: 0}
+  m_SizeDelta: {x: -10.698425, y: 237.5}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &990648460
 MonoBehaviour:
@@ -10055,6 +10055,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: LorryTrailer
       objectReference: {fileID: 0}
+    - target: {fileID: 4799698753521985795, guid: bcdcb55430133ca49a270743373eaa9c, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 1c02c1d8ae5eae84fa22b1cefe9ebcbd, type: 2}
     - target: {fileID: 9027435462615469172, guid: bcdcb55430133ca49a270743373eaa9c, type: 3}
       propertyPath: m_LocalScale.x
       value: 2
@@ -13452,9 +13456,9 @@ RectTransform:
   m_Father: {fileID: 1090606943}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
-  m_AnchorMax: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 20, y: 0}
+  m_SizeDelta: {x: 20, y: -17}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &1389814823
 MonoBehaviour:
@@ -14537,6 +14541,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 440561950}
     m_Modifications:
+    - target: {fileID: 434373845494628777, guid: 6a563f89a23ae0a42bf4d38da9d5a9ed, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 9093856806877707750, guid: 4c2f463ed7448f042b4f781d45e5f77c, type: 3}
     - target: {fileID: 5701193101681812555, guid: 6a563f89a23ae0a42bf4d38da9d5a9ed, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
@@ -18358,9 +18366,9 @@ RectTransform:
   m_Father: {fileID: 1090606943}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 20}
+  m_SizeDelta: {x: -17, y: 20}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &1772585717
 MonoBehaviour:
