@@ -18,14 +18,20 @@ public class PlayerInteraction : MonoBehaviour
     private PlayerMovement playerMovement;
     private Transform cameraTransform;
     private FishingController fishingController;
-    private IInteractable currentInteractable;
+
+    // ĐỔI 1: Chuyển biến lưu sang INpcInteractable
+    private INpcInteractable currentInteractable;
 
     private void Awake()
     {
         inputHandler = GetComponent<PlayerInputHandler>();
         playerCursor = GetComponent<PlayerCursor>();
         playerMovement = GetComponent<PlayerMovement>();
-        cameraTransform = Camera.main.transform;
+
+        if (Camera.main != null)
+        {
+            cameraTransform = Camera.main.transform;
+        }
         fishingController = GetComponent<FishingController>();
     }
 
@@ -43,7 +49,11 @@ public class PlayerInteraction : MonoBehaviour
 
     private void CheckForInteractable()
     {
-        if (Cursor.lockState != CursorLockMode.Locked) return;
+        if (cameraTransform == null)
+        {
+            if (Camera.main != null) cameraTransform = Camera.main.transform;
+            else return;
+        }
 
         Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
         Debug.DrawRay(ray.origin, ray.direction * interactDistance, Color.red);
@@ -51,20 +61,11 @@ public class PlayerInteraction : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, interactDistance, interactableLayer))
         {
-            IInteractable interactable = hit.collider.GetComponent<IInteractable>();
+            // ĐỔI 2: Tìm INpcInteractable ở chính nó hoặc ở cha (NPCBase)
+            INpcInteractable interactable = hit.collider.GetComponentInParent<INpcInteractable>();
 
             if (interactable != null)
             {
-                if (TireRepairMinigame.ActiveTire != null)
-                {
-                    InteractableTire hitTire = hit.collider.GetComponent<InteractableTire>();
-                    if (hitTire == null || (hitTire.GetComponent<IInteractable>() != currentInteractable && hitTire.gameObject != TireRepairMinigame.ActiveTire.gameObject))
-                    {
-                        ClearCurrentInteractable();
-                        return;
-                    }
-                }
-
                 if (interactable != currentInteractable)
                 {
                     if (currentInteractable != null)
@@ -74,6 +75,7 @@ public class PlayerInteraction : MonoBehaviour
 
                     currentInteractable = interactable;
                     currentInteractable.OnFocus();
+                    Debug.Log("<color=green>[PLAYER INTERACTION] Nhắm trúng NPC: </color>" + hit.collider.name);
                 }
 
                 SetCrosshairState(true, interactable.GetInteractPrompt());
@@ -109,15 +111,19 @@ public class PlayerInteraction : MonoBehaviour
 
     private void HandleInteractInput()
     {
-        if (inputHandler.InteractTriggered && currentInteractable != null)
+        if (inputHandler != null && inputHandler.InteractTriggered)
         {
-            MonoBehaviour targetObject = currentInteractable as MonoBehaviour;
-            if (targetObject != null)
+            if (currentInteractable != null)
             {
-                playerMovement.FaceTarget(targetObject.transform.position);
-            }
+                MonoBehaviour targetObject = currentInteractable as MonoBehaviour;
+                if (targetObject != null && playerMovement != null)
+                {
+                    playerMovement.FaceTarget(targetObject.transform.position);
+                }
 
-            currentInteractable.Interact();
+                Debug.Log("<color=cyan>[PLAYER INTERACTION] Gọi Interact() trên NPC thành công!</color>");
+                currentInteractable.Interact();
+            }
         }
     }
 
