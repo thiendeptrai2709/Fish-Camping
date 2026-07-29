@@ -5,9 +5,12 @@ using UnityEngine.UI;
 [RequireComponent(typeof(PlayerInputHandler))]
 public class PlayerNpcInteraction : MonoBehaviour
 {
-    [Header("NPC Raycast Settings")]
-    [SerializeField] private float interactDistance = 3f;
-    [SerializeField] private LayerMask npcLayer; // Ông nên đặt riêng 1 Layer cho NPC (Ví dụ: Layer "NPC" hoặc chung "Interactable")
+    [Header("Point Interaction Settings")]
+    [SerializeField] private Transform interactionPoint; // Kéo GameObject "Point" vào đây
+    [SerializeField] private float interactDistance = 2.5f; // Bán kính tương tác xung quanh Point
+    [SerializeField] private LayerMask npcLayer; // Layer "Interactable" hoặc "NPC"
+
+    [Header("UI Feedback")]
     [SerializeField] private Image crosshairImage;
     [SerializeField] private Color highlightCrosshairColor = Color.yellow;
     [SerializeField] private Color defaultCrosshairColor = Color.white;
@@ -15,14 +18,26 @@ public class PlayerNpcInteraction : MonoBehaviour
 
     private PlayerInputHandler inputHandler;
     private PlayerMovement playerMovement;
-    private Transform cameraTransform;
     private INpcInteractable currentNpcInteractable;
 
     private void Awake()
     {
         inputHandler = GetComponent<PlayerInputHandler>();
         playerMovement = GetComponent<PlayerMovement>();
-        cameraTransform = Camera.main.transform;
+
+        // Tự động tìm GameObject con tên "Point" nếu quên kéo ngoài Inspector
+        if (interactionPoint == null)
+        {
+            Transform pointChild = transform.Find("Point");
+            if (pointChild != null)
+            {
+                interactionPoint = pointChild;
+            }
+            else
+            {
+                interactionPoint = transform; // Tạm dùng vị trí Player nếu không thấy Point
+            }
+        }
     }
 
     private void Update()
@@ -33,14 +48,21 @@ public class PlayerNpcInteraction : MonoBehaviour
 
     private void CheckForNpc()
     {
-        if (Cursor.lockState != CursorLockMode.Locked) return;
+        Vector3 origin = interactionPoint != null ? interactionPoint.position : transform.position;
 
-        Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
-        RaycastHit hit;
+        // Quét tất cả các Collider nằm trong bán kính xung quanh Point
+        Collider[] colliders = Physics.OverlapSphere(origin, interactDistance, npcLayer);
 
-        if (Physics.Raycast(ray, out hit, interactDistance, npcLayer))
+        if (colliders.Length > 0)
         {
-            INpcInteractable npcInteractable = hit.collider.GetComponent<INpcInteractable>();
+            INpcInteractable npcInteractable = null;
+
+            // Tìm đối tượng đầu tiên chứa INpcInteractable (ở chính nó hoặc ở cha)
+            foreach (var col in colliders)
+            {
+                npcInteractable = col.GetComponentInParent<INpcInteractable>();
+                if (npcInteractable != null) break;
+            }
 
             if (npcInteractable != null)
             {
@@ -53,6 +75,7 @@ public class PlayerNpcInteraction : MonoBehaviour
 
                     currentNpcInteractable = npcInteractable;
                     currentNpcInteractable.OnFocus();
+                    Debug.Log("<color=green>[NPC INTERACTION] Đã chạm tầm tương tác NPC: </color>" + currentNpcInteractable.GetInteractPrompt());
                 }
 
                 if (crosshairImage != null) crosshairImage.color = highlightCrosshairColor;
@@ -77,23 +100,25 @@ public class PlayerNpcInteraction : MonoBehaviour
 
     private void HandleNpcInput()
     {
-        // Kiểm tra xem Dialogue Canvas có đang mở sẵn không (nếu có thì dùng phím E để tua chữ tiếp theo)
-        bool dialogueActive = GameObject.Find("DialogueCanvas") != null && GameObject.Find("DialogueCanvas").activeInHierarchy;
-
-        if (inputHandler.InteractTriggered)
+        if (inputHandler != null && inputHandler.InteractTriggered)
         {
-            if (dialogueActive)
+            // Kiểm tra trạng thái Dialogue Canvas qua Singleton
+            bool isDialogueActive = GameObject.Find("DialogueCanvas") != null && GameObject.Find("DialogueCanvas").activeInHierarchy;
+            if (isDialogueActive)
             {
+                // Nếu thoại đang mở -> Bấm E để tua câu tiếp theo
                 DialogueManager.Instance.DisplayNextSentence();
             }
             else if (currentNpcInteractable != null)
             {
+                // Xoay nhân vật về phía NPC
                 MonoBehaviour targetNpc = currentNpcInteractable as MonoBehaviour;
-                if (targetNpc != null)
+                if (targetNpc != null && playerMovement != null)
                 {
                     playerMovement.FaceTarget(targetNpc.transform.position);
                 }
 
+                Debug.Log("<color=cyan>[NPC INTERACTION] Bấm E mở tương tác NPC thành công!</color>");
                 currentNpcInteractable.Interact();
             }
         }
@@ -102,5 +127,13 @@ public class PlayerNpcInteraction : MonoBehaviour
     public bool HasActiveNpc()
     {
         return currentNpcInteractable != null;
+    }
+
+    // Vẽ hình cầu màu vàng trong Scene view để căn tầm tương tác
+    private void OnDrawGizmosSelected()
+    {
+        Vector3 origin = interactionPoint != null ? interactionPoint.position : transform.position;
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(origin, interactDistance);
     }
 }
