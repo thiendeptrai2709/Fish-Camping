@@ -100,9 +100,9 @@ TextureImporter:
       name: Login_0
       rect:
         serializedVersion: 2
-        x: 71
+        x: 0
         y: 0
-        width: 1465
+        width: 1536
         height: 1024
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
