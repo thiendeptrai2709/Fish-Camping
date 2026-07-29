@@ -6,10 +6,16 @@ public class ItemShapeSO : ScriptableObject
     public string itemID;
     public string itemName;
     public Sprite itemIcon;
+    [TextArea(3, 5)] public string itemDescription;
     public GameObject equippedModelPrefab;
     public int width = 1;
     public int height = 1;
     public bool[] shapeCells;
+
+    public virtual string GetFormattedStats()
+    {
+        return string.Empty;
+    }
 
     public int GetWidth(bool isRotated)
     {

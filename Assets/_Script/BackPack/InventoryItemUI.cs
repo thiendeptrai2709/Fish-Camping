@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(Image))]
 // Thêm IPointerDownHandler vào đây để bắt được phát click đầu tiên
-public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler, IPointerDownHandler
+public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler
 {
     [SerializeField] private Image itemImage;
 
@@ -24,7 +24,20 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     private bool isHandledBySlot = false;
     private bool isFromCooking = false;
     private EquipmentSlotUI currentSlot = null;
+    private float currentLength = 0f;
+    private float currentWeight = 0f;
+    private FishGrade currentGrade = FishGrade.Normal;
 
+    public void SetFishInstanceData(float length, float weight, FishGrade grade)
+    {
+        currentLength = length;
+        currentWeight = weight;
+        currentGrade = grade;
+    }
+
+    public float GetLength() => currentLength;
+    public float GetWeight() => currentWeight;
+    public FishGrade GetGrade() => currentGrade;
 
     public void SetEquippedState(bool equipped, EquipmentSlotUI slot = null)
     {
@@ -163,6 +176,12 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         canvasGroup.blocksRaycasts = false;
         canvasGroup.alpha = 0.4f;
 
+        // Ẩn bảng thông tin khi bắt đầu nhấc đồ lên kéo đi
+        if (ItemInfoPanelUI.Instance != null)
+        {
+            ItemInfoPanelUI.Instance.ClearInfo();
+        }
+
         if (isEquipped && currentSlot != null)
         {
             currentSlot.RemoveEquippedItem();
@@ -242,8 +261,30 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         minigameUI.OnItemEndDrag(this, eventData.position);
     }
 
-    public void OnPointerClick(PointerEventData eventData)
+   public void OnPointerClick(PointerEventData eventData)
     {
+        // Truyền "this" (chứa toàn bộ data động) thay vì chỉ truyền itemShape (dữ liệu tĩnh)
+        if (ItemInfoPanelUI.Instance != null && itemShape != null)
+        {
+            ItemInfoPanelUI.Instance.ShowInfo(this);
+        }
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (!isDragging && ItemInfoPanelUI.Instance != null && itemShape != null)
+        {
+            ItemInfoPanelUI.Instance.ShowInfo(this);
+        }
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        // Khi rời chuột khỏi item -> Xóa sạch thông tin trên bảng
+        if (ItemInfoPanelUI.Instance != null)
+        {
+            ItemInfoPanelUI.Instance.ClearInfo();
+        }
     }
 
     public ItemShapeSO GetItemShape() => itemShape;
