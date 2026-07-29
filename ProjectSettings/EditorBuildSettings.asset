@@ -6,9 +6,17 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/_Scenes/Play_Setting.unity
-    path: Assets/_Scenes/Play1.unity
-    guid: 99c9720ab356a0642a771bea13969a05
+    path: Assets/_Scenes/Map_1_Town.unity
+    guid: 7e3b6484f7c6baa4dae33ac6be9f33c2
+  - enabled: 1
+    path: Assets/_Scenes/Map_2_PineLake.unity
+    guid: dbf9b84e87848f149b26d158b7063735
+  - enabled: 1
+    path: Assets/_Scenes/Map3_Swamp.unity
+    guid: 256cb218dfbd03546a282e726c70f89f
+  - enabled: 1
+    path: Assets/_Scenes/Map4__Ocean Coast.unity
+    guid: 3775d662f274f034997e3bbf57797ea0
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: e35cfc3368f1bdf41ae0182d0b521e93, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}

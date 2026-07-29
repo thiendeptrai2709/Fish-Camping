@@ -9,8 +9,8 @@ public class VehicleInput : MonoBehaviour
     public Vector2 MoveInput { get; private set; }
     public bool IsBraking { get; private set; }
     public bool IsPushing { get; private set; }
+    public bool IsUIOpen { get; set; }
 
-   
     private void Awake()
     {
         inputActions = new CarInputActions();
@@ -29,6 +29,13 @@ public class VehicleInput : MonoBehaviour
     }
     private void Update()
     {
+        if (IsUIOpen)
+        {
+            MoveInput = Vector2.zero;
+            IsBraking = true;
+            return;
+        }
+
         if (inputActions != null)
         {
             MoveInput = inputActions.Gameplay.Drive.ReadValue<Vector2>();

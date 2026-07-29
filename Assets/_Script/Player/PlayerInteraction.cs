@@ -19,7 +19,7 @@ public class PlayerInteraction : MonoBehaviour
     private Transform cameraTransform;
     private FishingController fishingController;
     private IInteractable currentInteractable;
-
+    private bool wasUIOpen;
     private void Awake()
     {
         inputHandler = GetComponent<PlayerInputHandler>();
@@ -31,6 +31,28 @@ public class PlayerInteraction : MonoBehaviour
 
     private void Update()
     {
+        if (inputHandler.IsUIOpen != wasUIOpen)
+        {
+            wasUIOpen = inputHandler.IsUIOpen;
+
+            if (crosshairImage != null)
+            {
+                crosshairImage.enabled = !wasUIOpen;
+            }
+
+            if (playerCursor != null)
+            {
+                playerCursor.SetCursorState(!wasUIOpen);
+            }
+
+            if (wasUIOpen)
+            {
+                ClearCurrentInteractable();
+            }
+        }
+
+        if (inputHandler.IsUIOpen) return;
+
         if (fishingController != null && fishingController.IsBusyFishing())
         {
             ClearCurrentInteractable();
