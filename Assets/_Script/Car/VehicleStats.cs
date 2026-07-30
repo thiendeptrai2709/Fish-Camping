@@ -106,6 +106,11 @@ public class VehicleStats : MonoBehaviour
             statsCanvasObject.SetActive(!statsCanvasObject.activeSelf);
     }
 
+    public void CloseOverviewPanel()
+    {
+        if (statsCanvasObject)
+            statsCanvasObject.SetActive(false);
+    }
     public void TryRepairEngine()
     {
         bool isQTEPlaying = (qteMinigame != null && qteMinigame.IsPlaying);

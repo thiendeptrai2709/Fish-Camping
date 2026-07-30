@@ -14474,6 +14474,8 @@ GameObject:
   - component: {fileID: 989602323}
   - component: {fileID: 989602325}
   - component: {fileID: 989602324}
+  - component: {fileID: 989602327}
+  - component: {fileID: 989602326}
   m_Layer: 5
   m_Name: LoadingPanel
   m_TagString: Untagged
@@ -14539,6 +14541,30 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 989602322}
   m_CullTransparentMesh: 1
+--- !u!114 &989602326
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 989602322}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe4cde82f7ceba649aef3c041bcc2c00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CanvasFader
+--- !u!225 &989602327
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 989602322}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &990648458
 GameObject:
   m_ObjectHideFlags: 0
@@ -15237,9 +15263,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LoadingScreenManager
   loadingPanel: {fileID: 989602322}
   bgImage: {fileID: 989602324}
-  bgImages: []
+  bgImages:
+  - {fileID: 0}
   progressBar: {fileID: 903872949}
   imageChangeInterval: 3
+  fader: {fileID: 989602326}
+  fadeDuration: 0.5
 --- !u!4 &1054432126
 Transform:
   m_ObjectHideFlags: 0
@@ -22370,6 +22399,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1526191244}
     - target: {fileID: 3430033918699576460, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+      propertyPath: vehicleStats
+      value: 
+      objectReference: {fileID: 1417387866}
+    - target: {fileID: 3430033918699576460, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
       propertyPath: playerCollider
       value: 
       objectReference: {fileID: 1526191274}
@@ -22405,6 +22438,14 @@ PrefabInstance:
       propertyPath: OnEnteredVehicle.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 919817527}
+    - target: {fileID: 5224876922350798403, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+      propertyPath: crosshairUI
+      value: 
+      objectReference: {fileID: 130251909}
+    - target: {fileID: 5224876922350798403, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+      propertyPath: playerMovement
+      value: 
+      objectReference: {fileID: 1526191261}
     - target: {fileID: 6101324631861300197, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1.99

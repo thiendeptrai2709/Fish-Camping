@@ -68,8 +68,11 @@ public class PlayerInteraction : MonoBehaviour
 
     private void CheckForInteractable()
     {
-        if (Cursor.lockState != CursorLockMode.Locked) return;
-
+        if (Cursor.lockState != CursorLockMode.Locked)
+        {
+            ClearCurrentInteractable();
+            return;
+        }
         Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
         Debug.DrawRay(ray.origin, ray.direction * interactDistance, Color.red);
         RaycastHit hit;

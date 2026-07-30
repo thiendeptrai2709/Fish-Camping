@@ -118,6 +118,15 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Map"",
+                    ""type"": ""Button"",
+                    ""id"": ""f86992a0-83ef-425f-872d-88edb770c9cf"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -195,6 +204,17 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""ExitVehicle"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c98edc71-69fe-4dc2-8e72-70020c2b56a6"",
+                    ""path"": ""<Keyboard>/m"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Map"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -480,6 +500,7 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
         m_Gameplay_Drive = m_Gameplay.FindAction("Drive", throwIfNotFound: true);
         m_Gameplay_Brake = m_Gameplay.FindAction("Brake", throwIfNotFound: true);
         m_Gameplay_ExitVehicle = m_Gameplay.FindAction("ExitVehicle", throwIfNotFound: true);
+        m_Gameplay_Map = m_Gameplay.FindAction("Map", throwIfNotFound: true);
         // Player
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
@@ -577,6 +598,7 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Gameplay_Drive;
     private readonly InputAction m_Gameplay_Brake;
     private readonly InputAction m_Gameplay_ExitVehicle;
+    private readonly InputAction m_Gameplay_Map;
     /// <summary>
     /// Provides access to input actions defined in input action map "Gameplay".
     /// </summary>
@@ -600,6 +622,10 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Gameplay/ExitVehicle".
         /// </summary>
         public InputAction @ExitVehicle => m_Wrapper.m_Gameplay_ExitVehicle;
+        /// <summary>
+        /// Provides access to the underlying input action "Gameplay/Map".
+        /// </summary>
+        public InputAction @Map => m_Wrapper.m_Gameplay_Map;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -635,6 +661,9 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
             @ExitVehicle.started += instance.OnExitVehicle;
             @ExitVehicle.performed += instance.OnExitVehicle;
             @ExitVehicle.canceled += instance.OnExitVehicle;
+            @Map.started += instance.OnMap;
+            @Map.performed += instance.OnMap;
+            @Map.canceled += instance.OnMap;
         }
 
         /// <summary>
@@ -655,6 +684,9 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
             @ExitVehicle.started -= instance.OnExitVehicle;
             @ExitVehicle.performed -= instance.OnExitVehicle;
             @ExitVehicle.canceled -= instance.OnExitVehicle;
+            @Map.started -= instance.OnMap;
+            @Map.performed -= instance.OnMap;
+            @Map.canceled -= instance.OnMap;
         }
 
         /// <summary>
@@ -922,6 +954,13 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnExitVehicle(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Map" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnMap(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Player" which allows adding and removing callbacks.

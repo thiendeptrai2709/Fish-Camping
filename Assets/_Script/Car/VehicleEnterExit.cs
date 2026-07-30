@@ -26,6 +26,8 @@ public class VehicleEnterExit : MonoBehaviour
     [SerializeField] private InteractableHood interactableHood;
     [SerializeField] private InteractableTrunk interactableTrunk;
     [SerializeField] private EngineRepairMinigame engineRepair;
+    [SerializeField] private VehicleStats vehicleStats;
+
 
     [Header("Sự kiện ra vào xe")]
     public UnityEngine.Events.UnityEvent OnEnteredVehicle;
@@ -80,6 +82,8 @@ public class VehicleEnterExit : MonoBehaviour
         if (engineRepair != null && engineRepair.IsEngineOut) engineRepair.ExitRepairMode();
         if (interactableHood != null) interactableHood.ForceClose();
         if (interactableTrunk != null) interactableTrunk.ForceClose();
+        if (vehicleStats != null) vehicleStats.CloseOverviewPanel();
+
 
         currentExitPoint = doorExitPoint;
         isInCar = true;

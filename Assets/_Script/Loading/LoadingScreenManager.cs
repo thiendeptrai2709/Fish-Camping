@@ -10,8 +10,11 @@ public class LoadingScreenManager : MonoBehaviour
     [SerializeField] private GameObject loadingPanel;
     [SerializeField] private Image bgImage;
     [SerializeField] private Sprite[] bgImages;
+
     [SerializeField] private Slider progressBar;
     [SerializeField] private float imageChangeInterval = 3f;
+    [SerializeField] private CanvasFader fader;
+    [SerializeField] private float fadeDuration = 0.5f;
 
     private void Awake()
     {
@@ -39,6 +42,12 @@ public class LoadingScreenManager : MonoBehaviour
     public void LoadScene(string sceneName)
     {
         loadingPanel.SetActive(true);
+        StartCoroutine(StartLoadingWithFade(sceneName));
+    }
+
+    private IEnumerator StartLoadingWithFade(string sceneName)
+    {
+        if (fader != null) yield return StartCoroutine(fader.Fade(1f, fadeDuration));
         StartCoroutine(LoadSceneAsync(sceneName));
         StartCoroutine(ChangeImageRoutine());
     }
@@ -57,6 +66,7 @@ public class LoadingScreenManager : MonoBehaviour
             yield return null;
         }
 
+        if (fader != null) yield return StartCoroutine(fader.Fade(0f, fadeDuration));
         loadingPanel.SetActive(false);
     }
 

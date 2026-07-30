@@ -19,7 +19,10 @@ public class MapUIManager : MonoBehaviour
 
     private void Update()
     {
-        if (playerInputHandler != null && playerInputHandler.MapTriggered)
+        bool isPlayerMapTriggered = playerInputHandler != null && playerInputHandler.enabled && playerInputHandler.MapTriggered;
+        bool isVehicleMapTriggered = vehicleInput != null && vehicleInput.enabled && vehicleInput.MapTriggered;
+
+        if (isPlayerMapTriggered || isVehicleMapTriggered)
         {
             ToggleMap();
         }
