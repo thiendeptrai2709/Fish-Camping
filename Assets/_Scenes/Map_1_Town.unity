@@ -21395,6 +21395,7 @@ MonoBehaviour:
   gridRootRect: {fileID: 879873575}
   itemsContainer: {fileID: 1501289698}
   cellVisualPrefab: {fileID: 8483205119547044316, guid: 85a08912caa0f614b8a8c26429c8ead8, type: 3}
+  highlightOverlay: {fileID: 1813213770}
 --- !u!1 &1347571709
 GameObject:
   m_ObjectHideFlags: 0

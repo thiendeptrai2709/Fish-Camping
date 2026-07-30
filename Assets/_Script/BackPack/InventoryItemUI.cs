@@ -10,12 +10,16 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     private ItemShapeSO itemShape;
     private BackpackMinigameUI minigameUI;
+    public enum GridOwner { Backpack, Trunk }
+    public GridOwner currentOwner = GridOwner.Backpack;
     private RectTransform rectTransform;
     private CanvasGroup canvasGroup;
     private PlayerInputHandler inputHandler;
     private bool isDragging = false;
     private Vector2 lastDragPosition;
     private Vector2 dragOffset;
+    private bool isHoveringTrunk = false;
+    private bool isHoveringBackpack = false;
 
     private int gridX;
     private int gridY;
@@ -78,9 +82,17 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         if (isDragging && inputHandler != null && inputHandler.RotateItemTriggered)
         {
             ToggleRotate();
-            if (minigameUI != null)
+            // Ưu tiên gọi hàm UI của cái lưới mà chuột đang bay trên đầu
+            if (isHoveringTrunk && TrunkMinigameUI.Instance != null)
+                TrunkMinigameUI.Instance.OnItemDragging(this, lastDragPosition);
+            else if (isHoveringBackpack && BackpackMinigameUI.Instance != null)
+                BackpackMinigameUI.Instance.OnItemDragging(this, lastDragPosition);
+            else
             {
-                minigameUI.OnItemDragging(this, lastDragPosition);
+                if (currentOwner == GridOwner.Backpack && BackpackMinigameUI.Instance != null)
+                    BackpackMinigameUI.Instance.OnItemDragging(this, lastDragPosition);
+                else if (currentOwner == GridOwner.Trunk && TrunkMinigameUI.Instance != null)
+                    TrunkMinigameUI.Instance.OnItemDragging(this, lastDragPosition);
             }
         }
     }
@@ -119,10 +131,23 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     public void UpdateVisualSize()
     {
-        if (itemShape == null || minigameUI == null) return;
+        if (itemShape == null) return;
         if (rectTransform == null) rectTransform = GetComponent<RectTransform>();
 
-        float cellSize = minigameUI.GetCellSize();
+        float cellSize = 64f;
+        // Khi đang kéo thả, kích thước item phải scale theo ô lưới mà chuột đang chỉ vào
+        if (isDragging)
+        {
+            if (isHoveringTrunk && TrunkMinigameUI.Instance != null) cellSize = TrunkMinigameUI.Instance.GetCellSize();
+            else if (isHoveringBackpack && BackpackMinigameUI.Instance != null) cellSize = BackpackMinigameUI.Instance.GetCellSize();
+            else cellSize = (currentOwner == GridOwner.Trunk && TrunkMinigameUI.Instance != null) ? TrunkMinigameUI.Instance.GetCellSize() : (BackpackMinigameUI.Instance != null ? BackpackMinigameUI.Instance.GetCellSize() : 64f);
+        }
+        else
+        {
+            cellSize = (currentOwner == GridOwner.Trunk && TrunkMinigameUI.Instance != null)
+                ? TrunkMinigameUI.Instance.GetCellSize()
+                : (BackpackMinigameUI.Instance != null ? BackpackMinigameUI.Instance.GetCellSize() : 64f);
+        }
 
         if (rectTransform != null)
         {
@@ -169,10 +194,12 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         // Nếu là đồ từ nồi, CẤM TUYỆT ĐỐI kéo thả để né lỗi Unity
         if (isFromCooking) return;
 
-        if (eventData.button != PointerEventData.InputButton.Left || minigameUI == null) return;
+        if (eventData.button != PointerEventData.InputButton.Left) return;
 
         isDragging = true;
         lastDragPosition = eventData.position;
+        isHoveringTrunk = false;
+        isHoveringBackpack = false;
         canvasGroup.blocksRaycasts = false;
         canvasGroup.alpha = 0.4f;
 
@@ -197,19 +224,54 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             UpdateVisualSize();
 
             transform.SetAsLastSibling();
-            minigameUI.OnItemBeginDragFromExternal(this, eventData.position);
+            BackpackMinigameUI.Instance.OnItemBeginDragFromExternal(this, eventData.position);
         }
         else
         {
-            minigameUI.OnItemBeginDrag(this, eventData.position);
+            if (currentOwner == GridOwner.Backpack && BackpackMinigameUI.Instance != null)
+                BackpackMinigameUI.Instance.OnItemBeginDrag(this, eventData.position);
+            else if (currentOwner == GridOwner.Trunk && TrunkMinigameUI.Instance != null)
+                TrunkMinigameUI.Instance.OnItemBeginDrag(this, eventData.position);
         }
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (eventData.button != PointerEventData.InputButton.Left || minigameUI == null) return;
+        if (eventData.button != PointerEventData.InputButton.Left) return;
         lastDragPosition = eventData.position;
-        minigameUI.OnItemDragging(this, eventData.position);
+
+        bool overBackpack = BackpackMinigameUI.Instance != null && RectTransformUtility.RectangleContainsScreenPoint(BackpackMinigameUI.Instance.GetGridRoot(), eventData.position, eventData.pressEventCamera);
+        bool overTrunk = TrunkMinigameUI.Instance != null && RectTransformUtility.RectangleContainsScreenPoint(TrunkMinigameUI.Instance.GetGridRoot(), eventData.position, eventData.pressEventCamera);
+
+        isHoveringBackpack = overBackpack;
+        isHoveringTrunk = overTrunk;
+
+        if (overTrunk)
+        {
+            if (BackpackMinigameUI.Instance != null) BackpackMinigameUI.Instance.HideHighlight();
+            TrunkMinigameUI.Instance.OnItemDragging(this, eventData.position);
+        }
+        else if (overBackpack)
+        {
+            if (TrunkMinigameUI.Instance != null) TrunkMinigameUI.Instance.HideHighlight();
+            BackpackMinigameUI.Instance.OnItemDragging(this, eventData.position);
+        }
+        else
+        {
+            if (BackpackMinigameUI.Instance != null) BackpackMinigameUI.Instance.HideHighlight();
+            if (TrunkMinigameUI.Instance != null) TrunkMinigameUI.Instance.HideHighlight();
+
+            // Cho phép hình ảnh bay theo chuột khi ra ngoài vùng lưới
+            Canvas rootCanvas = GetComponentInParent<Canvas>();
+            if (rootCanvas != null)
+            {
+                if (transform.parent != rootCanvas.transform) { transform.SetParent(rootCanvas.transform, true); transform.SetAsLastSibling(); }
+                Camera pressCamera = rootCanvas.renderMode != RenderMode.ScreenSpaceOverlay ? rootCanvas.worldCamera : null;
+                if (pressCamera == null) pressCamera = Camera.main;
+                if (RectTransformUtility.ScreenPointToWorldPointInRectangle(rootCanvas.GetComponent<RectTransform>(), eventData.position, pressCamera, out Vector3 worldPoint))
+                    transform.position = worldPoint;
+            }
+        }
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -254,14 +316,39 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
                     currentSlot.ReturnItemToSlot(this);
                 }
             }
-            if (minigameUI != null) minigameUI.HideHighlight();
+            if (BackpackMinigameUI.Instance != null) BackpackMinigameUI.Instance.HideHighlight();
             return;
         }
 
-        minigameUI.OnItemEndDrag(this, eventData.position);
+        bool overBackpack = BackpackMinigameUI.Instance != null && RectTransformUtility.RectangleContainsScreenPoint(BackpackMinigameUI.Instance.GetGridRoot(), eventData.position, eventData.pressEventCamera);
+        bool overTrunk = TrunkMinigameUI.Instance != null && RectTransformUtility.RectangleContainsScreenPoint(TrunkMinigameUI.Instance.GetGridRoot(), eventData.position, eventData.pressEventCamera);
+
+        bool placed = false;
+        if (overTrunk)
+        {
+            placed = TrunkMinigameUI.Instance.TryPlaceItemFromExternal(this, eventData.position);
+            if (placed) currentOwner = GridOwner.Trunk;
+        }
+        else if (overBackpack)
+        {
+            placed = BackpackMinigameUI.Instance.TryPlaceItemFromExternal(this, eventData.position);
+            if (placed) currentOwner = GridOwner.Backpack;
+        }
+
+        if (BackpackMinigameUI.Instance != null) BackpackMinigameUI.Instance.HideHighlight();
+        if (TrunkMinigameUI.Instance != null) TrunkMinigameUI.Instance.HideHighlight();
+
+        if (!placed)
+        {
+            // Nếu thả không thành công (hoặc thả ra ngoài), trả về grid cũ
+            if (currentOwner == GridOwner.Backpack && BackpackMinigameUI.Instance != null)
+                BackpackMinigameUI.Instance.OnItemEndDrag(this, eventData.position);
+            else if (currentOwner == GridOwner.Trunk && TrunkMinigameUI.Instance != null)
+                TrunkMinigameUI.Instance.OnItemEndDrag(this, eventData.position);
+        }
     }
 
-   public void OnPointerClick(PointerEventData eventData)
+    public void OnPointerClick(PointerEventData eventData)
     {
         // Truyền "this" (chứa toàn bộ data động) thay vì chỉ truyền itemShape (dữ liệu tĩnh)
         if (ItemInfoPanelUI.Instance != null && itemShape != null)

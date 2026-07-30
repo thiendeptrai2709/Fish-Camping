@@ -84,7 +84,7 @@ public class BackpackMinigameUI : MonoBehaviour
     {
         return gridData != null ? gridData.GetCellSize() : 64f;
     }
-
+    public RectTransform GetGridRoot() => gridRootRect;
     public bool GetGridIndexFromScreenPosition(Vector2 screenPosition, out int x, out int y)
     {
         x = -1;
