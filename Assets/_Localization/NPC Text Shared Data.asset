@@ -14,7 +14,55 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
   m_TableCollectionName: NPC Text
   m_TableCollectionNameGuidString: 58e4accfb0b17c3488d584e4a3fd6ec4
-  m_Entries: []
+  m_Entries:
+  - m_Id: 12362459886051328
+    m_Key: npc_cost_text
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12362459936382976
+    m_Key: npc_current_info
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12362459940577280
+    m_Key: npc_part_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12362459940577281
+    m_Key: npc_selected_desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12362459940577282
+    m_Key: npc_selected_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12362459940577283
+    m_Key: npc_selected_price
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12362459940577284
+    m_Key: npc_title_upgrade_tire
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12362459940577285
+    m_Key: npc_title_upgrade_trunk
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12362459940577286
+    m_Key: npc_btn_upgrade
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12362459940577287
+    m_Key: npc_action_buy_rod
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12362459940577288
+    m_Key: npc_action_sell_fish
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12362459940577289
+    m_Key: npc_action_buy_sell
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

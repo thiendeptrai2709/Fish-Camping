@@ -53,38 +53,46 @@ public class PlayerNpcInteraction : MonoBehaviour
         // Quét tất cả các Collider nằm trong bán kính xung quanh Point
         Collider[] colliders = Physics.OverlapSphere(origin, interactDistance, npcLayer);
 
+        INpcInteractable foundNpc = null;
+
         if (colliders.Length > 0)
         {
-            INpcInteractable npcInteractable = null;
-
             // Tìm đối tượng đầu tiên chứa INpcInteractable (ở chính nó hoặc ở cha)
             foreach (var col in colliders)
             {
-                npcInteractable = col.GetComponentInParent<INpcInteractable>();
-                if (npcInteractable != null) break;
-            }
-
-            if (npcInteractable != null)
-            {
-                if (npcInteractable != currentNpcInteractable)
+                INpcInteractable interactable = col.GetComponentInParent<INpcInteractable>();
+                if (interactable != null)
                 {
-                    if (currentNpcInteractable != null)
-                    {
-                        currentNpcInteractable.OnLoseFocus();
-                    }
-
-                    currentNpcInteractable = npcInteractable;
-                    currentNpcInteractable.OnFocus();
-                    Debug.Log("<color=green>[NPC INTERACTION] Đã chạm tầm tương tác NPC: </color>" + currentNpcInteractable.GetInteractPrompt());
+                    foundNpc = interactable;
+                    break;
                 }
-
-                if (crosshairImage != null) crosshairImage.color = highlightCrosshairColor;
-                if (promptUI != null) promptUI.DisplayPrompt(true, currentNpcInteractable.GetInteractPrompt());
-                return;
             }
         }
 
-        ClearCurrentNpc();
+        // Xử lý đổi đối tượng NPC an toàn
+        if (foundNpc != null)
+        {
+            if (foundNpc != currentNpcInteractable)
+            {
+                if (currentNpcInteractable != null)
+                {
+                    currentNpcInteractable.OnLoseFocus();
+                }
+
+                currentNpcInteractable = foundNpc;
+                currentNpcInteractable.OnFocus();
+                Debug.Log("<color=green>[NPC INTERACTION] Đã chạm tầm tương tác NPC: </color>" + currentNpcInteractable.GetInteractPrompt());
+            }
+
+            // Bật UI Prompt & Highlight Crosshair
+            if (crosshairImage != null) crosshairImage.color = highlightCrosshairColor;
+            if (promptUI != null) promptUI.DisplayPrompt(true, currentNpcInteractable.GetInteractPrompt());
+        }
+        else
+        {
+            // Nếu đi ra khỏi tầm hoặc không tìm thấy NPC -> Xóa focus gọn gàng
+            ClearCurrentNpc();
+        }
     }
 
     private void ClearCurrentNpc()
@@ -102,12 +110,16 @@ public class PlayerNpcInteraction : MonoBehaviour
     {
         if (inputHandler != null && inputHandler.InteractTriggered)
         {
-            // Kiểm tra trạng thái Dialogue Canvas qua Singleton
-            bool isDialogueActive = GameObject.Find("DialogueCanvas") != null && GameObject.Find("DialogueCanvas").activeInHierarchy;
+            // Kiểm tra trạng thái Dialogue an toàn qua Singleton
+            bool isDialogueActive = CheckDialogueActive();
+
             if (isDialogueActive)
             {
                 // Nếu thoại đang mở -> Bấm E để tua câu tiếp theo
-                DialogueManager.Instance.DisplayNextSentence();
+                if (DialogueManager.Instance != null)
+                {
+                    DialogueManager.Instance.DisplayNextSentence();
+                }
             }
             else if (currentNpcInteractable != null)
             {
@@ -122,6 +134,18 @@ public class PlayerNpcInteraction : MonoBehaviour
                 currentNpcInteractable.Interact();
             }
         }
+    }
+
+    /// <summary>
+    /// Kiểm tra trạng thái thoại an toàn, ưu tiên Singleton tránh lỗi GameObject.Find
+    /// </summary>
+    private bool CheckDialogueActive()
+    {
+        if (DialogueManager.Instance != null)
+        {
+            return DialogueManager.Instance.IsDialogueActive;
+        }
+        return false;
     }
 
     public bool HasActiveNpc()

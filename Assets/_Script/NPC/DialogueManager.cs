@@ -19,6 +19,7 @@ public class DialogueManager : MonoBehaviour
     private bool _isTyping;
     private string _currentSentence;
     private System.Action _onDialogueComplete; // Hành động chạy sau khi hết thoại (Ví dụ: mở Shop)
+    public bool IsDialogueActive { get; private set; }
 
     private void Awake()
     {
@@ -32,6 +33,7 @@ public class DialogueManager : MonoBehaviour
     // Hàm gọi từ NPC để bắt đầu nói chuyện
     public void StartDialogue(string npcName, string[] dialogues, System.Action onComplete = null)
     {
+        IsDialogueActive = true;
         dialogueCanvas.SetActive(true);
         nameText.text = npcName;
         _onDialogueComplete = onComplete;
@@ -87,6 +89,7 @@ public class DialogueManager : MonoBehaviour
 
     private void EndDialogue()
     {
+        IsDialogueActive = false;
         dialogueCanvas.SetActive(false);
         Debug.Log("Kết thúc hội thoại.");
 
