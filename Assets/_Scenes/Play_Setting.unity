@@ -259,6 +259,7 @@ GameObject:
   - component: {fileID: 1658388479}
   - component: {fileID: 1658388478}
   - component: {fileID: 1658388477}
+  - component: {fileID: 1658388480}
   m_Layer: 0
   m_Name: EventSystem
   m_TagString: Untagged
@@ -327,6 +328,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1658388480
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1658388476}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc1ee83cf0a7ed74e8172976e66a5724, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LogOut
 --- !u!1 &1790896627
 GameObject:
   m_ObjectHideFlags: 0
@@ -693,11 +706,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 342053558522112305, guid: ab1685d523ede3d478867e843c9a07f1, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 1123
+      value: 861
       objectReference: {fileID: 0}
     - target: {fileID: 342053558522112305, guid: ab1685d523ede3d478867e843c9a07f1, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 357
+      value: 444
       objectReference: {fileID: 0}
     - target: {fileID: 1219606634206175702, guid: ab1685d523ede3d478867e843c9a07f1, type: 3}
       propertyPath: m_AnchorMax.x
@@ -973,7 +986,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6054098611373295998, guid: ab1685d523ede3d478867e843c9a07f1, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6054098611373295998, guid: ab1685d523ede3d478867e843c9a07f1, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
@@ -982,10 +995,22 @@ PrefabInstance:
     - target: {fileID: 6054098611373295998, guid: ab1685d523ede3d478867e843c9a07f1, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 11500000, guid: dc1ee83cf0a7ed74e8172976e66a5724, type: 3}
+      objectReference: {fileID: 1658388480}
     - target: {fileID: 6054098611373295998, guid: ab1685d523ede3d478867e843c9a07f1, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6054098611373295998, guid: ab1685d523ede3d478867e843c9a07f1, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: LogOutButtonPressed
+      objectReference: {fileID: 0}
+    - target: {fileID: 6054098611373295998, guid: ab1685d523ede3d478867e843c9a07f1, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: LogOut, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 6054098611373295998, guid: ab1685d523ede3d478867e843c9a07f1, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 6386043117840492746, guid: ab1685d523ede3d478867e843c9a07f1, type: 3}
       propertyPath: m_AnchorMax.x

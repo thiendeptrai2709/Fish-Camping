@@ -15,12 +15,40 @@ MonoBehaviour:
   m_TableCollectionName: Game Text
   m_TableCollectionNameGuidString: f1a165d24478b5741b965a38ede7488c
   m_Entries:
-  - m_Id: 57265807360
-    m_Key: menu_play
+  - m_Id: 13803567274975232
+    m_Key: minigame_solansai
     m_Metadata:
       m_Items: []
-  - m_Id: 210693447680
-    m_Key: setting-sound
+  - m_Id: 13803567291752448
+    m_Key: minigame_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13803567291752449
+    m_Key: minigame_win
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13803567291752450
+    m_Key: minigame_exit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13803567291752451
+    m_Key: minigame_lose
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13803567291752452
+    m_Key: minigame_join
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13803567291752453
+    m_Key: minigame_flip_cards
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13803567291752454
+    m_Key: minigame_rock_skipping
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13803567291752455
+    m_Key: minigame_stones_count
     m_Metadata:
       m_Items: []
   m_Metadata:

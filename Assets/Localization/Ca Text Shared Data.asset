@@ -14,7 +14,55 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
   m_TableCollectionName: Ca Text
   m_TableCollectionNameGuidString: 0fecbaabd90556a4d9030da77e91b044
-  m_Entries: []
+  m_Entries:
+  - m_Id: 12365579940716544
+    m_Key: car_enter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12365579978465280
+    m_Key: car_inspect
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12365579978465281
+    m_Key: car_check_tire
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12365579978465282
+    m_Key: car_remove_replace_tire
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12365579978465283
+    m_Key: car_install_tire
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12365579978465284
+    m_Key: car_open_trunk
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12365579978465285
+    m_Key: car_close_trunk
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12365579978465286
+    m_Key: car_open_hood
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12365579978465287
+    m_Key: car_close_hood
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12365579978465288
+    m_Key: car_check_engine
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12365579978465289
+    m_Key: car_btn_repair_engine
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12365579978465290
+    m_Key: car_btn_refill_water
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

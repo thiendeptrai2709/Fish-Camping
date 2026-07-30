@@ -21,6 +21,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-vi-VN
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3579fe6c91baf6c4db8d4ea6c0f9996d
+    m_Address: Map1_vi-VN
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-vi-VN
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4e2316e628fa1a7409ea0823f523a379
     m_Address: NPC Text_vi-VN
     m_ReadOnly: 1
