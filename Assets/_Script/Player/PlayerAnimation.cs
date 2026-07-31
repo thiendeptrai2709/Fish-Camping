@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(PlayerInputHandler))]
@@ -82,7 +82,8 @@ public class PlayerAnimation : MonoBehaviour
     {
         float targetSpeed = 0f;
 
-        if (playerMovement != null && playerMovement.enabled)
+        // Thêm điều kiện !playerMovement.IsMovementLocked để chặn animation di chuyển
+        if (playerMovement != null && playerMovement.enabled && !playerMovement.IsMovementLocked)
         {
             if (inputHandler.MoveInput.magnitude > 0.1f)
             {
