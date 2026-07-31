@@ -7,7 +7,9 @@ public class MapInteractionManager : MonoBehaviour
     public bool IsMapExpanded => activeMap != null;
 
     [SerializeField] private GameObject goButtonObject;
+    [SerializeField] private GameObject gameplayCorePrefab;
     private string targetSceneName;
+    private string targetSpawnID;
 
     private RectTransform activeMap;
     private Vector2 originalPosition;
@@ -16,7 +18,7 @@ public class MapInteractionManager : MonoBehaviour
     private Vector2 originalAnchorMax;
     private Coroutine animationCoroutine;
 
-    public void ExpandMap(RectTransform mapTransform, string sceneName)
+    public void ExpandMap(RectTransform mapTransform, string sceneName, string spawnID)
     {
         if (activeMap == mapTransform)
         {
@@ -36,6 +38,7 @@ public class MapInteractionManager : MonoBehaviour
         originalAnchorMax = mapTransform.anchorMax;
 
         targetSceneName = sceneName;
+        targetSpawnID = spawnID;
         if (goButtonObject != null) goButtonObject.SetActive(false);
 
         mapTransform.SetAsLastSibling();
@@ -62,24 +65,26 @@ public class MapInteractionManager : MonoBehaviour
         }
     }
 
-    private void RestoreMapInstantly()
+    public void RestoreMapInstantly()
     {
         if (goButtonObject != null) goButtonObject.SetActive(false);
 
-        activeMap.anchoredPosition = originalPosition;
-        activeMap.sizeDelta = originalSizeDelta;
-        activeMap.anchorMin = originalAnchorMin;
-        activeMap.anchorMax = originalAnchorMax;
-        activeMap = null;
+        if (activeMap != null)
+        {
+            activeMap.anchoredPosition = originalPosition;
+            activeMap.sizeDelta = originalSizeDelta;
+            activeMap.anchorMin = originalAnchorMin;
+            activeMap.anchorMax = originalAnchorMax;
+            activeMap = null;
+        }
     }
-
     public void LoadTargetScene()
     {
         if (!string.IsNullOrEmpty(targetSceneName))
         {
             if (LoadingScreenManager.Instance != null)
             {
-                LoadingScreenManager.Instance.LoadScene(targetSceneName);
+                LoadingScreenManager.Instance.LoadScene(targetSceneName, targetSpawnID, gameplayCorePrefab);
             }
             else
             {

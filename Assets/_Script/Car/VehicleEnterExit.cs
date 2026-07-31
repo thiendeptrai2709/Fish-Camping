@@ -35,6 +35,7 @@ public class VehicleEnterExit : MonoBehaviour
 
     private CarInputActions inputActions;
     private Transform currentExitPoint;
+    public bool IsInCar => isInCar;
     private bool isInCar = false;
 
     private void Awake()
@@ -49,9 +50,6 @@ public class VehicleEnterExit : MonoBehaviour
             playerInteraction = playerObject.GetComponent<PlayerInteraction>();
         }
 
-        // Lắng nghe sự kiện bấm phím E để xuống xe
-        inputActions.Gameplay.ExitVehicle.performed += _ => TryExitVehicle();
-
         // Mặc định khi mới vào game: Người chưa lên xe thì TẮT điều khiển và TẮT camera xe
         if (vehicleInput != null) vehicleInput.enabled = false;
         if (carCamera != null) carCamera.SetActive(false);
@@ -60,11 +58,20 @@ public class VehicleEnterExit : MonoBehaviour
     private void OnEnable()
     {
         inputActions.Enable();
+        // Đăng ký lắng nghe sự kiện
+        inputActions.Gameplay.ExitVehicle.performed += OnExitVehiclePerformed;
     }
 
     private void OnDisable()
     {
+        // Hủy đăng ký để tránh bị rò rỉ bộ nhớ hoặc gọi nhầm khi đổi Scene
+        inputActions.Gameplay.ExitVehicle.performed -= OnExitVehiclePerformed;
         inputActions.Disable();
+    }
+
+    private void OnExitVehiclePerformed(InputAction.CallbackContext context)
+    {
+        TryExitVehicle();
     }
     private void TogglePlayerPhysics(bool state)
     {
@@ -74,6 +81,43 @@ public class VehicleEnterExit : MonoBehaviour
 
         if (playerCollider != null) playerCollider.enabled = state;
         if (playerRigidbody != null) playerRigidbody.isKinematic = !state;
+    }
+    public void ForceEnterVehicleAndMove(Transform targetSpawn)
+    {
+        StartCoroutine(DelayPhysicsRoutine(targetSpawn));
+    }
+
+    private System.Collections.IEnumerator DelayPhysicsRoutine(Transform targetSpawn)
+    {
+        // Lấy trực tiếp Rigidbody của xe, KHÔNG dùng chữ transform.root nữa
+        Rigidbody carRb = GetComponent<Rigidbody>();
+        if (carRb != null)
+        {
+            carRb.isKinematic = true;
+            carRb.linearVelocity = Vector3.zero;
+            carRb.angularVelocity = Vector3.zero;
+        }
+
+        transform.position = targetSpawn.position;
+        transform.rotation = targetSpawn.rotation;
+        Physics.SyncTransforms();
+
+        if (!isInCar)
+        {
+            // Tự động tìm cửa xe để lấy đúng điểm xuống xe thay vì dùng targetSpawn
+            CarDoor carDoor = GetComponentInChildren<CarDoor>();
+            Transform correctExitPoint = (carDoor != null) ? carDoor.ExitPoint : null;
+
+            EnterVehicle(correctExitPoint);
+        }
+
+        // Chờ 0.5s để địa hình load xong Collider rồi mới nhả trọng lực cho xe
+        yield return new WaitForSeconds(0.5f);
+
+        if (carRb != null)
+        {
+            carRb.isKinematic = false;
+        }
     }
     public void EnterVehicle(Transform doorExitPoint)
     {
@@ -127,10 +171,19 @@ public class VehicleEnterExit : MonoBehaviour
             playerAnimation.SetDrivingState(false);
         }
 
-        // Snap ngay lập tức ra ngoài cửa xe
         playerObject.transform.SetParent(null);
-        playerObject.transform.position = currentExitPoint.position;
-        playerObject.transform.rotation = currentExitPoint.rotation;
+
+        // Kiểm tra xem điểm thoát hiểm có còn tồn tại (hoặc có bị đổi scene xóa mất không)
+        if (currentExitPoint != null)
+        {
+            playerObject.transform.position = currentExitPoint.position;
+            playerObject.transform.rotation = currentExitPoint.rotation;
+        }
+        else
+        {
+            // Nếu không có, đặt nhân vật đứng ngay cạnh xe để tránh lỗi
+            playerObject.transform.position = transform.position + transform.right * 2f;
+        }
 
         TogglePlayerPhysics(true);
 

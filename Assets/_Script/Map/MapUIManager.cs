@@ -1,13 +1,34 @@
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MapUIManager : MonoBehaviour
 {
     [SerializeField] private GameObject mapUIPanel;
+    [SerializeField] private MapInteractionManager mapInteractionManager;
     [SerializeField] private PlayerInputHandler playerInputHandler;
     [SerializeField] private PlayerMovement playerMovement;
     [SerializeField] private VehicleInput vehicleInput;
     [SerializeField] private PlayerCursor playerCursor;
     [SerializeField] private MonoBehaviour freeLookCamera;
+
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    /* Đóng map và trả lại điều khiển khi load xong scene mới */
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (mapUIPanel != null && mapUIPanel.activeSelf)
+        {
+            ToggleMap();
+        }
+    }
 
     private void Start()
     {
@@ -41,6 +62,12 @@ public class MapUIManager : MonoBehaviour
             bool isActive = !mapUIPanel.activeSelf;
             mapUIPanel.SetActive(isActive);
             playerInputHandler.IsUIOpen = isActive;
+
+            /* Reset trạng thái phóng to bản đồ khi mở lên */
+            if (isActive && mapInteractionManager != null)
+            {
+                mapInteractionManager.RestoreMapInstantly();
+            }
 
             if (playerMovement != null)
             {

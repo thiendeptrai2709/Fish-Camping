@@ -16,6 +16,8 @@ public class LoadingScreenManager : MonoBehaviour
     [SerializeField] private CanvasFader fader;
     [SerializeField] private float fadeDuration = 0.5f;
 
+    private string targetSpawnPointID = "";
+    private GameObject currentCorePrefab;
     private void Awake()
     {
         if (Instance == null)
@@ -39,8 +41,10 @@ public class LoadingScreenManager : MonoBehaviour
         }
     }
 
-    public void LoadScene(string sceneName)
+    public void LoadScene(string sceneName, string spawnID = "", GameObject corePrefab = null)
     {
+        targetSpawnPointID = spawnID;
+        currentCorePrefab = corePrefab;
         loadingPanel.SetActive(true);
         StartCoroutine(StartLoadingWithFade(sceneName));
     }
@@ -55,8 +59,9 @@ public class LoadingScreenManager : MonoBehaviour
     private IEnumerator LoadSceneAsync(string sceneName)
     {
         AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName);
+        operation.allowSceneActivation = false;
 
-        while (!operation.isDone)
+        while (operation.progress < 0.9f)
         {
             float progress = Mathf.Clamp01(operation.progress / 0.9f);
             if (progressBar != null)
@@ -66,8 +71,59 @@ public class LoadingScreenManager : MonoBehaviour
             yield return null;
         }
 
+        operation.allowSceneActivation = true;
+        yield return new WaitUntil(() => operation.isDone);
+
+        // Chờ 1 frame để các Core trùng lặp trong scene mới tự tiêu diệt lẫn nhau
+        yield return null;
+
+        SetupCoreAndPlayer();
+
         if (fader != null) yield return StartCoroutine(fader.Fade(0f, fadeDuration));
         loadingPanel.SetActive(false);
+    }
+
+    private void SetupCoreAndPlayer()
+    {
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+
+        if (playerObj == null && currentCorePrefab != null)
+        {
+            Instantiate(currentCorePrefab);
+            playerObj = GameObject.FindGameObjectWithTag("Player");
+        }
+
+        if (playerObj != null && !string.IsNullOrEmpty(targetSpawnPointID))
+        {
+            MovePlayerToSpawnPoint(playerObj);
+        }
+    }
+
+    private void MovePlayerToSpawnPoint(GameObject playerObj)
+    {
+        GameObject targetSpawn = GameObject.Find(targetSpawnPointID);
+
+        if (targetSpawn != null)
+        {
+            VehicleEnterExit vehicleScript = FindFirstObjectByType<VehicleEnterExit>();
+
+            if (vehicleScript != null)
+            {
+                vehicleScript.ForceEnterVehicleAndMove(targetSpawn.transform);
+            }
+            else
+            {
+                CharacterController cc = playerObj.GetComponent<CharacterController>();
+                if (cc != null) cc.enabled = false;
+
+                playerObj.transform.position = targetSpawn.transform.position;
+                playerObj.transform.rotation = targetSpawn.transform.rotation;
+
+                Physics.SyncTransforms();
+
+                if (cc != null) cc.enabled = true;
+            }
+        }
     }
 
     private IEnumerator ChangeImageRoutine()

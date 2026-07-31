@@ -6,7 +6,9 @@ public class MapRegion : MonoBehaviour
 {
     [SerializeField] private MapInteractionManager interactionManager;
     [SerializeField] private string sceneName;
+    [SerializeField] private string spawnID;
     private RectTransform rectTransform;
+
     private Button button;
 
     private void Awake()
@@ -18,6 +20,6 @@ public class MapRegion : MonoBehaviour
 
     private void OnClick()
     {
-        interactionManager.ExpandMap(rectTransform, sceneName);
+        interactionManager.ExpandMap(rectTransform, sceneName, spawnID);
     }
 }
