@@ -251,8 +251,8 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         if (eventData.button != PointerEventData.InputButton.Left) return;
         lastDragPosition = eventData.position;
 
-        bool overBackpack = BackpackMinigameUI.Instance != null && RectTransformUtility.RectangleContainsScreenPoint(BackpackMinigameUI.Instance.GetGridRoot(), eventData.position, eventData.pressEventCamera);
-        bool overTrunk = TrunkMinigameUI.Instance != null && RectTransformUtility.RectangleContainsScreenPoint(TrunkMinigameUI.Instance.GetGridRoot(), eventData.position, eventData.pressEventCamera);
+        bool overBackpack = BackpackMinigameUI.Instance != null && BackpackMinigameUI.Instance.GetGridRoot() != null && BackpackMinigameUI.Instance.GetGridRoot().gameObject.activeInHierarchy && RectTransformUtility.RectangleContainsScreenPoint(BackpackMinigameUI.Instance.GetGridRoot(), eventData.position, eventData.pressEventCamera);
+        bool overTrunk = TrunkMinigameUI.Instance != null && TrunkMinigameUI.Instance.GetGridRoot() != null && TrunkMinigameUI.Instance.GetGridRoot().gameObject.activeInHierarchy && RectTransformUtility.RectangleContainsScreenPoint(TrunkMinigameUI.Instance.GetGridRoot(), eventData.position, eventData.pressEventCamera);
 
         isHoveringBackpack = overBackpack;
         isHoveringTrunk = overTrunk;
@@ -303,8 +303,8 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
         if (isFromCooking || originIngredientSlot != null)
         {
-            bool isOverBalo = BackpackMinigameUI.Instance != null && RectTransformUtility.RectangleContainsScreenPoint(BackpackMinigameUI.Instance.GetGridRoot(), eventData.position, eventData.pressEventCamera);
-            bool isOverXe = TrunkMinigameUI.Instance != null && RectTransformUtility.RectangleContainsScreenPoint(TrunkMinigameUI.Instance.GetGridRoot(), eventData.position, eventData.pressEventCamera);
+            bool isOverBalo = BackpackMinigameUI.Instance != null && BackpackMinigameUI.Instance.GetGridRoot() != null && BackpackMinigameUI.Instance.GetGridRoot().gameObject.activeInHierarchy && RectTransformUtility.RectangleContainsScreenPoint(BackpackMinigameUI.Instance.GetGridRoot(), eventData.position, eventData.pressEventCamera);
+            bool isOverXe = TrunkMinigameUI.Instance != null && TrunkMinigameUI.Instance.GetGridRoot() != null && TrunkMinigameUI.Instance.GetGridRoot().gameObject.activeInHierarchy && RectTransformUtility.RectangleContainsScreenPoint(TrunkMinigameUI.Instance.GetGridRoot(), eventData.position, eventData.pressEventCamera);
             bool placedInGrid = false;
 
             if (isOverXe) { placedInGrid = TrunkMinigameUI.Instance.TryPlaceItemFromExternal(this, eventData.position); if (placedInGrid) currentOwner = GridOwner.Trunk; }
@@ -345,8 +345,8 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             return;
         }
 
-        bool overBackpack = BackpackMinigameUI.Instance != null && RectTransformUtility.RectangleContainsScreenPoint(BackpackMinigameUI.Instance.GetGridRoot(), eventData.position, eventData.pressEventCamera);
-        bool overTrunk = TrunkMinigameUI.Instance != null && RectTransformUtility.RectangleContainsScreenPoint(TrunkMinigameUI.Instance.GetGridRoot(), eventData.position, eventData.pressEventCamera);
+        bool overBackpack = BackpackMinigameUI.Instance != null && BackpackMinigameUI.Instance.GetGridRoot() != null && BackpackMinigameUI.Instance.GetGridRoot().gameObject.activeInHierarchy && RectTransformUtility.RectangleContainsScreenPoint(BackpackMinigameUI.Instance.GetGridRoot(), eventData.position, eventData.pressEventCamera);
+        bool overTrunk = TrunkMinigameUI.Instance != null && TrunkMinigameUI.Instance.GetGridRoot() != null && TrunkMinigameUI.Instance.GetGridRoot().gameObject.activeInHierarchy && RectTransformUtility.RectangleContainsScreenPoint(TrunkMinigameUI.Instance.GetGridRoot(), eventData.position, eventData.pressEventCamera);
 
         bool placed = false;
         if (overTrunk)

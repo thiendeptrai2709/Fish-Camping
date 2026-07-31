@@ -802,9 +802,13 @@ public class BackpackMinigameUI : MonoBehaviour
 
         if (canPlaceDragged && canPlaceTarget)
         {
+            // Lưu lại tọa độ cũ trước khi bị ghi đè
+            int oldDragX = draggedItem.GetGridX();
+            int oldDragY = draggedItem.GetGridY();
+
             PlaceItemDirectlyToGrid(draggedItem, targetX, targetY, draggedItem.IsRotated());
             if (targetItem.IsRotated() != targetRotatedState) targetItem.ToggleRotate();
-            TrunkMinigameUI.Instance.PlaceItemDirectlyToGrid(targetItem, draggedItem.GetGridX(), draggedItem.GetGridY(), targetRotatedState);
+            TrunkMinigameUI.Instance.PlaceItemDirectlyToGrid(targetItem, oldDragX, oldDragY, targetRotatedState);
             targetItem.currentOwner = InventoryItemUI.GridOwner.Trunk;
             return true;
         }

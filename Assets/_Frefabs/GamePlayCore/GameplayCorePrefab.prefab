@@ -6901,9 +6901,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EquipmentSlotUI
   slotRequirement: 0
-  minigameUI: {fileID: 0}
+  minigameUI: {fileID: 4712704025220209879}
   placeholderIcon: {fileID: 0}
-  handVisual: {fileID: 0}
+  handVisual: {fileID: 7115528907020466556}
   autoResizeSlotToFitItem: 1
   slotOrientation: 1
 --- !u!1 &4346291342068933015
@@ -13216,7 +13216,7 @@ MonoBehaviour:
   slotRequirement: 2
   minigameUI: {fileID: 0}
   placeholderIcon: {fileID: 0}
-  handVisual: {fileID: 0}
+  handVisual: {fileID: 7115528907020466556}
   autoResizeSlotToFitItem: 0
   slotOrientation: 0
 --- !u!1 &7613995312732295990
@@ -16385,6 +16385,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4164918743624052080, guid: 813fcddce83a2e5499f3a2d39b8dfa41, type: 3}
   m_PrefabInstance: {fileID: 7240699791961069258}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7115528907020466556 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 487318733101985718, guid: 813fcddce83a2e5499f3a2d39b8dfa41, type: 3}
+  m_PrefabInstance: {fileID: 7240699791961069258}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1585309521546865641}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 216af3613bc8a4841b8ce10cd490b4e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterHandVisual
 --- !u!114 &7259076512757741476 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 54405733136720238, guid: 813fcddce83a2e5499f3a2d39b8dfa41, type: 3}

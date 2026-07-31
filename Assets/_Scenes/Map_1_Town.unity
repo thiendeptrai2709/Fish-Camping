@@ -6430,6 +6430,17 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 7330825171634030359, guid: 6a563f89a23ae0a42bf4d38da9d5a9ed, type: 3}
   m_PrefabInstance: {fileID: 1477867952}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &921728419 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4712704025220209879, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
+  m_PrefabInstance: {fileID: 5022853100895133682}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9329cb4ae5765dc4c8007a3c34767e5b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BackpackMinigameUI
 --- !u!1 &923015198 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8550585858259769689, guid: 0c85bd08c0158fd49a049f08520ff227, type: 3}
@@ -18464,6 +18475,10 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 912145008672907500, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1200694222695984254, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -18476,6 +18491,10 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1752235582}
+    - target: {fileID: 2569909798415124913, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
+      propertyPath: minigameUI
+      value: 
+      objectReference: {fileID: 921728419}
     - target: {fileID: 3253391964180843985, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -18548,6 +18567,10 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1752235582}
+    - target: {fileID: 6742975932618711191, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
+      propertyPath: minigameUI
+      value: 
+      objectReference: {fileID: 921728419}
     - target: {fileID: 7036302608816471448, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: m_Name
       value: GameplayCorePrefab
@@ -18562,6 +18585,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8254793610159605757, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8570033980479128015, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

@@ -12715,6 +12715,7 @@ MonoBehaviour:
   highlightOverlay: {fileID: 627921284}
   testSpawnItems:
   - {fileID: 11400000, guid: b3d405c29bd65ad4cb17556483f36397, type: 2}
+  - {fileID: 11400000, guid: 9e21d412993373540b7bdf3ee729b5cc, type: 2}
 --- !u!4 &2050035795
 Transform:
   m_ObjectHideFlags: 0
