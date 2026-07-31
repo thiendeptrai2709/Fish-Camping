@@ -32,13 +32,15 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     private float currentWeight = 0f;
     private FishGrade currentGrade = FishGrade.Normal;
 
+    private CookingSlotUI originIngredientSlot = null;
+
     public void SetFishInstanceData(float length, float weight, FishGrade grade)
     {
         currentLength = length;
         currentWeight = weight;
         currentGrade = grade;
     }
-
+    public void SetOriginIngredientSlot(CookingSlotUI slot) => originIngredientSlot = slot;
     public float GetLength() => currentLength;
     public float GetWeight() => currentWeight;
     public FishGrade GetGrade() => currentGrade;
@@ -191,9 +193,6 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        // Nếu là đồ từ nồi, CẤM TUYỆT ĐỐI kéo thả để né lỗi Unity
-        if (isFromCooking) return;
-
         if (eventData.button != PointerEventData.InputButton.Left) return;
 
         isDragging = true;
@@ -209,7 +208,19 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             ItemInfoPanelUI.Instance.ClearInfo();
         }
 
-        if (isEquipped && currentSlot != null)
+        if (isFromCooking || originIngredientSlot != null)
+        {
+            Canvas rootCanvas = GetComponentInParent<Canvas>();
+            if (rootCanvas != null) transform.SetParent(rootCanvas.transform, true);
+
+            rectTransform.anchorMin = new Vector2(0, 1);
+            rectTransform.anchorMax = new Vector2(0, 1);
+            UpdateVisualSize();
+
+            transform.SetAsLastSibling();
+            if (BackpackMinigameUI.Instance != null) BackpackMinigameUI.Instance.OnItemBeginDragFromExternal(this, eventData.position);
+        }
+        else if (isEquipped && currentSlot != null)
         {
             currentSlot.RemoveEquippedItem();
 
@@ -286,23 +297,37 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         if (isHandledBySlot)
         {
             isHandledBySlot = false;
-            if (minigameUI != null) minigameUI.HideHighlight();
+            if (BackpackMinigameUI.Instance != null) BackpackMinigameUI.Instance.HideHighlight();
             return;
         }
 
-        if (isFromCooking)
+        if (isFromCooking || originIngredientSlot != null)
         {
-            bool placedInGrid = minigameUI.TryPlaceItemFromExternal(this, eventData.position);
+            bool isOverBalo = BackpackMinigameUI.Instance != null && RectTransformUtility.RectangleContainsScreenPoint(BackpackMinigameUI.Instance.GetGridRoot(), eventData.position, eventData.pressEventCamera);
+            bool isOverXe = TrunkMinigameUI.Instance != null && RectTransformUtility.RectangleContainsScreenPoint(TrunkMinigameUI.Instance.GetGridRoot(), eventData.position, eventData.pressEventCamera);
+            bool placedInGrid = false;
+
+            if (isOverXe) { placedInGrid = TrunkMinigameUI.Instance.TryPlaceItemFromExternal(this, eventData.position); if (placedInGrid) currentOwner = GridOwner.Trunk; }
+            else if (isOverBalo) { placedInGrid = BackpackMinigameUI.Instance.TryPlaceItemFromExternal(this, eventData.position); if (placedInGrid) currentOwner = GridOwner.Backpack; }
+
             if (placedInGrid)
             {
-                isFromCooking = false;
-                if (CookingUIManager.Instance != null) CookingUIManager.Instance.OnFoodCollectedSuccessfully();
+                if (isFromCooking)
+                {
+                    isFromCooking = false;
+                    if (CookingUIManager.Instance != null) CookingUIManager.Instance.OnFoodCollectedSuccessfully();
+                }
+                originIngredientSlot = null; // Quên đường về vì đã vào Balo/Xe thành công
             }
             else
             {
-                if (CookingUIManager.Instance != null) CookingUIManager.Instance.ReturnFoodToSlot(this);
+                // Nếu là đồ ăn chín thì quay lại khay 0, nếu là nguyên liệu thì quay về cái nồi cũ
+                if (isFromCooking && CookingUIManager.Instance != null) CookingUIManager.Instance.ReturnFoodToSlot(this);
+                else if (originIngredientSlot != null) originIngredientSlot.ReturnIngredient(this);
             }
-            if (minigameUI != null) minigameUI.HideHighlight();
+
+            if (BackpackMinigameUI.Instance != null) BackpackMinigameUI.Instance.HideHighlight();
+            if (TrunkMinigameUI.Instance != null) TrunkMinigameUI.Instance.HideHighlight();
             return;
         }
 

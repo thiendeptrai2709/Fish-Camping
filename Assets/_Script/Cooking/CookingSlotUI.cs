@@ -2,11 +2,13 @@
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class CookingSlotUI : MonoBehaviour, IDropHandler, IPointerClickHandler
+public class CookingSlotUI : MonoBehaviour, IDropHandler, IPointerClickHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     public ItemShapeSO CurrentItem { get; private set; }
 
     [SerializeField] private Image itemIcon; // Ảnh hiển thị nguyên liệu trong ô
+    private InventoryItemUI draggedProxyItem; // Vật thế thân khi kéo thả
+    private ItemShapeSO itemBackup; // Giữ data phòng khi thả trượt
 
     private void Awake()
     {
@@ -72,5 +74,45 @@ public class CookingSlotUI : MonoBehaviour, IDropHandler, IPointerClickHandler
                 }
             }
         }
+    }
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+        if (eventData.button != PointerEventData.InputButton.Left || CurrentItem == null) return;
+
+        itemBackup = CurrentItem;
+        ClearSlot(); // Tạm xóa ảnh ở nồi đi
+
+        // Sinh ra một item bám theo chuột
+        GameObject prefab = CookingUIManager.Instance.GetItemPrefab();
+        if (prefab != null)
+        {
+            GameObject itemObj = Instantiate(prefab, transform.root);
+            draggedProxyItem = itemObj.GetComponent<InventoryItemUI>();
+            draggedProxyItem.Setup(itemBackup, BackpackMinigameUI.Instance, 0, 0, false);
+            draggedProxyItem.SetOriginIngredientSlot(this); // Khai báo xuất xứ để biết đường về
+
+            draggedProxyItem.OnBeginDrag(eventData);
+        }
+    }
+
+    public void OnDrag(PointerEventData eventData)
+    {
+        if (draggedProxyItem != null) draggedProxyItem.OnDrag(eventData);
+    }
+
+    public void OnEndDrag(PointerEventData eventData)
+    {
+        if (draggedProxyItem != null)
+        {
+            draggedProxyItem.OnEndDrag(eventData);
+            draggedProxyItem = null;
+        }
+    }
+
+    public void ReturnIngredient(InventoryItemUI proxyItem)
+    {
+        // Bị thả rơi ra ngoài vũ trụ -> Hủy item trên chuột và hồi sinh vào nồi
+        ReceiveItem(proxyItem.GetItemShape());
+        Destroy(proxyItem.gameObject);
     }
 }

@@ -2153,6 +2153,37 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableTire
   tireRepairMinigame: {fileID: 6588371454107864548}
+--- !u!1 &6266195929406498191
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1086924796832470905}
+  m_Layer: 3
+  m_Name: DriverSeat
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1086924796832470905
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6266195929406498191}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.83, y: 1.27, z: 0.31}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9199933778229469735}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6342876642413886036
 GameObject:
   m_ObjectHideFlags: 0
@@ -2365,6 +2396,7 @@ Transform:
   - {fileID: 374782007085921243}
   - {fileID: 1065322887868291382}
   - {fileID: 1906215413318952013}
+  - {fileID: 1086924796832470905}
   m_Father: {fileID: 8537560577896252487}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &8825098225511885042
@@ -2632,7 +2664,7 @@ Transform:
   m_GameObject: {fileID: 6979421408826787828}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.36, y: -2.88, z: 0}
+  m_LocalPosition: {x: -1.99, y: -2.79, z: -1.389}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3009,6 +3041,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::VehicleEnterExit
   playerObject: {fileID: 0}
   playerCamera: {fileID: 0}
+  playerAnimation: {fileID: 0}
+  playerCollider: {fileID: 0}
+  playerRigidbody: {fileID: 0}
+  driverSeatPoint: {fileID: 1086924796832470905}
   vehicleInput: {fileID: 8457522825824892041}
   vehicleController: {fileID: 1260891777461015879}
   carCamera: {fileID: 0}
@@ -3016,6 +3052,7 @@ MonoBehaviour:
   interactableHood: {fileID: 1358497162715296175}
   interactableTrunk: {fileID: 5743390993015314429}
   engineRepair: {fileID: 5224876922350798403}
+  vehicleStats: {fileID: 6911055058645893938}
   OnEnteredVehicle:
     m_PersistentCalls:
       m_Calls:
@@ -3511,6 +3548,7 @@ GameObject:
   - component: {fileID: 7892098748989154847}
   - component: {fileID: 958326535375360560}
   - component: {fileID: 5743390993015314429}
+  - component: {fileID: 594690504660048728}
   m_Layer: 3
   m_Name: PickupAwning
   m_TagString: Untagged
@@ -3655,6 +3693,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InteractableTrunk
   trunkHinge: {fileID: 2340393170026331245}
   trunkInventory: {fileID: 7892098748989154847}
+--- !u!114 &594690504660048728
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8255171110751981243}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a060c6d69b437d40bd8963360b62fa1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TrunkMinigameUI
+  gridData: {fileID: 0}
+  gridRootRect: {fileID: 0}
+  itemsContainer: {fileID: 0}
+  cellVisualPrefab: {fileID: 8483205119547044316, guid: 85a08912caa0f614b8a8c26429c8ead8, type: 3}
+  highlightOverlay: {fileID: 0}
 --- !u!1 &8387264529292031677
 GameObject:
   m_ObjectHideFlags: 0

@@ -2505,7 +2505,6 @@ GameObject:
   - component: {fileID: 5357457113109584470}
   - component: {fileID: 7806615386800030187}
   - component: {fileID: 2809749041510651395}
-  - component: {fileID: 1038505990937777229}
   - component: {fileID: 1838012481729916704}
   - component: {fileID: 7532426258691569894}
   - component: {fileID: 54405733136720238}
@@ -2564,7 +2563,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 1927e2951305f3c4f889e43bbc0f5ca6, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
-  m_ApplyRootMotion: 1
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
@@ -2597,18 +2596,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b3f43f0b0a237db47b7d988df879f766, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAnimation
---- !u!114 &1038505990937777229
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8249473588253293859}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6f3423618f86e7b45abf12d58cdba400, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerInputHandler
 --- !u!143 &1838012481729916704
 CharacterController:
   m_ObjectHideFlags: 0
