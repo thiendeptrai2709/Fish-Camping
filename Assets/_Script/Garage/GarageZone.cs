@@ -38,6 +38,9 @@ public class GarageZone : MonoBehaviour
     [Header("=== THÔNG BÁO (NOTIFICATION) ===")]
     public TMP_Text notificationText;
 
+    [Header("=== CHUỘT ===")]
+    public PlayerCursor playerCursor;
+
     private bool isInsideGara = false;
     private bool isUIOpen = false;
 
@@ -105,6 +108,9 @@ public class GarageZone : MonoBehaviour
         if (garageUIPanel != null) garageUIPanel.SetActive(isUIOpen);
         if (pressBPrompt != null) pressBPrompt.SetActive(!isUIOpen);
         if (isUIOpen) UpdateAllUI();
+
+        // Nếu UI mở thì set false (mở khóa chuột), nếu UI đóng thì set true (khóa chuột)
+        if (playerCursor != null) playerCursor.SetCursorState(!isUIOpen);
     }
 
     public void CloseGarageUI()
@@ -112,6 +118,9 @@ public class GarageZone : MonoBehaviour
         isUIOpen = false;
         if (garageUIPanel != null) garageUIPanel.SetActive(false);
         if (pressBPrompt != null && isInsideGara) pressBPrompt.SetActive(true);
+
+        // Khóa chuột lại khi thoát UI
+        if (playerCursor != null) playerCursor.SetCursorState(true);
     }
 
     [Header("=== CĂN CHỈNH BÁNH XE (CHỐNG LỖI 3D) ===")]

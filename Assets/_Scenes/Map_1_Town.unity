@@ -10886,6 +10886,17 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1366280554 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7259076512757741476, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
+  m_PrefabInstance: {fileID: 5022853100895133682}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f976ab1fb6284a4580ea0cdcf5240b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerCursor
 --- !u!1 &1367322261
 GameObject:
   m_ObjectHideFlags: 0
@@ -15455,6 +15466,7 @@ MonoBehaviour:
   - {fileID: 1393172580}
   - {fileID: 829778494}
   notificationText: {fileID: 372012401}
+  playerCursor: {fileID: 1366280554}
   wheelRotationOffset: {x: 180, y: 90, z: 180}
   wheelScaleMultiplier: 2
 --- !u!65 &1752235583
