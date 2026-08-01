@@ -2913,7 +2913,7 @@ MonoBehaviour:
   m_Interactable: 1
   m_TargetGraphic: {fileID: 1044990690}
   m_TextComponent: {fileID: 2113461250}
-  m_Placeholder: {fileID: 0}
+  m_Placeholder: {fileID: 1651386495}
   m_ContentType: 7
   m_InputType: 2
   m_AsteriskChar: 42
@@ -5651,7 +5651,7 @@ MonoBehaviour:
   m_Interactable: 1
   m_TargetGraphic: {fileID: 5962140251690982855}
   m_TextComponent: {fileID: 637056166}
-  m_Placeholder: {fileID: 0}
+  m_Placeholder: {fileID: 297791440}
   m_ContentType: 6
   m_InputType: 0
   m_AsteriskChar: 42
@@ -5794,7 +5794,7 @@ MonoBehaviour:
   m_Interactable: 1
   m_TargetGraphic: {fileID: 7676350677845897517}
   m_TextComponent: {fileID: 90868173}
-  m_Placeholder: {fileID: 0}
+  m_Placeholder: {fileID: 383014129}
   m_ContentType: 7
   m_InputType: 2
   m_AsteriskChar: 42
