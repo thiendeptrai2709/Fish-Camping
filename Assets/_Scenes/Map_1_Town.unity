@@ -7058,7 +7058,7 @@ PrefabInstance:
     - target: {fileID: 4939482030673223498, guid: 0365bd19e14642f4aafd0d64ae5e2aee, type: 3}
       propertyPath: loadingPanel
       value: 
-      objectReference: {fileID: 2130005793}
+      objectReference: {fileID: 1851607971}
     - target: {fileID: 8399593781887586383, guid: 0365bd19e14642f4aafd0d64ae5e2aee, type: 3}
       propertyPath: m_Name
       value: LoadingManager
@@ -21270,6 +21270,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 251722999969012134, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 5.0670166
+      objectReference: {fileID: 0}
     - target: {fileID: 908416167910092402, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: m_SizeDelta.x
       value: 0
@@ -21354,9 +21358,21 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6751143913522101178, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.2
+      objectReference: {fileID: 0}
     - target: {fileID: 7036302608816471448, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: m_Name
       value: GameplayCorePrefab
+      objectReference: {fileID: 0}
+    - target: {fileID: 7487779001576783255, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 4.26
+      objectReference: {fileID: 0}
+    - target: {fileID: 7530843135742004556, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 4.26
       objectReference: {fileID: 0}
     - target: {fileID: 7570405469666024767, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: m_AnchorMax.x
@@ -21365,6 +21381,10 @@ PrefabInstance:
     - target: {fileID: 7570405469666024767, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7774338594131855571, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.32
       objectReference: {fileID: 0}
     - target: {fileID: 8254793610159605757, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: m_AnchorMax.y
@@ -37227,6 +37247,11 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300000, guid: f84563c4522be5e4bbef79b6a74da743, type: 3}
+--- !u!1 &1851607971 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7753633872737841490, guid: b1f5df64885efb5408bb06c7b6eb4299, type: 3}
+  m_PrefabInstance: {fileID: 2130005789}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1852615340
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -40736,7 +40761,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 138402747919561927, guid: b1f5df64885efb5408bb06c7b6eb4299, type: 3}
   m_PrefabInstance: {fileID: 2130005789}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1851607971}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe4cde82f7ceba649aef3c041bcc2c00, type: 3}
@@ -40758,17 +40783,12 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1641937026301926799, guid: b1f5df64885efb5408bb06c7b6eb4299, type: 3}
   m_PrefabInstance: {fileID: 2130005789}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1851607971}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
---- !u!1 &2130005793 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6185495904915586217, guid: b1f5df64885efb5408bb06c7b6eb4299, type: 3}
-  m_PrefabInstance: {fileID: 2130005789}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2136561572
 PrefabInstance:
   m_ObjectHideFlags: 0
