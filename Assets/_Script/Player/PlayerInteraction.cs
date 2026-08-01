@@ -6,12 +6,8 @@ using UnityEngine.UI;
 [RequireComponent(typeof(PlayerInputHandler))]
 public class PlayerInteraction : MonoBehaviour
 {
-    [Header("Interaction Settings")]
-    [SerializeField] private Transform interactionPoint; // Điểm gốc "Point"
-    [SerializeField] private float interactDistance = 3f; // Bán kính tương tác
+    [SerializeField] private float interactDistance = 3f;
     [SerializeField] private LayerMask interactableLayer;
-
-    [Header("UI References")]
     [SerializeField] private Image crosshairImage;
     [SerializeField] private Color defaultCrosshairColor = Color.white;
     [SerializeField] private Color highlightCrosshairColor = Color.yellow;
@@ -20,48 +16,46 @@ public class PlayerInteraction : MonoBehaviour
     private PlayerInputHandler inputHandler;
     private PlayerCursor playerCursor;
     private PlayerMovement playerMovement;
+    private Transform cameraTransform;
     private FishingController fishingController;
-
     private IInteractable currentInteractable;
     private bool wasUIOpen;
-
     private void Awake()
     {
         inputHandler = GetComponent<PlayerInputHandler>();
         playerCursor = GetComponent<PlayerCursor>();
         playerMovement = GetComponent<PlayerMovement>();
+        cameraTransform = Camera.main.transform;
         fishingController = GetComponent<FishingController>();
-
-        if (interactionPoint == null)
-        {
-            Transform pointChild = transform.Find("Point");
-            interactionPoint = pointChild != null ? pointChild : transform;
-        }
     }
-
     private void OnDisable()
     {
-        ClearCurrentInteractable();
+        ClearCurrentInteractable(); // Tự động xóa focus, tắt UI chữ và tắt tâm ngắm
     }
-
     private void Update()
     {
-        // Xử lý Input bấm nút E (Đặt trước kiểm tra IsUIOpen để luôn nhận phím tua thoại)
-        HandleInteractInput();
-
-        // Kiểm tra trạng thái UI Menu
-        if (inputHandler != null && inputHandler.IsUIOpen != wasUIOpen)
+        if (inputHandler.IsUIOpen != wasUIOpen)
         {
             wasUIOpen = inputHandler.IsUIOpen;
 
-            if (crosshairImage != null) crosshairImage.enabled = !wasUIOpen;
-            if (playerCursor != null) playerCursor.SetCursorState(!wasUIOpen);
-            if (wasUIOpen) ClearCurrentInteractable();
+            if (crosshairImage != null)
+            {
+                crosshairImage.enabled = !wasUIOpen;
+            }
+
+            if (playerCursor != null)
+            {
+                playerCursor.SetCursorState(!wasUIOpen);
+            }
+
+            if (wasUIOpen)
+            {
+                ClearCurrentInteractable();
+            }
         }
 
-        if (inputHandler != null && inputHandler.IsUIOpen) return;
+        if (inputHandler.IsUIOpen) return;
 
-        // Nếu đang câu cá -> Tắt tương tác khác
         if (fishingController != null && fishingController.IsBusyFishing())
         {
             ClearCurrentInteractable();
@@ -69,56 +63,53 @@ public class PlayerInteraction : MonoBehaviour
         }
 
         CheckForInteractable();
+        HandleInteractInput();
     }
 
     private void CheckForInteractable()
     {
-        Vector3 origin = interactionPoint != null ? interactionPoint.position : transform.position;
-
-        Collider[] colliders = Physics.OverlapSphere(origin, interactDistance, interactableLayer);
-
-        IInteractable closestInteractable = null;
-        float minDistance = float.MaxValue;
-
-        foreach (var col in colliders)
+        if (Cursor.lockState != CursorLockMode.Locked)
         {
-            IInteractable interactable = col.GetComponentInParent<IInteractable>();
+            ClearCurrentInteractable();
+            return;
+        }
+        Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
+        Debug.DrawRay(ray.origin, ray.direction * interactDistance, Color.red);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, interactDistance, interactableLayer))
+        {
+            IInteractable interactable = hit.collider.GetComponent<IInteractable>();
+
             if (interactable != null)
             {
                 if (TireRepairMinigame.ActiveTire != null)
                 {
-                    InteractableTire hitTire = col.GetComponentInParent<InteractableTire>();
+                    InteractableTire hitTire = hit.collider.GetComponent<InteractableTire>();
                     if (hitTire == null || (hitTire.GetComponent<IInteractable>() != currentInteractable && hitTire.gameObject != TireRepairMinigame.ActiveTire.gameObject))
                     {
-                        continue;
+                        ClearCurrentInteractable();
+                        return;
                     }
                 }
 
-                float distance = Vector3.Distance(origin, col.transform.position);
-                if (distance < minDistance)
+                if (interactable != currentInteractable)
                 {
-                    minDistance = distance;
-                    closestInteractable = interactable;
+                    if (currentInteractable != null)
+                    {
+                        currentInteractable.OnLoseFocus();
+                    }
+
+                    currentInteractable = interactable;
+                    currentInteractable.OnFocus();
                 }
+
+                SetCrosshairState(true, interactable.GetInteractPrompt());
+                return;
             }
         }
 
-        if (closestInteractable != null)
-        {
-            if (closestInteractable != currentInteractable)
-            {
-                if (currentInteractable != null) currentInteractable.OnLoseFocus();
-
-                currentInteractable = closestInteractable;
-                currentInteractable.OnFocus();
-            }
-
-            SetCrosshairState(true, currentInteractable.GetInteractPrompt());
-        }
-        else
-        {
-            ClearCurrentInteractable();
-        }
+        ClearCurrentInteractable();
     }
 
     private void ClearCurrentInteractable()
@@ -146,35 +137,20 @@ public class PlayerInteraction : MonoBehaviour
 
     private void HandleInteractInput()
     {
-        if (inputHandler != null && inputHandler.InteractTriggered)
+        if (inputHandler.InteractTriggered && currentInteractable != null)
         {
-            // 🌟 ĐIỂM SỬA QUAN TRỌNG: Ưu tiên tua thoại nếu Dialogue đang mở!
-            if (DialogueManager.Instance != null && DialogueManager.Instance.IsDialogueActive)
+            MonoBehaviour targetObject = currentInteractable as MonoBehaviour;
+            if (targetObject != null)
             {
-                DialogueManager.Instance.DisplayNextSentence();
-                return;
+                playerMovement.FaceTarget(targetObject.transform.position);
             }
 
-            // Nếu không mở thoại và đang nhắm vào vật thể -> Gọi Interact()
-            if (currentInteractable != null)
-            {
-                MonoBehaviour targetObject = currentInteractable as MonoBehaviour;
-                if (targetObject != null && playerMovement != null)
-                {
-                    playerMovement.FaceTarget(targetObject.transform.position);
-                }
-
-                currentInteractable.Interact();
-            }
+            currentInteractable.Interact();
         }
     }
 
-    public bool HasActiveInteractable() => currentInteractable != null;
-
-    private void OnDrawGizmosSelected()
+    public bool HasActiveInteractable()
     {
-        Vector3 origin = interactionPoint != null ? interactionPoint.position : transform.position;
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(origin, interactDistance);
+        return currentInteractable != null;
     }
 }
