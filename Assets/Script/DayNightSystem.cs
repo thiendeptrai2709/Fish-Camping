@@ -17,14 +17,15 @@ public class DayNightSystem : MonoBehaviour
     public float maxMoonIntensity = 0.1f;
 
     [Header("Skybox Settings")]
-    public Material dayNightSkyboxMaterial;
+    public Material daySkybox;
+    public Material nightSkybox;
 
     private float sunXRotation;
 
     void Update()
     {
-        UpdateIntensityAndSkybox();
         UpdateTime();
+        UpdateIntensityAndSkybox();
     }
 
     void UpdateTime()
@@ -39,6 +40,7 @@ public class DayNightSystem : MonoBehaviour
 
     void UpdateIntensityAndSkybox()
     {
+        // Tính góc xoay của Mặt Trời
         sunXRotation = (currentTime * 360f) - 90f;
         sunLight.transform.localRotation = Quaternion.Euler(sunXRotation, 170f, 0f);
 
@@ -47,9 +49,11 @@ public class DayNightSystem : MonoBehaviour
             moonLight.transform.localRotation = Quaternion.Euler(sunXRotation + 180f, 170f, 0f);
         }
 
+        // Tính toán độ chiếu sáng của mặt trời xuống mặt đất (độ cao mặt trời)
         float dotProduct = Vector3.Dot(sunLight.transform.forward, Vector3.down);
         float sunFactor = Mathf.Clamp01(dotProduct);
 
+        // Cập nhật cường độ sáng
         sunLight.intensity = Mathf.SmoothStep(0f, maxSunIntensity, sunFactor);
 
         if (moonLight != null)
@@ -57,10 +61,20 @@ public class DayNightSystem : MonoBehaviour
             moonLight.intensity = Mathf.SmoothStep(maxMoonIntensity, 0f, sunFactor);
         }
 
-        if (dayNightSkyboxMaterial != null)
+
+        if (sunFactor > 0f)
         {
-            float blendValue = 1f - sunFactor;
-            dayNightSkyboxMaterial.SetFloat("_Blend", blendValue);
+            if (daySkybox != null && RenderSettings.skybox != daySkybox)
+            {
+                RenderSettings.skybox = daySkybox;
+            }
+        }
+        else
+        {
+            if (nightSkybox != null && RenderSettings.skybox != nightSkybox)
+            {
+                RenderSettings.skybox = nightSkybox;
+            }
         }
     }
 }

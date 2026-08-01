@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class WeatherSystem : MonoBehaviour
 {
@@ -10,7 +10,8 @@ public class WeatherSystem : MonoBehaviour
     public float minFogDensity = 0.005f;
 
     [Header("Rain Settings")]
-    public ParticleSystem rainParticleSystem;
+    [Tooltip("Kéo file Prefab Mưa từ cửa sổ Project vào đây")]
+    public GameObject rainPrefab;
     public Transform playerTransform;
     public float rainCheckInterval = 60f;
     public float rainDuration = 240f;
@@ -20,24 +21,23 @@ public class WeatherSystem : MonoBehaviour
     private bool isRaining = false;
     private float nextRainCheckTime;
     private float rainEndTime;
-    private bool positionInitialized = false;
+
+    // Biến lưu trữ Instance mưa được sinh ra trong Scene
+    private GameObject currentRainInstance;
+    private ParticleSystem currentRainParticle;
 
     void Start()
     {
         RenderSettings.fog = true;
         RenderSettings.fogMode = FogMode.ExponentialSquared;
         nextRainCheckTime = Time.time + rainCheckInterval;
-
-        if (rainParticleSystem != null)
-        {
-            rainParticleSystem.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-        }
     }
 
     void Update()
     {
         UpdateFog();
         UpdateRainLogic();
+        FollowPlayer();
     }
 
     void UpdateFog()
@@ -66,56 +66,85 @@ public class WeatherSystem : MonoBehaviour
 
     void UpdateRainLogic()
     {
+        // Kiểm tra tỉ lệ mưa
         if (!isRaining && Time.time >= nextRainCheckTime)
         {
             nextRainCheckTime = Time.time + rainCheckInterval;
 
             if (Random.Range(0f, 100f) < rainChance)
             {
-                isRaining = true;
-                rainEndTime = Time.time + rainDuration;
-                positionInitialized = false;
+                StartRain();
             }
         }
 
+        // Hết thời gian mưa
         if (isRaining && Time.time >= rainEndTime)
         {
-            isRaining = false;
-            nextRainCheckTime = Time.time + rainCheckInterval;
+            StopRain();
         }
+    }
 
-        if (rainParticleSystem != null)
+    void StartRain()
+    {
+        isRaining = true;
+        rainEndTime = Time.time + rainDuration;
+
+        // Sinh ra Prefab mưa và giữ nguyên 100% Transform (Position, Rotation, Scale) của Prefab
+        if (rainPrefab != null && currentRainInstance == null)
         {
-            if (isRaining)
-            {
-                if (!positionInitialized)
-                {
-                    CenterRainOnPlayer();
-                    positionInitialized = true;
-                }
+            currentRainInstance = Instantiate(rainPrefab);
+            currentRainParticle = currentRainInstance.GetComponent<ParticleSystem>();
 
-                if (!rainParticleSystem.isPlaying)
-                {
-                    rainParticleSystem.Play(true);
-                }
-            }
-            else
+            // Cập nhật ngay vị trí ban đầu theo Player (giữ nguyên Rotation & Scale gốc của Prefab)
+            if (playerTransform != null)
             {
-                if (rainParticleSystem.isPlaying)
-                {
-                    rainParticleSystem.Stop(true, ParticleSystemStopBehavior.StopEmitting);
-                }
+                currentRainInstance.transform.position = GetRainPosition();
             }
         }
     }
 
-    void CenterRainOnPlayer()
+    void StopRain()
     {
-        if (playerTransform != null && rainParticleSystem != null)
+        isRaining = false;
+        nextRainCheckTime = Time.time + rainCheckInterval;
+
+        if (currentRainInstance != null)
         {
-            Vector3 spawnPosition = playerTransform.position;
-            spawnPosition.y += 15f;
-            rainParticleSystem.transform.position = spawnPosition;
+            GameObject rainToDestroy = currentRainInstance;
+            currentRainInstance = null;
+
+            if (currentRainParticle != null)
+            {
+                // Tắt phát hạt mới và chờ hạt cũ rơi hết trước khi Destroy
+                currentRainParticle.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+                Destroy(rainToDestroy, 3f);
+            }
+            else
+            {
+                Destroy(rainToDestroy);
+            }
+
+            currentRainParticle = null;
         }
+    }
+
+    void FollowPlayer()
+    {
+        // Cho hệ thống mưa đi theo Player khi di chuyển
+        if (isRaining && currentRainInstance != null && playerTransform != null)
+        {
+            currentRainInstance.transform.position = GetRainPosition();
+        }
+    }
+
+    Vector3 GetRainPosition()
+    {
+        if (playerTransform != null)
+        {
+            Vector3 targetPos = playerTransform.position;
+            targetPos.y += 20f; // Độ cao mưa so với Player
+            return targetPos;
+        }
+        return transform.position;
     }
 }

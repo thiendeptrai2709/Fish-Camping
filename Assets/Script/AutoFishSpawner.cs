@@ -5,37 +5,36 @@ public class AutoFishSpawner : MonoBehaviour
 {
     [Header("Hệ Thống Liên Kết")]
     public DayNightSystem dayNightSystem;
-    public LayerMask waterLayer;
-    public string targetWaterTag = "Untagged"; // Thẻ Tag để nhận diện đúng Map
+
+    [Header("Cấu Hình Điểm Sinh Cá (Spawn Points)")]
+    public List<Transform> spawnPoints; // Danh sách các điểm cố định trên map
 
     [Header("Cấu Hình Sinh Cá")]
     public List<FishData> fishList;
     public int totalMaxFishInWorld = 30;  // Tổng số lượng cá tối đa của TẤT CẢ các loài trong Map này
     public float spawnInterval = 5f;
 
-    [Header("Cấu Hình Độ Sâu")]
-    public float minDepth = 1f;           // Cách mặt nước tối thiểu bao nhiêu
-    public float maxDepth = 6f;           // Sâu tối đa bao nhiêu
+    [Header("Cấu Hình Độ Sâu (Tùy chỉnh quanh điểm spawn)")]
+    public float minDepthOffset = 0f;     // Độ lệch sâu tối thiểu so với điểm mốc
+    public float maxDepthOffset = 2f;     // Độ lệch sâu tối đa so với điểm mốc
 
     private List<GameObject> spawnedFishes = new List<GameObject>();
     private Dictionary<GameObject, FishData> fishToDataMap = new Dictionary<GameObject, FishData>();
     private float nextSpawnTime;
-    private Bounds waterBounds;
-    private bool isWaterDetected = false;
 
     void Start()
     {
-        TryDetectWater();
         nextSpawnTime = Time.time + spawnInterval;
+
+        if (spawnPoints == null || spawnPoints.Count == 0)
+        {
+            Debug.LogWarning("Chưa gán điểm spawn nào cho AutoFishSpawner!", this);
+        }
     }
 
     void Update()
     {
-        if (!isWaterDetected)
-        {
-            TryDetectWater();
-            return;
-        }
+        if (spawnPoints == null || spawnPoints.Count == 0) return;
 
         RefreshFishCounter();
 
@@ -43,24 +42,6 @@ public class AutoFishSpawner : MonoBehaviour
         {
             nextSpawnTime = Time.time + spawnInterval;
             TrySpawnRandomFish();
-        }
-    }
-
-    void TryDetectWater()
-    {
-        Collider[] allColliders = FindObjectsByType<Collider>(FindObjectsSortMode.None);
-
-        foreach (var col in allColliders)
-        {
-            string layerName = LayerMask.LayerToName(col.gameObject.layer);
-
-
-            if (layerName == "Water" && col.CompareTag(targetWaterTag))
-            {
-                waterBounds = col.bounds;
-                isWaterDetected = true;
-
-            }
         }
     }
 
@@ -89,7 +70,7 @@ public class AutoFishSpawner : MonoBehaviour
     }
 
     void TrySpawnRandomFish()
-    {        
+    {
         if (spawnedFishes.Count >= totalMaxFishInWorld) return;
 
         float currentTime = dayNightSystem.currentTime;
@@ -133,15 +114,18 @@ public class AutoFishSpawner : MonoBehaviour
 
     void ExecuteSpawn(FishData fishData)
     {
-        if (fishData.fishPrefab == null) return;
+        if (fishData.fishPrefab == null || spawnPoints.Count == 0) return;
 
-        float randomX = Random.Range(waterBounds.min.x, waterBounds.max.x);
-        float randomZ = Random.Range(waterBounds.min.z, waterBounds.max.z);
-        float waterSurfaceY = waterBounds.max.y;
-        float randomY = Random.Range(waterSurfaceY - maxDepth, waterSurfaceY - minDepth);
-        randomY = Mathf.Max(randomY, waterBounds.min.y); // Giữ cá không bị lún xuống dưới đáy bùn
+        // Chọn ngẫu nhiên một điểm trong danh sách điểm spawn đã thiết lập
+        Transform randomPoint = spawnPoints[Random.Range(0, spawnPoints.Count)];
+        if (randomPoint == null) return;
 
-        Vector3 spawnPosition = new Vector3(randomX, randomY, randomZ);
+        // Tính toán vị trí dựa trên điểm mốc cộng thêm độ sâu ngẫu nhiên
+        Vector3 basePos = randomPoint.position;
+        float randomOffsetY = Random.Range(minDepthOffset, maxDepthOffset);
+
+        Vector3 spawnPosition = new Vector3(basePos.x, basePos.y - randomOffsetY, basePos.z);
+
         GameObject newFish = Instantiate(fishData.fishPrefab, spawnPosition, Quaternion.identity);
         newFish.transform.SetParent(this.transform);
 
