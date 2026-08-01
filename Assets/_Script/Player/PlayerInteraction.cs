@@ -6,8 +6,12 @@ using UnityEngine.UI;
 [RequireComponent(typeof(PlayerInputHandler))]
 public class PlayerInteraction : MonoBehaviour
 {
-    [SerializeField] private float interactDistance = 3f;
+    [Header("Interaction Settings")]
+    [SerializeField] private Transform interactionPoint; // Điểm gốc "Point"
+    [SerializeField] private float interactDistance = 3f; // Bán kính tương tác
     [SerializeField] private LayerMask interactableLayer;
+
+    [Header("UI References")]
     [SerializeField] private Image crosshairImage;
     [SerializeField] private Color defaultCrosshairColor = Color.white;
     [SerializeField] private Color highlightCrosshairColor = Color.yellow;
@@ -16,27 +20,48 @@ public class PlayerInteraction : MonoBehaviour
     private PlayerInputHandler inputHandler;
     private PlayerCursor playerCursor;
     private PlayerMovement playerMovement;
-    private Transform cameraTransform;
     private FishingController fishingController;
 
-    // ĐỔI 1: Chuyển biến lưu sang INpcInteractable
-    private INpcInteractable currentInteractable;
+    private IInteractable currentInteractable;
+    private bool wasUIOpen;
 
     private void Awake()
     {
         inputHandler = GetComponent<PlayerInputHandler>();
         playerCursor = GetComponent<PlayerCursor>();
         playerMovement = GetComponent<PlayerMovement>();
-
-        if (Camera.main != null)
-        {
-            cameraTransform = Camera.main.transform;
-        }
         fishingController = GetComponent<FishingController>();
+
+        if (interactionPoint == null)
+        {
+            Transform pointChild = transform.Find("Point");
+            interactionPoint = pointChild != null ? pointChild : transform;
+        }
+    }
+
+    private void OnDisable()
+    {
+        ClearCurrentInteractable();
     }
 
     private void Update()
     {
+        // Xử lý Input bấm nút E (Đặt trước kiểm tra IsUIOpen để luôn nhận phím tua thoại)
+        HandleInteractInput();
+
+        // Kiểm tra trạng thái UI Menu
+        if (inputHandler != null && inputHandler.IsUIOpen != wasUIOpen)
+        {
+            wasUIOpen = inputHandler.IsUIOpen;
+
+            if (crosshairImage != null) crosshairImage.enabled = !wasUIOpen;
+            if (playerCursor != null) playerCursor.SetCursorState(!wasUIOpen);
+            if (wasUIOpen) ClearCurrentInteractable();
+        }
+
+        if (inputHandler != null && inputHandler.IsUIOpen) return;
+
+        // Nếu đang câu cá -> Tắt tương tác khác
         if (fishingController != null && fishingController.IsBusyFishing())
         {
             ClearCurrentInteractable();
@@ -44,46 +69,56 @@ public class PlayerInteraction : MonoBehaviour
         }
 
         CheckForInteractable();
-        HandleInteractInput();
     }
 
     private void CheckForInteractable()
     {
-        if (cameraTransform == null)
+        Vector3 origin = interactionPoint != null ? interactionPoint.position : transform.position;
+
+        Collider[] colliders = Physics.OverlapSphere(origin, interactDistance, interactableLayer);
+
+        IInteractable closestInteractable = null;
+        float minDistance = float.MaxValue;
+
+        foreach (var col in colliders)
         {
-            if (Camera.main != null) cameraTransform = Camera.main.transform;
-            else return;
-        }
-
-        Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
-        Debug.DrawRay(ray.origin, ray.direction * interactDistance, Color.red);
-        RaycastHit hit;
-
-        if (Physics.Raycast(ray, out hit, interactDistance, interactableLayer))
-        {
-            // ĐỔI 2: Tìm INpcInteractable ở chính nó hoặc ở cha (NPCBase)
-            INpcInteractable interactable = hit.collider.GetComponentInParent<INpcInteractable>();
-
+            IInteractable interactable = col.GetComponentInParent<IInteractable>();
             if (interactable != null)
             {
-                if (interactable != currentInteractable)
+                if (TireRepairMinigame.ActiveTire != null)
                 {
-                    if (currentInteractable != null)
+                    InteractableTire hitTire = col.GetComponentInParent<InteractableTire>();
+                    if (hitTire == null || (hitTire.GetComponent<IInteractable>() != currentInteractable && hitTire.gameObject != TireRepairMinigame.ActiveTire.gameObject))
                     {
-                        currentInteractable.OnLoseFocus();
+                        continue;
                     }
-
-                    currentInteractable = interactable;
-                    currentInteractable.OnFocus();
-                    Debug.Log("<color=green>[PLAYER INTERACTION] Nhắm trúng NPC: </color>" + hit.collider.name);
                 }
 
-                SetCrosshairState(true, interactable.GetInteractPrompt());
-                return;
+                float distance = Vector3.Distance(origin, col.transform.position);
+                if (distance < minDistance)
+                {
+                    minDistance = distance;
+                    closestInteractable = interactable;
+                }
             }
         }
 
-        ClearCurrentInteractable();
+        if (closestInteractable != null)
+        {
+            if (closestInteractable != currentInteractable)
+            {
+                if (currentInteractable != null) currentInteractable.OnLoseFocus();
+
+                currentInteractable = closestInteractable;
+                currentInteractable.OnFocus();
+            }
+
+            SetCrosshairState(true, currentInteractable.GetInteractPrompt());
+        }
+        else
+        {
+            ClearCurrentInteractable();
+        }
     }
 
     private void ClearCurrentInteractable()
@@ -113,6 +148,14 @@ public class PlayerInteraction : MonoBehaviour
     {
         if (inputHandler != null && inputHandler.InteractTriggered)
         {
+            // 🌟 ĐIỂM SỬA QUAN TRỌNG: Ưu tiên tua thoại nếu Dialogue đang mở!
+            if (DialogueManager.Instance != null && DialogueManager.Instance.IsDialogueActive)
+            {
+                DialogueManager.Instance.DisplayNextSentence();
+                return;
+            }
+
+            // Nếu không mở thoại và đang nhắm vào vật thể -> Gọi Interact()
             if (currentInteractable != null)
             {
                 MonoBehaviour targetObject = currentInteractable as MonoBehaviour;
@@ -121,14 +164,17 @@ public class PlayerInteraction : MonoBehaviour
                     playerMovement.FaceTarget(targetObject.transform.position);
                 }
 
-                Debug.Log("<color=cyan>[PLAYER INTERACTION] Gọi Interact() trên NPC thành công!</color>");
                 currentInteractable.Interact();
             }
         }
     }
 
-    public bool HasActiveInteractable()
+    public bool HasActiveInteractable() => currentInteractable != null;
+
+    private void OnDrawGizmosSelected()
     {
-        return currentInteractable != null;
+        Vector3 origin = interactionPoint != null ? interactionPoint.position : transform.position;
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(origin, interactDistance);
     }
 }

@@ -13,15 +13,29 @@ public class NPCOffroadUpgrade : MonoBehaviour
 
     public void HandleUpgradeInteraction(string npcName, System.Action onComplete)
     {
-        // 1. Chạy hội thoại chào hỏi trước
-        DialogueManager.Instance.StartDialogue(npcName, welcomeDialogues, () => {
+        if (DialogueManager.Instance != null)
+        {
+            // 1. Chạy thoại chào hỏi
+            DialogueManager.Instance.StartDialogue(npcName, welcomeDialogues, () => {
 
-            // 2. Hội thoại kết thúc thì mở giao diện Gara
-            GarageUIManager.Instance.OpenGarage(() => {
-
-                // 3. Khi người chơi tắt giao diện Gara, hoàn tất tương tác đưa NPC về Idle
-                onComplete?.Invoke();
+                // 2. Thoại xong mới mở Garage UI
+                if (GarageUIManager.Instance != null)
+                {
+                    GarageUIManager.Instance.OpenGarage(() => {
+                        onComplete?.Invoke(); // Tắt Garage -> Báo cho NPCBase trả về Idle
+                    });
+                }
+                else
+                {
+                    Debug.LogError("[NPCOffroadUpgrade] Thiếu GarageUIManager.Instance trong Scene!");
+                    onComplete?.Invoke();
+                }
             });
-        });
+        }
+        else
+        {
+            Debug.LogError("[NPCOffroadUpgrade] Thiếu DialogueManager.Instance trong Scene!");
+            onComplete?.Invoke();
+        }
     }
 }

@@ -46,37 +46,28 @@ public class NPCBase : MonoBehaviour, INpcInteractable
         RotateTowardsPlayer();
         SetNPCAnimationState(2);
 
+        // 1. Ưu tiên Quest
         if (_questGiver != null)
         {
             _questGiver.HandleQuestInteraction(npcName, _animator, () => {
                 ResetNPCState();
             });
         }
+        // 2. Ưu tiên Nâng cấp lốp xe
         else if (_tireUpgrader != null)
         {
             _tireUpgrader.HandleUpgradeInteraction(npcName, () => {
-                SetNPCAnimationState(2);
-                if (GarageUIManager.Instance != null)
-                {
-                    GarageUIManager.Instance.OpenGarage(() => {
-                        ResetNPCState();
-                    });
-                }
-                else ResetNPCState();
+                ResetNPCState(); // Chỉ cần ResetState, vì NPCOffroadUpgrade đã tự mở Garage rồi!
             });
         }
+        // 3. Ưu tiên Shop câu cá
         else if (_fishingShop != null)
         {
             _fishingShop.HandleShopInteraction(npcName, () => {
-                if (Shop_Tab_Manager.Instance != null)
-                {
-                    Shop_Tab_Manager.Instance.OpenShop(() => {
-                        ResetNPCState();
-                    });
-                }
-                else ResetNPCState();
+                ResetNPCState(); // Chỉ cần ResetState, vì NPCFishingShop đã tự mở Shop rồi!
             });
         }
+        // 4. Mặc định: Trò chuyện thông thường
         else
         {
             if (DialogueManager.Instance != null)
