@@ -128,6 +128,8 @@ public class GarageZone : MonoBehaviour
         }
 
         playerMoney -= tirePrice;
+        PlayerPrefs.SetInt("EquippedTireIndex", wheelIndex);
+        PlayerPrefs.Save();
         UpdateAllUI();
 
         Transform[] roots = new Transform[] { wheelFL, wheelFR, wheelRL, wheelRR };
