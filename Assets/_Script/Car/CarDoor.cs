@@ -7,6 +7,8 @@ public class CarDoor : MonoBehaviour, IInteractable
     [SerializeField] private VehicleEnterExit vehicleSystem;
     [SerializeField] private Transform exitPoint; // Cái Empty Object đứng cạnh cửa
 
+    public Transform ExitPoint => exitPoint; // Cho phép script khác lấy vị trí cửa xe
+
 
     private int normalLayer;
     private int outlineLayer;
@@ -27,9 +29,11 @@ public class CarDoor : MonoBehaviour, IInteractable
 
     public void OnLoseFocus()
     {
+        // Nếu object đang trong quá trình bị tiêu diệt thì bỏ qua để tránh lỗi
+        if (this == null) return;
+
         gameObject.layer = normalLayer;
     }
-
     public void Interact()
     {
         OnLoseFocus();

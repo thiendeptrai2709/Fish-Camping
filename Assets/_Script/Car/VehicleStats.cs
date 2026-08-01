@@ -40,9 +40,15 @@ public class VehicleStats : MonoBehaviour
     private float badRoadTimer;
 
     public UnityEvent OnStatsChanged;
+    private PlayerMovement playerMovement; // Khai báo reference
 
     private void Start()
     {
+        // Lấy component tự động từ playerTransform để tái sử dụng
+        if (playerTransform != null)
+        {
+            playerMovement = playerTransform.GetComponent<PlayerMovement>();
+        }
         ApplyDegradationToPhysics();
         UpdateUI();
     }
@@ -60,10 +66,20 @@ public class VehicleStats : MonoBehaviour
         bool isCapoClosed = (hoodHinge != null && !hoodHinge.IsFullyOpen);
         bool isEngineHidden = (engineMinigame != null && !engineMinigame.IsEngineOut);
 
+        bool isQTEPlaying = (qteMinigame != null && qteMinigame.IsPlaying);
+        bool isBalancePlaying = (balanceMinigame != null && balanceMinigame.IsPlaying);
+        bool isTireRepairing = TireRepairMinigame.ActiveTire != null; // Kiểm tra xem có lốp nào đang được sửa không
+
+        // Cập nhật trạng thái khóa di chuyển cho PlayerMovement
+        if (playerMovement != null)
+        {
+            playerMovement.IsMovementLocked = isQTEPlaying || isBalancePlaying || isTireRepairing;
+        }
+
         if (isCapoClosed || isEngineHidden)
         {
-            if (qteMinigame != null && qteMinigame.IsPlaying) qteMinigame.ForceAbort();
-            if (balanceMinigame != null && balanceMinigame.IsPlaying) balanceMinigame.ForceAbort();
+            if (isQTEPlaying) qteMinigame.ForceAbort();
+            if (isBalancePlaying) balanceMinigame.ForceAbort();
         }
 
         float currentSpeed = vehicleController.GetCurrentSpeedKmh();
@@ -106,6 +122,11 @@ public class VehicleStats : MonoBehaviour
             statsCanvasObject.SetActive(!statsCanvasObject.activeSelf);
     }
 
+    public void CloseOverviewPanel()
+    {
+        if (statsCanvasObject)
+            statsCanvasObject.SetActive(false);
+    }
     public void TryRepairEngine()
     {
         bool isQTEPlaying = (qteMinigame != null && qteMinigame.IsPlaying);

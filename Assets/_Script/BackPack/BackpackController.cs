@@ -36,6 +36,13 @@ public class BackpackController : MonoBehaviour
             return;
         }
 
+        // Tối ưu UX: Nếu Cốp xe đang mở, bấm Tab sẽ gọi thẳng lệnh đóng toàn bộ Cốp + Balo
+        if (TrunkInventory.CurrentOpenTrunk != null)
+        {
+            TrunkInventory.CurrentOpenTrunk.ForceCloseAll();
+            return;
+        }
+
         isOpen = !isOpen;
         SetUIState(isOpen, true);
     }

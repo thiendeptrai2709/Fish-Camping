@@ -16,7 +16,7 @@ public class PlayerMovement : MonoBehaviour
 
     private float currentVelocity;
     private float verticalVelocity;
-
+    public bool IsMovementLocked { get; set; } // Thêm biến khóa di chuyển
     private void Awake()
     {
         controller = GetComponent<CharacterController>();
@@ -27,12 +27,14 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        if (fishingController != null && fishingController.IsBusyFishing())
+        // Chốt an toàn: Nếu CharacterController bị tắt (ví dụ lúc đang ngồi trên xe) thì dừng toàn bộ tính toán di chuyển/trọng lực
+        if (controller == null || !controller.enabled) return;
+
+        if ((fishingController != null && fishingController.IsBusyFishing()) || IsMovementLocked)
         {
             HandleGravity();
             return;
         }
-
         HandleMovement();
         HandleGravity();
     }

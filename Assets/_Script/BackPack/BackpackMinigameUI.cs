@@ -84,7 +84,7 @@ public class BackpackMinigameUI : MonoBehaviour
     {
         return gridData != null ? gridData.GetCellSize() : 64f;
     }
-
+    public RectTransform GetGridRoot() => gridRootRect;
     public bool GetGridIndexFromScreenPosition(Vector2 screenPosition, out int x, out int y)
     {
         x = -1;
@@ -223,12 +223,13 @@ public class BackpackMinigameUI : MonoBehaviour
             if (GetClampedGridIndex(screenPosition, itemUI.GetItemShape(), itemUI.IsRotated(), out int targetX, out int targetY))
             {
                 bool canPlace = gridData.CanPlaceItem(targetX, targetY, itemUI.GetItemShape(), itemUI.IsRotated());
-
                 if (!canPlace && !itemUI.IsEquipped())
                 {
-                    canPlace = CanSwapItems(itemUI, targetX, targetY);
+                    if (itemUI.currentOwner == InventoryItemUI.GridOwner.Backpack)
+                        canPlace = CanSwapItems(itemUI, targetX, targetY); // Đổi chỗ trong nội bộ
+                    else
+                        canPlace = CanSwapItemsExternal(itemUI, targetX, targetY); // Đổi chỗ từ xe bay vào
                 }
-
                 Vector2 snappedPosition = GetAnchoredPositionFromGridIndex(targetX, targetY);
 
                 if (highlightOverlay != null)
@@ -536,6 +537,10 @@ public class BackpackMinigameUI : MonoBehaviour
                 PlaceItemDirectlyToGrid(itemUI, targetX, targetY, itemUI.IsRotated());
                 return true;
             }
+            else
+            {
+                return TrySwapItemsExternal(itemUI, targetX, targetY);
+            }
         }
         return false;
     }
@@ -712,5 +717,105 @@ public class BackpackMinigameUI : MonoBehaviour
         }
 
         return false;
+    }
+    public bool CanSwapItemsExternal(InventoryItemUI draggedItem, int targetX, int targetY)
+    {
+        if (draggedItem == null || itemsContainer == null || draggedItem.IsEquipped()) return false;
+        InventoryItemUI[] allItems = itemsContainer.GetComponentsInChildren<InventoryItemUI>();
+        InventoryItemUI targetItem = null;
+        int dragWidth = draggedItem.GetItemShape().GetWidth(draggedItem.IsRotated());
+        int dragHeight = draggedItem.GetItemShape().GetHeight(draggedItem.IsRotated());
+
+        foreach (InventoryItemUI item in allItems)
+        {
+            if (item == draggedItem || item.IsEquipped()) continue;
+            int otherX = item.GetGridX();
+            int otherY = item.GetGridY();
+            int otherW = item.GetItemShape().GetWidth(item.IsRotated());
+            int otherH = item.GetItemShape().GetHeight(item.IsRotated());
+            if ((targetX < otherX + otherW) && (targetX + dragWidth > otherX) && (targetY < otherY + otherH) && (targetY + dragHeight > otherY))
+            {
+                if (targetItem == null) targetItem = item;
+                else return false;
+            }
+        }
+
+        if (targetItem == null) return false;
+        int targetW = targetItem.GetItemShape().GetWidth(targetItem.IsRotated());
+        int targetH = targetItem.GetItemShape().GetHeight(targetItem.IsRotated());
+        if (dragWidth == targetW && dragHeight == targetH && (targetX != targetItem.GetGridX() || targetY != targetItem.GetGridY())) return false;
+
+        gridData.ClearCells(targetItem.GetGridX(), targetItem.GetGridY(), targetItem.GetItemShape(), targetItem.IsRotated());
+        bool canPlaceDragged = gridData.CanPlaceItem(targetX, targetY, draggedItem.GetItemShape(), draggedItem.IsRotated());
+        bool canPlaceTarget = false;
+
+        if (canPlaceDragged && draggedItem.currentOwner == InventoryItemUI.GridOwner.Trunk && TrunkMinigameUI.Instance != null)
+        {
+            canPlaceTarget = TrunkMinigameUI.Instance.CanPlaceItemAt(draggedItem.GetGridX(), draggedItem.GetGridY(), targetItem.GetItemShape(), targetItem.IsRotated());
+            if (!canPlaceTarget) canPlaceTarget = TrunkMinigameUI.Instance.CanPlaceItemAt(draggedItem.GetGridX(), draggedItem.GetGridY(), targetItem.GetItemShape(), !targetItem.IsRotated());
+        }
+
+        gridData.PlaceItem(targetItem.GetGridX(), targetItem.GetGridY(), targetItem.GetItemShape(), targetItem.IsRotated());
+        return (canPlaceDragged && canPlaceTarget);
+    }
+
+    public bool TrySwapItemsExternal(InventoryItemUI draggedItem, int targetX, int targetY)
+    {
+        InventoryItemUI[] allItems = itemsContainer.GetComponentsInChildren<InventoryItemUI>();
+        InventoryItemUI targetItem = null;
+        int dragWidth = draggedItem.GetItemShape().GetWidth(draggedItem.IsRotated());
+        int dragHeight = draggedItem.GetItemShape().GetHeight(draggedItem.IsRotated());
+
+        foreach (InventoryItemUI item in allItems)
+        {
+            if (item == draggedItem || item.IsEquipped()) continue;
+            int otherX = item.GetGridX();
+            int otherY = item.GetGridY();
+            int otherW = item.GetItemShape().GetWidth(item.IsRotated());
+            int otherH = item.GetItemShape().GetHeight(item.IsRotated());
+            if ((targetX < otherX + otherW) && (targetX + dragWidth > otherX) && (targetY < otherY + otherH) && (targetY + dragHeight > otherY))
+            {
+                if (targetItem == null) targetItem = item;
+                else return false;
+            }
+        }
+
+        if (targetItem == null) return false;
+        int targetW = targetItem.GetItemShape().GetWidth(targetItem.IsRotated());
+        int targetH = targetItem.GetItemShape().GetHeight(targetItem.IsRotated());
+        if (dragWidth == targetW && dragHeight == targetH && (targetX != targetItem.GetGridX() || targetY != targetItem.GetGridY())) return false;
+
+        gridData.ClearCells(targetItem.GetGridX(), targetItem.GetGridY(), targetItem.GetItemShape(), targetItem.IsRotated());
+        bool canPlaceDragged = gridData.CanPlaceItem(targetX, targetY, draggedItem.GetItemShape(), draggedItem.IsRotated());
+        bool canPlaceTarget = false;
+        bool targetRotatedState = targetItem.IsRotated();
+
+        if (canPlaceDragged && draggedItem.currentOwner == InventoryItemUI.GridOwner.Trunk && TrunkMinigameUI.Instance != null)
+        {
+            canPlaceTarget = TrunkMinigameUI.Instance.CanPlaceItemAt(draggedItem.GetGridX(), draggedItem.GetGridY(), targetItem.GetItemShape(), targetRotatedState);
+            if (!canPlaceTarget)
+            {
+                canPlaceTarget = TrunkMinigameUI.Instance.CanPlaceItemAt(draggedItem.GetGridX(), draggedItem.GetGridY(), targetItem.GetItemShape(), !targetRotatedState);
+                if (canPlaceTarget) targetRotatedState = !targetRotatedState;
+            }
+        }
+
+        if (canPlaceDragged && canPlaceTarget)
+        {
+            // Lưu lại tọa độ cũ trước khi bị ghi đè
+            int oldDragX = draggedItem.GetGridX();
+            int oldDragY = draggedItem.GetGridY();
+
+            PlaceItemDirectlyToGrid(draggedItem, targetX, targetY, draggedItem.IsRotated());
+            if (targetItem.IsRotated() != targetRotatedState) targetItem.ToggleRotate();
+            TrunkMinigameUI.Instance.PlaceItemDirectlyToGrid(targetItem, oldDragX, oldDragY, targetRotatedState);
+            targetItem.currentOwner = InventoryItemUI.GridOwner.Trunk;
+            return true;
+        }
+        else
+        {
+            gridData.PlaceItem(targetItem.GetGridX(), targetItem.GetGridY(), targetItem.GetItemShape(), targetItem.IsRotated());
+            return false;
+        }
     }
 }

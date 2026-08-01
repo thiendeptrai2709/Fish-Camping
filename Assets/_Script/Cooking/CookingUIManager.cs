@@ -179,4 +179,5 @@ public class CookingUIManager : MonoBehaviour
             rect.anchoredPosition = Vector2.zero;
         }
     }
+    public GameObject GetItemPrefab() => itemUIPrefab;
 }

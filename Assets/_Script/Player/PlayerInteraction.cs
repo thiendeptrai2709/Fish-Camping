@@ -19,7 +19,7 @@ public class PlayerInteraction : MonoBehaviour
     private Transform cameraTransform;
     private FishingController fishingController;
     private IInteractable currentInteractable;
-
+    private bool wasUIOpen;
     private void Awake()
     {
         inputHandler = GetComponent<PlayerInputHandler>();
@@ -28,9 +28,34 @@ public class PlayerInteraction : MonoBehaviour
         cameraTransform = Camera.main.transform;
         fishingController = GetComponent<FishingController>();
     }
-
+    private void OnDisable()
+    {
+        ClearCurrentInteractable(); // Tự động xóa focus, tắt UI chữ và tắt tâm ngắm
+    }
     private void Update()
     {
+        if (inputHandler.IsUIOpen != wasUIOpen)
+        {
+            wasUIOpen = inputHandler.IsUIOpen;
+
+            if (crosshairImage != null)
+            {
+                crosshairImage.enabled = !wasUIOpen;
+            }
+
+            if (playerCursor != null)
+            {
+                playerCursor.SetCursorState(!wasUIOpen);
+            }
+
+            if (wasUIOpen)
+            {
+                ClearCurrentInteractable();
+            }
+        }
+
+        if (inputHandler.IsUIOpen) return;
+
         if (fishingController != null && fishingController.IsBusyFishing())
         {
             ClearCurrentInteractable();
@@ -43,8 +68,11 @@ public class PlayerInteraction : MonoBehaviour
 
     private void CheckForInteractable()
     {
-        if (Cursor.lockState != CursorLockMode.Locked) return;
-
+        if (Cursor.lockState != CursorLockMode.Locked)
+        {
+            ClearCurrentInteractable();
+            return;
+        }
         Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
         Debug.DrawRay(ray.origin, ray.direction * interactDistance, Color.red);
         RaycastHit hit;

@@ -499,7 +499,9 @@ GameObject:
   - component: {fileID: 939050408369949184}
   - component: {fileID: 146681663407526602}
   - component: {fileID: 8499663215935644365}
-  m_Layer: 0
+  - component: {fileID: 6578016086529393662}
+  - component: {fileID: 2711431681773391151}
+  m_Layer: 3
   m_Name: FR_Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -622,6 +624,40 @@ MonoBehaviour:
   OnPlayAttachSound:
     m_PersistentCalls:
       m_Calls: []
+--- !u!65 &6578016086529393662
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2798392271993424207}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.9979851, y: 2.0464554, z: 2.046489}
+  m_Center: {x: 0.015584111, y: 0.00013715029, z: 0.000016570091}
+--- !u!114 &2711431681773391151
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2798392271993424207}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68977fd82318e4b4893bb909790318f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractableTire
+  tireRepairMinigame: {fileID: 8499663215935644365}
 --- !u!1 &3124920464126509395
 GameObject:
   m_ObjectHideFlags: 0
@@ -665,7 +701,9 @@ GameObject:
   - component: {fileID: 6902005281169892626}
   - component: {fileID: 8492382788305964165}
   - component: {fileID: 2630722091706659865}
-  m_Layer: 0
+  - component: {fileID: 4534045397397103638}
+  - component: {fileID: 2684824655801764428}
+  m_Layer: 3
   m_Name: BR_Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -788,6 +826,40 @@ MonoBehaviour:
   OnPlayAttachSound:
     m_PersistentCalls:
       m_Calls: []
+--- !u!65 &4534045397397103638
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3407097994585728633}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.9979851, y: 2.0464554, z: 2.046489}
+  m_Center: {x: 0.00835447, y: 0.0029585361, z: -0.0020788908}
+--- !u!114 &2684824655801764428
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3407097994585728633}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68977fd82318e4b4893bb909790318f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractableTire
+  tireRepairMinigame: {fileID: 2630722091706659865}
 --- !u!1 &3555587678272969470
 GameObject:
   m_ObjectHideFlags: 0
@@ -902,7 +974,7 @@ GameObject:
   - component: {fileID: 1906215413318952013}
   - component: {fileID: 3244015899442892094}
   - component: {fileID: 6857425169383248447}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: SteeringWheel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -991,7 +1063,7 @@ GameObject:
   - component: {fileID: 374782007085921243}
   - component: {fileID: 5846356544834498602}
   - component: {fileID: 4863816368480453160}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: PickupBackDoor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1173,7 +1245,7 @@ GameObject:
   m_Component:
   - component: {fileID: 958602786050788181}
   - component: {fileID: 5224876922350798403}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Engine_Root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1233,7 +1305,9 @@ GameObject:
   - component: {fileID: 3164168027835739694}
   - component: {fileID: 4968640177306893818}
   - component: {fileID: 8144061485435677077}
-  m_Layer: 0
+  - component: {fileID: 7926150936629278837}
+  - component: {fileID: 3378000387422407028}
+  m_Layer: 3
   m_Name: DoorL
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1254,6 +1328,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6198107492349303672}
+  - {fileID: 6101324631861300197}
   m_Father: {fileID: 9199933778229469735}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &4968640177306893818
@@ -1314,6 +1389,41 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &7926150936629278837
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5076049590600759153}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.7231165, y: 2.5259557, z: 1.9618771}
+  m_Center: {x: 0.084624365, y: 0.05310285, z: -0.83924603}
+--- !u!114 &3378000387422407028
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5076049590600759153}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2c484b78751d4640afe60c500846209, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CarDoor
+  vehicleSystem: {fileID: 3430033918699576460}
+  exitPoint: {fileID: 6101324631861300197}
 --- !u!1 &5148561890786470607
 GameObject:
   m_ObjectHideFlags: 0
@@ -1391,7 +1501,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7001191170965966183}
   - component: {fileID: 3031540550452161863}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Awning
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1588,7 +1698,8 @@ GameObject:
   - component: {fileID: 7350646276959413804}
   - component: {fileID: 5309245225153252894}
   - component: {fileID: 4004956790660651098}
-  m_Layer: 0
+  - component: {fileID: 9094455169279329207}
+  m_Layer: 3
   m_Name: Engine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1685,8 +1796,21 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.6269469, y: 0.9345819, z: 1.5094922}
-  m_Center: {x: -0.0000004172325, y: 0.17737897, z: -0.012432545}
+  m_Size: {x: 1.3001709, y: 0.8498421, z: 1.3854648}
+  m_Center: {x: -0.019226074, y: 0.13500905, z: -0.07444626}
+--- !u!114 &9094455169279329207
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5790796729899917841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5bb6a9738548e50448e811e58bdd663f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractableEngine
+  engineRepairMinigame: {fileID: 5224876922350798403}
 --- !u!1 &6037033108583849165
 GameObject:
   m_ObjectHideFlags: 0
@@ -1699,7 +1823,9 @@ GameObject:
   - component: {fileID: 4916005245006666503}
   - component: {fileID: 8454217661291981772}
   - component: {fileID: 6788558138562238416}
-  m_Layer: 0
+  - component: {fileID: 4627696996278274883}
+  - component: {fileID: 3237452549346374511}
+  m_Layer: 3
   m_Name: FL_Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1822,6 +1948,40 @@ MonoBehaviour:
   OnPlayAttachSound:
     m_PersistentCalls:
       m_Calls: []
+--- !u!65 &4627696996278274883
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6037033108583849165}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.9979851, y: 2.0464554, z: 2.046489}
+  m_Center: {x: -0.0053898543, y: -0.0029585361, z: 0.002075553}
+--- !u!114 &3237452549346374511
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6037033108583849165}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68977fd82318e4b4893bb909790318f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractableTire
+  tireRepairMinigame: {fileID: 6788558138562238416}
 --- !u!1 &6221342522028352847
 GameObject:
   m_ObjectHideFlags: 0
@@ -1834,7 +1994,9 @@ GameObject:
   - component: {fileID: 4038327665690787278}
   - component: {fileID: 6998135680246194690}
   - component: {fileID: 6588371454107864548}
-  m_Layer: 0
+  - component: {fileID: 2737363960658086262}
+  - component: {fileID: 9042242058060593931}
+  m_Layer: 3
   m_Name: BL_Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1957,6 +2119,71 @@ MonoBehaviour:
   OnPlayAttachSound:
     m_PersistentCalls:
       m_Calls: []
+--- !u!65 &2737363960658086262
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6221342522028352847}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.9979851, y: 2.0464554, z: 2.046489}
+  m_Center: {x: -0.0053921193, y: -0.0029585361, z: 0.002075553}
+--- !u!114 &9042242058060593931
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6221342522028352847}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68977fd82318e4b4893bb909790318f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractableTire
+  tireRepairMinigame: {fileID: 6588371454107864548}
+--- !u!1 &6266195929406498191
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1086924796832470905}
+  m_Layer: 3
+  m_Name: DriverSeat
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1086924796832470905
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6266195929406498191}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.83, y: 1.27, z: 0.31}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9199933778229469735}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6342876642413886036
 GameObject:
   m_ObjectHideFlags: 0
@@ -2000,7 +2227,9 @@ GameObject:
   - component: {fileID: 4872700611704513656}
   - component: {fileID: 2212866431246045977}
   - component: {fileID: 4263717819214804220}
-  m_Layer: 0
+  - component: {fileID: 326704554731646197}
+  - component: {fileID: 1358497162715296175}
+  m_Layer: 3
   m_Name: Hood
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2092,6 +2321,40 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ProceduralHinge
   openOffsetAngles: {x: -75, y: 0, z: 0}
   speed: 4
+--- !u!65 &326704554731646197
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6568179342447062847}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 2.8767424, y: 0.33047622, z: 2.003706}
+  m_Center: {x: 0.0004976988, y: -0.115723394, z: 0.9903758}
+--- !u!114 &1358497162715296175
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6568179342447062847}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a843f542cf3f93840b48623f35854b60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractableHood
+  hoodHinge: {fileID: 4263717819214804220}
 --- !u!1 &6715426423681580902
 GameObject:
   m_ObjectHideFlags: 0
@@ -2103,7 +2366,9 @@ GameObject:
   - component: {fileID: 9199933778229469735}
   - component: {fileID: 8825098225511885042}
   - component: {fileID: 4467038138247310086}
-  m_Layer: 0
+  - component: {fileID: 3940383848763555858}
+  - component: {fileID: 2317499194567251144}
+  m_Layer: 3
   m_Name: PickupBody
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2131,6 +2396,7 @@ Transform:
   - {fileID: 374782007085921243}
   - {fileID: 1065322887868291382}
   - {fileID: 1906215413318952013}
+  - {fileID: 1086924796832470905}
   m_Father: {fileID: 8537560577896252487}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &8825098225511885042
@@ -2192,6 +2458,40 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &3940383848763555858
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6715426423681580902}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 3.7254028, y: 1.3651333, z: 2.5986328}
+  m_Center: {x: 0.06808472, y: 2.2182508, z: 2.817505}
+--- !u!114 &2317499194567251144
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6715426423681580902}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf83ab99c1924bb478b9b5a1d203e1ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractableVehicleStats
+  vehicleStats: {fileID: 6911055058645893938}
 --- !u!1 &6734672487587284790
 GameObject:
   m_ObjectHideFlags: 0
@@ -2339,6 +2639,37 @@ WheelCollider:
   m_LayerOverridePriority: 0
   m_Enabled: 1
   m_ProvidesContacts: 0
+--- !u!1 &6979421408826787828
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6101324631861300197}
+  m_Layer: 3
+  m_Name: Left_ExitPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6101324631861300197
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6979421408826787828}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.99, y: -2.79, z: -1.389}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3164168027835739694}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7285261293918143009
 GameObject:
   m_ObjectHideFlags: 0
@@ -2382,7 +2713,7 @@ GameObject:
   - component: {fileID: 519339809105771528}
   - component: {fileID: 828112617354592243}
   - component: {fileID: 1796015629925581338}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Gear
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2477,9 +2808,10 @@ GameObject:
   - component: {fileID: 6911055058645893938}
   - component: {fileID: 2880476957763468156}
   - component: {fileID: -4432883697066076862}
+  - component: {fileID: 3430033918699576460}
   m_Layer: 0
   m_Name: MainCar
-  m_TagString: Untagged
+  m_TagString: Car
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2695,6 +3027,62 @@ MonoBehaviour:
   currentFuel: 100
   consumptionRate: 1
   fuelSlider: {fileID: 0}
+--- !u!114 &3430033918699576460
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7644770541340576481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45d361c2b7c047b4abffe8850eb2ba1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::VehicleEnterExit
+  playerObject: {fileID: 0}
+  playerCamera: {fileID: 0}
+  playerAnimation: {fileID: 0}
+  playerCollider: {fileID: 0}
+  playerRigidbody: {fileID: 0}
+  driverSeatPoint: {fileID: 1086924796832470905}
+  vehicleInput: {fileID: 8457522825824892041}
+  vehicleController: {fileID: 1260891777461015879}
+  carCamera: {fileID: 0}
+  playerUI: {fileID: 0}
+  interactableHood: {fileID: 1358497162715296175}
+  interactableTrunk: {fileID: 5743390993015314429}
+  engineRepair: {fileID: 5224876922350798403}
+  vehicleStats: {fileID: 6911055058645893938}
+  OnEnteredVehicle:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: VehicleDashboardUI, Assembly-CSharp
+        m_MethodName: SetDashboardVisible
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+  OnExitedVehicle:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: VehicleDashboardUI, Assembly-CSharp
+        m_MethodName: SetDashboardVisible
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &7659384282325513410
 GameObject:
   m_ObjectHideFlags: 0
@@ -2904,7 +3292,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2287545626393845277}
   - component: {fileID: 6139625769560615072}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: DoorR_Glass
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3027,7 +3415,9 @@ GameObject:
   - component: {fileID: 594947212067596166}
   - component: {fileID: 1399009033840462343}
   - component: {fileID: 6246956950514578104}
-  m_Layer: 0
+  - component: {fileID: 1341352718835682224}
+  - component: {fileID: 5961924097475091440}
+  m_Layer: 3
   m_Name: DoorR
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3108,6 +3498,41 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &1341352718835682224
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8063120375327953629}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.7309269, y: 2.5259557, z: 1.9506634}
+  m_Center: {x: -0.09698783, y: 0.053102612, z: -0.84485584}
+--- !u!114 &5961924097475091440
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8063120375327953629}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2c484b78751d4640afe60c500846209, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CarDoor
+  vehicleSystem: {fileID: 3430033918699576460}
+  exitPoint: {fileID: 6101324631861300197}
 --- !u!1 &8255171110751981243
 GameObject:
   m_ObjectHideFlags: 0
@@ -3121,7 +3546,10 @@ GameObject:
   - component: {fileID: 2626642980671535694}
   - component: {fileID: 2340393170026331245}
   - component: {fileID: 7892098748989154847}
-  m_Layer: 0
+  - component: {fileID: 958326535375360560}
+  - component: {fileID: 5743390993015314429}
+  - component: {fileID: 594690504660048728}
+  m_Layer: 3
   m_Name: PickupAwning
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3227,9 +3655,61 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TrunkInventory
   trunkInventoryPanel: {fileID: 0}
-  interactableTrunk: {fileID: 0}
+  interactableTrunk: {fileID: 5743390993015314429}
   playerTransform: {fileID: 0}
   maxDistance: 3.5
+--- !u!65 &958326535375360560
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8255171110751981243}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 3.5454144, y: 1.3688664, z: 3.4240236}
+  m_Center: {x: 0, y: -0.57275677, z: -1.6986327}
+--- !u!114 &5743390993015314429
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8255171110751981243}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 878cc3c3ce079194a8d2531704123773, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractableTrunk
+  trunkHinge: {fileID: 2340393170026331245}
+  trunkInventory: {fileID: 7892098748989154847}
+--- !u!114 &594690504660048728
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8255171110751981243}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a060c6d69b437d40bd8963360b62fa1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TrunkMinigameUI
+  gridData: {fileID: 0}
+  gridRootRect: {fileID: 0}
+  itemsContainer: {fileID: 0}
+  cellVisualPrefab: {fileID: 8483205119547044316, guid: 85a08912caa0f614b8a8c26429c8ead8, type: 3}
+  highlightOverlay: {fileID: 0}
 --- !u!1 &8387264529292031677
 GameObject:
   m_ObjectHideFlags: 0
@@ -3346,7 +3826,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6198107492349303672}
   - component: {fileID: 5098881860953986284}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: DoorL_Glass
   m_TagString: Untagged
   m_Icon: {fileID: 0}
