@@ -21401,6 +21401,42 @@ PrefabInstance:
       propertyPath: freeLookCamera
       value: 
       objectReference: {fileID: 276227990}
+    - target: {fileID: 9077343848564362688, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
+      propertyPath: isTrunk
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9077343848564362688, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
+      propertyPath: trunkLevelSizes.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 9077343848564362688, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
+      propertyPath: trunkLevelSizes.Array.data[0].x
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 9077343848564362688, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
+      propertyPath: trunkLevelSizes.Array.data[0].y
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 9077343848564362688, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
+      propertyPath: trunkLevelSizes.Array.data[1].x
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 9077343848564362688, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
+      propertyPath: trunkLevelSizes.Array.data[1].y
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 9077343848564362688, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
+      propertyPath: trunkLevelSizes.Array.data[2].x
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 9077343848564362688, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
+      propertyPath: trunkLevelSizes.Array.data[3].x
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 9077343848564362688, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
+      propertyPath: trunkLevelSizes.Array.data[3].y
+      value: 6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

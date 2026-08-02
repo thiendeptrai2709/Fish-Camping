@@ -525,4 +525,22 @@ public class TrunkMinigameUI : MonoBehaviour
     {
         return gridData != null && gridData.CanPlaceItem(x, y, shape, rotated);
     }
+
+    public void RefreshGridVisuals()
+    {
+        if (gridData != null) gridData.InitGrid();
+
+        foreach (Transform child in gridRootRect)
+        {
+            if (child != itemsContainer && (highlightOverlay == null || child != highlightOverlay.transform))
+            {
+                Destroy(child.gameObject);
+            }
+        }
+
+        CreateVisualGrid();
+
+        if (itemsContainer != null) itemsContainer.SetAsLastSibling();
+        if (highlightOverlay != null) highlightOverlay.transform.SetAsLastSibling();
+    }
 }

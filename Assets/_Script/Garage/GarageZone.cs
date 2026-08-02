@@ -188,6 +188,11 @@ public class GarageZone : MonoBehaviour
             PlayerPrefs.SetInt("SavedTrunkLevel", currentTrunkLevel);
             PlayerPrefs.Save();
 
+            if (TrunkMinigameUI.Instance != null)
+            {
+                TrunkMinigameUI.Instance.RefreshGridVisuals();
+            }
+
             UpdateAllUI();
             ShowNotify($"Nâng cấp Cốp Level {targetLevel} thành công!");
         }
