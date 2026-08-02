@@ -4,7 +4,9 @@ using TMPro;
 
 public class VehicleStats : MonoBehaviour
 {
-
+    [Header("Vehicle Base Stats")]
+    [SerializeField] private float baseMaxSpeed = 80f;
+    [SerializeField] private float baseMotorTorque = 1500f;
     [SerializeField] private TireRepairMinigame[] tireMinigames = new TireRepairMinigame[4];
 
     [Header("Link Hệ thống")]
@@ -224,6 +226,6 @@ public class VehicleStats : MonoBehaviour
         float speedPercent = Mathf.Lerp(0.25f, 1f, healthRatio);
         float torquePercent = Mathf.Lerp(0.3f, 1f, healthRatio);
 
-        vehicleController.ApplyUpgradedEngine(120f * speedPercent, 3800f * torquePercent);
+        vehicleController.ApplyUpgradedEngine(baseMaxSpeed * speedPercent, baseMotorTorque * torquePercent);
     }
 }

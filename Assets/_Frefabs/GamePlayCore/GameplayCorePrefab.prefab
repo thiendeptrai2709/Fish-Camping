@@ -18842,6 +18842,14 @@ PrefabInstance:
       propertyPath: fuelSlider
       value: 
       objectReference: {fileID: 3892084505837252568}
+    - target: {fileID: 439253625946532412, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+      propertyPath: m_SidewaysFriction.m_ExtremumValue
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 439253625946532412, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+      propertyPath: m_SidewaysFriction.m_AsymptoteValue
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 594690504660048728, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
       propertyPath: gridData
       value: 
@@ -18858,6 +18866,30 @@ PrefabInstance:
       propertyPath: highlightOverlay
       value: 
       objectReference: {fileID: 6300664315821909398}
+    - target: {fileID: 1260891777461015879, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+      propertyPath: brakeTorque
+      value: 2500
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260891777461015879, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+      propertyPath: maxSpeedKmh
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260891777461015879, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+      propertyPath: motorTorque
+      value: 2000
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260891777461015879, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+      propertyPath: lowSpeedPunch
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1275546088054282469, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+      propertyPath: m_SidewaysFriction.m_ExtremumValue
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1275546088054282469, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+      propertyPath: m_SidewaysFriction.m_AsymptoteValue
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 3430033918699576460, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
       propertyPath: playerUI
       value: 
@@ -18890,6 +18922,14 @@ PrefabInstance:
       propertyPath: OnEnteredVehicle.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 4367360009153616251}
+    - target: {fileID: 4969493096541613422, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+      propertyPath: m_SidewaysFriction.m_ExtremumValue
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4969493096541613422, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+      propertyPath: m_SidewaysFriction.m_AsymptoteValue
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 5224876922350798403, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
       propertyPath: crosshairUI
       value: 
@@ -18898,6 +18938,14 @@ PrefabInstance:
       propertyPath: playerMovement
       value: 
       objectReference: {fileID: 933564395206159916}
+    - target: {fileID: 6839730998919547939, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+      propertyPath: m_SidewaysFriction.m_ExtremumValue
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6839730998919547939, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+      propertyPath: m_SidewaysFriction.m_AsymptoteValue
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 6911055058645893938, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
       propertyPath: engineText
       value: 

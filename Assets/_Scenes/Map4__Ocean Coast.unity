@@ -7132,6 +7132,7 @@ GameObject:
   - component: {fileID: 617428557}
   - component: {fileID: 617428556}
   - component: {fileID: 617428555}
+  - component: {fileID: 617428558}
   m_Layer: 4
   m_Name: water
   m_TagString: Untagged
@@ -7232,6 +7233,26 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 617428553}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &617428558
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 617428553}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e563d16ee9bc9b741afd22dc03f313f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FishingZone
+  zoneName: "Bi\u1EC3n Xanh"
+  zoneFishes:
+  - {fileID: 11400000, guid: 7093ac9703bb37844a5878342cf9df75, type: 2}
+  - {fileID: 11400000, guid: 31488fe059e231d4fb656e4315f94f80, type: 2}
+  - {fileID: 11400000, guid: 659bda619caea814694813261169637c, type: 2}
+  - {fileID: 11400000, guid: 0c3d5adee577b1840af50611973cb876, type: 2}
+  - {fileID: 11400000, guid: fadda57e9e931914197923a6f95a3c9b, type: 2}
+  - {fileID: 11400000, guid: cd56ebf420b1525438a58cec954bc84e, type: 2}
 --- !u!1001 &618026778
 PrefabInstance:
   m_ObjectHideFlags: 0
