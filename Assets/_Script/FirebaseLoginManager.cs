@@ -89,7 +89,7 @@ public class Login : MonoBehaviour
                 // Lấy thông tin user vừa đăng nhập thành công
                 var user = Task.Result.User;
                 Debug.Log($"Đăng nhập thành công cho: {user.Email}");
-                SceneManager.LoadScene("Play"); 
+                SceneManager.LoadScene("Map_1_Town"); 
             }
         });
     }
