@@ -15,15 +15,7 @@ public class CampBuildZone : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-            return;
-        }
+        Instance = this;
 
         zoneCollider = GetComponent<BoxCollider>();
         zoneCollider.isTrigger = true;
@@ -34,6 +26,14 @@ public class CampBuildZone : MonoBehaviour
         }
 
         ToggleZoneVisual(false);
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            Instance = null;
+        }
     }
 
     private void GenerateBorders()
