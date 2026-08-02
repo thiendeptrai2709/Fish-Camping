@@ -5,6 +5,8 @@ using System.Collections;
 
 public class GarageZone : MonoBehaviour
 {
+    public static GarageZone Instance { get; private set; }
+
     [Header("=== GIAO DIỆN CHUNG ===")]
     public GameObject pressBPrompt;
     public GameObject garageUIPanel;
@@ -43,7 +45,13 @@ public class GarageZone : MonoBehaviour
 
     private bool isInsideGara = false;
     private bool isUIOpen = false;
+    private System.Action _onGarageClosed;
 
+    private void Awake()
+    {
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
+    }
     void Start()
     {
         if (pressBPrompt != null) pressBPrompt.SetActive(false);
@@ -113,14 +121,29 @@ public class GarageZone : MonoBehaviour
         if (playerCursor != null) playerCursor.SetCursorState(!isUIOpen);
     }
 
+    public void OpenGarage(System.Action onCloseCallback = null)
+    {
+        _onGarageClosed = onCloseCallback;
+        isUIOpen = true;
+
+        if (garageUIPanel != null) garageUIPanel.SetActive(true);
+        if (pressBPrompt != null) pressBPrompt.SetActive(false);
+
+        UpdateAllUI();
+
+        if (playerCursor != null) playerCursor.SetCursorState(false);
+    }
+
     public void CloseGarageUI()
     {
         isUIOpen = false;
         if (garageUIPanel != null) garageUIPanel.SetActive(false);
         if (pressBPrompt != null && isInsideGara) pressBPrompt.SetActive(true);
 
-        // Khóa chuột lại khi thoát UI
         if (playerCursor != null) playerCursor.SetCursorState(true);
+
+        _onGarageClosed?.Invoke();
+        _onGarageClosed = null;
     }
 
     [Header("=== CĂN CHỈNH BÁNH XE (CHỐNG LỖI 3D) ===")]

@@ -17,7 +17,7 @@ public class NPCOffroadUpgrade : MonoBehaviour
         DialogueManager.Instance.StartDialogue(npcName, welcomeDialogues, () => {
 
             // 2. Hội thoại kết thúc thì mở giao diện Gara
-            GarageUIManager.Instance.OpenGarage(() => {
+            GarageZone.Instance.OpenGarage(() => {
 
                 // 3. Khi người chơi tắt giao diện Gara, hoàn tất tương tác đưa NPC về Idle
                 onComplete?.Invoke();

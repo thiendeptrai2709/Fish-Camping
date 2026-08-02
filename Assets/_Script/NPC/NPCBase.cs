@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class NPCBase : MonoBehaviour, INpcInteractable
+public class NPCBase : MonoBehaviour, IInteractable
 {
     [Header("NPC Settings")]
     [SerializeField] private string npcName = "Bác Thợ Máy";

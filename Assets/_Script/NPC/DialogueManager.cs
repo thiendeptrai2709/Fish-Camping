@@ -6,6 +6,8 @@ using TMPro;
 public class DialogueManager : MonoBehaviour
 {
     public static DialogueManager Instance { get; private set; }
+    public bool IsDialogueActive => dialogueCanvas != null && dialogueCanvas.activeInHierarchy;
+
 
     [Header("UI Elements")]
     [SerializeField] private GameObject dialogueCanvas;
@@ -92,5 +94,14 @@ public class DialogueManager : MonoBehaviour
 
         // Nếu có sự kiện cài cắm phía sau (như mở UI Shop), kích hoạt nó ngay
         _onDialogueComplete?.Invoke();
+    }
+
+    public void ForceCloseDialogue()
+    {
+        StopAllCoroutines();
+        _sentences.Clear();
+        dialogueCanvas.SetActive(false);
+        _isTyping = false;
+        _onDialogueComplete = null;
     }
 }

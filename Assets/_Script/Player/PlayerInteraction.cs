@@ -61,7 +61,14 @@ public class PlayerInteraction : MonoBehaviour
             ClearCurrentInteractable();
             return;
         }
-
+        if (DialogueManager.Instance != null && DialogueManager.Instance.IsDialogueActive)
+        {
+            if (inputHandler.InteractTriggered)
+            {
+                DialogueManager.Instance.DisplayNextSentence();
+            }
+            return;
+        }
         CheckForInteractable();
         HandleInteractInput();
     }
