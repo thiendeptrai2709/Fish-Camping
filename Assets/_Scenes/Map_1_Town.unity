@@ -18592,7 +18592,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GasStation
   fillSpeed: 25
-  interactUI: {fileID: 0}
+  interactUI: {fileID: 1149496004}
   audioSource: {fileID: 515209581}
   fullFuelSound: {fileID: 8300000, guid: 43fce5231840dcd48b8b8c6126f02fba, type: 3}
 --- !u!65 &515209580
@@ -23758,6 +23758,11 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 8567033444478375857, guid: 167d5455369a56f46a8f4527855d3472, type: 3}
   m_PrefabInstance: {fileID: 1145696513}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1149496004 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7409009869431794566, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
+  m_PrefabInstance: {fileID: 883674292}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1149592196
 PrefabInstance:

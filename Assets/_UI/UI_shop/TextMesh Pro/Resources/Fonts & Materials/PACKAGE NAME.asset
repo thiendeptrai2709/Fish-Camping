@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!28 &-1845253704008698703
+--- !u!28 &-5246075193134542694
 Texture2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2128,8 +2128,8 @@ MonoBehaviour:
     m_Scale: 1
   m_AtlasTextures:
   - {fileID: 28268798066460806}
-  - {fileID: -1845253704008698703}
-  - {fileID: 6645396076602132519}
+  - {fileID: -5246075193134542694}
+  - {fileID: 5908222203735159357}
   - {fileID: 0}
   m_AtlasTextureIndex: 2
   m_IsMultiAtlasTexturesEnabled: 1
@@ -12218,7 +12218,7 @@ Texture2D:
     offset: 0
     size: 0
     path: 
---- !u!28 &6645396076602132519
+--- !u!28 &5908222203735159357
 Texture2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
