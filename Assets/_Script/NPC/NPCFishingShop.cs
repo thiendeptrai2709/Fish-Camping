@@ -15,8 +15,8 @@ public class NPCFishingShop : MonoBehaviour
         // 1. Chạy hội thoại chào mời của Thuyền trưởng trước
         DialogueManager.Instance.StartDialogue(npcName, shopWelcomeDialogues, () => {
 
-            // 2. Chạy xong thoại thì kích hoạt mở UI Shop mua bán
-            ShopUIManager.Instance.OpenShop(() => {
+            // 2. SỬA LẠI Ở ĐÂY: Gọi đúng ShopManager và hàm MoShop()
+            ShopManager.Instance.MoShop(() => {
 
                 // 3. Khi người chơi tắt UI Shop, kết thúc tương tác đưa NPC về Idle
                 onComplete?.Invoke();

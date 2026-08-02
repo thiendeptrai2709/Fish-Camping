@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: Rod1
   m_EditorClassIdentifier: Assembly-CSharp::FishingRodSO
   itemID: rod1
-  itemName: "C\u1EA7n g\u1ED7 \u0111\u1EC3u"
+  itemName: "C\u1EA7n Tr\xFAc \u0110ai "
   itemIcon: {fileID: 21300000, guid: e47070be1e2fb06488a00ba3e9c10d30, type: 3}
+  itemDescription: 
   equippedModelPrefab: {fileID: 3017937692658407651, guid: 66a442a323ed74b438133c9b3d5cd525, type: 3}
   width: 1
   height: 3

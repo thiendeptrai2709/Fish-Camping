@@ -44,40 +44,61 @@ public class ShopManager : MonoBehaviour
         }
     }
 
-    // ĐÃ SỬA: Thêm (System.Action onClose) để nhận Giao ước từ NPC
+    // Thêm (System.Action onClose) để nhận Giao ước từ NPC
     public void MoShop(System.Action onClose = null)
     {
-        _onShopClosed = onClose; // Ghi nhớ lại NPC nào vừa gọi
+        _onShopClosed = onClose;
         shopPanel.SetActive(true);
+
+        // HIỆN VÀ MỞ KHÓA CHUỘT
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
     }
 
-    // ĐÃ SỬA: Báo cho NPC biết khi tắt
     public void DongShop()
     {
         shopPanel.SetActive(false);
 
-        // CỰC KỲ QUAN TRỌNG: Gọi ngược lại NPC để nhả trạng thái "Đang tương tác"
         _onShopClosed?.Invoke();
-        _onShopClosed = null; // Xóa trí nhớ
+        _onShopClosed = null;
+
+        // ẨN VÀ KHÓA CHUỘT LẠI KHI ĐÓNG SHOP
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
-    public void MuaVatPham(int giaTien)
+    // Cập nhật tham số: Dùng ItemShapeSO cho đồng bộ với code Balo
+    public void MuaVatPham(int giaTien, ItemShapeSO monDoDaMua)
     {
         if (tongTien >= giaTien)
         {
-            int tienTruocKhiMua = tongTien;
-            tongTien -= giaTien;
+            if (monDoDaMua != null && BackpackMinigameUI.Instance != null)
+            {
+                // Gọi code Balo của bạn bồ để thử nhét đồ vào
+                bool themThanhCong = BackpackMinigameUI.Instance.TryAutoAddItem(monDoDaMua);
 
-            StopAllCoroutines();
-            StartCoroutine(HieuUngChaySo(tienTruocKhiMua, tongTien));
-            Debug.Log("Đã mua thành công! Trừ " + giaTien + " vàng.");
+                if (themThanhCong)
+                {
+                    // KHI NHÉT BALO THÀNH CÔNG THÌ MỚI TRỪ TIỀN
+                    int tienTruocKhiMua = tongTien;
+                    tongTien -= giaTien;
+
+                    StopAllCoroutines();
+                    StartCoroutine(HieuUngChaySo(tienTruocKhiMua, tongTien));
+
+                    Debug.Log($"Đã ném [{monDoDaMua.itemName}] vào balo! Trừ {giaTien} vàng.");
+                }
+                else
+                {
+                    Debug.Log("Giao dịch thất bại: Balo của bạn đã đầy!");
+                }
+            }
         }
         else
         {
             Debug.Log("Không đủ tiền để mua món này!");
         }
     }
-    // TÍNH NĂNG MỚI: Dành cho việc bán cá hoặc bán đồ
     public void BanVatPham(int giaTriVatPham)
     {
         int tienTruocKhiBan = tongTien;

@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: Rod2
   m_EditorClassIdentifier: Assembly-CSharp::FishingRodSO
   itemID: rod2
-  itemName: "C\u1EA7n g\u1ED7 "
+  itemName: "C\u1EA7n M\xE1y \u0110\u1ED3ng C\u1ED5"
   itemIcon: {fileID: 21300000, guid: 156c276f28cd9684bacbb651553a00f9, type: 3}
+  itemDescription: 
+  equippedModelPrefab: {fileID: 3017937692658407651, guid: 5b43993c1e9b6534087063c8cad89475, type: 3}
   width: 1
   height: 3
   shapeCells: 
@@ -22,6 +24,11 @@ MonoBehaviour:
   maxDurability: 100
   fishingPower: 15
   castDistance: 5
+  zoneDistanceMultipliers:
+  - 0
+  - 0.35
+  - 0.7
+  - 1
   waitTimeReductionPercentage: 0
   maxCatchableRarity: 1
   lineBreakResistance: 20

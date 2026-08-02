@@ -818,4 +818,16 @@ public class BackpackMinigameUI : MonoBehaviour
             return false;
         }
     }
+
+    // THÊM MỚI: Hàm để Shop gọi khi muốn xóa cá khỏi Balo sau khi bán
+    public void RemoveItem(InventoryItemUI itemUI)
+    {
+        if (itemUI == null || gridData == null) return;
+
+        // 1. Giải phóng khoảng trống trên lưới logic của Balo
+        gridData.ClearCells(itemUI.GetGridX(), itemUI.GetGridY(), itemUI.GetItemShape(), itemUI.IsRotated());
+
+        // 2. Tiêu hủy luôn hình ảnh của con cá đó
+        Destroy(itemUI.gameObject);
+    }
 }
