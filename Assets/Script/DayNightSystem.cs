@@ -24,10 +24,24 @@ public class DayNightSystem : MonoBehaviour
 
     void Update()
     {
+        CheckLights();
         UpdateTime();
         UpdateIntensityAndSkybox();
     }
+    private void CheckLights()
+    {
+        if (sunLight == null)
+        {
+            GameObject sun = GameObject.FindGameObjectWithTag("Sun");
+            if (sun != null) sunLight = sun.GetComponent<Light>();
+        }
 
+        if (moonLight == null)
+        {
+            GameObject moon = GameObject.FindGameObjectWithTag("Moon");
+            if (moon != null) moonLight = moon.GetComponent<Light>();
+        }
+    }
     void UpdateTime()
     {
         currentTime += Time.deltaTime / dayLengthInSeconds;

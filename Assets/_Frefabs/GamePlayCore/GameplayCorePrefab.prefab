@@ -6946,6 +6946,79 @@ MonoBehaviour:
   statSlider: {fileID: 182218127900464164}
   fillImage: {fileID: 8196499856090341526}
   lerpSpeed: 10
+--- !u!1 &3656499634674871555
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2434050628061734737}
+  - component: {fileID: 3127973283743639419}
+  - component: {fileID: 7372342699422987304}
+  m_Layer: 0
+  m_Name: WeatherManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2434050628061734737
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3656499634674871555}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 747.048, y: -6.029998, z: -192.20718}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4138194563798120343}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3127973283743639419
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3656499634674871555}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f396bb8c580dfdd49b21327b1ee2319b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WeatherSystem
+  dayNightSystem: {fileID: 0}
+  maxFogDensity: 0.005
+  minFogDensity: 0.00005
+  rainPrefab: {fileID: 1624732227010082, guid: 18d653ec6ac008e43a69363f42d8c371, type: 3}
+  playerTransform: {fileID: 0}
+  rainCheckInterval: 60
+  rainDuration: 240
+  rainChance: 20
+--- !u!114 &7372342699422987304
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3656499634674871555}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ca257a38eb15e94a8a991e40ada53e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DayNightSystem
+  dayLengthInSeconds: 720
+  currentTime: 0.25
+  sunLight: {fileID: 0}
+  moonLight: {fileID: 0}
+  maxSunIntensity: 1.5
+  maxMoonIntensity: 0.2
+  daySkybox: {fileID: 2100000, guid: 2d796ced94d61438fbab81b194038162, type: 2}
+  nightSkybox: {fileID: 2100000, guid: 9af23ba5fa5364ff598888460e0e2759, type: 2}
 --- !u!1 &3675853674899776396
 GameObject:
   m_ObjectHideFlags: 0
@@ -14398,6 +14471,7 @@ Transform:
   - {fileID: 6568163168114144360}
   - {fileID: 6489579328871173292}
   - {fileID: 1736117968943589764}
+  - {fileID: 2434050628061734737}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3271761007493964470
@@ -18959,9 +19033,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 3565470138741804778}
     - target: {fileID: 6911055058645893938, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+      propertyPath: baseMaxSpeed
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 6911055058645893938, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
       propertyPath: balanceMinigame
       value: 
       objectReference: {fileID: 5831419611446213205}
+    - target: {fileID: 6911055058645893938, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+      propertyPath: baseMotorTorque
+      value: 2000
+      objectReference: {fileID: 0}
     - target: {fileID: 6911055058645893938, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
       propertyPath: playerTransform
       value: 
