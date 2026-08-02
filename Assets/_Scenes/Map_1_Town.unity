@@ -2067,17 +2067,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 58c739995d7f95942bbc9a1226342421, type: 3}
---- !u!114 &276227990 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3744697484490627262, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
-  m_PrefabInstance: {fileID: 883674292}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f9dfa5b682dcd46bda6128250e975f58, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineCamera
 --- !u!1 &280363682 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4147961097211652758, guid: 438e575f86811874a9a15b0fe545babb, type: 3}
@@ -21305,10 +21294,6 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1752235582}
-    - target: {fileID: 3151907951004446320, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
-      propertyPath: freeLookCamera
-      value: 
-      objectReference: {fileID: 276227990}
     - target: {fileID: 3253391964180843985, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -21396,46 +21381,6 @@ PrefabInstance:
     - target: {fileID: 8254793610159605757, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8419358678227810920, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
-      propertyPath: freeLookCamera
-      value: 
-      objectReference: {fileID: 276227990}
-    - target: {fileID: 9077343848564362688, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
-      propertyPath: isTrunk
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9077343848564362688, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
-      propertyPath: trunkLevelSizes.Array.size
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 9077343848564362688, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
-      propertyPath: trunkLevelSizes.Array.data[0].x
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 9077343848564362688, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
-      propertyPath: trunkLevelSizes.Array.data[0].y
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 9077343848564362688, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
-      propertyPath: trunkLevelSizes.Array.data[1].x
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 9077343848564362688, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
-      propertyPath: trunkLevelSizes.Array.data[1].y
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 9077343848564362688, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
-      propertyPath: trunkLevelSizes.Array.data[2].x
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 9077343848564362688, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
-      propertyPath: trunkLevelSizes.Array.data[3].x
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 9077343848564362688, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
-      propertyPath: trunkLevelSizes.Array.data[3].y
-      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
