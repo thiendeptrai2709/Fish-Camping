@@ -66,7 +66,6 @@ public class WeatherSystem : MonoBehaviour
 
     void UpdateRainLogic()
     {
-        // Kiểm tra tỉ lệ mưa
         if (!isRaining && Time.time >= nextRainCheckTime)
         {
             nextRainCheckTime = Time.time + rainCheckInterval;
@@ -77,7 +76,6 @@ public class WeatherSystem : MonoBehaviour
             }
         }
 
-        // Hết thời gian mưa
         if (isRaining && Time.time >= rainEndTime)
         {
             StopRain();
@@ -89,20 +87,23 @@ public class WeatherSystem : MonoBehaviour
         isRaining = true;
         rainEndTime = Time.time + rainDuration;
 
-        // Sinh ra Prefab mưa và giữ nguyên 100% Transform (Position, Rotation, Scale) của Prefab
         if (rainPrefab != null && currentRainInstance == null)
         {
             currentRainInstance = Instantiate(rainPrefab);
             currentRainParticle = currentRainInstance.GetComponent<ParticleSystem>();
 
-            // Cập nhật ngay vị trí ban đầu theo Player (giữ nguyên Rotation & Scale gốc của Prefab)
+            if (playerTransform == null)
+            {
+                GameObject player = GameObject.FindGameObjectWithTag("Player");
+                if (player != null) playerTransform = player.transform;
+            }
+
             if (playerTransform != null)
             {
                 currentRainInstance.transform.position = GetRainPosition();
             }
         }
     }
-
     void StopRain()
     {
         isRaining = false;
@@ -115,7 +116,6 @@ public class WeatherSystem : MonoBehaviour
 
             if (currentRainParticle != null)
             {
-                // Tắt phát hạt mới và chờ hạt cũ rơi hết trước khi Destroy
                 currentRainParticle.Stop(true, ParticleSystemStopBehavior.StopEmitting);
                 Destroy(rainToDestroy, 3f);
             }
@@ -130,7 +130,12 @@ public class WeatherSystem : MonoBehaviour
 
     void FollowPlayer()
     {
-        // Cho hệ thống mưa đi theo Player khi di chuyển
+        if (playerTransform == null)
+        {
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            if (player != null) playerTransform = player.transform;
+        }
+
         if (isRaining && currentRainInstance != null && playerTransform != null)
         {
             currentRainInstance.transform.position = GetRainPosition();
@@ -142,7 +147,7 @@ public class WeatherSystem : MonoBehaviour
         if (playerTransform != null)
         {
             Vector3 targetPos = playerTransform.position;
-            targetPos.y += 20f; // Độ cao mưa so với Player
+            targetPos.y += 20f;
             return targetPos;
         }
         return transform.position;

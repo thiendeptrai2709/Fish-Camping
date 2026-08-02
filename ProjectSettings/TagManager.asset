@@ -7,6 +7,8 @@ TagManager:
   - Stone
   - Target
   - Car
+  - Sun
+  - Moon
   layers:
   - Default
   - TransparentFX

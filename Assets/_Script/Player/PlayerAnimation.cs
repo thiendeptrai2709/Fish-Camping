@@ -82,8 +82,11 @@ public class PlayerAnimation : MonoBehaviour
     {
         float targetSpeed = 0f;
 
-        // Thêm điều kiện !playerMovement.IsMovementLocked để chặn animation di chuyển
-        if (playerMovement != null && playerMovement.enabled && !playerMovement.IsMovementLocked)
+        bool isDialogueActive = DialogueManager.Instance != null && DialogueManager.Instance.IsDialogueActive;
+        bool isFishing = fishingController != null && fishingController.IsBusyFishing();
+
+        // Khóa animation chạy/đi bộ khi đang câu cá, bị khóa thủ công, mở UI hoặc đang có hội thoại
+        if (playerMovement != null && playerMovement.enabled && !playerMovement.IsMovementLocked && !inputHandler.IsUIOpen && !isDialogueActive && !isFishing)
         {
             if (inputHandler.MoveInput.magnitude > 0.1f)
             {

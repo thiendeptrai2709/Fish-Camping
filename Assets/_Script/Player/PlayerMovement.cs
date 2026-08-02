@@ -30,7 +30,9 @@ public class PlayerMovement : MonoBehaviour
         // Chốt an toàn: Nếu CharacterController bị tắt (ví dụ lúc đang ngồi trên xe) thì dừng toàn bộ tính toán di chuyển/trọng lực
         if (controller == null || !controller.enabled) return;
 
-        if ((fishingController != null && fishingController.IsBusyFishing()) || IsMovementLocked)
+        bool isDialogueActive = DialogueManager.Instance != null && DialogueManager.Instance.IsDialogueActive;
+
+        if ((fishingController != null && fishingController.IsBusyFishing()) || IsMovementLocked || inputHandler.IsUIOpen || isDialogueActive)
         {
             HandleGravity();
             return;
