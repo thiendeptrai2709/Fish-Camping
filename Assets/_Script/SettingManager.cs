@@ -7,6 +7,9 @@ using TMPro;
 
 public class SettingManager : MonoBehaviour
 {
+    [Header("--- UI Panel ---")]
+    [SerializeField] private GameObject settingPanel; // Kéo Panel Setting vào đây
+
     [Header("--- Audio ---")]
     [SerializeField] private AudioMixer audioMixer;
     [SerializeField] private Slider bgmSlider;
@@ -18,7 +21,6 @@ public class SettingManager : MonoBehaviour
     private void Start()
     {
         // --- Khởi tạo Âm thanh ---
-        // AudioMixer dùng thang đo Decibel (từ -80dB đến 0dB), Slider dùng từ 0 đến 1
         float savedBGM = PlayerPrefs.GetFloat("BGMVolume", 0.75f);
         float savedSFX = PlayerPrefs.GetFloat("SFXVolume", 0.75f);
 
@@ -28,7 +30,6 @@ public class SettingManager : MonoBehaviour
         SetBGMVolume(savedBGM);
         SetSFXVolume(savedSFX);
 
-        // Lắng nghe sự kiện thay đổi Slider
         bgmSlider.onValueChanged.AddListener(SetBGMVolume);
         sfxSlider.onValueChanged.AddListener(SetSFXVolume);
 
@@ -40,10 +41,31 @@ public class SettingManager : MonoBehaviour
         languageDropdown.onValueChanged.AddListener(OnLanguageChanged);
     }
 
-    // Hàm thay đổi volume BGM
+    private void Update()
+    {
+        // Lắng nghe khi người chơi bấm phím ESC
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            ToggleSetting();
+        }
+    }
+
+    // Hàm bật/tắt Panel Setting
+    public void ToggleSetting()
+    {
+        if (settingPanel != null)
+        {
+            // Bật nếu đang tắt, tắt nếu đang bật
+            bool isActive = !settingPanel.activeSelf;
+            settingPanel.SetActive(isActive);
+
+            // (Tùy chọn) Khóa / Mở con trỏ chuột khi bật bảng Setting
+            Cursor.visible = isActive;
+            Cursor.lockState = isActive ? CursorLockMode.None : CursorLockMode.Locked;
+        }
+    }
     public void SetBGMVolume(float value)
     {
-        // Chuyển đổi từ giá trị slider (0-1) sang Decibel (-80 đến 20)
         float dB = value <= 0 ? -80f : Mathf.Log10(value) * 20f;
         audioMixer.SetFloat("BGMVolume", dB);
         PlayerPrefs.SetFloat("BGMVolume", value);
