@@ -7132,7 +7132,7 @@ GameObject:
   - component: {fileID: 617428557}
   - component: {fileID: 617428556}
   - component: {fileID: 617428555}
-  m_Layer: 0
+  m_Layer: 4
   m_Name: water
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19188,6 +19188,77 @@ MonoBehaviour:
   patrolDuration: 8
   boatModel: {fileID: 472056137}
   waterWakeVFX: {fileID: 0}
+--- !u!1 &1672080438
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1672080441}
+  - component: {fileID: 1672080440}
+  - component: {fileID: 1672080439}
+  m_Layer: 0
+  m_Name: CampBuildArea
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1672080439
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1672080438}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8e8a204afce8e845acccc54c7055492, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CampBuildZone
+  borderPrefab: {fileID: 3329188500227599522, guid: b7c9ee990ba777647a6b36249fb82110, type: 3}
+  borderThickness: 0.1
+  textureAspectRatio: 4
+  cornerGap: 0.1
+  yOffset: -1.5
+--- !u!65 &1672080440
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1672080438}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 20, y: 5, z: 20}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!4 &1672080441
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1672080438}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 764.59094, y: 14.085, z: 260.08}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1672550349 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 59a196313827f8e4e9204896834d65cf, type: 3}
@@ -25660,3 +25731,4 @@ SceneRoots:
   - {fileID: 359790631}
   - {fileID: 1663662967}
   - {fileID: 1001521606}
+  - {fileID: 1672080441}

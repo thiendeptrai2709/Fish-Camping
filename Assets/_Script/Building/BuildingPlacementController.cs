@@ -74,7 +74,7 @@ public class BuildingPlacementController : MonoBehaviour
             }
             else
             {
-                isInsideValidZone = true;
+                isInsideValidZone = false;
             }
         }
         else

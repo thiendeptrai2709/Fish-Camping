@@ -1,10 +1,19 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class InventoryGridData : MonoBehaviour
 {
     [SerializeField] private int gridWidth = 10;
     [SerializeField] private int gridHeight = 8;
     [SerializeField] private float cellSize = 64f;
+    [SerializeField] private bool isTrunk = false; // Thêm tick box để phân biệt Balo và Cốp xe
+
+    [SerializeField]
+    private Vector2Int[] trunkLevelSizes = new Vector2Int[4] {
+        new Vector2Int(5, 2),
+        new Vector2Int(5, 4),
+        new Vector2Int(7, 5),
+        new Vector2Int(8, 5)
+    };
 
     private bool[,] occupiedCells;
 
@@ -15,9 +24,33 @@ public class InventoryGridData : MonoBehaviour
 
     public void InitGrid()
     {
+        // Chỉ áp dụng logic đọc Level Cốp xe nếu script này đang nằm trên Cốp xe
+        if (isTrunk)
+        {
+            int currentLevel = PlayerPrefs.GetInt("SavedTrunkLevel", 0);
+            if (currentLevel >= 0 && currentLevel < trunkLevelSizes.Length)
+            {
+                gridWidth = trunkLevelSizes[currentLevel].x;
+                gridHeight = trunkLevelSizes[currentLevel].y;
+            }
+        }
+
         if (occupiedCells == null || occupiedCells.GetLength(0) != gridWidth || occupiedCells.GetLength(1) != gridHeight)
         {
-            occupiedCells = new bool[gridWidth, gridHeight];
+            bool[,] newCells = new bool[gridWidth, gridHeight];
+            if (occupiedCells != null)
+            {
+                int oldW = occupiedCells.GetLength(0);
+                int oldH = occupiedCells.GetLength(1);
+                for (int x = 0; x < Mathf.Min(oldW, gridWidth); x++)
+                {
+                    for (int y = 0; y < Mathf.Min(oldH, gridHeight); y++)
+                    {
+                        newCells[x, y] = occupiedCells[x, y];
+                    }
+                }
+            }
+            occupiedCells = newCells;
         }
     }
 
