@@ -17,7 +17,7 @@ public class NPCFishingShop : MonoBehaviour
         {
             DialogueManager.Instance.StartDialogue(npcName, shopWelcomeDialogues, () => {
 
-                // 2. SỬA DÒNG 19: Đổi từ ShopUIManager sang Shop_Tab_Manager + Bọc check Null
+               
                 if (Shop_Tab_Manager.Instance != null)
                 {
                     Shop_Tab_Manager.Instance.OpenShop(() => {
