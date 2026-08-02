@@ -1,51 +1,75 @@
 ﻿using UnityEngine;
 using TMPro;
-using System.Collections; // BẮT BUỘC: Thêm thư viện này để dùng được Coroutine
+using System.Collections;
+using UnityEngine.InputSystem; // BẮT BUỘC PHẢI CÓ DÒNG NÀY ĐỂ SỬA LỖI KEYBOARD
 
 public class ShopManager : MonoBehaviour
 {
+    // BẮT BUỘC CÓ: Để NPC có thể tìm thấy ShopManager trong Scene
+    public static ShopManager Instance;
+
+    // BẮT BUỘC CÓ: Biến lưu trữ lệnh để gọi NPC thả trạng thái kẹt
+    private System.Action _onShopClosed;
+
     [Header("--- HỆ THỐNG TIỀN ---")]
-    public int tongTien = 5000;         // Tiền thật trong túi (Logic)
-    private int soTienHienThi;          // Tiền ảo đang chạy trên màn hình (Giao diện)
+    public int tongTien = 5000;
+    private int soTienHienThi;
     public TextMeshProUGUI txtHienThiTien;
 
     [Header("--- BẬT/TẮT GIAO DIỆN SHOP ---")]
     public GameObject shopPanel;
 
     [Header("--- CÀI ĐẶT HIỆU ỨNG ---")]
-    public float thoiGianDemSo = 0.5f;  // Chỉnh thời gian đếm số nhanh/chậm (giây)
+    public float thoiGianDemSo = 0.5f;
+
+    private void Awake()
+    {
+        // Khởi tạo Singleton
+        if (Instance == null) Instance = this;
+    }
 
     void Start()
     {
-        // Vừa vào game, gán số hiển thị bằng tổng tiền và cập nhật luôn
         soTienHienThi = tongTien;
         CapNhatGiaoDienTien(soTienHienThi);
-        DongShop();
+        shopPanel.SetActive(false); // Đảm bảo lúc vào game là Shop ẩn
     }
 
-    public void MoShop()
+    void Update()
     {
+        // Bấm phím E để tắt Shop khi bảng shop đang mở
+        if (shopPanel.activeInHierarchy && (Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame))
+        {
+            DongShop();
+        }
+    }
+
+    // ĐÃ SỬA: Thêm (System.Action onClose) để nhận Giao ước từ NPC
+    public void MoShop(System.Action onClose = null)
+    {
+        _onShopClosed = onClose; // Ghi nhớ lại NPC nào vừa gọi
         shopPanel.SetActive(true);
     }
 
+    // ĐÃ SỬA: Báo cho NPC biết khi tắt
     public void DongShop()
     {
         shopPanel.SetActive(false);
+
+        // CỰC KỲ QUAN TRỌNG: Gọi ngược lại NPC để nhả trạng thái "Đang tương tác"
+        _onShopClosed?.Invoke();
+        _onShopClosed = null; // Xóa trí nhớ
     }
 
     public void MuaVatPham(int giaTien)
     {
         if (tongTien >= giaTien)
         {
-            int tienTruocKhiMua = tongTien; // Nhớ lại lúc chưa trừ đang có bao nhiêu tiền
-
-            // TRỪ TIỀN GỐC NGAY LẬP TỨC (Rất quan trọng: Chống lỗi người chơi bấm mua nhanh 2 lần)
+            int tienTruocKhiMua = tongTien;
             tongTien -= giaTien;
 
-            // Dừng hiệu ứng cũ (nếu đang chạy dở do bấm mua liên tục) và bắt đầu đếm số mới
             StopAllCoroutines();
             StartCoroutine(HieuUngChaySo(tienTruocKhiMua, tongTien));
-
             Debug.Log("Đã mua thành công! Trừ " + giaTien + " vàng.");
         }
         else
@@ -53,28 +77,32 @@ public class ShopManager : MonoBehaviour
             Debug.Log("Không đủ tiền để mua món này!");
         }
     }
+    // TÍNH NĂNG MỚI: Dành cho việc bán cá hoặc bán đồ
+    public void BanVatPham(int giaTriVatPham)
+    {
+        int tienTruocKhiBan = tongTien;
 
-    // --- CỤC PHÉP THUẬT XỬ LÝ VIỆC ĐẾM SỐ TỪ TỪ ---
+        // CỘNG TIỀN VÀO TÚI
+        tongTien += giaTriVatPham;
+
+        // Chạy lại hiệu ứng đếm số cho mượt
+        StopAllCoroutines();
+        StartCoroutine(HieuUngChaySo(tienTruocKhiBan, tongTien));
+
+        Debug.Log("Đã bán thành công! Thu về " + giaTriVatPham + " vàng.");
+    }
+
     IEnumerator HieuUngChaySo(int soBatDau, int soKetThuc)
     {
         float thoiGianDaChay = 0f;
-
-        // Vòng lặp này sẽ chạy liên tục cho đến khi hết thời gian (thoiGianDemSo)
         while (thoiGianDaChay < thoiGianDemSo)
         {
             thoiGianDaChay += Time.deltaTime;
-
-            // Hàm Lerp sẽ tự động tính toán ra con số ở giữa cực kỳ mượt
             float phanTram = thoiGianDaChay / thoiGianDemSo;
             soTienHienThi = Mathf.RoundToInt(Mathf.Lerp(soBatDau, soKetThuc, phanTram));
-
-            // Cập nhật số đang chạy lên màn hình
             CapNhatGiaoDienTien(soTienHienThi);
-
-            yield return null; // Lệnh chờ tới khung hình (frame) tiếp theo rồi mới vòng lại
+            yield return null;
         }
-
-        // Chốt hạ: Đảm bảo khi hết giờ thì số hiển thị chính xác 100% bằng số tiền thật
         soTienHienThi = soKetThuc;
         CapNhatGiaoDienTien(soTienHienThi);
     }

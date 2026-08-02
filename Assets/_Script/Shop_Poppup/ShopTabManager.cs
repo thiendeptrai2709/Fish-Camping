@@ -6,6 +6,7 @@ public class ShopTabManager : MonoBehaviour
     public GameObject scrollViewCanCau;
     public GameObject scrollViewMoiCau;
     public GameObject scrollViewPhuTung;
+    public GameObject scrollViewBanCa; // THÊM MỚI: Nơi chứa danh sách cá của Player
 
     void Start()
     {
@@ -18,6 +19,7 @@ public class ShopTabManager : MonoBehaviour
         scrollViewCanCau.SetActive(true);
         scrollViewMoiCau.SetActive(false);
         scrollViewPhuTung.SetActive(false);
+        if (scrollViewBanCa != null) scrollViewBanCa.SetActive(false);
     }
 
     public void MoTabMoiCau()
@@ -25,6 +27,7 @@ public class ShopTabManager : MonoBehaviour
         scrollViewCanCau.SetActive(false);
         scrollViewMoiCau.SetActive(true);
         scrollViewPhuTung.SetActive(false);
+        if (scrollViewBanCa != null) scrollViewBanCa.SetActive(false);
     }
 
     public void MoTabPhuTung()
@@ -32,5 +35,15 @@ public class ShopTabManager : MonoBehaviour
         scrollViewCanCau.SetActive(false);
         scrollViewMoiCau.SetActive(false);
         scrollViewPhuTung.SetActive(true);
+        if (scrollViewBanCa != null) scrollViewBanCa.SetActive(false);
+    }
+
+    // THÊM MỚI: Hàm mở Tab Bán Cá
+    public void MoTabBanCa()
+    {
+        scrollViewCanCau.SetActive(false);
+        scrollViewMoiCau.SetActive(false);
+        scrollViewPhuTung.SetActive(false);
+        if (scrollViewBanCa != null) scrollViewBanCa.SetActive(true);
     }
 }
