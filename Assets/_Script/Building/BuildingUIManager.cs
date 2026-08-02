@@ -6,6 +6,7 @@ public class BuildingUIManager : MonoBehaviour
     [SerializeField] private PlayerInputHandler inputHandler;
     [SerializeField] private BuildingPlacementController placementController;
     [SerializeField] private PlayerCursor playerCursor;
+    [SerializeField] private MonoBehaviour freeLookCamera;
     private void Update()
     {
         if (inputHandler != null && inputHandler.BuildTriggered)
@@ -41,6 +42,15 @@ public class BuildingUIManager : MonoBehaviour
         {
             if (playerCursor != null) playerCursor.SetCursorState(true);
             if (CampBuildZone.Instance != null) CampBuildZone.Instance.ToggleZoneVisual(false);
+        }
+
+        if (freeLookCamera != null)
+        {
+            MonoBehaviour cm3Input = freeLookCamera.GetComponent("CinemachineInputAxisController") as MonoBehaviour;
+            if (cm3Input != null) cm3Input.enabled = !isOpening;
+
+            MonoBehaviour cm2Input = freeLookCamera.GetComponent("CinemachineInputProvider") as MonoBehaviour;
+            if (cm2Input != null) cm2Input.enabled = !isOpening;
         }
     }
 

@@ -15,6 +15,7 @@ public class CookingUIManager : MonoBehaviour
     [Header("Player References")]
     [SerializeField] private PlayerCursor playerCursor;
     [SerializeField] private GameObject crosshairUI;
+    [SerializeField] private MonoBehaviour freeLookCamera;
 
     private CookingRack currentRack;
     [SerializeField] private CookingSlotUI[] cookingSlots;
@@ -55,8 +56,6 @@ public class CookingUIManager : MonoBehaviour
     {
         currentRack = rack;
 
-        // 1. MỞ GIAO DIỆN BALO TRƯỚC TIÊN
-        // (Bắt buộc phải bật trước để đảm bảo Balo kịp Awake() và không bị null)
         if (BackpackController.Instance != null)
         {
             BackpackController.Instance.OpenForCooking(true);
@@ -70,6 +69,15 @@ public class CookingUIManager : MonoBehaviour
         // Hiện chuột, Ẩn tâm ngắm
         if (playerCursor != null) playerCursor.SetCursorState(false);
         if (crosshairUI != null) crosshairUI.SetActive(false);
+
+        if (freeLookCamera != null)
+        {
+            MonoBehaviour cm3Input = freeLookCamera.GetComponent("CinemachineInputAxisController") as MonoBehaviour;
+            if (cm3Input != null) cm3Input.enabled = false;
+
+            MonoBehaviour cm2Input = freeLookCamera.GetComponent("CinemachineInputProvider") as MonoBehaviour;
+            if (cm2Input != null) cm2Input.enabled = false;
+        }
 
         // 2. DỌN DẸP ĐỒ CŨ NẾU CÓ
         if (spawnedResultItem != null)
@@ -124,6 +132,15 @@ public class CookingUIManager : MonoBehaviour
 
         if (playerCursor != null) playerCursor.SetCursorState(true);
         if (crosshairUI != null) crosshairUI.SetActive(true);
+
+        if (freeLookCamera != null)
+        {
+            MonoBehaviour cm3Input = freeLookCamera.GetComponent("CinemachineInputAxisController") as MonoBehaviour;
+            if (cm3Input != null) cm3Input.enabled = true;
+
+            MonoBehaviour cm2Input = freeLookCamera.GetComponent("CinemachineInputProvider") as MonoBehaviour;
+            if (cm2Input != null) cm2Input.enabled = true;
+        }
 
         if (BackpackController.Instance != null)
         {
