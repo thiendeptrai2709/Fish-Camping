@@ -1,12 +1,5 @@
 fileFormatVersion: 2
-guid: 5d003ba648310e14eb67ec1f710a7490
-AssetOrigin:
-  serializedVersion: 1
-  productId: 375832
-  packageName: Hyper Casual UI Pack
-  packageVersion: 1.0
-  assetPath: Assets/Hyper_Casual_UI/Sprites/Panel_Sprites/scroll icon.png
-  uploadId: 906102
+guid: 4944c56a5092d0442899101d319ef1bd
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -50,7 +43,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -102,13 +95,35 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: Gas_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 1536
+        height: 1024
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3f9cd2743c86cca42bb8c425927a7ab6
+      internalID: -168497641
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
-    internalID: 1537655665
+    spriteID: d8a648327fadd7341922d25e104a56b4
+    internalID: 0
     vertices: []
     indices: 
     edges: []
@@ -116,7 +131,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Gas_0: -168497641
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
