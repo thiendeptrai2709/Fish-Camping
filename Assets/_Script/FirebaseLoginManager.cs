@@ -86,10 +86,9 @@ public class Login : MonoBehaviour
             }
             if (Task.IsCompletedSuccessfully)
             {
-                // Lấy thông tin user vừa đăng nhập thành công
                 var user = Task.Result.User;
                 Debug.Log($"Đăng nhập thành công cho: {user.Email}");
-                SceneManager.LoadScene("Map_1_Town"); 
+                SceneManager.LoadScene("Map_1_Town");
             }
         });
     }

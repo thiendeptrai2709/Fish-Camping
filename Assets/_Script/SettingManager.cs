@@ -64,8 +64,6 @@ public class SettingManager : MonoBehaviour
             Cursor.lockState = isActive ? CursorLockMode.None : CursorLockMode.Locked;
         }
     }
-
-    // Hàm thay đổi volume BGM
     public void SetBGMVolume(float value)
     {
         float dB = value <= 0 ? -80f : Mathf.Log10(value) * 20f;
