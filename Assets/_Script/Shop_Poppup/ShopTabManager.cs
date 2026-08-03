@@ -68,7 +68,7 @@ public class ShopTabManager : MonoBehaviour
         SellFishSlot[] cacO = contentBanCa.GetComponentsInChildren<SellFishSlot>(true);
 
         // 2. Lấy toàn bộ cá đang có trong Balo
-        InventoryItemUI[] doTrongBalo = BackpackMinigameUI.Instance.GetComponentsInChildren<InventoryItemUI>();
+        InventoryItemUI[] doTrongBalo = BackpackMinigameUI.Instance.GetAllItems();
         List<InventoryItemUI> danhSachCa = new List<InventoryItemUI>();
         foreach (InventoryItemUI item in doTrongBalo)
         {

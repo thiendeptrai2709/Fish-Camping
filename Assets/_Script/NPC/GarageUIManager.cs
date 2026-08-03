@@ -32,15 +32,31 @@ public class GarageUIManager : MonoBehaviour
         garagePanel.SetActive(false);
     }
 
-    // Hàm mở Gara (Mặc định khi mở sẽ hiển thị tab Lốp xe trước)
     public void OpenGarage(System.Action onClose)
     {
-        garagePanel.SetActive(true);
         _onCloseCallback = onClose;
-        SelectTireTab(); // Mặc định chọn Lốp
+
+        try
+        {
+            if (garagePanel != null)
+            {
+                garagePanel.SetActive(true);
+                garagePanel.transform.SetAsLastSibling();
+            }
+
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+
+            SelectTireTab(); // Mặc định chọn Lốp
+        }
+        catch (System.Exception e)
+        {
+            // NẾU CÓ LỖI (quên kéo UI, thiếu data...), HỆ THỐNG SẼ TỰ ĐỘNG BÁO LỖI VÀ THẢ NPC RA NGAY LẬP TỨC!
+            Debug.LogError($"[GarageUIManager] Lỗi khi mở UI: {e.Message}. Đã ép thả khóa NPC!");
+            CloseGarage();
+        }
     }
 
-    // Nút bấm Tab Lốp xe gọi hàm này
     public void SelectTireTab()
     {
         _selectedData = tireUpgradeData;
@@ -54,11 +70,12 @@ public class GarageUIManager : MonoBehaviour
         UpdateGarageUI(_currentTrunkLevel);
     }
 
+    // Đã thêm các lớp khiên bảo vệ (if != null) cho toàn bộ UI
     private void UpdateGarageUI(int currentLevel)
     {
         if (_selectedData == null) return;
 
-        partNameText.text = _selectedData.partName;
+        if (partNameText != null) partNameText.text = _selectedData.partName;
 
         UpgradeLevel currentData = GetUpgradeLevelData(_selectedData, currentLevel);
         int nextLevel = currentLevel + 1;
@@ -67,18 +84,25 @@ public class GarageUIManager : MonoBehaviour
         if (hasNextLevel)
         {
             UpgradeLevel nextData = GetUpgradeLevelData(_selectedData, nextLevel);
-            currentInfoText.text = $"Hiện tại: {currentData.upgradeName}\n👉 Tiếp theo: {nextData.upgradeName}\n({nextData.description})";
-            costText.text = $"Chi phí: {nextData.cost}G";
 
-            upgradeButton.interactable = true;
-            upgradeButton.onClick.RemoveAllListeners();
-            upgradeButton.onClick.AddListener(() => TryUpgradePart(nextLevel));
+            if (currentInfoText != null)
+                currentInfoText.text = $"Hiện tại: {currentData.upgradeName}\n👉 Tiếp theo: {nextData.upgradeName}\n({nextData.description})";
+
+            if (costText != null)
+                costText.text = $"Chi phí: {nextData.cost}G";
+
+            if (upgradeButton != null)
+            {
+                upgradeButton.interactable = true;
+                upgradeButton.onClick.RemoveAllListeners();
+                upgradeButton.onClick.AddListener(() => TryUpgradePart(nextLevel));
+            }
         }
         else
         {
-            currentInfoText.text = $"Hiện tại: {currentData.upgradeName}\n🎉 Đã đạt cấp độ tối đa!";
-            costText.text = "MAX";
-            upgradeButton.interactable = false;
+            if (currentInfoText != null) currentInfoText.text = $"Hiện tại: {currentData.upgradeName}\n🎉 Đã đạt cấp độ tối đa!";
+            if (costText != null) costText.text = "MAX";
+            if (upgradeButton != null) upgradeButton.interactable = false;
         }
     }
 

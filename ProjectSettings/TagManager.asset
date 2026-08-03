@@ -9,6 +9,7 @@ TagManager:
   - Car
   - Sun
   - Moon
+  - TextTien
   layers:
   - Default
   - TransparentFX

@@ -61,10 +61,9 @@ public class NPCBase : MonoBehaviour, IInteractable
         else if (_tireUpgrader != null)
         {
             _tireUpgrader.HandleUpgradeInteraction(npcName, () => {
-                SetNPCAnimationState(2); // Giữ hoạt ảnh sửa xe / nói chuyện
-                GarageUIManager.Instance.OpenGarage(() => {
-                    ResetNPCState();
-                });
+                // Nhận tín hiệu từ NPCOffroadUpgrade báo về là đã xong việc (đóng Garage).
+                // Lập tức gọi hàm Reset để thả cờ _isInteracting = false.
+                ResetNPCState();
             });
         }
         // NHÁNH 3: Nếu là NPC Thuyền trưởng bán đồ câu / thu mua cá

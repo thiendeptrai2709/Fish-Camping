@@ -819,6 +819,13 @@ public class BackpackMinigameUI : MonoBehaviour
         }
     }
 
+    // THÊM MỚI: Hàm để Shop (hay bất kỳ ai) lấy đúng toàn bộ item đang có trong Balo.
+    public InventoryItemUI[] GetAllItems()
+    {
+        if (itemsContainer == null) return new InventoryItemUI[0];
+        return itemsContainer.GetComponentsInChildren<InventoryItemUI>();
+    }
+
     // THÊM MỚI: Hàm để Shop gọi khi muốn xóa cá khỏi Balo sau khi bán
     public void RemoveItem(InventoryItemUI itemUI)
     {

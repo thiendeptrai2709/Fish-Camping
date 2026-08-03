@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Fish9
   m_EditorClassIdentifier: Assembly-CSharp::FishSO
   itemID: fish9
-  itemName: Fish 9
+  itemName: "C\xE1 B\u0103ng Ca-r\xF4"
   itemIcon: {fileID: 21300000, guid: 6d600ccf880f8b34fa3e278bebdd2be3, type: 3}
   itemDescription: 
   equippedModelPrefab: {fileID: 8443153244633029542, guid: 0778e720b5ad7234f94fa1d20d4220c6, type: 3}
@@ -23,7 +23,7 @@ MonoBehaviour:
   rarity: 0
   caughtFishPrefab: {fileID: 8443153244633029542, guid: 0778e720b5ad7234f94fa1d20d4220c6, type: 3}
   difficulty: 1
-  basePrice: 50
+  basePrice: 300
   minLength: 10
   maxLength: 30
   minWeight: 0.5

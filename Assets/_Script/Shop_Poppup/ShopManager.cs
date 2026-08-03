@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using TMPro;
-using System.Collections;
 using UnityEngine.InputSystem; // BẮT BUỘC PHẢI CÓ DÒNG NÀY ĐỂ SỬA LỖI KEYBOARD
 
 public class ShopManager : MonoBehaviour
@@ -11,16 +9,12 @@ public class ShopManager : MonoBehaviour
     // BẮT BUỘC CÓ: Biến lưu trữ lệnh để gọi NPC thả trạng thái kẹt
     private System.Action _onShopClosed;
 
-    [Header("--- HỆ THỐNG TIỀN ---")]
-    public int tongTien = 5000;
-    private int soTienHienThi;
-    public TextMeshProUGUI txtHienThiTien;
-
     [Header("--- BẬT/TẮT GIAO DIỆN SHOP ---")]
     public GameObject shopPanel;
 
-    [Header("--- CÀI ĐẶT HIỆU ỨNG ---")]
-    public float thoiGianDemSo = 0.5f;
+    [Header("--- ẨN UI KHÁC KHI ĐANG MỞ SHOP ---")]
+    [Tooltip("Kéo các UI cần ẩn tạm lúc mở Shop vào đây (VD: cái HUD tiền 'coin' đang đè lên góc màn hình). Đóng Shop sẽ tự hiện lại.")]
+    public GameObject[] cacUIAnKhiMoShop;
 
     private void Awake()
     {
@@ -30,8 +24,6 @@ public class ShopManager : MonoBehaviour
 
     void Start()
     {
-        soTienHienThi = tongTien;
-        CapNhatGiaoDienTien(soTienHienThi);
         shopPanel.SetActive(false); // Đảm bảo lúc vào game là Shop ẩn
     }
 
@@ -49,6 +41,7 @@ public class ShopManager : MonoBehaviour
     {
         _onShopClosed = onClose;
         shopPanel.SetActive(true);
+        AnHienCacUIKhac(false); // Ẩn HUD/UI khác đi trong lúc Shop đang mở
 
         // HIỆN VÀ MỞ KHÓA CHUỘT
         Cursor.visible = true;
@@ -58,6 +51,7 @@ public class ShopManager : MonoBehaviour
     public void DongShop()
     {
         shopPanel.SetActive(false);
+        AnHienCacUIKhac(true); // Hiện lại UI đã ẩn lúc mở Shop
 
         _onShopClosed?.Invoke();
         _onShopClosed = null;
@@ -67,10 +61,19 @@ public class ShopManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
     }
 
+    private void AnHienCacUIKhac(bool hienRa)
+    {
+        if (cacUIAnKhiMoShop == null) return;
+        foreach (GameObject obj in cacUIAnKhiMoShop)
+        {
+            if (obj != null) obj.SetActive(hienRa);
+        }
+    }
+
     // Cập nhật tham số: Dùng ItemShapeSO cho đồng bộ với code Balo
     public void MuaVatPham(int giaTien, ItemShapeSO monDoDaMua)
     {
-        if (tongTien >= giaTien)
+        if (MoneyManager.Instance != null && MoneyManager.Instance.CoDuTien(giaTien))
         {
             if (monDoDaMua != null && BackpackMinigameUI.Instance != null)
             {
@@ -80,11 +83,7 @@ public class ShopManager : MonoBehaviour
                 if (themThanhCong)
                 {
                     // KHI NHÉT BALO THÀNH CÔNG THÌ MỚI TRỪ TIỀN
-                    int tienTruocKhiMua = tongTien;
-                    tongTien -= giaTien;
-
-                    StopAllCoroutines();
-                    StartCoroutine(HieuUngChaySo(tienTruocKhiMua, tongTien));
+                    MoneyManager.Instance.TruTien(giaTien);
 
                     Debug.Log($"Đã ném [{monDoDaMua.itemName}] vào balo! Trừ {giaTien} vàng.");
                 }
@@ -101,38 +100,11 @@ public class ShopManager : MonoBehaviour
     }
     public void BanVatPham(int giaTriVatPham)
     {
-        int tienTruocKhiBan = tongTien;
+        if (MoneyManager.Instance == null) return;
 
         // CỘNG TIỀN VÀO TÚI
-        tongTien += giaTriVatPham;
-
-        // Chạy lại hiệu ứng đếm số cho mượt
-        StopAllCoroutines();
-        StartCoroutine(HieuUngChaySo(tienTruocKhiBan, tongTien));
+        MoneyManager.Instance.CongTien(giaTriVatPham);
 
         Debug.Log("Đã bán thành công! Thu về " + giaTriVatPham + " vàng.");
-    }
-
-    IEnumerator HieuUngChaySo(int soBatDau, int soKetThuc)
-    {
-        float thoiGianDaChay = 0f;
-        while (thoiGianDaChay < thoiGianDemSo)
-        {
-            thoiGianDaChay += Time.deltaTime;
-            float phanTram = thoiGianDaChay / thoiGianDemSo;
-            soTienHienThi = Mathf.RoundToInt(Mathf.Lerp(soBatDau, soKetThuc, phanTram));
-            CapNhatGiaoDienTien(soTienHienThi);
-            yield return null;
-        }
-        soTienHienThi = soKetThuc;
-        CapNhatGiaoDienTien(soTienHienThi);
-    }
-
-    private void CapNhatGiaoDienTien(int soTien)
-    {
-        if (txtHienThiTien != null)
-        {
-            txtHienThiTien.text = soTien.ToString() + "K";
-        }
     }
 }
