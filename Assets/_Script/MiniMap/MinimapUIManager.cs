@@ -3,17 +3,21 @@
 public class MinimapUIManager : MonoBehaviour
 {
     public PlayerInputHandler inputHandler;
+    public VehicleInput vehicleInput;
     public GameObject smallMapUI;
     public GameObject expandedMapUI;
     public GameObject minimapCamera; // Camera của map góc màn hình
     public GameObject fullMapCamera; // Camera của map lớn
     public MonoBehaviour freeLookCamera;
-
+    public MonoBehaviour carFreeLookCamera;
     private bool isExpanded = false;
 
     private void Update()
     {
-        if (inputHandler != null && inputHandler.ExpandMapTriggered)
+        bool isPlayerOpening = (inputHandler != null && inputHandler.ExpandMapTriggered);
+        bool isVehicleOpening = (vehicleInput != null && vehicleInput.ExpandMapTriggered);
+
+        if (isPlayerOpening || isVehicleOpening)
         {
             isExpanded = !isExpanded;
             UpdateMapUI();
@@ -30,20 +34,23 @@ public class MinimapUIManager : MonoBehaviour
         if (minimapCamera != null) minimapCamera.SetActive(!isExpanded);
         if (fullMapCamera != null) fullMapCamera.SetActive(isExpanded);
 
-        if (inputHandler != null)
-        {
-            inputHandler.IsUIOpen = isExpanded;
-        }
-        if (freeLookCamera != null)
-        {
-            MonoBehaviour cm3Input = freeLookCamera.GetComponent("CinemachineInputAxisController") as MonoBehaviour;
-            if (cm3Input != null) cm3Input.enabled = !isExpanded;
+        if (inputHandler != null) inputHandler.IsUIOpen = isExpanded;
+        if (vehicleInput != null) vehicleInput.IsUIOpen = isExpanded;
 
-            MonoBehaviour cm2Input = freeLookCamera.GetComponent("CinemachineInputProvider") as MonoBehaviour;
-            if (cm2Input != null) cm2Input.enabled = !isExpanded;
+        ToggleCameraInput(freeLookCamera, !isExpanded);
+        ToggleCameraInput(carFreeLookCamera, !isExpanded);
+    }
+    private void ToggleCameraInput(MonoBehaviour cam, bool isEnabled)
+    {
+        if (cam != null)
+        {
+            MonoBehaviour cm3Input = cam.GetComponent("CinemachineInputAxisController") as MonoBehaviour;
+            if (cm3Input != null) cm3Input.enabled = isEnabled;
+
+            MonoBehaviour cm2Input = cam.GetComponent("CinemachineInputProvider") as MonoBehaviour;
+            if (cm2Input != null) cm2Input.enabled = isEnabled;
         }
     }
-
     // Hàm này để các Camera ở từng map tự động báo cáo cho Manager khi load xong
     public void SetFullMapCamera(GameObject sceneCamera)
     {

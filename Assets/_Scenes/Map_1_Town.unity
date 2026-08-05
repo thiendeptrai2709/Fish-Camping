@@ -24431,7 +24431,7 @@ Camera:
   m_Depth: 1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 1169
+    m_Bits: 1177
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 8400000, guid: c25206b9ee4170348b41e57dc9d25f57, type: 2}
   m_TargetDisplay: 0
@@ -26423,11 +26423,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 873325673093978388, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 864.88
+      value: -425
       objectReference: {fileID: 0}
     - target: {fileID: 873325673093978388, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -475.41
+      value: -459
       objectReference: {fileID: 0}
     - target: {fileID: 903645093363700883, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: m_AnchorMax.x
@@ -28937,11 +28937,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MinimapUIManager
   inputHandler: {fileID: 1840939327}
+  vehicleInput: {fileID: 1592030707}
   smallMapUI: {fileID: 1636236013}
   expandedMapUI: {fileID: 1545388129}
   minimapCamera: {fileID: 732395247}
   fullMapCamera: {fileID: 0}
   freeLookCamera: {fileID: 1473681185}
+  carFreeLookCamera: {fileID: 1838179872}
 --- !u!1 &936525188
 GameObject:
   m_ObjectHideFlags: 0
@@ -31538,7 +31540,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 1169
+    m_Bits: 1177
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 8400000, guid: 7e29129d4c18e9f4685d56e9e576d344, type: 2}
   m_TargetDisplay: 0
@@ -31577,7 +31579,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56e46205c1fb98246837019b116ff60a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FullMapCameraController
-  panSpeed: 50
+  panSpeed: 30
   minX: 0
   maxX: 400
   minZ: 0
@@ -39169,6 +39171,17 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300000, guid: 600c276288a996744bd73e53635eba4c, type: 3}
+--- !u!114 &1592030707 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7550097776944134173, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
+  m_PrefabInstance: {fileID: 883674292}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c9698c4afeae714099aa592775e8f29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::VehicleInput
 --- !u!1 &1597482769 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8087206098101400960, guid: 56e3f715ad78ae648aff217ab7ce7274, type: 3}
@@ -48175,6 +48188,17 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.2161845, y: 1.9405481, z: 1.9281085}
   m_Center: {x: 0, y: -0.97027403, z: 0}
+--- !u!114 &1838179872 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3347199809833063233, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
+  m_PrefabInstance: {fileID: 883674292}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9dfa5b682dcd46bda6128250e975f58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineCamera
 --- !u!1 &1840078861 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 441211640589119590, guid: 56e3f715ad78ae648aff217ab7ce7274, type: 3}

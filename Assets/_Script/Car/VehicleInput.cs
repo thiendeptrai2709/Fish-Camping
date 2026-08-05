@@ -11,7 +11,7 @@ public class VehicleInput : MonoBehaviour
     public bool IsPushing { get; private set; }
     public bool IsUIOpen { get; set; }
     public bool MapTriggered { get; private set; }
-
+    public bool ExpandMapTriggered { get; private set; }
     private void Awake()
     {
         inputActions = new CarInputActions();
@@ -34,6 +34,7 @@ public class VehicleInput : MonoBehaviour
         {
             // Phải đọc nút Map ở ngoài để biến này được reset lại (false) ở frame tiếp theo
             MapTriggered = inputActions.Gameplay.Map.WasPressedThisFrame();
+            ExpandMapTriggered = inputActions.Gameplay.ExpandMap.WasPressedThisFrame();
         }
 
         if (IsUIOpen)
