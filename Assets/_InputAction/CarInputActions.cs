@@ -127,6 +127,15 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ExpandMap"",
+                    ""type"": ""Button"",
+                    ""id"": ""144157f0-2470-4e08-b060-40ff3756ad99"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -215,6 +224,17 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Map"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""68cc4df1-203c-4b02-8c55-22da3367478e"",
+                    ""path"": ""<Keyboard>/n"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ExpandMap"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -318,6 +338,15 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
                     ""name"": ""Map"",
                     ""type"": ""Button"",
                     ""id"": ""77f2e142-987b-4bc2-b255-7b30c35a2d1e"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ExpandMap"",
+                    ""type"": ""Button"",
+                    ""id"": ""696ea938-252b-44e0-9cd1-5ea70fa33277"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -489,6 +518,17 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""Map"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a55f9034-b053-4bc4-8725-062ab2ecf87e"",
+                    ""path"": ""<Keyboard>/n"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ExpandMap"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -501,6 +541,7 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
         m_Gameplay_Brake = m_Gameplay.FindAction("Brake", throwIfNotFound: true);
         m_Gameplay_ExitVehicle = m_Gameplay.FindAction("ExitVehicle", throwIfNotFound: true);
         m_Gameplay_Map = m_Gameplay.FindAction("Map", throwIfNotFound: true);
+        m_Gameplay_ExpandMap = m_Gameplay.FindAction("ExpandMap", throwIfNotFound: true);
         // Player
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
@@ -514,6 +555,7 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
         m_Player_Build = m_Player.FindAction("Build", throwIfNotFound: true);
         m_Player_Journal = m_Player.FindAction("Journal", throwIfNotFound: true);
         m_Player_Map = m_Player.FindAction("Map", throwIfNotFound: true);
+        m_Player_ExpandMap = m_Player.FindAction("ExpandMap", throwIfNotFound: true);
     }
 
     ~@CarInputActions()
@@ -599,6 +641,7 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Gameplay_Brake;
     private readonly InputAction m_Gameplay_ExitVehicle;
     private readonly InputAction m_Gameplay_Map;
+    private readonly InputAction m_Gameplay_ExpandMap;
     /// <summary>
     /// Provides access to input actions defined in input action map "Gameplay".
     /// </summary>
@@ -626,6 +669,10 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Gameplay/Map".
         /// </summary>
         public InputAction @Map => m_Wrapper.m_Gameplay_Map;
+        /// <summary>
+        /// Provides access to the underlying input action "Gameplay/ExpandMap".
+        /// </summary>
+        public InputAction @ExpandMap => m_Wrapper.m_Gameplay_ExpandMap;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -664,6 +711,9 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
             @Map.started += instance.OnMap;
             @Map.performed += instance.OnMap;
             @Map.canceled += instance.OnMap;
+            @ExpandMap.started += instance.OnExpandMap;
+            @ExpandMap.performed += instance.OnExpandMap;
+            @ExpandMap.canceled += instance.OnExpandMap;
         }
 
         /// <summary>
@@ -687,6 +737,9 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
             @Map.started -= instance.OnMap;
             @Map.performed -= instance.OnMap;
             @Map.canceled -= instance.OnMap;
+            @ExpandMap.started -= instance.OnExpandMap;
+            @ExpandMap.performed -= instance.OnExpandMap;
+            @ExpandMap.canceled -= instance.OnExpandMap;
         }
 
         /// <summary>
@@ -735,6 +788,7 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Build;
     private readonly InputAction m_Player_Journal;
     private readonly InputAction m_Player_Map;
+    private readonly InputAction m_Player_ExpandMap;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -790,6 +844,10 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/Map".
         /// </summary>
         public InputAction @Map => m_Wrapper.m_Player_Map;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/ExpandMap".
+        /// </summary>
+        public InputAction @ExpandMap => m_Wrapper.m_Player_ExpandMap;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -849,6 +907,9 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
             @Map.started += instance.OnMap;
             @Map.performed += instance.OnMap;
             @Map.canceled += instance.OnMap;
+            @ExpandMap.started += instance.OnExpandMap;
+            @ExpandMap.performed += instance.OnExpandMap;
+            @ExpandMap.canceled += instance.OnExpandMap;
         }
 
         /// <summary>
@@ -893,6 +954,9 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
             @Map.started -= instance.OnMap;
             @Map.performed -= instance.OnMap;
             @Map.canceled -= instance.OnMap;
+            @ExpandMap.started -= instance.OnExpandMap;
+            @ExpandMap.performed -= instance.OnExpandMap;
+            @ExpandMap.canceled -= instance.OnExpandMap;
         }
 
         /// <summary>
@@ -961,6 +1025,13 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnMap(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ExpandMap" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnExpandMap(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Player" which allows adding and removing callbacks.
@@ -1046,5 +1117,12 @@ public partial class @CarInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnMap(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ExpandMap" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnExpandMap(InputAction.CallbackContext context);
     }
 }

@@ -41,6 +41,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "ExpandMap",
+                    "type": "Button",
+                    "id": "144157f0-2470-4e08-b060-40ff3756ad99",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -129,6 +138,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Map",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "68cc4df1-203c-4b02-8c55-22da3367478e",
+                    "path": "<Keyboard>/n",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ExpandMap",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
@@ -232,6 +252,15 @@
                     "name": "Map",
                     "type": "Button",
                     "id": "77f2e142-987b-4bc2-b255-7b30c35a2d1e",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ExpandMap",
+                    "type": "Button",
+                    "id": "696ea938-252b-44e0-9cd1-5ea70fa33277",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -401,6 +430,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Map",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a55f9034-b053-4bc4-8725-062ab2ecf87e",
+                    "path": "<Keyboard>/n",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ExpandMap",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
