@@ -67,4 +67,12 @@ public class MinimapUIManager : MonoBehaviour
             fullMapCamera.SetActive(isExpanded);
         }
     }
+    public void ForceCloseExpandedMap()
+    {
+        if (isExpanded)
+        {
+            isExpanded = false;
+            UpdateMapUI();
+        }
+    }
 }

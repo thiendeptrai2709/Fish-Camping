@@ -2016,6 +2016,7 @@ MonoBehaviour:
   maxX: 500
   minZ: 0
   maxZ: 500
+  smoothFocusSpeed: 5
 --- !u!4 &703316460 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8297613023634736737, guid: bdba6e0c619703d4d874e30271d42953, type: 3}
@@ -4382,6 +4383,10 @@ PrefabInstance:
     - target: {fileID: 8029384935560429254, guid: 6dd68daad9a92d3428724f61fe8b134f, type: 3}
       propertyPath: m_Name
       value: Tend camping 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8029384935560429254, guid: 6dd68daad9a92d3428724f61fe8b134f, type: 3}
+      propertyPath: m_TagString
+      value: Camp
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

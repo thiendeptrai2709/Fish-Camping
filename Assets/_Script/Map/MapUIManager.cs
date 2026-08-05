@@ -10,7 +10,7 @@ public class MapUIManager : MonoBehaviour
     [SerializeField] private VehicleInput vehicleInput;
     [SerializeField] private PlayerCursor playerCursor;
     [SerializeField] private MonoBehaviour freeLookCamera;
-
+    [SerializeField] private GameObject smallMapUI;
     private void OnEnable()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
@@ -62,6 +62,11 @@ public class MapUIManager : MonoBehaviour
             bool isActive = !mapUIPanel.activeSelf;
             mapUIPanel.SetActive(isActive);
             playerInputHandler.IsUIOpen = isActive;
+
+            if (smallMapUI != null)
+            {
+                smallMapUI.SetActive(!isActive);
+            }
 
             /* Reset trạng thái phóng to bản đồ khi mở lên */
             if (isActive && mapInteractionManager != null)

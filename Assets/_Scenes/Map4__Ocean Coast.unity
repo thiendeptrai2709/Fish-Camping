@@ -8837,6 +8837,7 @@ MonoBehaviour:
   maxX: 2000
   minZ: 0
   maxZ: 1000
+  smoothFocusSpeed: 5
 --- !u!114 &733793779
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16087,6 +16088,10 @@ PrefabInstance:
     - target: {fileID: 1401315718095716314, guid: 8f82e55b1e03368488dc9bb9cbe8b39d, type: 3}
       propertyPath: m_Name
       value: Tend camping 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1401315718095716314, guid: 8f82e55b1e03368488dc9bb9cbe8b39d, type: 3}
+      propertyPath: m_TagString
+      value: Camp
       objectReference: {fileID: 0}
     - target: {fileID: 4762653102039612433, guid: 8f82e55b1e03368488dc9bb9cbe8b39d, type: 3}
       propertyPath: m_LocalScale.x
