@@ -7,6 +7,7 @@ public class MinimapUIManager : MonoBehaviour
     public GameObject expandedMapUI;
     public GameObject minimapCamera; // Camera của map góc màn hình
     public GameObject fullMapCamera; // Camera của map lớn
+    public MonoBehaviour freeLookCamera;
 
     private bool isExpanded = false;
 
@@ -32,6 +33,26 @@ public class MinimapUIManager : MonoBehaviour
         if (inputHandler != null)
         {
             inputHandler.IsUIOpen = isExpanded;
+        }
+        if (freeLookCamera != null)
+        {
+            MonoBehaviour cm3Input = freeLookCamera.GetComponent("CinemachineInputAxisController") as MonoBehaviour;
+            if (cm3Input != null) cm3Input.enabled = !isExpanded;
+
+            MonoBehaviour cm2Input = freeLookCamera.GetComponent("CinemachineInputProvider") as MonoBehaviour;
+            if (cm2Input != null) cm2Input.enabled = !isExpanded;
+        }
+    }
+
+    // Hàm này để các Camera ở từng map tự động báo cáo cho Manager khi load xong
+    public void SetFullMapCamera(GameObject sceneCamera)
+    {
+        fullMapCamera = sceneCamera;
+
+        if (fullMapCamera != null)
+        {
+            // Đảm bảo trạng thái bật/tắt khớp với UI hiện tại khi vừa sang map mới
+            fullMapCamera.SetActive(isExpanded);
         }
     }
 }
