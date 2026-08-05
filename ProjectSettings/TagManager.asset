@@ -10,6 +10,8 @@ TagManager:
   - Sun
   - Moon
   - TextTien
+  - NPC
+  - Camp
   layers:
   - Default
   - TransparentFX

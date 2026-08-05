@@ -67,4 +67,10 @@ public class FullMapCameraController : MonoBehaviour
 
         return targetPos;
     }
+    public void FocusOnPosition(Vector3 targetPosition)
+    {
+        Vector3 newPos = targetPosition;
+        newPos.y = transform.position.y;
+        transform.position = GetClampedPosition(newPos);
+    }
 }

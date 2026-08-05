@@ -11,7 +11,7 @@ public class MinimapUIManager : MonoBehaviour
     public MonoBehaviour freeLookCamera;
     public MonoBehaviour carFreeLookCamera;
     private bool isExpanded = false;
-
+    public PlayerCursor playerCursor;
     private void Update()
     {
         bool isPlayerOpening = (inputHandler != null && inputHandler.ExpandMapTriggered);
@@ -36,6 +36,11 @@ public class MinimapUIManager : MonoBehaviour
 
         if (inputHandler != null) inputHandler.IsUIOpen = isExpanded;
         if (vehicleInput != null) vehicleInput.IsUIOpen = isExpanded;
+
+        if (playerCursor != null)
+        {
+            playerCursor.SetCursorState(!isExpanded);
+        }
 
         ToggleCameraInput(freeLookCamera, !isExpanded);
         ToggleCameraInput(carFreeLookCamera, !isExpanded);
