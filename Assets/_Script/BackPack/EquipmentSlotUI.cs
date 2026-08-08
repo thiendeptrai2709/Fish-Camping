@@ -1,9 +1,14 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System;
+
 
 public class EquipmentSlotUI : MonoBehaviour, IDropHandler
 {
+    public event Action<ItemShapeSO> OnItemEquipped;
+    public event Action OnItemRemoved;
+
     public enum SlotRequirement { OnlyFishingRod, OnlyBait, OnlyBobber, Universal }
     public enum SlotOrientation { KeepItemOrientation, ForceVertical, ForceHorizontal }
 
@@ -109,6 +114,7 @@ public class EquipmentSlotUI : MonoBehaviour, IDropHandler
         {
             handVisual.EquipItemVisual(itemUI.GetItemShape());
         }
+        OnItemEquipped?.Invoke(itemUI.GetItemShape());
     }
 
     public void EquipItemDirectly(InventoryItemUI itemUI)
@@ -145,6 +151,7 @@ public class EquipmentSlotUI : MonoBehaviour, IDropHandler
         {
             handVisual.EquipItemVisual(itemUI.GetItemShape());
         }
+        OnItemEquipped?.Invoke(itemUI.GetItemShape());
     }
 
     public void RemoveEquippedItem()
@@ -161,6 +168,7 @@ public class EquipmentSlotUI : MonoBehaviour, IDropHandler
         {
             GetComponent<RectTransform>().sizeDelta = originalSlotSize;
         }
+        OnItemRemoved?.Invoke();
     }
     public void ReturnItemToSlot(InventoryItemUI itemUI)
     {

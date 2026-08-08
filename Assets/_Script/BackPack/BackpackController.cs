@@ -10,6 +10,7 @@ public class BackpackController : MonoBehaviour
     [SerializeField] private GameObject crosshairUI;
     [SerializeField] private GameObject backpackPanel;
     [SerializeField] private GameObject hotbarPanel;
+    [SerializeField] private GameObject externalHUDHotbar;
 
     [SerializeField] private MonoBehaviour freeLookCamera;
 
@@ -83,6 +84,10 @@ public class BackpackController : MonoBehaviour
         if (playerCursor != null)
         {
             playerCursor.SetCursorState(!openUI);
+        }
+        if (externalHUDHotbar != null)
+        {
+            externalHUDHotbar.SetActive(!openUI);
         }
         if (freeLookCamera != null)
         {
