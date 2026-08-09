@@ -21,6 +21,7 @@ public class VehicleEnterExit : MonoBehaviour
     [SerializeField] private VehicleController vehicleController; // Thêm tham chiếu đến Controller để lấy tốc độ
     [SerializeField] private GameObject carCamera; // Cinemachine Camera riêng của xe
     [SerializeField] private GameObject playerUI;
+    [SerializeField] private CarRadio myCarRadio;
 
     [Header("Các bộ phận cần tự động đóng")]
     [SerializeField] private InteractableHood interactableHood;
@@ -151,6 +152,7 @@ public class VehicleEnterExit : MonoBehaviour
         vehicleInput.enabled = true;
 
         OnEnteredVehicle?.Invoke();
+        if (myCarRadio != null) myCarRadio.PlayerEnteredCar();
     }
 
     private void TryExitVehicle()
@@ -192,5 +194,6 @@ public class VehicleEnterExit : MonoBehaviour
         if (playerUI != null) playerUI.SetActive(true);
 
         OnExitedVehicle?.Invoke();
+        if (myCarRadio != null) myCarRadio.PlayerExitedCar();
     }
 }
