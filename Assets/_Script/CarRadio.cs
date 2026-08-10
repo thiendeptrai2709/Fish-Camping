@@ -102,13 +102,11 @@ public class CarRadio : MonoBehaviour
             radioIcon.color = c;
         }
     }
-
     public void PlayerEnteredCar()
     {
         isInCar = true;
         if (radioIcon != null) radioIcon.gameObject.SetActive(true);
     }
-
     public void PlayerExitedCar()
     {
         isInCar = false;
