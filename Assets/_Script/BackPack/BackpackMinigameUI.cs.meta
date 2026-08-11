@@ -1,2 +1,18 @@
 fileFormatVersion: 2
 guid: 9329cb4ae5765dc4c8007a3c34767e5b
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - gridData: {instanceID: 0}
+  - gridRootRect: {instanceID: 0}
+  - itemsContainer: {instanceID: 0}
+  - itemUIPrefab: {instanceID: 0}
+  - cellVisualPrefab: {instanceID: 0}
+  - highlightOverlay: {instanceID: 0}
+  - fishDatabase: {fileID: 11400000, guid: a8ad27f5e6c3fd345b7860158827364e, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

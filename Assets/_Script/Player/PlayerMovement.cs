@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement; // Thêm thư viện quản lý Scene
 
 [RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(PlayerInputHandler))]
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : MonoBehaviour, ISaveable // Kế thừa ISaveable
 {
     [SerializeField] private float walkSpeed = 3f;
     [SerializeField] private float sprintSpeed = 6f;
@@ -17,6 +18,7 @@ public class PlayerMovement : MonoBehaviour
     private float currentVelocity;
     private float verticalVelocity;
     public bool IsMovementLocked { get; set; } // Thêm biến khóa di chuyển
+
     private void Awake()
     {
         controller = GetComponent<CharacterController>();
@@ -69,6 +71,7 @@ public class PlayerMovement : MonoBehaviour
         verticalVelocity += gravity * Time.deltaTime;
         controller.Move(Vector3.up * verticalVelocity * Time.deltaTime);
     }
+
     public void FaceTarget(Vector3 targetPosition)
     {
         Vector3 lookDirection = targetPosition - transform.position;
@@ -78,5 +81,42 @@ public class PlayerMovement : MonoBehaviour
         {
             transform.rotation = Quaternion.LookRotation(lookDirection);
         }
+    }
+
+    // ==================== TÍCH HỢP HỆ THỐNG LƯU / TẢI VỊ TRÍ & SCENE (ISAVEABLE) ====================
+
+    public void SaveData(GameSaveData data)
+    {
+        // 1. Lưu tên Scene hiện tại
+        data.currentSceneName = SceneManager.GetActiveScene().name;
+
+        // 2. Lưu tọa độ X, Y, Z của Player
+        data.playerPosX = transform.position.x;
+        data.playerPosY = transform.position.y;
+        data.playerPosZ = transform.position.z;
+
+        Debug.Log($"[PlayerSave] Đã lưu vị trí Player: ({data.playerPosX}, {data.playerPosY}, {data.playerPosZ}) tại Scene: {data.currentSceneName}");
+    }
+
+    public void LoadData(GameSaveData data)
+    {
+        // Kiểm tra xem có dữ liệu vị trí hợp lệ không (tránh lỡ load về gốc 0,0,0)
+        if (data.playerPosX == 0 && data.playerPosY == 0 && data.playerPosZ == 0) return;
+
+        Vector3 savedPosition = new Vector3(data.playerPosX, data.playerPosY, data.playerPosZ);
+
+        // Phải tạm tắt CharacterController trước khi gán vị trí mới để Unity không bị xô lệch/chặn vị trí
+        if (controller != null)
+        {
+            controller.enabled = false;
+            transform.position = savedPosition;
+            controller.enabled = true;
+        }
+        else
+        {
+            transform.position = savedPosition;
+        }
+
+        Debug.Log($"[PlayerSave] Đã khôi phục vị trí Player về: {savedPosition}");
     }
 }

@@ -120,6 +120,7 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             itemImage.sprite = itemShape.itemIcon;
             itemImage.color = Color.white;
             itemImage.preserveAspect = true;
+            itemImage.raycastTarget = true;
         }
         if (canvasGroup != null)
         {
@@ -287,28 +288,42 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (eventData.button != PointerEventData.InputButton.Left || minigameUI == null) return;
+        // 1. Chỉ kiểm tra nút chuột trái (BỎ 'minigameUI == null' ở đây để không bị chặn code Cốp xe)
+        if (eventData.button != PointerEventData.InputButton.Left) return;
+
+        // 2. Luôn khôi phục lại trạng thái giao diện trước tiên
         isDragging = false;
-        canvasGroup.blocksRaycasts = true;
-        canvasGroup.alpha = 1f;
+        if (canvasGroup != null)
+        {
+            canvasGroup.blocksRaycasts = true;
+            canvasGroup.alpha = 1f;
+        }
 
         Debug.Log($"<color=lime>[DEBUG KÉO] ĐÃ THẢ TAY!</color>");
+
+        // Tự động tìm lại BackpackMinigameUI nếu item thuộc Balo mà minigameUI đang bị null
+        if (minigameUI == null && currentOwner == GridOwner.Backpack && BackpackMinigameUI.Instance != null)
+        {
+            minigameUI = BackpackMinigameUI.Instance;
+        }
 
         if (isHandledBySlot)
         {
             isHandledBySlot = false;
             if (BackpackMinigameUI.Instance != null) BackpackMinigameUI.Instance.HideHighlight();
+            if (TrunkMinigameUI.Instance != null) TrunkMinigameUI.Instance.HideHighlight();
             return;
         }
 
+        // 3. Xử lý đồ ăn từ Nồi / Nguyên liệu nấu ăn
         if (isFromCooking || originIngredientSlot != null)
         {
             bool isOverBalo = BackpackMinigameUI.Instance != null && BackpackMinigameUI.Instance.GetGridRoot() != null && BackpackMinigameUI.Instance.GetGridRoot().gameObject.activeInHierarchy && RectTransformUtility.RectangleContainsScreenPoint(BackpackMinigameUI.Instance.GetGridRoot(), eventData.position, eventData.pressEventCamera);
             bool isOverXe = TrunkMinigameUI.Instance != null && TrunkMinigameUI.Instance.GetGridRoot() != null && TrunkMinigameUI.Instance.GetGridRoot().gameObject.activeInHierarchy && RectTransformUtility.RectangleContainsScreenPoint(TrunkMinigameUI.Instance.GetGridRoot(), eventData.position, eventData.pressEventCamera);
             bool placedInGrid = false;
 
-            if (isOverXe) { placedInGrid = TrunkMinigameUI.Instance.TryPlaceItemFromExternal(this, eventData.position); if (placedInGrid) currentOwner = GridOwner.Trunk; }
-            else if (isOverBalo) { placedInGrid = BackpackMinigameUI.Instance.TryPlaceItemFromExternal(this, eventData.position); if (placedInGrid) currentOwner = GridOwner.Backpack; }
+            if (isOverXe && TrunkMinigameUI.Instance != null) { placedInGrid = TrunkMinigameUI.Instance.TryPlaceItemFromExternal(this, eventData.position); if (placedInGrid) currentOwner = GridOwner.Trunk; }
+            else if (isOverBalo && BackpackMinigameUI.Instance != null) { placedInGrid = BackpackMinigameUI.Instance.TryPlaceItemFromExternal(this, eventData.position); if (placedInGrid) currentOwner = GridOwner.Backpack; }
 
             if (placedInGrid)
             {
@@ -317,11 +332,10 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
                     isFromCooking = false;
                     if (CookingUIManager.Instance != null) CookingUIManager.Instance.OnFoodCollectedSuccessfully();
                 }
-                originIngredientSlot = null; // Quên đường về vì đã vào Balo/Xe thành công
+                originIngredientSlot = null;
             }
             else
             {
-                // Nếu là đồ ăn chín thì quay lại khay 0, nếu là nguyên liệu thì quay về cái nồi cũ
                 if (isFromCooking && CookingUIManager.Instance != null) CookingUIManager.Instance.ReturnFoodToSlot(this);
                 else if (originIngredientSlot != null) originIngredientSlot.ReturnIngredient(this);
             }
@@ -331,30 +345,29 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             return;
         }
 
+        // 4. Xử lý trang bị đang mặc
         if (isEquipped)
         {
-            bool placedInGrid = minigameUI.TryPlaceItemFromExternal(this, eventData.position);
-            if (!placedInGrid)
+            bool placedInGrid = minigameUI != null && minigameUI.TryPlaceItemFromExternal(this, eventData.position);
+            if (!placedInGrid && currentSlot != null)
             {
-                if (currentSlot != null)
-                {
-                    currentSlot.ReturnItemToSlot(this);
-                }
+                currentSlot.ReturnItemToSlot(this);
             }
             if (BackpackMinigameUI.Instance != null) BackpackMinigameUI.Instance.HideHighlight();
             return;
         }
 
+        // 5. Xử lý kéo thả bình thường giữa Balo và Cốp xe
         bool overBackpack = BackpackMinigameUI.Instance != null && BackpackMinigameUI.Instance.GetGridRoot() != null && BackpackMinigameUI.Instance.GetGridRoot().gameObject.activeInHierarchy && RectTransformUtility.RectangleContainsScreenPoint(BackpackMinigameUI.Instance.GetGridRoot(), eventData.position, eventData.pressEventCamera);
         bool overTrunk = TrunkMinigameUI.Instance != null && TrunkMinigameUI.Instance.GetGridRoot() != null && TrunkMinigameUI.Instance.GetGridRoot().gameObject.activeInHierarchy && RectTransformUtility.RectangleContainsScreenPoint(TrunkMinigameUI.Instance.GetGridRoot(), eventData.position, eventData.pressEventCamera);
 
         bool placed = false;
-        if (overTrunk)
+        if (overTrunk && TrunkMinigameUI.Instance != null)
         {
             placed = TrunkMinigameUI.Instance.TryPlaceItemFromExternal(this, eventData.position);
             if (placed) currentOwner = GridOwner.Trunk;
         }
-        else if (overBackpack)
+        else if (overBackpack && BackpackMinigameUI.Instance != null)
         {
             placed = BackpackMinigameUI.Instance.TryPlaceItemFromExternal(this, eventData.position);
             if (placed) currentOwner = GridOwner.Backpack;
@@ -365,14 +378,13 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
         if (!placed)
         {
-            // Nếu thả không thành công (hoặc thả ra ngoài), trả về grid cũ
+            // Trả vật phẩm về đúng ô lưới cũ dựa theo chủ sở hữu (Balo hoặc Cốp xe)
             if (currentOwner == GridOwner.Backpack && BackpackMinigameUI.Instance != null)
                 BackpackMinigameUI.Instance.OnItemEndDrag(this, eventData.position);
             else if (currentOwner == GridOwner.Trunk && TrunkMinigameUI.Instance != null)
                 TrunkMinigameUI.Instance.OnItemEndDrag(this, eventData.position);
         }
     }
-
     public void OnPointerClick(PointerEventData eventData)
     {
         // Truyền "this" (chứa toàn bộ data động) thay vì chỉ truyền itemShape (dữ liệu tĩnh)
@@ -403,4 +415,8 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     public int GetGridX() => gridX;
     public int GetGridY() => gridY;
     public bool IsRotated() => isRotated;
+    public string ItemID => itemShape != null ? itemShape.itemID : ""; // Tự động lấy ID từ ItemShapeSO
+    public int Quantity => 1; // Mặc định là 1 (hoặc đổi thành biến số lượng nếu có xếp chồng)
+    public int GridX => gridX; // Trả về vị trí X trên lưới
+    public int GridY => gridY; // Trả về vị trí Y trên lưới
 }

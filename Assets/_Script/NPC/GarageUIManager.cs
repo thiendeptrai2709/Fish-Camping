@@ -2,7 +2,7 @@
 using TMPro;
 using UnityEngine.UI;
 
-public class GarageUIManager : MonoBehaviour
+public class GarageUIManager : MonoBehaviour, ISaveable
 {
     public static GarageUIManager Instance { get; private set; }
 
@@ -136,5 +136,30 @@ public class GarageUIManager : MonoBehaviour
     {
         garagePanel.SetActive(false);
         _onCloseCallback?.Invoke();
+    }
+    public void SaveData(GameSaveData data)
+    {
+        // Ghi dữ liệu từ Garage vào đối tượng data
+        data.tireUpgradeLevel = this._currentTireLevel;
+        data.trunkUpgradeLevel = this._currentTrunkLevel;
+
+        Debug.Log("[Garage] Đã gom dữ liệu Garage thành công!");
+    }
+
+    public void LoadData(GameSaveData data)
+    {
+        // 1. Lấy dữ liệu load về gán vào biến
+        // (Nếu dữ liệu load về <= 0 thì tự ép về level 1 tối thiểu để tránh bug)
+        this._currentTireLevel = data.tireUpgradeLevel > 0 ? data.tireUpgradeLevel : 1;
+        this._currentTrunkLevel = data.trunkUpgradeLevel > 0 ? data.trunkUpgradeLevel : 1;
+
+        // 2. Nếu bảng Gara đang mở thì cập nhật lại UI ngay lập tức
+        if (garagePanel != null && garagePanel.activeSelf)
+        {
+            if (_selectedData == tireUpgradeData) UpdateGarageUI(_currentTireLevel);
+            else if (_selectedData == trunkUpgradeData) UpdateGarageUI(_currentTrunkLevel);
+        }
+
+        Debug.Log($"[Garage] Đã load: Lốp cấp {this._currentTireLevel}, Thùng cấp {this._currentTrunkLevel}");
     }
 }

@@ -1,8 +1,8 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody), typeof(VehicleInput))]
-public class VehicleController : MonoBehaviour
+public class VehicleController : MonoBehaviour, ISaveable // Kế thừa ISaveable
 {
     [Header("Vehicle Settings")]
     [SerializeField] private float maxSpeedKmh = 80f;
@@ -120,9 +120,58 @@ public class VehicleController : MonoBehaviour
     {
         return currentSpeedKmh;
     }
+
     public void ApplyUpgradedEngine(float newMaxSpeed, float newTorque)
     {
         maxSpeedKmh = newMaxSpeed;
         motorTorque = newTorque;
+    }
+
+    // ==================== TÍCH HỢP CLOUD SAVE VỊ TRÍ VÀ GÓC ĐỖ XE ====================
+
+    public void SaveData(GameSaveData data)
+    {
+        // Lưu tọa độ và góc xoay chuẩn của Xe
+        data.vehiclePosX = transform.position.x;
+        data.vehiclePosY = transform.position.y;
+        data.vehiclePosZ = transform.position.z;
+
+        data.vehicleRotX = transform.eulerAngles.x;
+        data.vehicleRotY = transform.eulerAngles.y;
+        data.vehicleRotZ = transform.eulerAngles.z;
+
+        Debug.Log($"<color=green>[VehicleSave] Đã lưu vị trí xe: ({data.vehiclePosX}, {data.vehiclePosY}, {data.vehiclePosZ})</color>");
+    }
+
+    public void LoadData(GameSaveData data)
+    {
+        // Bỏ qua nếu chưa từng có dữ liệu vị trí xe
+        if (data.vehiclePosX == 0 && data.vehiclePosY == 0 && data.vehiclePosZ == 0) return;
+
+        Vector3 targetPos = new Vector3(data.vehiclePosX, data.vehiclePosY, data.vehiclePosZ);
+        Quaternion targetRot = Quaternion.Euler(data.vehicleRotX, data.vehicleRotY, data.vehicleRotZ);
+
+        // NẾU CÓ RIGIDBODY: Phải khóa vật lý tạm thời để đặt vị trí chuẩn xác
+        if (rb == null) rb = GetComponent<Rigidbody>();
+
+        if (rb != null)
+        {
+            rb.isKinematic = true; // Khóa vật lý tạm thời
+            rb.position = targetPos;
+            rb.rotation = targetRot;
+        }
+
+        transform.position = targetPos;
+        transform.rotation = targetRot;
+
+        // Bật lại vật lý và xả lực quán tính
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            rb.isKinematic = false; // Mở lại vật lý cho xe chạy bình thường
+        }
+
+        Debug.Log($"<color=cyan>[VehicleSave] Đã khôi phục xe về vị trí thành công!</color>");
     }
 }

@@ -11,6 +11,8 @@ public class TrunkMinigameUI : MonoBehaviour
     [SerializeField] private RectTransform itemsContainer;
     [SerializeField] private GameObject cellVisualPrefab;
     [SerializeField] private Image highlightOverlay;
+    [SerializeField] private FishDatabaseSO fishDatabase; // Kéo file FishDatabaseSO vào đây trong Inspector
+    [SerializeField] private GameObject itemUIPrefab;
 
     private int startDragX;
     private int startDragY;
@@ -542,5 +544,45 @@ public class TrunkMinigameUI : MonoBehaviour
 
         if (itemsContainer != null) itemsContainer.SetAsLastSibling();
         if (highlightOverlay != null) highlightOverlay.transform.SetAsLastSibling();
+    }
+    // ==================== HÀM TẠO LẠI ITEM CỐP XE KHI LOAD GAME ====================
+    public void SpawnSavedItem(string itemID, int gridX, int gridY, int quantity)
+    {
+        // 1. Tìm ItemShapeSO từ Database cá/vật phẩm
+        ItemShapeSO shape = null;
+        if (fishDatabase != null && fishDatabase.allFishes != null)
+        {
+            foreach (var fish in fishDatabase.allFishes)
+            {
+                if (fish != null && fish.itemID == itemID)
+                {
+                    shape = fish;
+                    break;
+                }
+            }
+        }
+
+        if (shape == null)
+        {
+            Debug.LogWarning($"[LoadCopXe] Không tìm thấy ItemShapeSO với ID: {itemID}");
+            return;
+        }
+
+        // 2. Sinh ra UI món đồ và bỏ vào itemsContainer của Cốp xe
+        Transform parentTransform = itemsContainer != null ? itemsContainer : transform;
+        GameObject newItemObj = Instantiate(itemUIPrefab, parentTransform);
+        InventoryItemUI itemUI = newItemObj.GetComponent<InventoryItemUI>();
+
+        if (itemUI != null)
+        {
+            itemUI.Setup(shape, null, gridX, gridY);
+            itemUI.currentOwner = InventoryItemUI.GridOwner.Trunk;
+
+            // Đánh dấu ô vuông trên lưới Cốp xe đã bị chiếm
+            if (gridData != null)
+            {
+                gridData.PlaceItem(gridX, gridY, shape, itemUI.IsRotated());
+            }
+        }
     }
 }

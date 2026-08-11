@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-public class FishJournalManager : MonoBehaviour
+public class FishJournalManager : MonoBehaviour, ISaveable // Thêm ISaveable
 {
     public static FishJournalManager Instance { get; private set; }
 
@@ -15,9 +15,9 @@ public class FishJournalManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            savePath = Path.Combine(Application.persistentDataPath, "FishJournal.json");
+            // savePath = Path.Combine(Application.persistentDataPath, "FishJournal.json"); // COMMENT: Không cần đường dẫn file cục bộ khi dùng Cloud
             InitJournal();
-            LoadData();
+            // LoadData(); // COMMENT: Chuyển sang dùng LoadData(GameSaveData) của Cloud Save Firebase
         }
         else
         {
@@ -69,7 +69,14 @@ public class FishJournalManager : MonoBehaviour
             isNewRecord = true;
         }
 
-        SaveData();
+        // SaveData(); // COMMENT: Tắt hàm lưu file Json cục bộ cũ
+
+        // LƯU CLOUD: Tự động đẩy lên Firebase nếu lập kỷ lục mới
+        if (isNewRecord && SaveManager.Instance != null)
+        {
+            SaveManager.Instance.SaveGameToCloud();
+        }
+
         return isNewRecord;
     }
 
@@ -82,6 +89,8 @@ public class FishJournalManager : MonoBehaviour
         return null;
     }
 
+    // ==================== CODE LƯU / TẢI JSON CỤC BỘ CỦ (ĐÃ COMMENT) ====================
+    /*
     private void SaveData()
     {
         List<FishRecord> dataToSave = new List<FishRecord>(journalData.Values);
@@ -130,5 +139,48 @@ public class FishJournalManager : MonoBehaviour
         {
             Debug.Log("<color=yellow>[Fish Journal] Không tìm thấy file save nào để xóa.</color>");
         }
+    }
+    */
+
+    // ==================== HỆ THỐNG LƯU / TẢI CLOUD MỚI (ISAVEABLE) ====================
+
+    public void SaveData(GameSaveData data)
+    {
+        data.caughtFishJournal.Clear();
+
+        // Chuyển toàn bộ kỷ lục cá từ Dictionary sang List trong GameSaveData
+        foreach (var record in journalData.Values)
+        {
+            data.caughtFishJournal.Add(new FishRecordSave
+            {
+                fishID = record.fishID,
+                isUnlocked = record.isUnlocked,
+                highestGrade = (int)record.highestGrade,
+                maxLength = record.maxLength,
+                maxWeight = record.maxWeight
+            });
+        }
+
+        Debug.Log($"[FishJournal] Đã đóng gói {data.caughtFishJournal.Count} loại cá lên Cloud Data!");
+    }
+
+    public void LoadData(GameSaveData data)
+    {
+        if (data.caughtFishJournal == null || data.caughtFishJournal.Count == 0) return;
+
+        // Đọc dữ liệu từ Cloud khôi phục lại vào Dictionary journalData
+        foreach (var savedRecord in data.caughtFishJournal)
+        {
+            if (journalData.ContainsKey(savedRecord.fishID))
+            {
+                FishRecord record = journalData[savedRecord.fishID];
+                record.isUnlocked = savedRecord.isUnlocked;
+                record.highestGrade = (FishGrade)savedRecord.highestGrade;
+                record.maxLength = savedRecord.maxLength;
+                record.maxWeight = savedRecord.maxWeight;
+            }
+        }
+
+        Debug.Log($"[FishJournal] Đã khôi phục dữ liệu Sổ cá từ Cloud thành công!");
     }
 }

@@ -2,7 +2,7 @@
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Button))]
-public class MapRegion : MonoBehaviour
+public class MapRegion : MonoBehaviour, ISaveable
 {
     [SerializeField] private MapInteractionManager interactionManager;
     [SerializeField] private string sceneName;
@@ -51,5 +51,31 @@ public class MapRegion : MonoBehaviour
         }
 
         interactionManager.ExpandMap(rectTransform, sceneName, spawnID);
+    }
+    public void SaveData(GameSaveData data)
+    {
+        // Nếu map này đã được mở (!isLocked), lưu tên sceneName của nó vào danh sách Firebase
+        if (!isLocked)
+        {
+            if (!data.unlockedMapIDs.Contains(sceneName))
+            {
+                data.unlockedMapIDs.Add(sceneName);
+            }
+        }
+    }
+
+    public void LoadData(GameSaveData data)
+    {
+        // Nếu trong dữ liệu Firebase có chứa tên sceneName của map này -> Mở khóa
+        if (data.unlockedMapIDs != null && data.unlockedMapIDs.Contains(sceneName))
+        {
+            isLocked = false;
+
+            // Tắt icon ổ khóa trên UI nếu có
+            if (lockIcon != null)
+            {
+                lockIcon.SetActive(false);
+            }
+        }
     }
 }
