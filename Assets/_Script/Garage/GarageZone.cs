@@ -166,6 +166,13 @@ public class GarageZone : MonoBehaviour
 
         UpdateAllUI();
         ApplyTireVisual(wheelIndex);
+
+        VehicleStats stats = Object.FindFirstObjectByType<VehicleStats>(FindObjectsInactive.Include);
+        if (stats != null)
+        {
+            stats.UpdateTireStats();
+        }
+
         ShowNotify($"Đã trang bị lốp mới!");
     }
 

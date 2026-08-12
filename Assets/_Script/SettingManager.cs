@@ -8,7 +8,7 @@ using TMPro;
 public class SettingManager : MonoBehaviour
 {
     [Header("--- UI Panel ---")]
-    [SerializeField] private GameObject settingPanel; // Kéo Panel Setting vào đây
+    [SerializeField] private GameObject settingPanel;
 
     [Header("--- Audio ---")]
     [SerializeField] private AudioMixer audioMixer;
@@ -24,62 +24,59 @@ public class SettingManager : MonoBehaviour
         float savedBGM = PlayerPrefs.GetFloat("BGMVolume", 0.75f);
         float savedSFX = PlayerPrefs.GetFloat("SFXVolume", 0.75f);
 
-        bgmSlider.value = savedBGM;
-        sfxSlider.value = savedSFX;
+        if (bgmSlider != null) bgmSlider.value = savedBGM;
+        if (sfxSlider != null) sfxSlider.value = savedSFX;
 
         SetBGMVolume(savedBGM);
         SetSFXVolume(savedSFX);
 
-        bgmSlider.onValueChanged.AddListener(SetBGMVolume);
-        sfxSlider.onValueChanged.AddListener(SetSFXVolume);
+        if (bgmSlider != null) bgmSlider.onValueChanged.AddListener(SetBGMVolume);
+        if (sfxSlider != null) sfxSlider.onValueChanged.AddListener(SetSFXVolume);
 
         // --- Khởi tạo Ngôn ngữ ---
         int savedLangID = PlayerPrefs.GetInt("LanguageID", 0);
         StartCoroutine(SetLocale(savedLangID));
 
-        languageDropdown.value = savedLangID;
-        languageDropdown.onValueChanged.AddListener(OnLanguageChanged);
+        if (languageDropdown != null)
+        {
+            languageDropdown.value = savedLangID;
+            languageDropdown.onValueChanged.AddListener(OnLanguageChanged);
+        }
     }
 
     private void Update()
     {
-        // Lắng nghe khi người chơi bấm phím ESC
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             ToggleSetting();
         }
     }
 
-    // Hàm bật/tắt Panel Setting
     public void ToggleSetting()
     {
         if (settingPanel != null)
         {
-            // Bật nếu đang tắt, tắt nếu đang bật
             bool isActive = !settingPanel.activeSelf;
             settingPanel.SetActive(isActive);
-
-            // (Tùy chọn) Khóa / Mở con trỏ chuột khi bật bảng Setting
             Cursor.visible = isActive;
             Cursor.lockState = isActive ? CursorLockMode.None : CursorLockMode.Locked;
         }
     }
+
     public void SetBGMVolume(float value)
     {
         float dB = value <= 0 ? -80f : Mathf.Log10(value) * 20f;
-        audioMixer.SetFloat("BGMVolume", dB);
+        if (audioMixer != null) audioMixer.SetFloat("BGMVolume", dB);
         PlayerPrefs.SetFloat("BGMVolume", value);
     }
 
-    // Hàm thay đổi volume SFX
     public void SetSFXVolume(float value)
     {
         float dB = value <= 0 ? -80f : Mathf.Log10(value) * 20f;
-        audioMixer.SetFloat("SFXVolume", dB);
+        if (audioMixer != null) audioMixer.SetFloat("SFXVolume", dB);
         PlayerPrefs.SetFloat("SFXVolume", value);
     }
 
-    // Hàm xử lý khi chọn Dropdown ngôn ngữ
     public void OnLanguageChanged(int index)
     {
         StartCoroutine(SetLocale(index));
@@ -94,5 +91,30 @@ public class SettingManager : MonoBehaviour
             LocalizationSettings.SelectedLocale = LocalizationSettings.AvailableLocales.Locales[localeID];
             PlayerPrefs.SetInt("LanguageID", localeID);
         }
+    }
+
+    // ================= CHỨC NĂNG MỚI THÊM =================
+
+    // 1. Hàm bật/tắt chế độ toàn màn hình (Cửa sổ)
+    public void ToggleFullScreen()
+    {
+        // Nếu đang full thì đổi thành cửa sổ, và ngược lại
+        Screen.fullScreen = !Screen.fullScreen;
+
+        if (Screen.fullScreen)
+        {
+            Debug.Log("Đã chuyển sang chế độ: CỬA SỔ");
+        }
+        else
+        {
+            Debug.Log("Đã chuyển sang chế độ: TOÀN MÀN HÌNH");
+        }
+    }
+
+    // 2. Hàm thoát game
+    public void QuitGame()
+    {
+        Debug.Log("Đang thoát game...");
+        Application.Quit();
     }
 }

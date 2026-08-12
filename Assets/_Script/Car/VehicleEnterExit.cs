@@ -28,6 +28,7 @@ public class VehicleEnterExit : MonoBehaviour
     [SerializeField] private InteractableTrunk interactableTrunk;
     [SerializeField] private EngineRepairMinigame engineRepair;
     [SerializeField] private VehicleStats vehicleStats;
+    [SerializeField] private CarFuel carFuel;
 
 
     [Header("Sự kiện ra vào xe")]
@@ -150,9 +151,11 @@ public class VehicleEnterExit : MonoBehaviour
         playerCamera.SetActive(false);
         carCamera.SetActive(true);
         vehicleInput.enabled = true;
+        vehicleInput.IsUIOpen = false;
 
         OnEnteredVehicle?.Invoke();
         if (myCarRadio != null) myCarRadio.PlayerEnteredCar();
+        if (carFuel != null) carFuel.PlayerEnterCar();
     }
 
     private void TryExitVehicle()
@@ -195,5 +198,6 @@ public class VehicleEnterExit : MonoBehaviour
 
         OnExitedVehicle?.Invoke();
         if (myCarRadio != null) myCarRadio.PlayerExitedCar();
+        if (carFuel != null) carFuel.PlayerExitCar();
     }
 }

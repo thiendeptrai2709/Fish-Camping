@@ -5550,7 +5550,6 @@ RectTransform:
   - {fileID: 8010580452205366643}
   - {fileID: 4404009849333674060}
   - {fileID: 873325673093978388}
-  - {fileID: 8727483763804662830}
   - {fileID: 6157252870002714738}
   - {fileID: 749333337468143635}
   - {fileID: 5511299128727164184}
@@ -5560,6 +5559,7 @@ RectTransform:
   - {fileID: 8692413979647005141}
   - {fileID: 7106007591346688236}
   - {fileID: 341744239757344160}
+  - {fileID: 8727483763804662830}
   - {fileID: 6363189707855567165}
   - {fileID: 1692454966496083652}
   m_Father: {fileID: 4138194563798120343}
@@ -23204,6 +23204,18 @@ PrefabInstance:
       propertyPath: m_SidewaysFriction.m_AsymptoteValue
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 2684824655801764428, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+      propertyPath: tireRepairMinigame
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2711431681773391151, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+      propertyPath: tireRepairMinigame
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3237452549346374511, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+      propertyPath: tireRepairMinigame
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 3430033918699576460, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
       propertyPath: playerUI
       value: 
@@ -23308,6 +23320,22 @@ PrefabInstance:
       propertyPath: 'tireTexts.Array.data[3]'
       value: 
       objectReference: {fileID: 3442233685085633744}
+    - target: {fileID: 6911055058645893938, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+      propertyPath: 'tireMinigames.Array.data[0]'
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6911055058645893938, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+      propertyPath: 'tireMinigames.Array.data[1]'
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6911055058645893938, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+      propertyPath: 'tireMinigames.Array.data[2]'
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6911055058645893938, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+      propertyPath: 'tireMinigames.Array.data[3]'
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 7219671113973616440, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
       propertyPath: OutputAudioMixerGroup
       value: 
@@ -23368,7 +23396,19 @@ PrefabInstance:
       propertyPath: OutputAudioMixerGroup
       value: 
       objectReference: {fileID: 5109181599121300647, guid: eed424e6e173a3e4684fc4d653cfd707, type: 2}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8499663215935644365, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+    - {fileID: 2711431681773391151, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+    - {fileID: 6578016086529393662, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+    - {fileID: 6788558138562238416, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+    - {fileID: 3237452549346374511, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+    - {fileID: 4627696996278274883, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+    - {fileID: 9042242058060593931, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+    - {fileID: 6588371454107864548, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+    - {fileID: 2737363960658086262, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+    - {fileID: 2630722091706659865, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+    - {fileID: 2684824655801764428, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
+    - {fileID: 4534045397397103638, guid: a0c93a1f5e1e7a84c9be771ff5ca23cf, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

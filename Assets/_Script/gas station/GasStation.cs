@@ -1,26 +1,42 @@
 ﻿using UnityEngine;
-using UnityEngine.InputSystem; // Dùng Input System mới
+using UnityEngine.InputSystem;
 
 public class GasStation : MonoBehaviour
 {
     [Header("Cấu hình Cây xăng")]
-    [SerializeField] private float fillSpeed = 25f;     // Tốc độ bơm xăng (lít/giây)
+    [SerializeField] private float fillSpeed = 25f;
 
     [Header("UI Cảnh báo / Tương tác")]
-    [SerializeField] private GameObject interactUI;     // Canvas/Text hiện "[F] Đổ xăng"
+    [SerializeField] private GameObject interactUI;
 
     [Header("Âm thanh (Audio)")]
-    [SerializeField] private AudioSource audioSource;   // Component AudioSource
-    [SerializeField] private AudioClip fullFuelSound;   // Tiếng "tinh" báo đầy xăng
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip fullFuelSound;
 
-    private CarFuel currentCarFuel;                     // Xe đang trong vùng
+    private CarFuel currentCarFuel;
     private bool isPlayerInZone = false;
-    private bool isRefilling = false;                   // Trạng thái đang tự động bơm
+    private bool isRefilling = false;
 
     private void Start()
     {
-        if (interactUI != null) interactUI.SetActive(false);
         if (audioSource == null) audioSource = GetComponent<AudioSource>();
+        FindUI();
+        if (interactUI != null) interactUI.SetActive(false);
+    }
+
+    // --- HÀM TÌM UI CHỐNG MẤT TRÍ NHỚ KHI ĐỔI MAP ---
+    private void FindUI()
+    {
+        if (interactUI != null) return;
+        TrunkMinigameUI trunk = Object.FindFirstObjectByType<TrunkMinigameUI>(FindObjectsInactive.Include);
+        if (trunk != null)
+        {
+            Transform[] allT = trunk.transform.root.GetComponentsInChildren<Transform>(true);
+            foreach (Transform t in allT)
+            {
+                if (t.name == "GasPromptUI") interactUI = t.gameObject;
+            }
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -30,6 +46,7 @@ public class GasStation : MonoBehaviour
         {
             currentCarFuel = car;
             isPlayerInZone = true;
+            FindUI(); // Quét lại 1 lần nữa lúc chạm cho an toàn 100%
             if (interactUI != null) interactUI.SetActive(true);
         }
     }
@@ -39,7 +56,6 @@ public class GasStation : MonoBehaviour
         CarFuel car = other.GetComponentInParent<CarFuel>();
         if (car != null && car == currentCarFuel)
         {
-            // Nếu lái xe chạy ra khỏi vùng thì dừng bơm lập tức
             StopRefill();
             currentCarFuel = null;
             isPlayerInZone = false;
@@ -49,12 +65,10 @@ public class GasStation : MonoBehaviour
 
     private void Update()
     {
-        // Nhấn F 1 lần để bật chế độ tự động bơm xăng
         if (isPlayerInZone && currentCarFuel != null && !isRefilling)
         {
             if (Keyboard.current != null && Keyboard.current.fKey.wasPressedThisFrame)
             {
-                // Chỉ bơm nếu xăng chưa đầy
                 if (currentCarFuel.currentFuel < currentCarFuel.maxFuel)
                 {
                     isRefilling = true;
@@ -62,7 +76,6 @@ public class GasStation : MonoBehaviour
             }
         }
 
-        // Tự động cộng xăng liên tục khi đang trong trạng thái isRefilling
         if (isRefilling && currentCarFuel != null)
         {
             if (currentCarFuel.currentFuel < currentCarFuel.maxFuel)
@@ -71,7 +84,6 @@ public class GasStation : MonoBehaviour
             }
             else
             {
-                // Khi bình xăng đã ĐẦY:
                 CompleteRefill();
             }
         }
@@ -80,14 +92,7 @@ public class GasStation : MonoBehaviour
     private void CompleteRefill()
     {
         isRefilling = false;
-
-        // Phát âm thanh báo đầy xăng (nếu có)
-        if (audioSource != null && fullFuelSound != null)
-        {
-            audioSource.PlayOneShot(fullFuelSound);
-        }
-
-        // Tắt UI thông báo vì đã đầy bình
+        if (audioSource != null && fullFuelSound != null) audioSource.PlayOneShot(fullFuelSound);
         if (interactUI != null) interactUI.SetActive(false);
     }
 

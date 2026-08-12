@@ -33,26 +33,57 @@ public class VehicleStats : MonoBehaviour
     [Header("Cấu hình hao hụt (Số Km để mất 1%)")]
     [SerializeField] private float kmPerEnginePercent = 5f;
     [SerializeField] private float kmPerCoolantPercent = 2f;
-    [SerializeField] private float kmPerTirePercent = 3f;
 
-    [Header("Cấu hình rủi ro đường xấu (RNG Lốp)")]
-    [SerializeField] private float badRoadCheckInterval = 2f; // Cứ 2s chạy xe thì tung xúc xắc 1 lần
-    [SerializeField] private float badRoadDamageChance = 0.1f; // Tỉ lệ 10% bị thủng
-    [SerializeField] private float badRoadDamageAmount = 5f; // Tụt 5% nếu xui
+    // Đã ẩn kmPerTirePercent và badRoadDamageChance đi vì giờ nó sẽ TỰ ĐỌC TỪ TIRE DATA
+    private float kmPerTirePercent = 3f;
+    private float badRoadCheckInterval = 2f;
+    private float badRoadDamageChance = 0.1f;
+    private float badRoadDamageAmount = 5f;
+
     private float badRoadTimer;
 
     public UnityEvent OnStatsChanged;
-    private PlayerMovement playerMovement; // Khai báo reference
+    private PlayerMovement playerMovement;
 
     private void Start()
     {
-        // Lấy component tự động từ playerTransform để tái sử dụng
         if (playerTransform != null)
         {
             playerMovement = playerTransform.GetComponent<PlayerMovement>();
         }
+
+        // Vừa vào game là đọc thông số lốp ngay lập tức
+        UpdateTireStats();
+
         ApplyDegradationToPhysics();
         UpdateUI();
+    }
+
+    // --- HÀM THẦN THÁNH: TỰ ĐỘNG LẤY CHỈ SỐ TỪ SCRIPTABLE OBJECT CỦA BỒ ---
+    public void UpdateTireStats()
+    {
+        int equippedTire = PlayerPrefs.GetInt("EquippedTireIndex", -1);
+
+        // Kiểm tra xem Gara có tồn tại và lốp bồ đang lắp có nằm trong danh sách 8 lốp kia không
+        if (GarageZone.Instance != null && equippedTire >= 0 && equippedTire < GarageZone.Instance.allTires.Length)
+        {
+            // Trích xuất file Data Lốp tương ứng
+            TireData currentTireData = GarageZone.Instance.allTires[equippedTire];
+
+            if (currentTireData != null)
+            {
+                // Áp dụng độ trâu bò từ file của bồ vào xe
+                kmPerTirePercent = currentTireData.kmPerTirePercent;
+                badRoadDamageChance = currentTireData.badRoadDamageChance;
+                Debug.Log($"Đã nạp thành công thông số lốp: {currentTireData.name}");
+            }
+        }
+        else
+        {
+            // LẮP LỐP MẶC ĐỊNH (Khi chưa mua gì): Thông số cùi bắp
+            kmPerTirePercent = 3f; // 3km mất 1%
+            badRoadDamageChance = 0.1f; // 10% rách lốp
+        }
     }
 
     private void Update()
@@ -67,12 +98,10 @@ public class VehicleStats : MonoBehaviour
 
         bool isCapoClosed = (hoodHinge != null && !hoodHinge.IsFullyOpen);
         bool isEngineHidden = (engineMinigame != null && !engineMinigame.IsEngineOut);
-
         bool isQTEPlaying = (qteMinigame != null && qteMinigame.IsPlaying);
         bool isBalancePlaying = (balanceMinigame != null && balanceMinigame.IsPlaying);
-        bool isTireRepairing = TireRepairMinigame.ActiveTire != null; // Kiểm tra xem có lốp nào đang được sửa không
+        bool isTireRepairing = TireRepairMinigame.ActiveTire != null;
 
-        // Cập nhật trạng thái khóa di chuyển cho PlayerMovement
         if (playerMovement != null)
         {
             playerMovement.IsMovementLocked = isQTEPlaying || isBalancePlaying || isTireRepairing;
@@ -96,11 +125,13 @@ public class VehicleStats : MonoBehaviour
             float engineDrop = distanceThisFrame / currentKmPerEngine;
             engineHealth = Mathf.Clamp(engineHealth - engineDrop, 0f, 100f);
 
+            // Tốc độ mòn lốp lúc này đã được lấy từ ScriptableObject của bồ
             float tireDrop = distanceThisFrame / kmPerTirePercent;
             for (int i = 0; i < 4; i++)
             {
                 tireHealths[i] = Mathf.Clamp(tireHealths[i] - tireDrop, 0f, 100f);
             }
+
             badRoadTimer += Time.deltaTime;
             if (badRoadTimer >= badRoadCheckInterval)
             {
@@ -117,48 +148,32 @@ public class VehicleStats : MonoBehaviour
         }
     }
 
-    // ================= 1. XỬ LÝ PHÍM TAB =================
     public void ToggleOverviewPanel()
     {
-        if (statsCanvasObject)
-            statsCanvasObject.SetActive(!statsCanvasObject.activeSelf);
+        if (statsCanvasObject) statsCanvasObject.SetActive(!statsCanvasObject.activeSelf);
     }
 
     public void CloseOverviewPanel()
     {
-        if (statsCanvasObject)
-            statsCanvasObject.SetActive(false);
+        if (statsCanvasObject) statsCanvasObject.SetActive(false);
     }
+
     public void TryRepairEngine()
     {
-        bool isQTEPlaying = (qteMinigame != null && qteMinigame.IsPlaying);
-        bool isBalancePlaying = (balanceMinigame != null && balanceMinigame.IsPlaying);
-
-        if (isQTEPlaying || isBalancePlaying) return;
-
-        if (engineMinigame != null && engineMinigame.IsEngineOut)
-        {
-            StartRepairEngineQTE();
-        }
+        if ((qteMinigame != null && qteMinigame.IsPlaying) || (balanceMinigame != null && balanceMinigame.IsPlaying)) return;
+        if (engineMinigame != null && engineMinigame.IsEngineOut) StartRepairEngineQTE();
     }
 
     public void TryRefillCoolant()
     {
-        bool isQTEPlaying = (qteMinigame != null && qteMinigame.IsPlaying);
-        bool isBalancePlaying = (balanceMinigame != null && balanceMinigame.IsPlaying);
-
-        if (isQTEPlaying || isBalancePlaying) return;
-
-        if (engineMinigame != null && engineMinigame.IsEngineOut)
-        {
-            StartRefillCoolantMinigame();
-        }
+        if ((qteMinigame != null && qteMinigame.IsPlaying) || (balanceMinigame != null && balanceMinigame.IsPlaying)) return;
+        if (engineMinigame != null && engineMinigame.IsEngineOut) StartRefillCoolantMinigame();
     }
-    // ================= KÍCH HOẠT QTE =================
+
     public void StartRepairEngineQTE() => qteMinigame.BeginQTE("BẢO DƯỠNG ĐỘNG CƠ", RepairEngine);
     public void StartRepairTrunkQTE() => qteMinigame.BeginQTE("NẮN LẠI BẢN LỀ CỐP", RepairTrunk);
     public void StartRefillCoolantMinigame() => balanceMinigame.BeginMinigame("CHÂM NƯỚC MÁT", RefillCoolant);
-    // ================= HẬU QTE (HỒI MÁU) =================
+
     public void RepairEngine()
     {
         engineHealth = 100f;
@@ -187,10 +202,7 @@ public class VehicleStats : MonoBehaviour
         if (coolantText) coolantText.text = $"NƯỚC MÁT: {Mathf.RoundToInt(coolantLevel)}%";
         for (int i = 0; i < 4; i++)
         {
-            if (tireTexts[i] != null)
-            {
-                tireTexts[i].text = $"LỐP {i + 1}: {Mathf.RoundToInt(tireHealths[i])}%";
-            }
+            if (tireTexts[i] != null) tireTexts[i].text = $"LỐP {i + 1}: {Mathf.RoundToInt(tireHealths[i])}%";
         }
     }
 
@@ -205,10 +217,7 @@ public class VehicleStats : MonoBehaviour
             if (i != index && tireMinigames[i] != null && tireMinigames[i].IsActive) return;
         }
 
-        if (tireMinigames[index] != null)
-        {
-            tireMinigames[index].Interact();
-        }
+        if (tireMinigames[index] != null) tireMinigames[index].Interact();
     }
 
     public void RepairTire(int index)
@@ -221,11 +230,9 @@ public class VehicleStats : MonoBehaviour
     private void ApplyDegradationToPhysics()
     {
         if (vehicleController == null) return;
-
         float healthRatio = engineHealth / 100f;
         float speedPercent = Mathf.Lerp(0.25f, 1f, healthRatio);
         float torquePercent = Mathf.Lerp(0.3f, 1f, healthRatio);
-
         vehicleController.ApplyUpgradedEngine(baseMaxSpeed * speedPercent, baseMotorTorque * torquePercent);
     }
 }

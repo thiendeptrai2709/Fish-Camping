@@ -1,9 +1,8 @@
 using System;
-using UnityEditor;
 
 #if UNITY_EDITOR
+using UnityEditor;
 using UnityEngine;
-#endif
 
 namespace Harpia.CampingPack
 {
@@ -11,14 +10,12 @@ namespace Harpia.CampingPack
     {
     }
 
-#if UNITY_EDITOR
-
     [CustomEditor(typeof(CampingPackWelcome))]
     public class CampingPackWelcomeEditor : Editor
     {
         public static Texture2D test;
         private Texture2D _downloadedTexture;
-        
+
 
         async void LoadTexture(string link, Texture2D tex)
         {
@@ -53,8 +50,7 @@ namespace Harpia.CampingPack
 
             GUILayout.Label("Check out our other tools:");
             GUILayout.Space(5);
-            
-            
+
             if (GUILayout.Button("Level Design Tool"))
             {
                 Application.OpenURL(CampingPackCanvas.prefabBrushLink);
@@ -76,5 +72,5 @@ namespace Harpia.CampingPack
             }
         }
     }
-#endif
 }
+#endif

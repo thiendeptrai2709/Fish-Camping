@@ -837,4 +837,5 @@ public class BackpackMinigameUI : MonoBehaviour
         // 2. Tiêu hủy luôn hình ảnh của con cá đó
         Destroy(itemUI.gameObject);
     }
+    public InventoryGridData GetGridData() => gridData;
 }

@@ -591,7 +591,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3505e1f9fcd3bcd47a9b675ac4849ea4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TireRepairMinigame
-  tireVisualMesh: {fileID: 914764114268755276}
   inspectPoint: {fileID: 330515942205782570}
   dropPoint: {fileID: 5804584290032033977}
   inspectCam: {fileID: 8945028749599526186}
@@ -793,7 +792,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3505e1f9fcd3bcd47a9b675ac4849ea4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TireRepairMinigame
-  tireVisualMesh: {fileID: 93818729613292090}
   inspectPoint: {fileID: 2457659231847736874}
   dropPoint: {fileID: 610372696010740392}
   inspectCam: {fileID: 4053971113956869767}
@@ -1915,7 +1913,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3505e1f9fcd3bcd47a9b675ac4849ea4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TireRepairMinigame
-  tireVisualMesh: {fileID: 8168492984063426283}
   inspectPoint: {fileID: 2432577783017155365}
   dropPoint: {fileID: 8443740280943401743}
   inspectCam: {fileID: 7958155957145011520}
@@ -2086,7 +2083,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3505e1f9fcd3bcd47a9b675ac4849ea4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TireRepairMinigame
-  tireVisualMesh: {fileID: 124423496851695165}
   inspectPoint: {fileID: 4673955441740762919}
   dropPoint: {fileID: 2477047616760041906}
   inspectCam: {fileID: 8417568017342125115}
@@ -2955,6 +2951,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4fe86cb98f82aa74191700813e53cb85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::VehicleStats
+  baseMaxSpeed: 80
+  baseMotorTorque: 1500
   tireMinigames:
   - {fileID: 6788558138562238416}
   - {fileID: 8499663215935644365}
@@ -2985,10 +2983,6 @@ MonoBehaviour:
   - 100
   kmPerEnginePercent: 5
   kmPerCoolantPercent: 2
-  kmPerTirePercent: 3
-  badRoadCheckInterval: 2
-  badRoadDamageChance: 0.1
-  badRoadDamageAmount: 5
   OnStatsChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -3026,7 +3020,9 @@ MonoBehaviour:
   maxFuel: 100
   currentFuel: 100
   consumptionRate: 1
+  fuelBarUI: {fileID: 0}
   fuelSlider: {fileID: 0}
+  isEngineOn: 0
 --- !u!114 &3430033918699576460
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3049,10 +3045,12 @@ MonoBehaviour:
   vehicleController: {fileID: 1260891777461015879}
   carCamera: {fileID: 0}
   playerUI: {fileID: 0}
+  myCarRadio: {fileID: 0}
   interactableHood: {fileID: 1358497162715296175}
   interactableTrunk: {fileID: 5743390993015314429}
   engineRepair: {fileID: 5224876922350798403}
   vehicleStats: {fileID: 6911055058645893938}
+  carFuel: {fileID: 0}
   OnEnteredVehicle:
     m_PersistentCalls:
       m_Calls:
