@@ -8,6 +8,7 @@ public enum FishRarity
     Rare,       // Hiếm
     Legendary   // Truyền thuyết
 }
+
 public enum FishGrade
 {
     Normal,
@@ -15,9 +16,14 @@ public enum FishGrade
     Silver,
     Gold
 }
+
 [CreateAssetMenu(fileName = "NewFish", menuName = "Inventory/Fish Data")]
 public class FishSO : ItemShapeSO
 {
+    [Header("--- THÔNG TIN VÙNG / MAP ---")]
+    [Tooltip("Tên khu vực/map xuất hiện con cá này (hiển thị thay cho dấu hỏi chấm khi chưa câu được)")]
+    public string mapName = "Hồ Nước Ngọt";
+
     [Header("--- FISH SPECIFIC DATA ---")]
     public FishRarity rarity = FishRarity.Common;
 
@@ -42,12 +48,14 @@ public class FishSO : ItemShapeSO
     public float bronzeChance = 25f;
     public float silverChance = 10f;
     public float goldChance = 5f;
+
     // Hàm tiện ích để random kích thước cá mỗi khi câu được
     public void GenerateRandomSize(out float length, out float weight)
     {
         length = Random.Range(minLength, maxLength);
         weight = Random.Range(minWeight, maxWeight);
     }
+
     public FishGrade GenerateRandomGrade()
     {
         float randomVal = Random.Range(0f, 100f);

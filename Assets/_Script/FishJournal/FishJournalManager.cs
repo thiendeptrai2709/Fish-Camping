@@ -131,4 +131,7 @@ public class FishJournalManager : MonoBehaviour
             Debug.Log("<color=yellow>[Fish Journal] Không tìm thấy file save nào để xóa.</color>");
         }
     }
+
+    
+    
 }

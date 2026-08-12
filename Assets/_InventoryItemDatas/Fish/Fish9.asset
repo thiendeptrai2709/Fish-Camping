@@ -20,6 +20,7 @@ MonoBehaviour:
   width: 2
   height: 2
   shapeCells: 
+  mapName: SWAMP
   rarity: 0
   caughtFishPrefab: {fileID: 8443153244633029542, guid: 0778e720b5ad7234f94fa1d20d4220c6, type: 3}
   difficulty: 1

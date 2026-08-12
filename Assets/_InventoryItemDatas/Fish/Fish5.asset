@@ -20,6 +20,7 @@ MonoBehaviour:
   width: 2
   height: 2
   shapeCells: 
+  mapName: PINE LAKE
   rarity: 0
   caughtFishPrefab: {fileID: 3303966350102610267, guid: e563dcb19133bd849876eee846c5c930, type: 3}
   difficulty: 1

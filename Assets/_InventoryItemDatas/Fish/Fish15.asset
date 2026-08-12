@@ -20,6 +20,7 @@ MonoBehaviour:
   width: 2
   height: 2
   shapeCells: 
+  mapName: OCEAN COAST
   rarity: 0
   caughtFishPrefab: {fileID: 4695939832957849231, guid: 59ecc3d326e071f45be3f35708a4092b, type: 3}
   difficulty: 1
