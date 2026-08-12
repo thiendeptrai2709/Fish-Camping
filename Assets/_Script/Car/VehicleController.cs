@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody), typeof(VehicleInput))]
@@ -30,10 +30,14 @@ public class VehicleController : MonoBehaviour
     private VehicleInput vehicleInput;
     private float currentSpeedKmh;
 
+    private CarFuel carFuel;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
         vehicleInput = GetComponent<VehicleInput>();
+
+        carFuel = GetComponent<CarFuel>();
 
         if (vehicleInput == null)
         {
@@ -68,19 +72,30 @@ public class VehicleController : MonoBehaviour
         }
 
         float torque = 0f;
-        if (currentSpeedKmh < maxSpeedKmh)
-        {
-            torque = vehicleInput.MoveInput.y * finalMotorTorque;
-        }
-
         float currentBrake = 0f;
-        if (vehicleInput.IsBraking)
+
+        bool hasFuel = (carFuel == null || carFuel.HasFuel());
+
+        if (hasFuel)
         {
-            currentBrake = brakeTorque;
+            if (currentSpeedKmh < maxSpeedKmh)
+            {
+                torque = vehicleInput.MoveInput.y * finalMotorTorque;
+            }
+
+            if (vehicleInput.IsBraking)
+            {
+                currentBrake = brakeTorque;
+            }
+            else if (Mathf.Abs(vehicleInput.MoveInput.y) < 0.01f)
+            {
+                currentBrake = idleBrakeTorque;
+            }
         }
-        else if (Mathf.Abs(vehicleInput.MoveInput.y) < 0.01f)
+        else
         {
-            currentBrake = idleBrakeTorque;
+            torque = 0f;
+            currentBrake = brakeTorque;
         }
 
         frontLeftWheel.motorTorque = torque;
@@ -120,6 +135,7 @@ public class VehicleController : MonoBehaviour
     {
         return currentSpeedKmh;
     }
+
     public void ApplyUpgradedEngine(float newMaxSpeed, float newTorque)
     {
         maxSpeedKmh = newMaxSpeed;

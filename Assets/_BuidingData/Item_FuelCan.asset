@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 915fc19d6119cf842a5bea88bae3964c, type: 3}
+  m_Name: Item_FuelCan
+  m_EditorClassIdentifier: Assembly-CSharp::ItemShapeSO
+  itemID: fuel_can_01
+  itemName: "Can X\u0103ng D\u1EF1 Tr\u1EEF"
+  itemIcon: {fileID: -168497641, guid: 4944c56a5092d0442899101d319ef1bd, type: 3}
+  itemDescription: "B\u01A1m th\xEAm 30 l\xEDt x\u0103ng cho xe"
+  equippedModelPrefab: {fileID: 0}
+  width: 1
+  height: 1
+  shapeCells: 01

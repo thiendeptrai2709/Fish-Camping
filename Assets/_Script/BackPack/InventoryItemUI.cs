@@ -375,10 +375,15 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        // Truyền "this" (chứa toàn bộ data động) thay vì chỉ truyền itemShape (dữ liệu tĩnh)
         if (ItemInfoPanelUI.Instance != null && itemShape != null)
         {
             ItemInfoPanelUI.Instance.ShowInfo(this);
+        }
+
+        // Khi click chuột, gọi Menu Thao tác xuất hiện
+        if (ItemActionMenu.Instance != null && itemShape != null)
+        {
+            ItemActionMenu.Instance.ShowMenu(this);
         }
     }
 
