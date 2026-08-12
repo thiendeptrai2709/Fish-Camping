@@ -4,13 +4,11 @@ using System.Threading.Tasks;
 using Firebase;
 using Firebase.Auth;
 using Firebase.Extensions;
-using UnityEditor.SearchService;
-using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class Login : MonoBehaviour 
+public class Login : MonoBehaviour
 {
     //Đăng Ký
     [Header("Đăng Ký")]
@@ -24,6 +22,7 @@ public class Login : MonoBehaviour
     public InputField ipLoginEmail;
     public InputField ipLoginPassword;
     public Button buttonLogin;
+
     [Header("Chuyển đổi trạng thái giữa Đăng ký và Đăng nhập")]
     public Button buttonMoveToRegister;
     public Button buttonMoveToSignIn;
@@ -41,10 +40,12 @@ public class Login : MonoBehaviour
         buttonMoveToRegister.onClick.AddListener(SwitchForm);
         buttonMoveToSignIn.onClick.AddListener(SwitchForm);
     }
+
     public void RegisterAccountWithFirebase()
     {
         string email = ipRegisterEmail.text;
         string password = ipRegisterPassword.text;
+
         auth.CreateUserWithEmailAndPasswordAsync(email, password).ContinueWithOnMainThread(Task =>
         {
             if (Task.IsCanceled)
@@ -63,15 +64,17 @@ public class Login : MonoBehaviour
                 var newUser = Task.Result.User;
                 Debug.Log($"Đăng ký tài khoản thành công cho: {newUser.Email}");
 
-                // TODO: Chuyển scene hoặc hiển thị panel Đăng nhập tại đây
+                // Tự động chuyển sang form Đăng nhập sau khi đăng ký thành công
+                SwitchForm();
             }
         });
-
     }
+
     public void SignInAccountWithFirebase()
     {
         string email = ipLoginEmail.text;
         string password = ipLoginPassword.text;
+
         auth.SignInWithEmailAndPasswordAsync(email, password).ContinueWithOnMainThread(Task =>
         {
             if (Task.IsCanceled)
@@ -92,9 +95,10 @@ public class Login : MonoBehaviour
             }
         });
     }
+
     public void SwitchForm()
     {
-        if(loginForm.activeSelf)
+        if (loginForm.activeSelf)
         {
             loginForm.SetActive(false);
             registerForm.SetActive(true);
