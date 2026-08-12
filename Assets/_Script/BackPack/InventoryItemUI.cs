@@ -183,6 +183,11 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             {
                 Debug.Log("<color=green>[THU HOẠCH] Đã click lấy đồ ăn thẳng vào Balo thành công!</color>");
                 if (CookingUIManager.Instance != null) CookingUIManager.Instance.OnFoodCollectedSuccessfully();
+                if (itemShape != null && QuestManager.Instance != null)
+                {
+                    string itemName = string.IsNullOrEmpty(itemShape.itemName) ? itemShape.name : itemShape.itemName;
+                    QuestManager.Instance.AddProgressByItem(itemName, 1);
+                }
             }
             else
             {
@@ -308,7 +313,21 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             bool placedInGrid = false;
 
             if (isOverXe) { placedInGrid = TrunkMinigameUI.Instance.TryPlaceItemFromExternal(this, eventData.position); if (placedInGrid) currentOwner = GridOwner.Trunk; }
-            else if (isOverBalo) { placedInGrid = BackpackMinigameUI.Instance.TryPlaceItemFromExternal(this, eventData.position); if (placedInGrid) currentOwner = GridOwner.Backpack; }
+            else if (isOverBalo)
+            {
+                placedInGrid = BackpackMinigameUI.Instance.TryPlaceItemFromExternal(this, eventData.position);
+                if (placedInGrid)
+                {
+                    currentOwner = GridOwner.Backpack;
+
+                    // --- BỔ SUNG: Báo tiến độ nhiệm vụ khi kéo đồ ăn/nguyên liệu vào Balo ---
+                    if (itemShape != null && QuestManager.Instance != null)
+                    {
+                        string itemName = string.IsNullOrEmpty(itemShape.itemName) ? itemShape.name : itemShape.itemName;
+                        QuestManager.Instance.AddProgressByItem(itemName, 1);
+                    }
+                }
+            }
 
             if (placedInGrid)
             {
@@ -334,7 +353,16 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         if (isEquipped)
         {
             bool placedInGrid = minigameUI.TryPlaceItemFromExternal(this, eventData.position);
-            if (!placedInGrid)
+            if (placedInGrid)
+            {
+                // --- BỔ SUNG: Báo tiến độ nhiệm vụ khi tháo trang bị vào Balo ---
+                if (itemShape != null && QuestManager.Instance != null)
+                {
+                    string itemName = string.IsNullOrEmpty(itemShape.itemName) ? itemShape.name : itemShape.itemName;
+                    QuestManager.Instance.AddProgressByItem(itemName, 1);
+                }
+            }
+            else
             {
                 if (currentSlot != null)
                 {
@@ -357,7 +385,17 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         else if (overBackpack)
         {
             placed = BackpackMinigameUI.Instance.TryPlaceItemFromExternal(this, eventData.position);
-            if (placed) currentOwner = GridOwner.Backpack;
+            if (placed)
+            {
+                currentOwner = GridOwner.Backpack;
+
+                // --- BỔ SUNG: Báo tiến độ nhiệm vụ khi thả item vào Balo ---
+                if (itemShape != null && QuestManager.Instance != null)
+                {
+                    string itemName = string.IsNullOrEmpty(itemShape.itemName) ? itemShape.name : itemShape.itemName;
+                    QuestManager.Instance.AddProgressByItem(itemName, 1);
+                }
+            }
         }
 
         if (BackpackMinigameUI.Instance != null) BackpackMinigameUI.Instance.HideHighlight();
