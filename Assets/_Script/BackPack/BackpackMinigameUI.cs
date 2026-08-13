@@ -697,6 +697,11 @@ public class BackpackMinigameUI : MonoBehaviour
                 {
                     InventoryItemUI spawned = SpawnItem(fishShape, x, y, false);
                     if (spawned != null) spawned.SetFishInstanceData(length, weight, grade);
+                    if (QuestManager.Instance != null && fishShape != null)
+                    {
+                        string fishName = string.IsNullOrEmpty(fishShape.itemName) ? fishShape.name : fishShape.itemName;
+                        QuestManager.Instance.AddProgressByItem(fishName, 1);
+                    }
                     return true;
                 }
             }
