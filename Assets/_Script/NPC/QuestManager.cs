@@ -11,14 +11,14 @@ public class QuestManager : MonoBehaviour
     [Header("UI References")]
     public Transform questContentParent; // Kéo ô Content trong ScrollView vào đây
     public GameObject questItemPrefab;   // Kéo Prefab ô Nhiệm vụ vào đây
-    public GameObject questPanel;       // Kéo QuestPanel từ Hierarchy vào đây
+    public GameObject questPanel;        // Kéo QuestPanel từ Hierarchy vào đây
 
     private void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject); // Giữ QuestManager không bị xóa khi đổi Scene / Map
+            DontDestroyOnLoad(gameObject); // Giữ QuestManager không bị xóa khi đổi Scene
         }
         else
         {
@@ -28,27 +28,91 @@ public class QuestManager : MonoBehaviour
 
     private void Update()
     {
-        // Nhấn phím Z để Bật / Tắt Panel Nhiệm vụ
+        // Nhấn phím V để Bật / Tắt Panel Nhiệm vụ
         if (Input.GetKeyDown(KeyCode.V))
         {
             ToggleQuestPanel();
         }
     }
 
-    // Hàm ẩn/hiện Panel UI
+    // Hàm ÉP ĐÓNG Panel (Gọi từ QuestGiver / DialogueManager khi bắt đầu nói chuyện)
+    public void ClosePanel()
+    {
+        EnsureUIAttached();
+
+        if (questPanel != null && questPanel.activeSelf)
+        {
+            questPanel.SetActive(false);
+        }
+    }
+
+    // Hàm Bật / Tắt Panel Nhiệm vụ + Quản lý Con Trỏ Chuột
     public void ToggleQuestPanel()
     {
-        if (questPanel != null)
-        {
-            bool isActive = questPanel.activeSelf;
-            questPanel.SetActive(!isActive);
+        EnsureUIAttached();
 
-            // Mở Panel lên thì cập nhật lại danh sách nhiệm vụ mới nhất
-            if (!isActive)
+        if (questPanel == null) return;
+
+        bool willOpen = !questPanel.activeSelf;
+
+        // Nếu chuẩn bị MỞ BẢNG -> Kiểm tra xem có đang nói chuyện với NPC không
+        if (willOpen)
+        {
+            // Nếu DialogueManager đang bật khung thoại thì CẤM KHÔNG CHO MỞ BẢNG
+            if (IsDialogueShowing())
             {
-                RenderQuestList();
+                return;
+            }
+
+            questPanel.SetActive(true);
+            RenderQuestList();
+
+            // --- BẬT CON TRỎ CHUỘT ĐỂ CLICK NHẬN THƯỞNG ---
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+        else
+        {
+            // TẮT BẢNG NHIỆM VỤ
+            questPanel.SetActive(false);
+
+            // --- KHÓA LẠI CON TRỎ CHUỘT ĐỂ ĐIỀU KHIỂN NHÂN VẬT ---
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+    }
+
+    // Kiểm tra chính xác xem khung thoại NPC có đang hiện trên màn hình không
+    private bool IsDialogueShowing()
+    {
+        if (DialogueManager.Instance != null && DialogueManager.Instance.dialogueCanvas != null)
+        {
+            // Chỉ chặn phím V khi cái Khung Thoại (dialogueCanvas) thực sự đang BẬT
+            return DialogueManager.Instance.dialogueCanvas.activeInHierarchy;
+        }
+        return false;
+    }
+
+
+    // Tự động nối lại UI khi chuyển Scene
+    private void EnsureUIAttached()
+    {
+        if (questPanel == null)
+        {
+            QuestUIBinder binder = FindFirstObjectByType<QuestUIBinder>();
+            if (binder != null)
+            {
+                binder.RegisterToManager();
             }
         }
+    }
+
+    // Đăng ký UI từ QuestUIBinder
+    public void RegisterUI(GameObject panel, Transform contentParent)
+    {
+        questPanel = panel;
+        questContentParent = contentParent;
+        RenderQuestList();
     }
 
     // Lấy trạng thái của nhiệm vụ theo ID
@@ -73,17 +137,6 @@ public class QuestManager : MonoBehaviour
         RenderQuestList();
     }
 
-    // Chuyển trạng thái khi xong nhiệm vụ
-    public void CompleteQuest(string questId)
-    {
-        Quest q = questList.Find(x => x.id == questId);
-        if (q != null)
-        {
-            q.state = QuestState.Claimed;
-            RenderQuestList();
-        }
-    }
-
     // Cập nhật lại UI Panel
     public void RenderQuestList()
     {
@@ -100,21 +153,14 @@ public class QuestManager : MonoBehaviour
             item.GetComponent<QuestItemUI>().Setup(q);
         }
     }
-    public void RegisterUI(GameObject panel, Transform contentParent)
-    {
-        questPanel = panel;
-        questContentParent = contentParent;
-        RenderQuestList(); // Tự động vẽ lại danh sách nhiệm vụ ngay khi kết nối UI mới
-    }
 
-    // Cập nhật tiến độ khi cất cá/vật phẩm vào Balo
+    // Cập nhật tiến độ khi nhặt/câu được cá
     public void AddProgressByItem(string itemName, int amount = 1)
     {
         foreach (Quest q in questList)
         {
             if (q.state == QuestState.InProgress)
             {
-                // Kiểm tra khớp tên targetItem hoặc khớp từ khóa trong description
                 bool isMatch = (!string.IsNullOrEmpty(q.targetItem) && q.targetItem.Equals(itemName, System.StringComparison.OrdinalIgnoreCase))
                             || (!string.IsNullOrEmpty(q.description) && q.description.Contains(itemName));
 
@@ -124,7 +170,7 @@ public class QuestManager : MonoBehaviour
                     if (q.currentAmount >= q.targetAmount)
                     {
                         q.currentAmount = q.targetAmount;
-                        q.state = QuestState.CanClaim; // Tự động chuyển nút thành "Nhận thưởng"
+                        q.state = QuestState.CanClaim;
                     }
                 }
             }
@@ -132,7 +178,7 @@ public class QuestManager : MonoBehaviour
         RenderQuestList();
     }
 
-    // Bấm nút Nhận thưởng -> Lập tức cộng tiền qua MoneyManager
+    // Bấm nút Nhận thưởng
     public void ClaimReward(string questId)
     {
         Quest q = questList.Find(x => x.id == questId);
@@ -140,7 +186,6 @@ public class QuestManager : MonoBehaviour
         {
             q.state = QuestState.Claimed;
 
-            // Gọi MoneyManager chạy hiệu ứng cộng tiền lên UI góc phải
             if (MoneyManager.Instance != null)
             {
                 MoneyManager.Instance.CongTien(q.goldReward);

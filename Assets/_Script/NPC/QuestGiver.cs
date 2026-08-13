@@ -4,61 +4,50 @@ using UnityEngine;
 [System.Serializable]
 public class QuestData
 {
-    [Header("Quest Identifier")]
-    public string questId = "QUEST_01"; // ID riêng cho từng nhiệm vụ (không được trùng)
-
-    [Header("Quest Info")]
-    public string questName = "Tên Nhiệm Vụ";
+    [Header("--- THÔNG TIN NHIỆM VỤ ---")]
+    public string questId = "Quest1";              // ID riêng (Quest1, Quest2...)
+    public string questName = "NV1";                // Tên hiển thị (NV1, NV2...)
+    [TextArea(2, 3)]
     public string questDescription = "Mô tả nhiệm vụ...";
-    public string targetItem = "Largemouth Bass";
-    public int targetAmount = 1;
-    public int rewardGold = 150;
+    public string targetItem = "Cá Hồ Cam Đốm";     // Tên cá / vật phẩm
+    public int targetAmount = 1;                    // Số lượng
+    public int rewardGold = 1500;                   // Tiền thưởng
+
+    [Header("--- HỘI THOẠI RIÊNG CHO NHIỆM VỤ NÀY ---")]
+    [TextArea(2, 4)] public string[] offerDialogues;    // Thoại khi NPC bắt đầu giao NV này
+    [TextArea(2, 4)] public string[] progressDialogues; // Thoại khi người chơi đang làm NV này
+    [TextArea(2, 4)] public string[] completeDialogues; // Thoại khi hoàn thành / trả thưởng NV này
 }
 
 public class QuestGiver : MonoBehaviour
 {
-    [Header("Danh Sách Tất Cả Nhiệm Vụ NPC Sẽ Giao")]
+    [Header("Danh Sách Nhiệm Vụ Nối Tiếp (NV1 -> NV2 -> ...)")]
     public List<QuestData> questList = new List<QuestData>();
 
-    [Header("Quest Dialogues")]
-    [SerializeField]
-    [TextArea(2, 5)]
-    private string[] offerDialogues = new string[] {
-        "Chào cậu! Ta có một vài việc cần cậu giúp đỡ đây.",
-        "Hãy kiểm tra bảng nhiệm vụ (phím J) để xem chi tiết danh sách nhé!"
-    };
-
-    [SerializeField]
-    [TextArea(2, 5)]
-    private string[] progressDialogues = new string[] {
-        "Cậu vẫn đang làm các nhiệm vụ ta giao đúng không?",
-        "Cố gắng hoàn thành sớm nhé!"
-    };
-
-    [SerializeField]
-    [TextArea(2, 5)]
-    private string[] completeDialogues = new string[] {
-        "Tuyệt vời! Cảm ơn cậu đã hoàn thành các công việc!"
-    };
-
+    [Header("Thoại khi ĐÃ HOÀN THÀNH HẾT TẤT CẢ Nhiệm vụ")]
     [SerializeField]
     [TextArea(2, 5)]
     private string[] finalDialogues = new string[] {
-        "Cảm ơn cậu nhé! Chúc cậu một ngày vui vẻ."
+        "Cảm ơn cậu nhé! Cậu đã giúp ta làm xong tất cả công việc rồi."
     };
 
     public void HandleQuestInteraction(string npcName, Animator animator, System.Action onComplete)
     {
+        // 1. SỬA LỖI UI: Gọi hàm ClosePanel() để tự động tìm lại UI và ẩn chắc chắn 100%
+        if (QuestManager.Instance != null)
+        {
+            QuestManager.Instance.ClosePanel();
+        }
+
         if (questList == null || questList.Count == 0)
         {
             onComplete?.Invoke();
             return;
         }
 
-        // Kiểm tra trạng thái chung của tất cả nhiệm vụ trong danh sách
-        bool hasNotStarted = false;
-        bool hasCanClaim = false;
-        bool allClaimed = true;
+        // 2. TÌM NHIỆM VỤ ĐẦU TIÊN CHƯA HOÀN THÀNH (Chưa Claimed)
+        QuestData currentQuestData = null;
+        QuestState currentState = QuestState.NotStarted;
 
         foreach (var qData in questList)
         {
@@ -66,65 +55,73 @@ public class QuestGiver : MonoBehaviour
                 ? QuestManager.Instance.GetQuestState(qData.questId)
                 : QuestState.NotStarted;
 
-            if (state == QuestState.NotStarted) hasNotStarted = true;
-            if (state == QuestState.CanClaim) hasCanClaim = true;
-            if (state != QuestState.Claimed) allClaimed = false;
+            if (state != QuestState.Claimed)
+            {
+                currentQuestData = qData;
+                currentState = state;
+                break; // Dừng lại ở nhiệm vụ chưa xong đầu tiên
+            }
         }
 
-        // 1. Nếu còn nhiệm vụ chưa nhận -> Nói chuyện xong sẽ NHẬN HẾT TẤT CẢ NV cùng lúc
-        if (hasNotStarted)
-        {
-            DialogueManager.Instance.StartDialogue(npcName, offerDialogues, () => {
-                if (QuestManager.Instance != null)
-                {
-                    foreach (var qData in questList)
-                    {
-                        if (QuestManager.Instance.GetQuestState(qData.questId) == QuestState.NotStarted)
-                        {
-                            Quest newQuest = new Quest
-                            {
-                                id = qData.questId,
-                                title = qData.questName,
-                                description = qData.questDescription,
-                                targetItem = qData.targetItem,
-                                currentAmount = 0,
-                                targetAmount = qData.targetAmount,
-                                goldReward = qData.rewardGold,
-                                state = QuestState.InProgress
-                            };
-                            QuestManager.Instance.AddQuestToList(newQuest);
-                        }
-                    }
-                }
-                onComplete?.Invoke();
-            });
-        }
-        // 2. Nếu đã hoàn thành và nhận thưởng hết tất cả nhiệm vụ
-        else if (allClaimed)
+        // 3. Nếu tất cả NV trong danh sách đều đã làm xong (Claimed)
+        if (currentQuestData == null)
         {
             DialogueManager.Instance.StartDialogue(npcName, finalDialogues, onComplete);
+            return;
         }
-        // 3. Nếu có nhiệm vụ đã đủ điều kiện trả thưởng
-        else if (hasCanClaim)
+
+        // 4. XỬ LÝ TRẠNG THÁI NHIỆM VỤ HIỆN TẠI
+        switch (currentState)
         {
-            DialogueManager.Instance.StartDialogue(npcName, completeDialogues, () => {
-                if (QuestManager.Instance != null)
-                {
-                    foreach (var qData in questList)
+            case QuestState.NotStarted:
+                // Chưa nhận -> Nói chuyện nhận NV hiện tại
+                string[] offerLines = (currentQuestData.offerDialogues != null && currentQuestData.offerDialogues.Length > 0)
+                    ? currentQuestData.offerDialogues
+                    : new string[] { $"Ta có việc nhờ cậu: {currentQuestData.questDescription}" };
+
+                DialogueManager.Instance.StartDialogue(npcName, offerLines, () => {
+                    if (QuestManager.Instance != null)
                     {
-                        if (QuestManager.Instance.GetQuestState(qData.questId) == QuestState.CanClaim)
+                        Quest newQuest = new Quest
                         {
-                            QuestManager.Instance.ClaimReward(qData.questId);
-                        }
+                            id = currentQuestData.questId,
+                            title = currentQuestData.questName,
+                            description = currentQuestData.questDescription,
+                            targetItem = currentQuestData.targetItem,
+                            currentAmount = 0,
+                            targetAmount = currentQuestData.targetAmount,
+                            goldReward = currentQuestData.rewardGold,
+                            state = QuestState.InProgress
+                        };
+                        QuestManager.Instance.AddQuestToList(newQuest);
                     }
-                }
-                onComplete?.Invoke();
-            });
-        }
-        // 4. Đang trong quá trình làm
-        else
-        {
-            DialogueManager.Instance.StartDialogue(npcName, progressDialogues, onComplete);
+                    onComplete?.Invoke();
+                });
+                break;
+
+            case QuestState.InProgress:
+                // Đang làm -> Nhắc nhở tiến độ
+                string[] progressLines = (currentQuestData.progressDialogues != null && currentQuestData.progressDialogues.Length > 0)
+                    ? currentQuestData.progressDialogues
+                    : new string[] { "Cậu vẫn đang làm nhiệm vụ đúng không? Cố gắng lên nhé!" };
+
+                DialogueManager.Instance.StartDialogue(npcName, progressLines, onComplete);
+                break;
+
+            case QuestState.CanClaim:
+                // Đã đủ điều kiện -> Trả thưởng & chuyển sang Claimed (Mở khóa NV tiếp theo)
+                string[] completeLines = (currentQuestData.completeDialogues != null && currentQuestData.completeDialogues.Length > 0)
+                    ? currentQuestData.completeDialogues
+                    : new string[] { "Tuyệt vời! Cảm ơn cậu đã hoàn thành công việc!" };
+
+                DialogueManager.Instance.StartDialogue(npcName, completeLines, () => {
+                    if (QuestManager.Instance != null)
+                    {
+                        QuestManager.Instance.ClaimReward(currentQuestData.questId);
+                    }
+                    onComplete?.Invoke();
+                });
+                break;
         }
     }
 }

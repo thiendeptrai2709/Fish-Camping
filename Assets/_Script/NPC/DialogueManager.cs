@@ -10,7 +10,7 @@ public class DialogueManager : MonoBehaviour
 
 
     [Header("UI Elements")]
-    [SerializeField] private GameObject dialogueCanvas;
+    [SerializeField] public GameObject dialogueCanvas;
     [SerializeField] private TextMeshProUGUI nameText;
     [SerializeField] private TextMeshProUGUI dialogueText;
 
@@ -34,6 +34,10 @@ public class DialogueManager : MonoBehaviour
     // Hàm gọi từ NPC để bắt đầu nói chuyện
     public void StartDialogue(string npcName, string[] dialogues, System.Action onComplete = null)
     {
+        if (QuestManager.Instance != null)
+        {
+            QuestManager.Instance.ClosePanel();
+        }
         dialogueCanvas.SetActive(true);
         nameText.text = npcName;
         _onDialogueComplete = onComplete;

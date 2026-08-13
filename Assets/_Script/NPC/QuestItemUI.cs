@@ -8,6 +8,7 @@ public class QuestItemUI : MonoBehaviour
     public TMP_Text titleText;
     public TMP_Text descriptionText;
     public TMP_Text progressText;
+    public TMP_Text rewardText; // <-- Bổ sung biến hiển thị tiền thưởng
     public Button actionButton;
     public TMP_Text buttonText;
 
@@ -19,6 +20,9 @@ public class QuestItemUI : MonoBehaviour
 
         if (titleText != null) titleText.text = quest.title;
         if (descriptionText != null) descriptionText.text = quest.description;
+
+        // Hiển thị số tiền thưởng (Ví dụ: +1500G hoặc +1500K tùy bạn chỉnh chữ 'G' hay 'K')
+        if (rewardText != null) rewardText.text = $"+{quest.goldReward}G";
 
         RefreshUI();
     }
