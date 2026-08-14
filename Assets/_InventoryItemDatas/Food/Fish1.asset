@@ -15,4 +15,4 @@ MonoBehaviour:
   recipeName: "c\xE1 "
   requiredIngredients:
   - {fileID: 11400000, guid: b3d405c29bd65ad4cb17556483f36397, type: 2}
-  resultItem: {fileID: 11400000, guid: b3d405c29bd65ad4cb17556483f36397, type: 2}
+  resultItem: {fileID: 11400000, guid: 7e122460c73e18c4dbe579ced7567030, type: 2}

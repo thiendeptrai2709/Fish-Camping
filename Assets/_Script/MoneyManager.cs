@@ -27,20 +27,16 @@ public class MoneyManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            // Giữ nguyên qua các Scene khác (nếu Shop và Garage nằm ở 2 Scene riêng).
-            // Nếu 2 khu vực đang ở chung 1 Scene thì dòng này không gây hại gì cả.
-            DontDestroyOnLoad(gameObject);
+            DontDestroyOnLoad(gameObject); //[cite: 16]
+            SceneManager.sceneLoaded += OnSceneLoaded; //[cite: 16]
 
-            // BẮT BUỘC: Vì object này sống xuyên Scene (DontDestroyOnLoad) nhưng các Text
-            // hiển thị tiền lại là UI của TỪNG Scene (bị hủy khi đổi Scene), nên phải tự
-            // đăng ký lắng nghe mỗi lần load Scene mới để "nối" lại đúng Text của Scene đó.
-            // Nếu không làm cái này, sau khi đổi map quay lại, Text tiền sẽ bị kẹt ở giá trị
-            // cũ/mặc định (nhìn như tiền bị reset về 0) dù tongTien bên trong vẫn đúng.
-            SceneManager.sceneLoaded += OnSceneLoaded;
+            // --- LOAD TIỀN TỪ Ổ CỨNG LÚC MỚI MỞ GAME ---
+            // Nếu có dữ liệu cũ thì lấy, không có thì mặc định cho 5000 vàng
+            tongTien = PlayerPrefs.GetInt("PlayerMoney", 5000);
         }
         else
         {
-            Destroy(gameObject);
+            Destroy(gameObject); //[cite: 16]
         }
     }
 
@@ -51,7 +47,7 @@ public class MoneyManager : MonoBehaviour
 
     private void Start()
     {
-        CapNhatLaiDanhSachTextTien();
+        CapNhatLaiDanhSachTextTien(); //[cite: 16]
     }
 
     // Được gọi tự động mỗi khi 1 Scene mới load xong (kể cả lúc quay lại 1 map đã đi qua)
@@ -96,20 +92,26 @@ public class MoneyManager : MonoBehaviour
     // Cố trừ tiền. Trả về false và KHÔNG trừ gì nếu không đủ tiền.
     public bool TruTien(int soTien)
     {
-        if (tongTien < soTien) return false;
+        if (tongTien < soTien) return false; //[cite: 16]
 
-        int tienTruoc = tongTien;
-        tongTien -= soTien;
-        ChayHieuUngDemSo(tienTruoc, tongTien);
-        return true;
+        int tienTruoc = tongTien; //[cite: 16]
+        tongTien -= soTien; //[cite: 16]
+
+        PlayerPrefs.SetInt("PlayerMoney", tongTien); // <-- LƯU VÀO Ổ CỨNG
+
+        ChayHieuUngDemSo(tienTruoc, tongTien); //[cite: 16]
+        return true; //[cite: 16]
     }
 
     // Cộng tiền (bán đồ, thưởng...)
     public void CongTien(int soTien)
     {
-        int tienTruoc = tongTien;
-        tongTien += soTien;
-        ChayHieuUngDemSo(tienTruoc, tongTien);
+        int tienTruoc = tongTien; //[cite: 16]
+        tongTien += soTien; //[cite: 16]
+
+        PlayerPrefs.SetInt("PlayerMoney", tongTien); // <-- LƯU VÀO Ổ CỨNG
+
+        ChayHieuUngDemSo(tienTruoc, tongTien); //[cite: 16]
     }
 
     private void ChayHieuUngDemSo(int tuSo, int denSo)

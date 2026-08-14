@@ -441,6 +441,30 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             ItemInfoPanelUI.Instance.ClearInfo();
         }
     }
+    public void ConsumeItem()
+    {
+        // 1. Kiểm tra xem món đồ này có đúng là Đồ Ăn (FoodSO) không?
+        if (itemShape is FoodSO foodData)
+        {
+            if (CharacterStatsManager.Instance != null)
+            {
+                CharacterStatsManager.Instance.ModifyStat(StatType.Hunger, foodData.hungerRestore);
+                CharacterStatsManager.Instance.ModifyStat(StatType.Energy, foodData.energyRestore);
+            }
+
+            Debug.Log($"<color=cyan>[MĂM MĂM] Đã ăn {foodData.itemName}, hồi {foodData.hungerRestore} độ no!</color>");
+
+            // 3. Xóa món ăn khỏi Balo một cách sạch sẽ
+            if (currentOwner == GridOwner.Backpack && BackpackMinigameUI.Instance != null)
+            {
+                BackpackMinigameUI.Instance.RemoveItem(this);
+            }
+        }
+        else
+        {
+            Debug.LogWarning("Món này không ăn được đâu bồ ơi!");
+        }
+    }
 
     public ItemShapeSO GetItemShape() => itemShape;
     public int GetGridX() => gridX;
