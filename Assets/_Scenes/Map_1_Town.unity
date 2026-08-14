@@ -27913,7 +27913,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6777345517091444524, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 35
+      value: 85
+      objectReference: {fileID: 0}
+    - target: {fileID: 6777345517091444524, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6909443347425122774, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: fuelBarUI
@@ -27941,15 +27945,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7487779001576783255, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.1502533
+      value: -0.8385925
       objectReference: {fileID: 0}
     - target: {fileID: 7487779001576783255, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4.26
+      value: 2.1100006
       objectReference: {fileID: 0}
     - target: {fileID: 7487779001576783255, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -3.6290894
+      value: -1.9252129
+      objectReference: {fileID: 0}
+    - target: {fileID: 7487779001576783255, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.97920454
+      objectReference: {fileID: 0}
+    - target: {fileID: 7487779001576783255, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.01957634
+      objectReference: {fileID: 0}
+    - target: {fileID: 7487779001576783255, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.20188853
+      objectReference: {fileID: 0}
+    - target: {fileID: 7487779001576783255, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.0040361723
       objectReference: {fileID: 0}
     - target: {fileID: 7512315670268604788, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: m_Sprite
