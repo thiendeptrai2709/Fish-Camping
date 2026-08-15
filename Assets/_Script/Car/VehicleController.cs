@@ -31,13 +31,14 @@ public class VehicleController : MonoBehaviour
     private float currentSpeedKmh;
 
     private CarFuel carFuel;
+    private CarLightController carLightController; // Thêm tham chiếu đến Đèn xe
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
         vehicleInput = GetComponent<VehicleInput>();
-
         carFuel = GetComponent<CarFuel>();
+        carLightController = GetComponent<CarLightController>(); // Tự động tìm bộ điều khiển đèn
 
         if (vehicleInput == null)
         {
@@ -96,6 +97,12 @@ public class VehicleController : MonoBehaviour
         {
             torque = 0f;
             currentBrake = brakeTorque;
+        }
+
+        // CẬP NHẬT ĐÈN HẬU/PHANH: Bật sáng khi người lái chủ động đạp phanh (vehicleInput.IsBraking)
+        if (carLightController != null)
+        {
+            carLightController.SetBraking(vehicleInput.IsBraking);
         }
 
         frontLeftWheel.motorTorque = torque;

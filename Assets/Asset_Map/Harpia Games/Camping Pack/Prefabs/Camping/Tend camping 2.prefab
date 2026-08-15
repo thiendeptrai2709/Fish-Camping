@@ -59,6 +59,11 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -80,6 +85,7 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
@@ -95,6 +101,7 @@ GameObject:
   - component: {fileID: 72882217196725905}
   - component: {fileID: 2423416777527769321}
   - component: {fileID: 3546818872907873505}
+  - component: {fileID: 4708408619970600514}
   m_Layer: 0
   m_Name: Collider Tend Camping 2 - 1
   m_TagString: Untagged
@@ -147,3 +154,23 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 7464532043086751822, guid: ede913b672d3f554e9bf81bdfa472abe, type: 3}
+--- !u!114 &4708408619970600514
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4184457143291782281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a52c649c00be5f342a81e02f64f26234, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractableBed
+  interactPrompt: "Click [Chu\u1ED9t Tr\xE1i] \u0111\u1EC3 Ng\u1EE7"
+  sleepRestoreAmount: 100
+  energyRestoreAmount: 100
+  fadeDuration: 1.5
+  sleepHoldDuration: 5
+  sleepByDuration: 1
+  sleepHours: 5
+  fixedWakeUpTime: 0.25
