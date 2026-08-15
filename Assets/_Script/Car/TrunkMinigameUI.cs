@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class TrunkMinigameUI : MonoBehaviour
 {
@@ -9,8 +10,15 @@ public class TrunkMinigameUI : MonoBehaviour
     [SerializeField] private InventoryGridData gridData;
     [SerializeField] private RectTransform gridRootRect;
     [SerializeField] private RectTransform itemsContainer;
+    [SerializeField] private GameObject itemUIPrefab;
     [SerializeField] private GameObject cellVisualPrefab;
     [SerializeField] private Image highlightOverlay;
+
+    [Header("--- TẤT CẢ ITEM TRONG GAME ĐỂ LOAD CỐP ---")]
+    [Tooltip("Kéo toàn bộ ScriptableObject Item/Fish/Rod vào đây để load dữ liệu cốp xe lúc khởi động")]
+    [SerializeField] private ItemShapeSO[] allDatabaseItems;
+
+    private const string TRUNK_SAVE_KEY = "Saved_Trunk_Data";
 
     private int startDragX;
     private int startDragY;
@@ -53,7 +61,130 @@ public class TrunkMinigameUI : MonoBehaviour
             highlightOverlay.gameObject.SetActive(false);
             highlightOverlay.transform.SetAsLastSibling();
         }
+
+        LoadTrunk();
     }
+
+    // ==========================================
+    // HỆ THỐNG SAVE & LOAD CỐP XE
+    // ==========================================
+    public void SaveTrunk()
+    {
+        if (itemsContainer == null) return;
+
+        BackpackSaveContainer container = new BackpackSaveContainer();
+        InventoryItemUI[] allItems = itemsContainer.GetComponentsInChildren<InventoryItemUI>();
+
+        foreach (var item in allItems)
+        {
+            if (item == null || item.GetItemShape() == null) continue;
+
+            ItemShapeSO shape = item.GetItemShape();
+            string finalID = !string.IsNullOrEmpty(shape.itemID) ? shape.itemID : shape.name;
+
+            SavedItemData data = new SavedItemData
+            {
+                itemID = finalID,
+                gridX = item.GetGridX(),
+                gridY = item.GetGridY(),
+                isRotated = item.IsRotated(),
+                isFish = (shape is FishSO),
+                fishLength = item.GetLength(),
+                fishWeight = item.GetWeight(),
+                fishGrade = (int)item.GetGrade()
+            };
+
+            container.items.Add(data);
+        }
+
+        string json = JsonUtility.ToJson(container);
+        PlayerPrefs.SetString(TRUNK_SAVE_KEY, json);
+        PlayerPrefs.Save();
+    }
+
+    public void LoadTrunk()
+    {
+        string json = PlayerPrefs.GetString(TRUNK_SAVE_KEY, "");
+        if (string.IsNullOrEmpty(json)) return;
+
+        BackpackSaveContainer container = JsonUtility.FromJson<BackpackSaveContainer>(json);
+        if (container == null || container.items == null) return;
+
+        InventoryItemUI[] oldItems = itemsContainer.GetComponentsInChildren<InventoryItemUI>();
+        foreach (var old in oldItems) Destroy(old.gameObject);
+
+        if (gridData != null) gridData.InitGrid();
+
+        foreach (var saved in container.items)
+        {
+            ItemShapeSO foundShape = FindItemShapeByID(saved.itemID);
+            if (foundShape != null)
+            {
+                InventoryItemUI spawned = SpawnItem(foundShape, saved.gridX, saved.gridY, saved.isRotated);
+                if (spawned != null)
+                {
+                    spawned.currentOwner = InventoryItemUI.GridOwner.Trunk;
+                    if (saved.isFish)
+                    {
+                        spawned.SetFishInstanceData(saved.fishLength, saved.fishWeight, (FishGrade)saved.fishGrade);
+                    }
+                }
+            }
+        }
+    }
+
+    private ItemShapeSO FindItemShapeByID(string id)
+    {
+        if (allDatabaseItems != null)
+        {
+            foreach (var item in allDatabaseItems)
+            {
+                if (item != null)
+                {
+                    string checkID = !string.IsNullOrEmpty(item.itemID) ? item.itemID : item.name;
+                    if (checkID == id) return item;
+                }
+            }
+        }
+
+        ItemShapeSO loaded = Resources.Load<ItemShapeSO>(id);
+        return loaded;
+    }
+
+    public InventoryItemUI SpawnItem(ItemShapeSO shape, int startX, int startY, bool rotated = false)
+    {
+        if (gridData == null || itemUIPrefab == null || itemsContainer == null) return null;
+
+        if (gridData.CanPlaceItem(startX, startY, shape, rotated))
+        {
+            GameObject itemObj = Instantiate(itemUIPrefab, itemsContainer);
+            RectTransform rect = itemObj.GetComponent<RectTransform>();
+            rect.pivot = new Vector2(0, 1);
+            rect.anchorMin = new Vector2(0, 1);
+            rect.anchorMax = new Vector2(0, 1);
+
+            InventoryItemUI itemUI = itemObj.GetComponent<InventoryItemUI>();
+            itemUI.Setup(shape, BackpackMinigameUI.Instance, startX, startY, rotated);
+            itemUI.currentOwner = InventoryItemUI.GridOwner.Trunk;
+
+            gridData.PlaceItem(startX, startY, shape, rotated);
+            rect.anchoredPosition = GetAnchoredPositionFromGridIndex(startX, startY);
+
+            return itemUI;
+        }
+        return null;
+    }
+
+    [ContextMenu("Xóa dữ liệu Cốp Xe (Reset Trunk)")]
+    public void ClearTrunkSave()
+    {
+        PlayerPrefs.DeleteKey(TRUNK_SAVE_KEY);
+        PlayerPrefs.Save();
+        Debug.Log("<color=yellow>[Trunk] Đã xóa dữ liệu lưu trữ Cốp Xe thành công!</color>");
+    }
+
+    private void OnApplicationQuit() => SaveTrunk();
+    private void OnApplicationPause(bool pause) { if (pause) SaveTrunk(); }
 
     public void CreateVisualGrid()
     {
@@ -243,25 +374,28 @@ public class TrunkMinigameUI : MonoBehaviour
                     gridData.PlaceItem(targetX, targetY, itemUI.GetItemShape(), itemUI.IsRotated());
                     itemUI.SetGridPosition(targetX, targetY);
                     itemRect.anchoredPosition = GetAnchoredPositionFromGridIndex(targetX, targetY);
+                    SaveTrunk();
                     return;
                 }
                 else
                 {
                     if (TrySwapItems(itemUI, targetX, targetY))
                     {
+                        SaveTrunk();
                         return;
                     }
                 }
             }
         }
 
-            if (itemUI.IsRotated() != startDragRotated)
+        if (itemUI.IsRotated() != startDragRotated)
         {
             itemUI.ToggleRotate();
         }
         gridData.PlaceItem(startDragX, startDragY, itemUI.GetItemShape(), startDragRotated);
         itemUI.SetGridPosition(startDragX, startDragY);
         itemRect.anchoredPosition = GetAnchoredPositionFromGridIndex(startDragX, startDragY);
+        SaveTrunk();
     }
 
     public bool TryPlaceItemFromExternal(InventoryItemUI itemUI, Vector2 screenPosition)
@@ -291,8 +425,11 @@ public class TrunkMinigameUI : MonoBehaviour
         gridData.PlaceItem(x, y, itemUI.GetItemShape(), rotated);
         itemUI.SetGridPosition(x, y);
         itemRect.anchoredPosition = GetAnchoredPositionFromGridIndex(x, y);
+        itemUI.currentOwner = InventoryItemUI.GridOwner.Trunk;
         itemUI.UpdateVisualSize();
+        SaveTrunk();
     }
+
     public bool TrySwapItems(InventoryItemUI draggedItem, int targetX, int targetY)
     {
         InventoryItemUI[] allItems = itemsContainer.GetComponentsInChildren<InventoryItemUI>();
@@ -415,12 +552,14 @@ public class TrunkMinigameUI : MonoBehaviour
             gridData.PlaceItem(currentX, currentY, itemUI.GetItemShape(), targetRotatedState);
             itemUI.ToggleRotate();
             itemUI.GetComponent<RectTransform>().anchoredPosition = GetAnchoredPositionFromGridIndex(currentX, currentY);
+            SaveTrunk();
         }
         else
         {
             gridData.PlaceItem(currentX, currentY, itemUI.GetItemShape(), currentRotatedState);
         }
     }
+
     public bool CanSwapItemsExternal(InventoryItemUI draggedItem, int targetX, int targetY)
     {
         if (draggedItem == null || itemsContainer == null || draggedItem.IsEquipped()) return false;
@@ -505,7 +644,6 @@ public class TrunkMinigameUI : MonoBehaviour
 
         if (canPlaceDragged && canPlaceTarget)
         {
-            // Lưu lại tọa độ cũ trước khi bị ghi đè
             int oldDragX = draggedItem.GetGridX();
             int oldDragY = draggedItem.GetGridY();
 
@@ -513,6 +651,7 @@ public class TrunkMinigameUI : MonoBehaviour
             if (targetItem.IsRotated() != targetRotatedState) targetItem.ToggleRotate();
             BackpackMinigameUI.Instance.PlaceItemDirectlyToGrid(targetItem, oldDragX, oldDragY, targetRotatedState);
             targetItem.currentOwner = InventoryItemUI.GridOwner.Backpack;
+            SaveTrunk();
             return true;
         }
         else
@@ -521,6 +660,7 @@ public class TrunkMinigameUI : MonoBehaviour
             return false;
         }
     }
+
     public bool CanPlaceItemAt(int x, int y, ItemShapeSO shape, bool rotated)
     {
         return gridData != null && gridData.CanPlaceItem(x, y, shape, rotated);

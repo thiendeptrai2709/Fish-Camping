@@ -1,59 +1,80 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 public class BanCaThuCong : MonoBehaviour
 {
     [Header("Kéo file Data Cá của ô này vào đây")]
-    public FishSO dataCaCanBan; //[cite: 8]
+    public FishSO dataCaCanBan;
+
+    [Header("Nút bấm bán (Tự động tìm nếu để trống)")]
+    [SerializeField] private Button btnSell;
+
+    private void Start()
+    {
+        // Tự động tìm Button 'Btn_Sell' trong các object con nếu chưa kéo vào Inspector
+        if (btnSell == null)
+        {
+            btnSell = GetComponentInChildren<Button>();
+        }
+
+        if (btnSell != null)
+        {
+            btnSell.onClick.RemoveListener(ThucHienBanCa);
+            btnSell.onClick.AddListener(ThucHienBanCa);
+        }
+    }
 
     public void ThucHienBanCa()
     {
-        // Ổ KHÓA CHỐNG SPAM: Nếu ô này bị gỡ data rồi thì không cho bấm nữa
         if (dataCaCanBan == null)
         {
-            Debug.LogWarning("Chưa gắn data cá hoặc cá này vừa bị bán rồi!"); //[cite: 8]
+            Debug.LogWarning("[Bán Cá] Ô này chưa được gán Data Cá!");
             return;
         }
 
-        InventoryItemUI conCaCanXoa = null; //[cite: 8]
+        InventoryItemUI conCaCanXoa = null;
 
-        if (BackpackMinigameUI.Instance != null) //[cite: 8]
+        // Quét tìm đúng con cá trong Balo
+        if (BackpackMinigameUI.Instance != null)
         {
-            InventoryItemUI[] doTrongBalo = BackpackMinigameUI.Instance.GetComponentsInChildren<InventoryItemUI>(true); //[cite: 8]
-            foreach (var item in doTrongBalo) //[cite: 8]
+            InventoryItemUI[] doTrongBalo = BackpackMinigameUI.Instance.GetComponentsInChildren<InventoryItemUI>();
+            foreach (var item in doTrongBalo)
             {
-                if (item.GetItemShape() == dataCaCanBan) //[cite: 8]
+                if (item.GetItemShape() == dataCaCanBan)
                 {
-                    conCaCanXoa = item; //[cite: 8]
-                    break; //[cite: 8]
+                    conCaCanXoa = item;
+                    break;
                 }
             }
         }
 
-        if (conCaCanXoa != null) //[cite: 8]
+        if (conCaCanXoa != null)
         {
-            // 1. Xóa cá khỏi Balo
-            BackpackMinigameUI.Instance.RemoveItem(conCaCanXoa); //[cite: 8]
+            int giaTien = dataCaCanBan.basePrice;
 
-            // 2. Gọi hàm cộng tiền bên ShopManager (Lấy giá tiền từ FishSO)
+            // 1. Tắt ngay lập tức để không bị quét trúng ở frame hiện tại
+            conCaCanXoa.gameObject.SetActive(false);
+
+            // 2. Xóa khỏi logic Balo
+            BackpackMinigameUI.Instance.RemoveItem(conCaCanXoa);
+
+            // 3. Cộng tiền vào ví
             if (ShopManager.Instance != null)
             {
-                ShopManager.Instance.BanVatPham(dataCaCanBan.basePrice);
+                ShopManager.Instance.BanVatPham(giaTien);
             }
 
-            // 3. KHÓA LIỀN TAY: Chuyển data = null ngay lập tức để bồ có x10 click cũng vô dụng!
-            dataCaCanBan = null;
-
-            // 4. Ra lệnh cho Shop Bán Cá tự động giật load lại giao diện ngay tắp lự
-            if (ShopTabManager.Instance != null)
+            // 4. Phát âm thanh click nút nếu có
+            if (UIButtonSoundManager.Instance != null)
             {
-                ShopTabManager.Instance.LamMoiDanhSachCa();
+                UIButtonSoundManager.Instance.PlayClickSound();
             }
 
-            Debug.Log("<color=green>Đã bán 1 con thành công!</color>"); //[cite: 8]
+            Debug.Log($"<color=green>[Bán Cá] Đã bán 1 con {dataCaCanBan.itemName} thành công! +{giaTien} vàng</color>");
         }
         else
         {
-            Debug.Log("<color=red>Không có cá này trong balo!</color>"); //[cite: 8]
+            Debug.Log($"<color=red>[Bán Cá] Không còn con cá {dataCaCanBan.itemName} nào trong Balo để bán!</color>");
         }
     }
 }

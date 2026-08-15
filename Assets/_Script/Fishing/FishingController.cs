@@ -2,7 +2,9 @@
 
 public class FishingController : MonoBehaviour
 {
-    private enum FishingState { Idle, WindingUp, WaitingForPower, Casting, Fishing, Catching }
+    // Đã thêm trạng thái Failed để chống kẹt bug spam click
+    private enum FishingState { Idle, WindingUp, WaitingForPower, Casting, Fishing, Catching, Failed }
+
     [SerializeField] private EquipmentSlotUI hotbarSlot;
     [SerializeField] private EquipmentSlotUI baitSlot;
     [SerializeField] private EquipmentSlotUI bobberSlot;
@@ -10,14 +12,21 @@ public class FishingController : MonoBehaviour
     [SerializeField] private GameObject fishingLinePrefab;
     [SerializeField] private BalanceMinigameUI balanceMinigameUI;
 
-    [Header("--- FISHING DATA & INVENTORY ---")]
-    [SerializeField] private LayerMask waterLayer; // Layer để nhận diện mặt nước
-    private FishingZone currentFishingZone;
+    [Header("--- FISHING AUDIO ---")]
+    [Tooltip("Kéo AudioSource vào đây (hoặc để trống, code tự tạo)")]
+    [SerializeField] private AudioSource fishingAudioSource;
+    [Tooltip("Tiếng vung cần xé gió")]
+    [SerializeField] private AudioClip castSwingSound;
+    [Tooltip("Tiếng giằng co dây câu / quay cước")]
+    [SerializeField] private AudioClip reelingStruggleSound;
 
+    [Header("--- FISHING DATA & INVENTORY ---")]
+    [SerializeField] private LayerMask waterLayer;
+    private FishingZone currentFishingZone;
 
     [SerializeField] private float minBiteWaitTime = 3f;
     [SerializeField] private float maxBiteWaitTime = 8f;
-    [SerializeField] private float energyCostPerCast = 10f; // Lượng năng lượng tiêu hao mỗi lần quăng câu
+    [SerializeField] private float energyCostPerCast = 10f;
 
     private PlayerAnimation playerAnimation;
     private ActivityEnergyController energyController;
@@ -29,7 +38,6 @@ public class FishingController : MonoBehaviour
     private BobberSO currentBobber;
     private BobberEntity activeBobberEntity;
     private FishingLineVisual activeLineVisual;
-
 
     private float currentThrowDistance;
     private int currentCastZone;
@@ -45,6 +53,11 @@ public class FishingController : MonoBehaviour
     private float caughtFishLength;
     private float caughtFishWeight;
     private FishGrade caughtFishGrade;
+
+    // Biến chống spam click gây lỗi game
+    private float inputCooldown = 0f;
+    private float catchingLockTimer = 0f;
+
     private void Awake()
     {
         playerAnimation = GetComponent<PlayerAnimation>();
@@ -52,14 +65,31 @@ public class FishingController : MonoBehaviour
         playerInteraction = GetComponent<PlayerInteraction>();
         handVisual = GetComponentInChildren<CharacterHandVisual>();
         energyController = GetComponent<ActivityEnergyController>();
+
+        // Tự động tìm/tạo AudioSource để phát âm thanh
+        if (fishingAudioSource == null)
+        {
+            fishingAudioSource = GetComponent<AudioSource>();
+            if (fishingAudioSource == null)
+            {
+                fishingAudioSource = gameObject.AddComponent<AudioSource>();
+                fishingAudioSource.playOnAwake = false;
+            }
+        }
     }
+
     public bool IsBusyFishing()
     {
         return currentState != FishingState.Idle;
     }
+
     private void Update()
     {
         if (inputHandler != null && inputHandler.IsUIOpen) return;
+
+        // Giảm thời gian đếm ngược chống spam
+        if (inputCooldown > 0f) inputCooldown -= Time.deltaTime;
+        if (catchingLockTimer > 0f) catchingLockTimer -= Time.deltaTime;
 
         if (reelInCooldown > 0f)
         {
@@ -79,15 +109,24 @@ public class FishingController : MonoBehaviour
         {
             HandleLeftClick();
         }
+
         if (currentState == FishingState.Catching && inputHandler != null && inputHandler.MinigameTriggered)
         {
-            Debug.Log("<color=yellow>[Fishing Controller] Bấm Space -> Thả cá đi!</color>");
-            ResetToIdle();
+            // Chỉ cho phép vứt cá khi đã qua thời gian khóa (chống spam phím Space)
+            if (catchingLockTimer <= 0f)
+            {
+                Debug.Log("<color=yellow>[Fishing Controller] Bấm Space -> Thả cá đi!</color>");
+                ResetToIdle();
+            }
         }
     }
 
     private void HandleLeftClick()
     {
+        // Khóa click chuột quá nhanh chống hỏng chuột
+        if (inputCooldown > 0f) return;
+        inputCooldown = 0.3f;
+
         if (currentState == FishingState.Idle)
         {
             if (playerInteraction != null && playerInteraction.HasActiveInteractable()) return;
@@ -126,12 +165,7 @@ public class FishingController : MonoBehaviour
             }
             else
             {
-                string baitStatus = currentBait != null ? "ĐÃ CÓ" : "THIẾU (Hoặc chưa gán Slot)";
-                string bobberStatus = currentBobber != null ? "ĐÃ CÓ" : "THIẾU (Hoặc chưa gán Slot)";
-
-                Debug.Log($"<color=yellow>[Fishing Controller] Đã cầm cần nhưng chưa thể quăng! Kiểm tra trang bị đi kèm:\n" +
-                          $"• Mồi Câu: {baitStatus}\n" +
-                          $"• Phao Câu: {bobberStatus}</color>");
+                Debug.Log($"<color=yellow>[Fishing Controller] Đã cầm cần nhưng chưa thể quăng! Thiếu Mồi hoặc Phao.</color>");
             }
         }
         else if (currentState == FishingState.WaitingForPower)
@@ -152,9 +186,20 @@ public class FishingController : MonoBehaviour
         }
         else if (currentState == FishingState.Catching)
         {
+            // ==========================================
+            // FIX BUG: CHẶN CẤT CÁ KHI CHƯA HIỆN MODEL
+            // ==========================================
+            if (activeCaughtFish == null)
+            {
+                // Nếu model cá chưa được Instantiate ra tay -> Bỏ qua lệnh cất cá!
+                return;
+            }
+
+            // Vẫn giữ khóa 1.5 giây dự phòng nếu bồ muốn ngắm cá lâu hơn
+            if (catchingLockTimer > 0f) return;
+
             if (currentCaughtFishData != null && BackpackMinigameUI.Instance != null)
             {
-                // Gọi hàm mới và truyền toàn bộ dữ liệu động vào Balo
                 bool added = BackpackMinigameUI.Instance.TryAutoAddFish(currentCaughtFishData, caughtFishLength, caughtFishWeight, caughtFishGrade);
                 if (added)
                 {
@@ -178,7 +223,6 @@ public class FishingController : MonoBehaviour
         isWaitingForBite = false;
         isFishBiting = true;
 
-        // Random ngẫu nhiên 1 con cá từ danh sách
         if (currentFishingZone != null)
         {
             currentCaughtFishData = currentFishingZone.GetRandomFish();
@@ -206,6 +250,15 @@ public class FishingController : MonoBehaviour
             activeBobberEntity.StartBiting();
         }
 
+        // --- FIX: ÉP BUỘC PHÁT TIẾNG GIẰNG CO LIÊN TỤC ---
+        if (fishingAudioSource != null && reelingStruggleSound != null)
+        {
+            fishingAudioSource.clip = reelingStruggleSound;
+            fishingAudioSource.loop = true;
+            fishingAudioSource.Play();
+            Debug.Log("<color=green>[Audio] Đang phát tiếng kéo cá giằng co!</color>");
+        }
+
         if (balanceMinigameUI != null)
         {
             balanceMinigameUI.StartMinigame(inputHandler, this);
@@ -218,7 +271,9 @@ public class FishingController : MonoBehaviour
 
     public void OnMinigameEnd(bool isSuccess)
     {
-        // Dọn dẹp phao và dây câu trước khi chạy animation kết quả
+        // --- TẮT ÂM THANH KHI MINIGAME KẾT THÚC ---
+        StopStruggleSound();
+
         if (activeLineVisual != null)
         {
             Destroy(activeLineVisual.gameObject);
@@ -234,27 +289,21 @@ public class FishingController : MonoBehaviour
         {
             Debug.Log("<color=green>[Fishing Controller] CÂN BẰNG THÀNH CÔNG! Chuyển sang animation dâng cá.</color>");
 
-            // --- GHI NHẬN VÀO SỔ TAY CÁ ---
             if (currentCaughtFishData != null && FishJournalManager.Instance != null)
             {
-                // Random và gán thông số trực tiếp vào biến lưu tạm
                 currentCaughtFishData.GenerateRandomSize(out caughtFishLength, out caughtFishWeight);
                 caughtFishGrade = currentCaughtFishData.GenerateRandomGrade();
 
-                // Ghi vào sổ và kiểm tra kỷ lục
                 bool isNewRecord = FishJournalManager.Instance.RecordCatch(currentCaughtFishData.itemID, caughtFishLength, caughtFishWeight, caughtFishGrade);
 
                 if (isNewRecord)
                 {
-                    Debug.Log($"<color=yellow>[Sổ Tay] KỶ LỰC MỚI! {currentCaughtFishData.itemName} ({caughtFishGrade}) - Dài: {caughtFishLength:F1}cm | Nặng: {caughtFishWeight:F1}kg</color>");
-                }
-                else
-                {
-                    Debug.Log($"<color=white>[Sổ Tay] Đã câu được {currentCaughtFishData.itemName} ({caughtFishGrade}) - Dài: {caughtFishLength:F1}cm | Nặng: {caughtFishWeight:F1}kg</color>");
+                    Debug.Log($"<color=yellow>[Sổ Tay] KỶ LỰC MỚI!</color>");
                 }
             }
 
             currentState = FishingState.Catching;
+            catchingLockTimer = 1.5f; // Khóa thao tác 1.5s để người chơi ngắm cá
             if (playerAnimation != null)
             {
                 playerAnimation.TriggerCatchSuccess();
@@ -262,7 +311,8 @@ public class FishingController : MonoBehaviour
         }
         else
         {
-            Debug.Log("<color=red>[Fishing Controller] CÂN BẰNG THẤT BẠI! Chuyển sang animation câu hụt.</color>");
+            Debug.Log("<color=red>[Fishing Controller] CÂN BẰNG THẤT BẠI!</color>");
+            currentState = FishingState.Failed;
             if (playerAnimation != null)
             {
                 playerAnimation.SetFishingState(false);
@@ -270,6 +320,7 @@ public class FishingController : MonoBehaviour
             }
         }
     }
+
     public void OnCatchSuccessIntroComplete()
     {
         if (currentState == FishingState.Catching)
@@ -293,14 +344,15 @@ public class FishingController : MonoBehaviour
             }
         }
     }
+
     public void OnCatchFailComplete()
     {
-        if (currentState == FishingState.Fishing)
+        if (currentState == FishingState.Failed)
         {
-            Debug.Log("<color=yellow>[Fishing Controller] Animation buồn đã diễn xong -> Reset về Idle!</color>");
             ResetToIdle();
         }
     }
+
     private void StartWindUp()
     {
         currentState = FishingState.WindingUp;
@@ -331,19 +383,12 @@ public class FishingController : MonoBehaviour
         if (energyController != null)
         {
             energyController.TryConsumeEnergy(energyCostPerCast);
-            Debug.Log($"<color=orange>[Fishing Controller] Đã tiêu hao {energyCostPerCast} Năng lượng cho cú quăng câu!</color>");
         }
-
-        Debug.Log($"<color=cyan>[Casting Minigame] Kim dừng ở ZONE: {zone} | Tỷ lệ lực bấm: {(powerRatio * 100f):F1}%</color>");
 
         if (zone == 0)
         {
-            Debug.Log("<color=red>[Casting Minigame] Quăng XỊT (Zone 0)! Hủy thao tác ném cần.</color>");
             currentState = FishingState.Idle;
-            if (playerAnimation != null)
-            {
-                playerAnimation.ResetAnimationSpeed();
-            }
+            if (playerAnimation != null) playerAnimation.ResetAnimationSpeed();
             return;
         }
 
@@ -353,11 +398,8 @@ public class FishingController : MonoBehaviour
             playerAnimation.ResumeAnimation();
         }
 
-        float finalPower = currentRod != null ? currentRod.CalculateDamageToFish() * powerRatio : 0f;
-
         currentCastZone = zone;
 
-        // Tính khoảng cách dựa theo hệ số của Zone trong Data Cần Câu
         if (currentRod != null && currentRod.zoneDistanceMultipliers != null && zone < currentRod.zoneDistanceMultipliers.Length)
         {
             currentThrowDistance = currentRod.castDistance * currentRod.zoneDistanceMultipliers[zone];
@@ -366,22 +408,17 @@ public class FishingController : MonoBehaviour
         {
             currentThrowDistance = currentRod != null ? currentRod.castDistance * (zone / 3f) : 0f;
         }
-
-        string baitName = currentBait != null ? currentBait.itemName : "Không có";
-        string bobberName = currentBobber != null ? currentBobber.itemName : "Phao mặc định";
-
-        // --- DEBUG LOG KHI QUĂNG THÀNH CÔNG ---
-        Debug.Log($"<color=green>[Casting Minigame] Quăng THÀNH CÔNG (Zone {zone})!\n" +
-                  $"• Cần: {currentRod.itemName} | Mồi: {baitName} | Phao: {bobberName}\n" +
-                  $"• Lực kéo: {finalPower:F1} | Khoảng cách ném: {currentThrowDistance:F1}m</color>");
-
-        // Không dùng Invoke đoán thời gian nữa, chờ Animation Event (OnAnimationCastRelease) gọi
     }
 
     private void EnterFishingState()
     {
         currentState = FishingState.Fishing;
-        Debug.Log("<color=cyan>[Fishing Controller] Bắt đầu vào trạng thái: ĐANG CÂU (Fishing).</color>");
+
+        // --- PHÁT ÂM THANH VUNG CẦN ---
+        if (fishingAudioSource != null && castSwingSound != null)
+        {
+            fishingAudioSource.PlayOneShot(castSwingSound);
+        }
 
         if (playerAnimation != null)
         {
@@ -402,23 +439,19 @@ public class FishingController : MonoBehaviour
             }
 
             Vector3 startPos = tipTransform.position;
-
             Vector3 castDirection = transform.forward;
             castDirection.y = 0f;
             castDirection.Normalize();
 
             Vector3 targetPos = transform.position + castDirection * currentThrowDistance;
 
-            // --- KIỂM TRA ĐIỂM RƠI VÀ LAYER ---
             bool isWaterHit = false;
             Vector3 rayStart = new Vector3(targetPos.x, transform.position.y + 10f, targetPos.z);
 
-            // Quét để tìm chiều cao mặt đất/mặt nước tại điểm rơi
             if (Physics.Raycast(rayStart, Vector3.down, out RaycastHit hit, 20f))
             {
                 targetPos.y = hit.point.y;
 
-                // Kiểm tra xem vật thể phao sắp rơi trúng có nằm trong Water Layer không
                 if ((waterLayer.value & (1 << hit.collider.gameObject.layer)) > 0)
                 {
                     isWaterHit = true;
@@ -431,10 +464,9 @@ public class FishingController : MonoBehaviour
             }
             else
             {
-                targetPos.y = transform.position.y; // Nếu ném ra khỏi map
+                targetPos.y = transform.position.y;
             }
 
-            // Vẫn cứ sinh phao và cho bay ra ngoài như bình thường
             GameObject bobberObj = Instantiate(currentBobber.bobberPrefab, startPos, Quaternion.identity);
             activeBobberEntity = bobberObj.GetComponent<BobberEntity>();
             if (activeBobberEntity == null)
@@ -459,10 +491,8 @@ public class FishingController : MonoBehaviour
 
             activeBobberEntity.Cast(startPos, targetPos, dynamicDuration, dynamicHeight, activeLineVisual);
 
-            // --- XỬ LÝ LOGIC SAU KHI QUĂNG DÂY ---
             if (isWaterHit)
             {
-                // Rơi trúng nước -> Set thời gian chờ cá cắn
                 isFishBiting = false;
                 isWaitingForBite = true;
                 reelInCooldown = 1.0f;
@@ -472,69 +502,47 @@ public class FishingController : MonoBehaviour
                 {
                     biteTimer *= (1f - Mathf.Clamp01(currentRod.waitTimeReductionPercentage / 100f));
                 }
-                Debug.Log($"<color=cyan>[Fishing Controller] Đã thả phao xuống nước! Đợi cá cắn: {biteTimer:F1}s.</color>");
             }
             else
             {
-                // Rơi trúng bờ cạn -> Vẫn bay nhưng sẽ tự thu cần khi chạm đất
                 isFishBiting = false;
                 isWaitingForBite = false;
-                reelInCooldown = dynamicDuration + 0.5f; // Khóa chuột trong lúc phao đang bay để tránh bug click sớm
-
-                Debug.Log("<color=orange>[Fishing Controller] Phao rơi trên cạn! Tự động thu hồi...</color>");
-
-                // Hẹn giờ: đợi phao bay hết thời gian dynamicDuration (+ 0.2s để người chơi kịp nhìn nó rơi đất) thì gọi hàm ResetToIdle
+                reelInCooldown = dynamicDuration + 0.5f;
                 Invoke(nameof(ResetToIdle), dynamicDuration + 0.2f);
             }
         }
     }
+
     private void ResetToIdle()
     {
         CancelInvoke(nameof(ResetToIdle));
+        StopStruggleSound(); // Tắt luôn âm thanh khi reset trạng thái
+
         isWaitingForBite = false;
         isFishBiting = false;
-        currentCaughtFishData = null; // Xóa data cá cũ
-        currentFishingZone = null; // Xóa lưu trữ vùng nước
+        currentCaughtFishData = null;
+        currentFishingZone = null;
         currentState = FishingState.Idle;
 
-        Debug.Log("<color=white>[Fishing Controller] Về trạng thái ban đầu: IDLE.</color>");
+        if (balanceMinigameUI != null) balanceMinigameUI.ForceStopMinigame();
+        if (activeLineVisual != null) { Destroy(activeLineVisual.gameObject); activeLineVisual = null; }
+        if (activeBobberEntity != null) { Destroy(activeBobberEntity.gameObject); activeBobberEntity = null; }
+        if (activeCaughtFish != null) { Destroy(activeCaughtFish); activeCaughtFish = null; }
+        if (playerAnimation != null) playerAnimation.SetFishingState(false);
+        if (handVisual != null) handVisual.SetBobberVisualActive(true);
+    }
 
-        if (balanceMinigameUI != null)
+    private void StopStruggleSound()
+    {
+        if (fishingAudioSource != null && fishingAudioSource.isPlaying && fishingAudioSource.clip == reelingStruggleSound)
         {
-            balanceMinigameUI.ForceStopMinigame();
-        }
-
-        if (activeLineVisual != null)
-        {
-            Destroy(activeLineVisual.gameObject);
-            activeLineVisual = null;
-        }
-
-        if (activeBobberEntity != null)
-        {
-            Destroy(activeBobberEntity.gameObject);
-            activeBobberEntity = null;
-        }
-
-        if (activeCaughtFish != null)
-        {
-            Destroy(activeCaughtFish);
-            activeCaughtFish = null;
-        }
-
-        if (playerAnimation != null)
-        {
-            playerAnimation.SetFishingState(false);
-        }
-
-        if (handVisual != null)
-        {
-            handVisual.SetBobberVisualActive(true);
+            fishingAudioSource.Stop();
+            fishingAudioSource.loop = false;
         }
     }
+
     public void OnAnimationCastRelease()
     {
-        // Chỉ kích hoạt bay phao nếu đang ở trạng thái chuẩn bị ném (Casting)
         if (currentState == FishingState.Casting)
         {
             EnterFishingState();

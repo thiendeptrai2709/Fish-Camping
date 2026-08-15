@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4c70ed5e815f5b1438ae299b508efa50, type: 3}
-  m_Name: Fish2
+  m_Name: FishFood 18
   m_EditorClassIdentifier: Assembly-CSharp::CookingRecipeSO
-  recipeName: "c\xE1 "
+  recipeName: ca18
   requiredIngredients:
-  - {fileID: 11400000, guid: b3d405c29bd65ad4cb17556483f36397, type: 2}
-  resultItem: {fileID: 11400000, guid: d14acc07310fad748aacbe15bfd12542, type: 2}
+  - {fileID: 11400000, guid: 0c3d5adee577b1840af50611973cb876, type: 2}
+  resultItem: {fileID: 11400000, guid: a53a7314d8ae59a489afd3c21b8d35a5, type: 2}

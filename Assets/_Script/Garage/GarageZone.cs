@@ -100,11 +100,14 @@ public class GarageZone : MonoBehaviour
             TireUIItem uiItem = newObj.GetComponent<TireUIItem>();
             if (uiItem != null) uiItem.SetupUI(allTires[i], i, this);
         }
+
+        // Tự động gán âm thanh cho các nút bấm mua lốp xe vừa sinh ra
+        if (UIButtonSoundManager.Instance != null)
+        {
+            UIButtonSoundManager.Instance.RegisterAllButtonsInScene();
+        }
     }
 
-    // ==========================================
-    // NPC SẼ GỌI HÀM NÀY ĐỂ MỞ GARAGE
-    // ==========================================
     public void OpenGarage(System.Action onCloseCallback = null)
     {
         _onGarageClosed = onCloseCallback;
@@ -112,13 +115,18 @@ public class GarageZone : MonoBehaviour
         if (garageUIPanel != null)
         {
             garageUIPanel.SetActive(true);
-            garageUIPanel.transform.SetAsLastSibling(); // Ép nổi lên trên cùng (Sửa lỗi tàng hình)
+            garageUIPanel.transform.SetAsLastSibling(); 
         }
 
         AnHienCacUIKhac(false);
         UpdateAllUI();
 
-        // Mở khóa chuột bằng lệnh hệ thống (Chuẩn như Shop)
+        // Gán âm thanh cho toàn bộ nút trong bảng Garage (nút đóng, nâng cấp cốp...)
+        if (UIButtonSoundManager.Instance != null)
+        {
+            UIButtonSoundManager.Instance.RegisterAllButtonsInScene();
+        }
+
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
     }

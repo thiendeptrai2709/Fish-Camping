@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System.Collections.Generic;
 
 public class BackpackMinigameUI : MonoBehaviour
 {
-    public static BackpackMinigameUI Instance { get; private set; } // Thêm dòng này
+    public static BackpackMinigameUI Instance { get; private set; }
 
     [SerializeField] private InventoryGridData gridData;
     [SerializeField] private RectTransform gridRootRect;
@@ -14,19 +15,26 @@ public class BackpackMinigameUI : MonoBehaviour
     [SerializeField] private Image highlightOverlay;
     [SerializeField] private ItemShapeSO[] testSpawnItems;
 
+    [Header("--- TẤT CẢ ITEM TRONG GAME ĐỂ LOAD ---")]
+    [Tooltip("Kéo toàn bộ ScriptableObject ItemShapeSO / FishSO / RodSO vào đây để hệ thống tra cứu lúc nạp game")]
+    [SerializeField] private ItemShapeSO[] allDatabaseItems;
+
+    private const string SAVE_KEY = "Saved_Backpack_Data";
+
     private int startDragX;
     private int startDragY;
     private bool startDragRotated;
     private int dragGridOffsetX;
     private int dragGridOffsetY;
+
     private void Awake()
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
     }
+
     private void Start()
     {
-        // Đảm bảo lưới logic được khởi tạo trước mọi thao tác vẽ UI và spawn item
         if (gridData != null)
         {
             gridData.InitGrid();
@@ -53,8 +61,118 @@ public class BackpackMinigameUI : MonoBehaviour
             highlightOverlay.gameObject.SetActive(false);
             highlightOverlay.transform.SetAsLastSibling();
         }
-        SpawnTestItems();
+
+        // Tự động Load Balo từ ổ cứng. Nếu chưa từng chơi thì mới sinh Test Items
+        if (PlayerPrefs.HasKey(SAVE_KEY))
+        {
+            LoadBackpack();
+        }
+        else
+        {
+            SpawnTestItems();
+            SaveBackpack();
+        }
     }
+
+    // ==========================================
+    // HỆ THỐNG SAVE & LOAD BALO
+    // ==========================================
+    public void SaveBackpack()
+    {
+        if (itemsContainer == null) return;
+
+        BackpackSaveContainer container = new BackpackSaveContainer();
+        InventoryItemUI[] allItems = itemsContainer.GetComponentsInChildren<InventoryItemUI>();
+
+        foreach (var item in allItems)
+        {
+            if (item == null || item.GetItemShape() == null) continue;
+
+            ItemShapeSO shape = item.GetItemShape();
+            string finalID = !string.IsNullOrEmpty(shape.itemID) ? shape.itemID : shape.name;
+
+            SavedItemData data = new SavedItemData
+            {
+                itemID = finalID,
+                gridX = item.GetGridX(),
+                gridY = item.GetGridY(),
+                isRotated = item.IsRotated(),
+                isFish = (shape is FishSO)
+            };
+
+            container.items.Add(data);
+        }
+
+        string json = JsonUtility.ToJson(container);
+        PlayerPrefs.SetString(SAVE_KEY, json);
+        PlayerPrefs.Save();
+    }
+
+    public void LoadBackpack()
+    {
+        string json = PlayerPrefs.GetString(SAVE_KEY, "");
+        if (string.IsNullOrEmpty(json)) return;
+
+        BackpackSaveContainer container = JsonUtility.FromJson<BackpackSaveContainer>(json);
+        if (container == null || container.items == null) return;
+
+        // Xóa sạch các item visual cũ nếu có
+        InventoryItemUI[] oldItems = itemsContainer.GetComponentsInChildren<InventoryItemUI>();
+        foreach (var old in oldItems) Destroy(old.gameObject);
+
+        if (gridData != null) gridData.InitGrid();
+
+        foreach (var saved in container.items)
+        {
+            ItemShapeSO foundShape = FindItemShapeByID(saved.itemID);
+            if (foundShape != null)
+            {
+                InventoryItemUI spawned = SpawnItem(foundShape, saved.gridX, saved.gridY, saved.isRotated);
+                if (spawned != null && saved.isFish)
+                {
+                    spawned.SetFishInstanceData(saved.fishLength, saved.fishWeight, (FishGrade)saved.fishGrade);
+                }
+            }
+        }
+    }
+
+    private ItemShapeSO FindItemShapeByID(string id)
+    {
+        if (allDatabaseItems != null)
+        {
+            foreach (var item in allDatabaseItems)
+            {
+                if (item != null)
+                {
+                    string checkID = !string.IsNullOrEmpty(item.itemID) ? item.itemID : item.name;
+                    if (checkID == id) return item;
+                }
+            }
+        }
+
+        // Tự động fallback tìm trong thư mục Resources nếu chưa kéo vào Inspector
+        ItemShapeSO loaded = Resources.Load<ItemShapeSO>(id);
+        return loaded;
+    }
+
+    [ContextMenu("Xóa dữ liệu Balo (Reset Backpack)")]
+    public void ClearBackpackSave()
+    {
+        PlayerPrefs.DeleteKey(SAVE_KEY);
+        PlayerPrefs.Save();
+        Debug.Log("<color=yellow>[Backpack] Đã xóa dữ liệu lưu trữ balo thành công!</color>");
+    }
+
+    private void OnApplicationQuit()
+    {
+        SaveBackpack();
+    }
+
+    private void OnApplicationPause(bool pause)
+    {
+        if (pause) SaveBackpack();
+    }
+
     public void CreateVisualGrid()
     {
         if (gridData == null || cellVisualPrefab == null || gridRootRect == null) return;
@@ -84,7 +202,9 @@ public class BackpackMinigameUI : MonoBehaviour
     {
         return gridData != null ? gridData.GetCellSize() : 64f;
     }
-    public RectTransform GetGridRoot() => gridRootRect;
+    public RectTransform GetGridRoot() => gridRootRootRect;
+    private RectTransform gridRootRootRect => gridRootRect;
+
     public bool GetGridIndexFromScreenPosition(Vector2 screenPosition, out int x, out int y)
     {
         x = -1;
@@ -129,17 +249,14 @@ public class BackpackMinigameUI : MonoBehaviour
             int rawMouseX = Mathf.FloorToInt(offsetX / cellSize);
             int rawMouseY = Mathf.FloorToInt(offsetY / cellSize);
 
-            // Đảm bảo offset không vượt quá kích thước hiện tại của item (bảo vệ lỗi khi vừa xoay item lúc kéo)
             int maxOffsetX = shape.GetWidth(isRotated) - 1;
             int maxOffsetY = shape.GetHeight(isRotated) - 1;
             int effectiveOffsetX = Mathf.Clamp(dragGridOffsetX, 0, Mathf.Max(0, maxOffsetX));
             int effectiveOffsetY = Mathf.Clamp(dragGridOffsetY, 0, Mathf.Max(0, maxOffsetY));
 
-            // Trừ đi offset để giữ nguyên vị trí tương đối giữa chuột và góc trên-trái của item
             x = rawMouseX - effectiveOffsetX;
             y = rawMouseY - effectiveOffsetY;
 
-            // Giới hạn (Clamp) góc trên-trái nằm hoàn toàn trong lưới
             int maxValX = gridData.GetGridWidth() - shape.GetWidth(isRotated);
             int maxValY = gridData.GetGridHeight() - shape.GetHeight(isRotated);
 
@@ -150,6 +267,7 @@ public class BackpackMinigameUI : MonoBehaviour
         }
         return false;
     }
+
     public Vector2 GetAnchoredPositionFromGridIndex(int x, int y)
     {
         float cellSize = GetCellSize();
@@ -162,8 +280,6 @@ public class BackpackMinigameUI : MonoBehaviour
         startDragY = itemUI.GetGridY();
         startDragRotated = itemUI.IsRotated();
 
-        // Tính toán khoảng cách (offset) từ ô chuột click đến ô góc trên-trái của item
-        // Loại bỏ hoàn toàn hiện tượng "giật ảnh" khi nhấp chuột
         if (GetGridIndexFromScreenPosition(screenPosition, out int mouseGridX, out int mouseGridY))
         {
             dragGridOffsetX = mouseGridX - startDragX;
@@ -189,7 +305,6 @@ public class BackpackMinigameUI : MonoBehaviour
             highlightOverlay.rectTransform.localRotation = Quaternion.Euler(0f, 0f, startDragRotated ? -90f : 0f);
         }
 
-        // Cập nhật ngay vị trí highlight và item tại frame đầu tiên
         OnItemDragging(itemUI, screenPosition);
     }
 
@@ -206,7 +321,6 @@ public class BackpackMinigameUI : MonoBehaviour
         Canvas rootCanvas = gridRootRect.GetComponentInParent<Canvas>();
         if (rootCanvas != null)
         {
-            // Bắt buộc dùng "true"
             itemUI.transform.SetParent(rootCanvas.transform, true);
             itemUI.transform.SetAsLastSibling();
         }
@@ -226,9 +340,9 @@ public class BackpackMinigameUI : MonoBehaviour
                 if (!canPlace && !itemUI.IsEquipped())
                 {
                     if (itemUI.currentOwner == InventoryItemUI.GridOwner.Backpack)
-                        canPlace = CanSwapItems(itemUI, targetX, targetY); // Đổi chỗ trong nội bộ
+                        canPlace = CanSwapItems(itemUI, targetX, targetY);
                     else
-                        canPlace = CanSwapItemsExternal(itemUI, targetX, targetY); // Đổi chỗ từ xe bay vào
+                        canPlace = CanSwapItemsExternal(itemUI, targetX, targetY);
                 }
                 Vector2 snappedPosition = GetAnchoredPositionFromGridIndex(targetX, targetY);
 
@@ -244,7 +358,6 @@ public class BackpackMinigameUI : MonoBehaviour
 
                 if (itemUI.transform.parent != itemsContainer)
                 {
-                    // Chú ý "false" để khóa tỷ lệ ảnh khi bay vào lưới balo
                     itemUI.transform.SetParent(itemsContainer, false);
                     itemUI.transform.SetAsLastSibling();
                 }
@@ -253,7 +366,6 @@ public class BackpackMinigameUI : MonoBehaviour
         }
         else
         {
-            // --- KHI CHUỘT KÉO RA NGOÀI LƯỚI: Tắt Highlight, cho ảnh bay tự do theo chuột ---
             if (highlightOverlay != null)
             {
                 highlightOverlay.gameObject.SetActive(false);
@@ -264,11 +376,10 @@ public class BackpackMinigameUI : MonoBehaviour
             {
                 if (itemUI.transform.parent != rootCanvas.transform)
                 {
-                    itemUI.transform.SetParent(rootCanvas.transform, true); // true!
+                    itemUI.transform.SetParent(rootCanvas.transform, true);
                     itemUI.transform.SetAsLastSibling();
                 }
 
-                // Cứu mạng: Tự động gán Camera.main nếu Canvas của ông chưa setup World Camera
                 Camera pressCamera = null;
                 if (rootCanvas.renderMode != RenderMode.ScreenSpaceOverlay)
                 {
@@ -283,6 +394,7 @@ public class BackpackMinigameUI : MonoBehaviour
             }
         }
     }
+
     public void OnItemEndDrag(InventoryItemUI itemUI, Vector2 screenPosition)
     {
         itemUI.transform.SetParent(itemsContainer);
@@ -305,12 +417,14 @@ public class BackpackMinigameUI : MonoBehaviour
                     gridData.PlaceItem(targetX, targetY, itemUI.GetItemShape(), itemUI.IsRotated());
                     itemUI.SetGridPosition(targetX, targetY);
                     itemRect.anchoredPosition = GetAnchoredPositionFromGridIndex(targetX, targetY);
+                    SaveBackpack();
                     return;
                 }
                 else
                 {
                     if (TrySwapItems(itemUI, targetX, targetY))
                     {
+                        SaveBackpack();
                         return;
                     }
                 }
@@ -324,6 +438,7 @@ public class BackpackMinigameUI : MonoBehaviour
         gridData.PlaceItem(startDragX, startDragY, itemUI.GetItemShape(), startDragRotated);
         itemUI.SetGridPosition(startDragX, startDragY);
         itemRect.anchoredPosition = GetAnchoredPositionFromGridIndex(startDragX, startDragY);
+        SaveBackpack();
     }
 
     private bool TrySwapItems(InventoryItemUI draggedItem, int targetX, int targetY)
@@ -380,7 +495,6 @@ public class BackpackMinigameUI : MonoBehaviour
 
         if (canPlaceDragged)
         {
-            // Bắt buộc phải đặt tạm draggedItem vào lưới trước để ngăn targetItem bay đè lên
             gridData.PlaceItem(targetX, targetY, draggedItem.GetItemShape(), draggedItem.IsRotated());
 
             canPlaceTarget = gridData.CanPlaceItem(startDragX, startDragY, targetItem.GetItemShape(), targetRotatedState);
@@ -393,7 +507,6 @@ public class BackpackMinigameUI : MonoBehaviour
                 }
             }
 
-            // Nếu targetItem không vừa chỗ cũ, phải xóa tạm draggedItem đi để hoàn tác lại
             if (!canPlaceTarget)
             {
                 gridData.ClearCells(targetX, targetY, draggedItem.GetItemShape(), draggedItem.IsRotated());
@@ -402,7 +515,6 @@ public class BackpackMinigameUI : MonoBehaviour
 
         if (canPlaceDragged && canPlaceTarget)
         {
-            // draggedItem lúc này đã nằm sẵn trên lưới logic từ bước thử phía trên
             draggedItem.SetGridPosition(targetX, targetY);
             draggedItem.GetComponent<RectTransform>().anchoredPosition = GetAnchoredPositionFromGridIndex(targetX, targetY);
 
@@ -423,6 +535,7 @@ public class BackpackMinigameUI : MonoBehaviour
             return false;
         }
     }
+
     public void TryRotateItemInGrid(InventoryItemUI itemUI)
     {
         int currentX = itemUI.GetGridX();
@@ -436,14 +549,15 @@ public class BackpackMinigameUI : MonoBehaviour
         {
             gridData.PlaceItem(currentX, currentY, itemUI.GetItemShape(), targetRotatedState);
             itemUI.ToggleRotate();
-            // Khóa chặt vị trí trực quan vào đúng ô (currentX, currentY), không cho phép tụt hàng
             itemUI.GetComponent<RectTransform>().anchoredPosition = GetAnchoredPositionFromGridIndex(currentX, currentY);
+            SaveBackpack();
         }
         else
         {
             gridData.PlaceItem(currentX, currentY, itemUI.GetItemShape(), currentRotatedState);
         }
     }
+
     public InventoryItemUI SpawnItem(ItemShapeSO shape, int startX, int startY, bool rotated = false)
     {
         if (gridData == null || itemUIPrefab == null || itemsContainer == null) return null;
@@ -496,6 +610,7 @@ public class BackpackMinigameUI : MonoBehaviour
             }
         }
     }
+
     public void HideHighlight()
     {
         if (highlightOverlay != null)
@@ -524,6 +639,8 @@ public class BackpackMinigameUI : MonoBehaviour
         itemRect.anchoredPosition = GetAnchoredPositionFromGridIndex(x, y);
         itemUI.SetEquippedState(false, null);
         itemUI.UpdateVisualSize();
+
+        SaveBackpack();
     }
 
     public bool TryPlaceItemFromExternal(InventoryItemUI itemUI, Vector2 screenPosition)
@@ -544,6 +661,7 @@ public class BackpackMinigameUI : MonoBehaviour
         }
         return false;
     }
+
     public bool CanSwapItems(InventoryItemUI draggedItem, int targetX, int targetY)
     {
         if (draggedItem == null || itemsContainer == null || draggedItem.IsEquipped()) return false;
@@ -598,17 +716,14 @@ public class BackpackMinigameUI : MonoBehaviour
 
         if (canPlaceDragged)
         {
-            // Đặt thử draggedItem vào lưới logic để kiểm tra va chạm thực tế với chỗ vị trí cũ
             gridData.PlaceItem(targetX, targetY, draggedItem.GetItemShape(), draggedItem.IsRotated());
 
             canPlaceTarget = gridData.CanPlaceItem(startDragX, startDragY, targetItem.GetItemShape(), targetItem.IsRotated());
             if (!canPlaceTarget)
             {
-                // Đồng bộ khả năng tự động xoay giống hệt như TrySwapItems
                 canPlaceTarget = gridData.CanPlaceItem(startDragX, startDragY, targetItem.GetItemShape(), !targetItem.IsRotated());
             }
 
-            // Nhấc trả draggedItem ra ngay vì đây chỉ là hàm kiểm tra màu Highlight khi đang kéo
             gridData.ClearCells(targetX, targetY, draggedItem.GetItemShape(), draggedItem.IsRotated());
         }
 
@@ -616,6 +731,7 @@ public class BackpackMinigameUI : MonoBehaviour
 
         return (canPlaceDragged && canPlaceTarget);
     }
+
     public bool TryAutoAddFromCooking(InventoryItemUI itemUI)
     {
         if (gridData == null) return false;
@@ -623,29 +739,27 @@ public class BackpackMinigameUI : MonoBehaviour
         int height = gridData.GetGridHeight();
         ItemShapeSO shape = itemUI.GetItemShape();
 
-        // Quét lưới từ trên xuống dưới, từ trái sang phải
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
             {
-                // Thử đặt thẳng
                 if (gridData.CanPlaceItem(x, y, shape, false))
                 {
                     PlaceItemDirectlyToGrid(itemUI, x, y, false);
-                    itemUI.SetFromCooking(false); // Biến nó thành đồ Balo bình thường
+                    itemUI.SetFromCooking(false);
                     return true;
                 }
-                // Thử đặt xoay ngang (nếu đặt thẳng không vừa)
                 if (gridData.CanPlaceItem(x, y, shape, true))
                 {
                     PlaceItemDirectlyToGrid(itemUI, x, y, true);
-                    itemUI.SetFromCooking(false); // Biến nó thành đồ Balo bình thường
+                    itemUI.SetFromCooking(false);
                     return true;
                 }
             }
         }
-        return false; // Trả về false nếu Balo đã hết sạch chỗ trống
+        return false;
     }
+
     public bool TryAutoAddItem(ItemShapeSO itemShape)
     {
         if (gridData == null) return false;
@@ -653,7 +767,6 @@ public class BackpackMinigameUI : MonoBehaviour
         int width = gridData.GetGridWidth();
         int height = gridData.GetGridHeight();
 
-        // Ưu tiên 1: Quét từ trên xuống dưới, trái sang phải, thử nhét thẳng (không xoay)
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
@@ -661,12 +774,12 @@ public class BackpackMinigameUI : MonoBehaviour
                 if (gridData.CanPlaceItem(x, y, itemShape, false))
                 {
                     SpawnItem(itemShape, x, y, false);
-                    return true; // Nhét thành công
+                    SaveBackpack();
+                    return true;
                 }
             }
         }
 
-        // Ưu tiên 2: Nếu không có chỗ thẳng, thử xoay ngang lại và quét tìm chỗ trống
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
@@ -674,13 +787,15 @@ public class BackpackMinigameUI : MonoBehaviour
                 if (gridData.CanPlaceItem(x, y, itemShape, true))
                 {
                     SpawnItem(itemShape, x, y, true);
-                    return true; // Nhét xoay thành công
+                    SaveBackpack();
+                    return true;
                 }
             }
         }
 
-        return false; // Trả về false nếu Balo đã hết sạch chỗ
+        return false;
     }
+
     public bool TryAutoAddFish(FishSO fishShape, float length, float weight, FishGrade grade)
     {
         if (gridData == null) return false;
@@ -688,7 +803,6 @@ public class BackpackMinigameUI : MonoBehaviour
         int width = gridData.GetGridWidth();
         int height = gridData.GetGridHeight();
 
-        // Quét để nhét thẳng
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
@@ -702,12 +816,12 @@ public class BackpackMinigameUI : MonoBehaviour
                         string fishName = string.IsNullOrEmpty(fishShape.itemName) ? fishShape.name : fishShape.itemName;
                         QuestManager.Instance.AddProgressByItem(fishName, 1);
                     }
+                    SaveBackpack();
                     return true;
                 }
             }
         }
 
-        // Quét để nhét xoay ngang
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
@@ -716,6 +830,7 @@ public class BackpackMinigameUI : MonoBehaviour
                 {
                     InventoryItemUI spawned = SpawnItem(fishShape, x, y, true);
                     if (spawned != null) spawned.SetFishInstanceData(length, weight, grade);
+                    SaveBackpack();
                     return true;
                 }
             }
@@ -723,6 +838,7 @@ public class BackpackMinigameUI : MonoBehaviour
 
         return false;
     }
+
     public bool CanSwapItemsExternal(InventoryItemUI draggedItem, int targetX, int targetY)
     {
         if (draggedItem == null || itemsContainer == null || draggedItem.IsEquipped()) return false;
@@ -807,7 +923,6 @@ public class BackpackMinigameUI : MonoBehaviour
 
         if (canPlaceDragged && canPlaceTarget)
         {
-            // Lưu lại tọa độ cũ trước khi bị ghi đè
             int oldDragX = draggedItem.GetGridX();
             int oldDragY = draggedItem.GetGridY();
 
@@ -815,6 +930,7 @@ public class BackpackMinigameUI : MonoBehaviour
             if (targetItem.IsRotated() != targetRotatedState) targetItem.ToggleRotate();
             TrunkMinigameUI.Instance.PlaceItemDirectlyToGrid(targetItem, oldDragX, oldDragY, targetRotatedState);
             targetItem.currentOwner = InventoryItemUI.GridOwner.Trunk;
+            SaveBackpack();
             return true;
         }
         else
@@ -824,23 +940,22 @@ public class BackpackMinigameUI : MonoBehaviour
         }
     }
 
-    // THÊM MỚI: Hàm để Shop (hay bất kỳ ai) lấy đúng toàn bộ item đang có trong Balo.
     public InventoryItemUI[] GetAllItems()
     {
         if (itemsContainer == null) return new InventoryItemUI[0];
         return itemsContainer.GetComponentsInChildren<InventoryItemUI>();
     }
 
-    // THÊM MỚI: Hàm để Shop gọi khi muốn xóa cá khỏi Balo sau khi bán
     public void RemoveItem(InventoryItemUI itemUI)
     {
         if (itemUI == null || gridData == null) return;
 
-        // 1. Giải phóng khoảng trống trên lưới logic của Balo
         gridData.ClearCells(itemUI.GetGridX(), itemUI.GetGridY(), itemUI.GetItemShape(), itemUI.IsRotated());
-
-        // 2. Tiêu hủy luôn hình ảnh của con cá đó
         Destroy(itemUI.gameObject);
+
+        // Lưu lại ngay sau khi một item bị gỡ/bán
+        SaveBackpack();
     }
+
     public InventoryGridData GetGridData() => gridData;
 }

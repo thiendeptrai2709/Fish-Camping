@@ -14,14 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FoodSO
   itemID: food_fish1
   itemName: "C\xE1 R\xF4 Bi\u1EC3n V\u1EB1n"
-  itemIcon: {fileID: -1713828299, guid: 63728bcc9b53cb54bb3fb9ca1b317114, type: 3}
+  itemIcon: {fileID: -75585968, guid: 80e815b0a26dfff4583983a00877e0eb, type: 3}
   itemDescription: 
   equippedModelPrefab: {fileID: 585159940412984651, guid: 31a11d7402b580c4ba93bf51319dbca7, type: 3}
   width: 2
   height: 2
   shapeCells: 
   description: "M\u1ED9t m\xF3n \u0103n n\xF3ng h\u1ED5i v\u1EEBa ra l\xF2."
-  hungerRestore: 50
+  hungerRestore: 20
   thirstRestore: 15
   energyRestore: 20
   sellPrice: 100

@@ -202,14 +202,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df25f9be8cdff0949a5451f59f0e1182, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CookingRack
-  cookingDuration: 5
+  cookingDuration: 15
   cookingProgressSlider: {fileID: 3698055480723803428}
   campfireLayer:
     serializedVersion: 2
     m_Bits: 512
   groundCheckPoint: {fileID: 7257643161662151496}
   availableRecipes:
-  - {fileID: 11400000, guid: 0c987ec46a74b1046acd1e1e038e3e9b, type: 2}
+  - {fileID: 11400000, guid: 99abb876faa57ec4fbbc57e07257b889, type: 2}
+  - {fileID: 11400000, guid: d92b1245f7be9a34e9fa07abe492223d, type: 2}
+  - {fileID: 11400000, guid: 4fe6a838854a5004693460ba0e6bdaa9, type: 2}
+  - {fileID: 11400000, guid: 3298802f8fa460b4ebdd74f5fed0dd5d, type: 2}
+  - {fileID: 11400000, guid: da24a947c5fd7e04eb7c4584634108f3, type: 2}
+  - {fileID: 11400000, guid: b8f69a5a1e2d5354094c878725999e7f, type: 2}
+  - {fileID: 11400000, guid: 34e6682867fd63b40af5ece9a47d8af4, type: 2}
+  - {fileID: 11400000, guid: 8bc73b92175090c4dbdd86fa7b4706c4, type: 2}
+  - {fileID: 11400000, guid: 8db541224a586cf40bdadda3cc6c4347, type: 2}
+  - {fileID: 11400000, guid: 7edcbbaec35f3eb4098be9753858e7a1, type: 2}
+  - {fileID: 11400000, guid: a6a30cf685de27f41a019fb5c45a47eb, type: 2}
+  - {fileID: 11400000, guid: 89fbf945e7520e845abfdb6d954f2df3, type: 2}
+  - {fileID: 11400000, guid: bf2744bcba31e2b409afbc7f22b768b9, type: 2}
+  - {fileID: 11400000, guid: 00bc16fd069fdc040bb1fa4955517bbd, type: 2}
+  - {fileID: 11400000, guid: ec3659f6026bd6e4680f92ae2861aa8d, type: 2}
+  - {fileID: 11400000, guid: 5ff019d9f1054be4492ed053cbfeb258, type: 2}
+  - {fileID: 11400000, guid: 2069a4ccd0642d94ab08cf63abb95f84, type: 2}
+  - {fileID: 11400000, guid: 03235b27f87c11b4580469b12f6b2f1a, type: 2}
+  - {fileID: 11400000, guid: 6719993e96cd0fe448d8c8d0eea68ead, type: 2}
+  - {fileID: 11400000, guid: 4d072493949d13442946db2bcddaaa05, type: 2}
 --- !u!1 &1370986542948608298
 GameObject:
   m_ObjectHideFlags: 0

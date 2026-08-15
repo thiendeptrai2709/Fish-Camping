@@ -3,7 +3,6 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(Image))]
-// Thêm IPointerDownHandler vào đây để bắt được phát click đầu tiên
 public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler
 {
     [SerializeField] private Image itemImage;
@@ -84,7 +83,6 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         if (isDragging && inputHandler != null && inputHandler.RotateItemTriggered)
         {
             ToggleRotate();
-            // Ưu tiên gọi hàm UI của cái lưới mà chuột đang bay trên đầu
             if (isHoveringTrunk && TrunkMinigameUI.Instance != null)
                 TrunkMinigameUI.Instance.OnItemDragging(this, lastDragPosition);
             else if (isHoveringBackpack && BackpackMinigameUI.Instance != null)
@@ -124,7 +122,6 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         if (canvasGroup != null)
         {
             canvasGroup.alpha = 1f;
-            // Ép buộc nó phải nhận va chạm chuột, phòng trường hợp đẻ ra từ nồi bị lỗi
             canvasGroup.blocksRaycasts = true;
             canvasGroup.interactable = true;
         }
@@ -137,7 +134,6 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         if (rectTransform == null) rectTransform = GetComponent<RectTransform>();
 
         float cellSize = 64f;
-        // Khi đang kéo thả, kích thước item phải scale theo ô lưới mà chuột đang chỉ vào
         if (isDragging)
         {
             if (isHoveringTrunk && TrunkMinigameUI.Instance != null) cellSize = TrunkMinigameUI.Instance.GetCellSize();
@@ -171,27 +167,20 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         UpdateVisualSize();
     }
 
-    // --- LOGIC BẮT CHUỘT MỚI ---
     public void OnPointerDown(PointerEventData eventData)
     {
         if (eventData.button != PointerEventData.InputButton.Left) return;
 
-        // Nếu là cá chín từ Nồi: BẤM LÀ THU HOẠCH LUÔN
         if (isFromCooking)
         {
             if (minigameUI != null && minigameUI.TryAutoAddFromCooking(this))
             {
-                Debug.Log("<color=green>[THU HOẠCH] Đã click lấy đồ ăn thẳng vào Balo thành công!</color>");
                 if (CookingUIManager.Instance != null) CookingUIManager.Instance.OnFoodCollectedSuccessfully();
                 if (itemShape != null && QuestManager.Instance != null)
                 {
                     string itemName = string.IsNullOrEmpty(itemShape.itemName) ? itemShape.name : itemShape.itemName;
                     QuestManager.Instance.AddProgressByItem(itemName, 1);
                 }
-            }
-            else
-            {
-                Debug.Log("<color=red>[THU HOẠCH LỖI] Balo đã đầy, dọn bớt đồ đi!</color>");
             }
         }
     }
@@ -207,7 +196,6 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         canvasGroup.blocksRaycasts = false;
         canvasGroup.alpha = 0.4f;
 
-        // Ẩn bảng thông tin khi bắt đầu nhấc đồ lên kéo đi
         if (ItemInfoPanelUI.Instance != null)
         {
             ItemInfoPanelUI.Instance.ClearInfo();
@@ -233,8 +221,6 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             if (rootCanvas != null) transform.SetParent(rootCanvas.transform, true);
             else transform.SetParent(currentSlot.transform.root, true);
 
-            // --- BẮT BUỘC THÊM ĐOẠN NÀY ĐỂ TRỊ BỆNH LỆCH Ô XANH ---
-            // Trả Anchor về (0, 1) và gọi UpdateVisualSize để set lại Pivot chuẩn của Balo
             rectTransform.anchorMin = new Vector2(0, 1);
             rectTransform.anchorMax = new Vector2(0, 1);
             UpdateVisualSize();
@@ -277,7 +263,6 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             if (BackpackMinigameUI.Instance != null) BackpackMinigameUI.Instance.HideHighlight();
             if (TrunkMinigameUI.Instance != null) TrunkMinigameUI.Instance.HideHighlight();
 
-            // Cho phép hình ảnh bay theo chuột khi ra ngoài vùng lưới
             Canvas rootCanvas = GetComponentInParent<Canvas>();
             if (rootCanvas != null)
             {
@@ -296,8 +281,6 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         isDragging = false;
         canvasGroup.blocksRaycasts = true;
         canvasGroup.alpha = 1f;
-
-        Debug.Log($"<color=lime>[DEBUG KÉO] ĐÃ THẢ TAY!</color>");
 
         if (isHandledBySlot)
         {
@@ -319,8 +302,6 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
                 if (placedInGrid)
                 {
                     currentOwner = GridOwner.Backpack;
-
-                    // --- BỔ SUNG: Báo tiến độ nhiệm vụ khi kéo đồ ăn/nguyên liệu vào Balo ---
                     if (itemShape != null && QuestManager.Instance != null)
                     {
                         string itemName = string.IsNullOrEmpty(itemShape.itemName) ? itemShape.name : itemShape.itemName;
@@ -336,11 +317,10 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
                     isFromCooking = false;
                     if (CookingUIManager.Instance != null) CookingUIManager.Instance.OnFoodCollectedSuccessfully();
                 }
-                originIngredientSlot = null; // Quên đường về vì đã vào Balo/Xe thành công
+                originIngredientSlot = null;
             }
             else
             {
-                // Nếu là đồ ăn chín thì quay lại khay 0, nếu là nguyên liệu thì quay về cái nồi cũ
                 if (isFromCooking && CookingUIManager.Instance != null) CookingUIManager.Instance.ReturnFoodToSlot(this);
                 else if (originIngredientSlot != null) originIngredientSlot.ReturnIngredient(this);
             }
@@ -355,7 +335,6 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             bool placedInGrid = minigameUI.TryPlaceItemFromExternal(this, eventData.position);
             if (placedInGrid)
             {
-                // --- BỔ SUNG: Báo tiến độ nhiệm vụ khi tháo trang bị vào Balo ---
                 if (itemShape != null && QuestManager.Instance != null)
                 {
                     string itemName = string.IsNullOrEmpty(itemShape.itemName) ? itemShape.name : itemShape.itemName;
@@ -388,8 +367,6 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             if (placed)
             {
                 currentOwner = GridOwner.Backpack;
-
-                // --- BỔ SUNG: Báo tiến độ nhiệm vụ khi thả item vào Balo ---
                 if (itemShape != null && QuestManager.Instance != null)
                 {
                     string itemName = string.IsNullOrEmpty(itemShape.itemName) ? itemShape.name : itemShape.itemName;
@@ -403,7 +380,6 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
         if (!placed)
         {
-            // Nếu thả không thành công (hoặc thả ra ngoài), trả về grid cũ
             if (currentOwner == GridOwner.Backpack && BackpackMinigameUI.Instance != null)
                 BackpackMinigameUI.Instance.OnItemEndDrag(this, eventData.position);
             else if (currentOwner == GridOwner.Trunk && TrunkMinigameUI.Instance != null)
@@ -418,7 +394,6 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             ItemInfoPanelUI.Instance.ShowInfo(this);
         }
 
-        // Khi click chuột, gọi Menu Thao tác xuất hiện
         if (ItemActionMenu.Instance != null && itemShape != null)
         {
             ItemActionMenu.Instance.ShowMenu(this);
@@ -435,34 +410,9 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        // Khi rời chuột khỏi item -> Xóa sạch thông tin trên bảng
         if (ItemInfoPanelUI.Instance != null)
         {
             ItemInfoPanelUI.Instance.ClearInfo();
-        }
-    }
-    public void ConsumeItem()
-    {
-        // 1. Kiểm tra xem món đồ này có đúng là Đồ Ăn (FoodSO) không?
-        if (itemShape is FoodSO foodData)
-        {
-            if (CharacterStatsManager.Instance != null)
-            {
-                CharacterStatsManager.Instance.ModifyStat(StatType.Hunger, foodData.hungerRestore);
-                CharacterStatsManager.Instance.ModifyStat(StatType.Energy, foodData.energyRestore);
-            }
-
-            Debug.Log($"<color=cyan>[MĂM MĂM] Đã ăn {foodData.itemName}, hồi {foodData.hungerRestore} độ no!</color>");
-
-            // 3. Xóa món ăn khỏi Balo một cách sạch sẽ
-            if (currentOwner == GridOwner.Backpack && BackpackMinigameUI.Instance != null)
-            {
-                BackpackMinigameUI.Instance.RemoveItem(this);
-            }
-        }
-        else
-        {
-            Debug.LogWarning("Món này không ăn được đâu bồ ơi!");
         }
     }
 
@@ -470,4 +420,25 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     public int GetGridX() => gridX;
     public int GetGridY() => gridY;
     public bool IsRotated() => isRotated;
+
+    // ==========================================
+    // HÀM ĂN MÓN ĂN - ĐÃ FIX NGOẶC CHUẨN XÁC
+    // ==========================================
+    public void ConsumeItem()
+    {
+        if (itemShape is FoodSO foodData)
+        {
+            if (CharacterStatsManager.Instance != null)
+            {
+                CharacterStatsManager.Instance.ModifyStat(StatType.Hunger, foodData.hungerRestore);
+                CharacterStatsManager.Instance.ModifyStat(StatType.Thirst, foodData.thirstRestore);
+                CharacterStatsManager.Instance.ModifyStat(StatType.Energy, foodData.energyRestore);
+            }
+
+            if (currentOwner == GridOwner.Backpack && BackpackMinigameUI.Instance != null)
+            {
+                BackpackMinigameUI.Instance.RemoveItem(this);
+            }
+        }
+    }
 }
