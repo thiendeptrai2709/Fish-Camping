@@ -82,6 +82,7 @@ public class GameManagerMiniGame : MonoBehaviour
     #region PHẦN 1: QUẢN LÝ MENU SẢNH
     [Header("---- QUẢN LÝ LUỒNG UI MENU ----")]
     public GameObject panelMenuMiniGame;
+    public GameObject canvasChinh;          // Kéo Canvas/UI khác cần tắt/mở vào đây
     public Image imgNenMinhHoa;
     public Sprite[] danhSachAnhNenMenu;
     public Button btnThamGia;
@@ -110,7 +111,7 @@ public class GameManagerMiniGame : MonoBehaviour
     {
         StopBGM();
         AnTatCaNutMusic();
-        panelMenuMiniGame.SetActive(false);
+        if (panelMenuMiniGame != null) panelMenuMiniGame.SetActive(false);
     }
 
     public void ChonGameOMenu(int idGame)
@@ -389,6 +390,28 @@ public class GameManagerMiniGame : MonoBehaviour
 
     private void Update()
     {
+        // --- TÍNH NĂNG NHẤN PHÍM Z ĐỂ CHUYỂN ĐỔI CANVAS VÀ MENU MINI GAME ---
+        var keyboard = Keyboard.current;
+        if (keyboard != null && keyboard.zKey.wasPressedThisFrame)
+        {
+            if (panelMenuMiniGame != null)
+            {
+                if (!panelMenuMiniGame.activeSelf)
+                {
+                    // Lần 1: Tắt Canvas chính -> Mở Menu Mini Game
+                    if (canvasChinh != null) canvasChinh.SetActive(false);
+                    MoMenuMiniGame();
+                }
+                else
+                {
+                    // Lần 2: Mở lại Canvas chính -> Đóng Menu Mini Game
+                    DongMenuHoanToan();
+                    if (canvasChinh != null) canvasChinh.SetActive(true);
+                }
+            }
+        }
+        // --------------------------------------------------
+
         for (int i = danhSachVienDaDangBay.Count - 1; i >= 0; i--)
         {
             var da = danhSachVienDaDangBay[i];
