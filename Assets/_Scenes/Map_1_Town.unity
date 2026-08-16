@@ -1741,26 +1741,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bbd46dc908f4d344927771fd035b1bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NPCFemaleRunner
-  npcName: "C\xF4 G\xE1i Ch\u1EA1y B\u1ED9"
-  promptMessage: "Tr\xF2 chuy\u1EC7n"
-  dialogues:
-  - "H\u1ED3 Pine Lake s\xE1ng s\u1EDBm kh\xF4ng kh\xED trong l\xE0nh th\u1EADt \u0111\u1EA5y!"
-  - "Ch\u1EA1y b\u1ED9 quanh \u0111\xE2y gi\xFAp t\xF4i th\u1EA5y s\u1EA3ng kho\xE1i
-    h\u01A1n nhi\u1EC1u."
-  runClipName: run
-  idleClipName: idle
-  talkClipName: talk
-  transitionDuration: 0.25
-  runWaypoints: []
-  runSpeed: 4.5
-  restDuration: 1.5
-  _agent: {fileID: 0}
-  _animator: {fileID: 0}
-  _currentWaypointIndex: 0
-  _restTimer: 0
-  _isResting: 0
-  _isInteracting: 0
-  _playerTransform: {fileID: 0}
 --- !u!1 &77759327 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4898715082365110249, guid: 56e3f715ad78ae648aff217ab7ce7274, type: 3}
@@ -52914,13 +52894,25 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 8300000, guid: a5c38f3ed5086f545a21bfc3aa33635e, type: 3}
     - target: {fileID: 95842515939335115, guid: 2584cfdf4d1d1a449bf4faf1f2f10ca3, type: 3}
+      propertyPath: upgradeFirstTimeDialogues.Array.data[0].voiceClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 763d184ed1808224e84a043a2681cc4d, type: 3}
+    - target: {fileID: 95842515939335115, guid: 2584cfdf4d1d1a449bf4faf1f2f10ca3, type: 3}
+      propertyPath: upgradeFirstTimeDialogues.Array.data[1].voiceClip
+      value: 
+      objectReference: {fileID: 8300000, guid: a3b54b8601a581a4896e105e4428fd37, type: 3}
+    - target: {fileID: 95842515939335115, guid: 2584cfdf4d1d1a449bf4faf1f2f10ca3, type: 3}
+      propertyPath: upgradeFirstTimeDialogues.Array.data[2].voiceClip
+      value: 
+      objectReference: {fileID: 8300000, guid: a5c38f3ed5086f545a21bfc3aa33635e, type: 3}
+    - target: {fileID: 95842515939335115, guid: 2584cfdf4d1d1a449bf4faf1f2f10ca3, type: 3}
       propertyPath: upgradeReturningDialogues.Array.data[0].voiceClip
       value: 
       objectReference: {fileID: 8300000, guid: 06a12cfd370aab14f8276f9e34422653, type: 3}
     - target: {fileID: 95842515939335115, guid: 2584cfdf4d1d1a449bf4faf1f2f10ca3, type: 3}
       propertyPath: upgradeReturningDialogues.Array.data[1].voiceClip
       value: 
-      objectReference: {fileID: 8300000, guid: ef370675c6ba14345b3996dedd29934a, type: 3}
+      objectReference: {fileID: 8300000, guid: e9e3fd463f421b145b6b82e1cb19338f, type: 3}
     - target: {fileID: 2339525508738480029, guid: 2584cfdf4d1d1a449bf4faf1f2f10ca3, type: 3}
       propertyPath: m_Name
       value: NPC_Ncap
