@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BobberSO
   itemID: bobber3
   itemName: Bobber3
-  itemIcon: {fileID: 21300000, guid: a3e72e4787a1f33488724173b36a75ab, type: 3}
+  itemIcon: {fileID: -1287435466, guid: d0acb7c593863fc4c8ed9165d7b0081a, type: 3}
   itemDescription: 
   equippedModelPrefab: {fileID: 0}
   width: 1

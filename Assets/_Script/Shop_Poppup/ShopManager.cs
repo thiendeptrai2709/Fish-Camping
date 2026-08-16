@@ -64,9 +64,24 @@ public class ShopManager : MonoBehaviour
     private void AnHienCacUIKhac(bool hienRa)
     {
         if (cacUIAnKhiMoShop == null) return;
-        foreach (GameObject obj in cacUIAnKhiMoShop)
+        for (int i = 0; i < cacUIAnKhiMoShop.Length; i++)
         {
-            if (obj != null) obj.SetActive(hienRa);
+            // Nếu phát hiện ô nào bị đứt dây do chuyển Map (bị null)
+            if (cacUIAnKhiMoShop[i] == null)
+            {
+                // Tự động radar quét tìm lại UI tên là "coin"
+                GameObject uiBiMat = GameObject.Find("coin");
+                if (uiBiMat != null)
+                {
+                    cacUIAnKhiMoShop[i] = uiBiMat;
+                }
+            }
+
+            // Tiến hành ẩn/hiện bình thường
+            if (cacUIAnKhiMoShop[i] != null)
+            {
+                cacUIAnKhiMoShop[i].SetActive(hienRa);
+            }
         }
     }
 

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BaitSO
   itemID: bait1
   itemName: Bait1
-  itemIcon: {fileID: 21300000, guid: c94991c9beb9f2c4389a6a07f94fd5b5, type: 3}
+  itemIcon: {fileID: 778444871, guid: 0f24499a3fb346846b8d2a01d3c1b04d, type: 3}
   itemDescription: 
   equippedModelPrefab: {fileID: 0}
   width: 1

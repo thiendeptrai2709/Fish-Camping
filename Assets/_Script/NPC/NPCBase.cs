@@ -33,7 +33,8 @@ public class NPCBase : MonoBehaviour, IInteractable
     }
 
     // Thuộc tính từ Interface trả về chuỗi hiển thị UI
-    public string InteractionPrompt => $"[{npcName}] \n Nhấn E để {promptMessage}";
+    // DÒNG MỚI:
+    public string InteractionPrompt => $"[{npcName}] \n Click Chuột Trái để {promptMessage}";
 
     // Hàm gọi khi Player nhấn phím tương tác E
     public void Interact()

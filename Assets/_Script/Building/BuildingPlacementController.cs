@@ -117,20 +117,26 @@ public class BuildingPlacementController : MonoBehaviour
                 energyController.TryConsumeEnergy(currentItem.energyCost);
             }
 
-            GameObject placedObj = Instantiate(currentItem.prefab, currentPreview.transform.position, currentPreview.transform.rotation);
-            if (currentParentSurface != null)
+            GameObject placedObj = Instantiate(currentItem.prefab, currentPreview.transform.position, currentPreview.transform.rotation); //[cite: 10]
+            if (currentParentSurface != null) //[cite: 10]
             {
-                placedObj.transform.SetParent(currentParentSurface, true);
+                placedObj.transform.SetParent(currentParentSurface, true); //[cite: 10]
             }
-            Debug.Log($"<color=green>[Building System] Đã đặt thành công: {currentItem.itemName}</color>");
+            Debug.Log($"<color=green>[Building System] Đã đặt thành công: {currentItem.itemName}</color>"); //[cite: 10]
 
-            if (comfortController != null)
+            // --- LƯU ĐỒ VÀO DỮ LIỆU MAP TẠI ĐÂY ---
+            if (BuildingSaveManager.Instance != null)
             {
-                comfortController.ModifyCampComfort(currentItem.comfortBonus);
-                Debug.Log($"<color=cyan>[Building System] Điểm thoải mái khu trại tăng thêm: +{currentItem.comfortBonus}</color>");
+                BuildingSaveManager.Instance.SavePlacedItem(currentItem, currentPreview.transform.position, currentPreview.transform.rotation);
             }
 
-            CancelPlacement();
+            if (comfortController != null) //[cite: 10]
+            {
+                comfortController.ModifyCampComfort(currentItem.comfortBonus); //[cite: 10]
+                Debug.Log($"<color=cyan>[Building System] Điểm thoải mái khu trại tăng thêm: +{currentItem.comfortBonus}</color>"); //[cite: 10]
+            }
+
+            CancelPlacement(); //[cite: 10]
         }
     }
 }

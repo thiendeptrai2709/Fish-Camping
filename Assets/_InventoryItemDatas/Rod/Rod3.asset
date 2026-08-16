@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FishingRodSO
   itemID: rod3
   itemName: "C\u1EA7n B\u1EA1c \xC1nh Kim "
-  itemIcon: {fileID: 361804216, guid: 5e2d7f04126fead4c82d40e2bae1c36d, type: 3}
+  itemIcon: {fileID: -979311502, guid: 47100d6f026c8b946975784c7f349790, type: 3}
   itemDescription: 
   equippedModelPrefab: {fileID: 3017937692658407651, guid: 158616233a1982f46acdcce90c20888c, type: 3}
   width: 1

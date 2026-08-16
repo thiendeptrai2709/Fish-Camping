@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using System.Collections;
+using UnityEngine.SceneManagement; // BẮT BUỘC THÊM THƯ VIỆN NÀY
 
 public class WeatherSystem : MonoBehaviour
 {
@@ -18,19 +20,60 @@ public class WeatherSystem : MonoBehaviour
     [Range(0f, 100f)]
     public float rainChance = 30f;
 
+    [Header("--- Âm Thanh Mưa ---")]
+    public AudioSource rainAudioSource;
+    public float fadeDuration = 3f;
+    [Range(0f, 1f)]
+    public float maxRainVolume = 1f;
+
     private bool isRaining = false;
     private float nextRainCheckTime;
     private float rainEndTime;
 
-    // Biến lưu trữ Instance mưa được sinh ra trong Scene
     private GameObject currentRainInstance;
     private ParticleSystem currentRainParticle;
+    private Coroutine audioFadeCoroutine;
+
+    private float playerSearchTimer = 0f;
+    private float playerSearchInterval = 1f;
+
+    // --- BẮT SỰ KIỆN CHUYỂN SCENE ---
+    private void OnEnable()
+    {
+        // Lắng nghe mỗi khi một Map mới được load xong
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        // Hủy lắng nghe và ép dừng khi script bị tắt
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+        ForceStopWeather();
+    }
+
+    // --- HÀM RESET CỨNG KHI ĐỔI MAP ---
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // 1. Ép tắt toàn bộ mưa, hạt mưa và âm thanh ngay lập tức
+        ForceStopWeather();
+
+        // 2. Reset lại bộ đếm thời gian để không bị mưa luôn ở Map mới
+        nextRainCheckTime = Time.time + rainCheckInterval;
+
+        // 3. Xóa transform của Player cũ đi để nó tự tìm Player ở Map mới
+        playerTransform = null;
+    }
 
     void Start()
     {
         RenderSettings.fog = true;
         RenderSettings.fogMode = FogMode.ExponentialSquared;
         nextRainCheckTime = Time.time + rainCheckInterval;
+
+        if (rainAudioSource != null && !isRaining)
+        {
+            rainAudioSource.volume = 0f;
+        }
     }
 
     void Update()
@@ -38,6 +81,31 @@ public class WeatherSystem : MonoBehaviour
         UpdateFog();
         UpdateRainLogic();
         FollowPlayer();
+    }
+
+    // --- HÀM DỌN DẸP SẠCH SẼ MỌI THỨ ---
+    private void ForceStopWeather()
+    {
+        isRaining = false;
+
+        if (audioFadeCoroutine != null)
+        {
+            StopCoroutine(audioFadeCoroutine);
+            audioFadeCoroutine = null;
+        }
+
+        if (rainAudioSource != null)
+        {
+            rainAudioSource.Stop();
+            rainAudioSource.volume = 0f;
+        }
+
+        if (currentRainInstance != null)
+        {
+            Destroy(currentRainInstance);
+            currentRainInstance = null;
+            currentRainParticle = null;
+        }
     }
 
     void UpdateFog()
@@ -92,18 +160,21 @@ public class WeatherSystem : MonoBehaviour
             currentRainInstance = Instantiate(rainPrefab);
             currentRainParticle = currentRainInstance.GetComponent<ParticleSystem>();
 
-            if (playerTransform == null)
-            {
-                GameObject player = GameObject.FindGameObjectWithTag("Player");
-                if (player != null) playerTransform = player.transform;
-            }
+            TryFindPlayer();
 
             if (playerTransform != null)
             {
                 currentRainInstance.transform.position = GetRainPosition();
             }
+
+            if (rainAudioSource != null)
+            {
+                if (audioFadeCoroutine != null) StopCoroutine(audioFadeCoroutine);
+                audioFadeCoroutine = StartCoroutine(FadeAudio(rainAudioSource, maxRainVolume, fadeDuration));
+            }
         }
     }
+
     void StopRain()
     {
         isRaining = false;
@@ -125,6 +196,44 @@ public class WeatherSystem : MonoBehaviour
             }
 
             currentRainParticle = null;
+
+            if (rainAudioSource != null)
+            {
+                if (audioFadeCoroutine != null) StopCoroutine(audioFadeCoroutine);
+                audioFadeCoroutine = StartCoroutine(FadeAudio(rainAudioSource, 0f, fadeDuration));
+            }
+        }
+    }
+
+    private IEnumerator FadeAudio(AudioSource audioSrc, float targetVolume, float duration)
+    {
+        if (audioSrc == null) yield break;
+
+        if (!audioSrc.isPlaying && targetVolume > 0f)
+        {
+            audioSrc.volume = 0f;
+            audioSrc.Play();
+        }
+
+        float startVolume = audioSrc.volume;
+        float timeElapsed = 0f;
+
+        while (timeElapsed < duration)
+        {
+            if (audioSrc == null) yield break;
+
+            audioSrc.volume = Mathf.Lerp(startVolume, targetVolume, timeElapsed / duration);
+            timeElapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        if (audioSrc != null)
+        {
+            audioSrc.volume = targetVolume;
+            if (targetVolume <= 0f)
+            {
+                audioSrc.Stop();
+            }
         }
     }
 
@@ -132,13 +241,26 @@ public class WeatherSystem : MonoBehaviour
     {
         if (playerTransform == null)
         {
-            GameObject player = GameObject.FindGameObjectWithTag("Player");
-            if (player != null) playerTransform = player.transform;
+            TryFindPlayer();
         }
 
         if (isRaining && currentRainInstance != null && playerTransform != null)
         {
             currentRainInstance.transform.position = GetRainPosition();
+        }
+    }
+
+    private void TryFindPlayer()
+    {
+        playerSearchTimer -= Time.deltaTime;
+        if (playerSearchTimer <= 0f)
+        {
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            if (player != null)
+            {
+                playerTransform = player.transform;
+            }
+            playerSearchTimer = playerSearchInterval;
         }
     }
 

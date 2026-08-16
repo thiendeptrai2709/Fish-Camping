@@ -2645,6 +2645,7 @@ MonoBehaviour:
   maxX: 700
   minZ: 0
   maxZ: 600
+  smoothFocusSpeed: 5
 --- !u!1001 &585146381
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4292,15 +4293,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4762653102039612433, guid: 8f82e55b1e03368488dc9bb9cbe8b39d, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 68.731
+      value: 70.95
       objectReference: {fileID: 0}
     - target: {fileID: 4762653102039612433, guid: 8f82e55b1e03368488dc9bb9cbe8b39d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -59.157
+      value: -59.44
       objectReference: {fileID: 0}
     - target: {fileID: 4762653102039612433, guid: 8f82e55b1e03368488dc9bb9cbe8b39d, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 263.67
+      value: 262.6
       objectReference: {fileID: 0}
     - target: {fileID: 4762653102039612433, guid: 8f82e55b1e03368488dc9bb9cbe8b39d, type: 3}
       propertyPath: m_LocalRotation.w

@@ -4,9 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 
-// Nơi DUY NHẤT giữ số tiền thật của người chơi trong toàn bộ game.
-// ShopManager (shop câu cá) và GarageZone (garage lốp xe) đều đọc/ghi tiền qua đây,
-// nên dù đứng ở đâu, số tiền và mọi Text hiển thị đều luôn khớp nhau.
 public class MoneyManager : MonoBehaviour
 {
     public static MoneyManager Instance { get; private set; }
@@ -14,11 +11,17 @@ public class MoneyManager : MonoBehaviour
     [Header("--- SỐ TIỀN THẬT CỦA NGƯỜI CHƠI ---")]
     public int tongTien = 5000;
 
-    [Tooltip("Kéo TẤT CẢ các Text hiển thị tiền trong game vào đây (Shop câu cá, Garage lốp xe, HUD ngoài map...) - tất cả sẽ tự động chạy số cùng lúc")]
+    [Tooltip("Kéo TẤT CẢ các Text hiển thị tiền trong game vào đây (Shop câu cá, Garage lốp xe, HUD ngoài map...)")]
     public TextMeshProUGUI[] cacTextHienThiTien;
 
     [Header("--- CÀI ĐẶT HIỆU ỨNG CHẠY SỐ ---")]
     public float thoiGianDemSo = 0.5f;
+
+    [Header("--- PHÍM TẮT TEST DEBUG (TRONG LÚC CHƠI) ---")]
+    [Tooltip("Bấm phím này để reset tiền về mặc định")]
+    public KeyCode phimResetTien = KeyCode.F9;
+    [Tooltip("Bấm phím này để cộng thêm 5000 tiền test nhanh")]
+    public KeyCode phimCongThemTien = KeyCode.F10;
 
     private Coroutine coroutineDemSo;
 
@@ -27,16 +30,10 @@ public class MoneyManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            // Giữ nguyên qua các Scene khác (nếu Shop và Garage nằm ở 2 Scene riêng).
-            // Nếu 2 khu vực đang ở chung 1 Scene thì dòng này không gây hại gì cả.
             DontDestroyOnLoad(gameObject);
-
-            // BẮT BUỘC: Vì object này sống xuyên Scene (DontDestroyOnLoad) nhưng các Text
-            // hiển thị tiền lại là UI của TỪNG Scene (bị hủy khi đổi Scene), nên phải tự
-            // đăng ký lắng nghe mỗi lần load Scene mới để "nối" lại đúng Text của Scene đó.
-            // Nếu không làm cái này, sau khi đổi map quay lại, Text tiền sẽ bị kẹt ở giá trị
-            // cũ/mặc định (nhìn như tiền bị reset về 0) dù tongTien bên trong vẫn đúng.
             SceneManager.sceneLoaded += OnSceneLoaded;
+
+            tongTien = PlayerPrefs.GetInt("PlayerMoney", 5000);
         }
         else
         {
@@ -54,24 +51,36 @@ public class MoneyManager : MonoBehaviour
         CapNhatLaiDanhSachTextTien();
     }
 
-    // Được gọi tự động mỗi khi 1 Scene mới load xong (kể cả lúc quay lại 1 map đã đi qua)
+    private void Update()
+    {
+        // Bấm F9 để Reset tiền về 5000 (hoặc xóa sạch dữ liệu tiền)
+        if (Input.GetKeyDown(phimResetTien))
+        {
+            ResetTien(5000);
+        }
+
+        // Bấm F10 để buff nhanh +5000 tiền test mua đồ
+        if (Input.GetKeyDown(phimCongThemTien))
+        {
+            CongTien(5000);
+            Debug.Log("<color=green>[Cheat] Đã cộng thêm 5000 Vàng!</color>");
+        }
+    }
+
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         CapNhatLaiDanhSachTextTien();
     }
 
-    // Tự đi tìm lại TẤT CẢ Text đang gắn Tag "TextTien" trong Scene hiện tại rồi cập nhật số tiền.
     private void CapNhatLaiDanhSachTextTien()
     {
         try
         {
-            // Phép thuật ở đây: Tìm TẤT CẢ các Text trong game, kể cả các Text đang bị ẨN
             TextMeshProUGUI[] tatCaText = Resources.FindObjectsOfTypeAll<TextMeshProUGUI>();
             List<TextMeshProUGUI> danhSachMoi = new List<TextMeshProUGUI>();
 
             foreach (TextMeshProUGUI txt in tatCaText)
             {
-                // Lọc: Chỉ lấy những Text đang nằm trong Scene hiện tại (bỏ qua Prefab) và có Tag "TextTien"
                 if (txt.gameObject.scene.isLoaded && txt.CompareTag("TextTien"))
                 {
                     danhSachMoi.Add(txt);
@@ -87,29 +96,62 @@ public class MoneyManager : MonoBehaviour
         CapNhatGiaoDienTien(tongTien);
     }
 
-    // Kiểm tra có đủ tiền không, dùng trước khi cho phép mua
     public bool CoDuTien(int soTien)
     {
         return tongTien >= soTien;
     }
 
-    // Cố trừ tiền. Trả về false và KHÔNG trừ gì nếu không đủ tiền.
     public bool TruTien(int soTien)
     {
         if (tongTien < soTien) return false;
 
         int tienTruoc = tongTien;
         tongTien -= soTien;
+
+        PlayerPrefs.SetInt("PlayerMoney", tongTien);
+        PlayerPrefs.Save();
+
         ChayHieuUngDemSo(tienTruoc, tongTien);
         return true;
     }
 
-    // Cộng tiền (bán đồ, thưởng...)
     public void CongTien(int soTien)
     {
         int tienTruoc = tongTien;
         tongTien += soTien;
+
+        PlayerPrefs.SetInt("PlayerMoney", tongTien);
+        PlayerPrefs.Save();
+
         ChayHieuUngDemSo(tienTruoc, tongTien);
+    }
+
+    // ==========================================
+    // CÁC HÀM RESET TIỀN ĐỂ TEST GAME
+    // ==========================================
+
+    // Gọi bằng code hoặc phím F9
+    public void ResetTien(int soTienMacDinh = 5000)
+    {
+        int tienTruoc = tongTien;
+        tongTien = soTienMacDinh;
+
+        PlayerPrefs.SetInt("PlayerMoney", tongTien);
+        PlayerPrefs.Save();
+
+        ChayHieuUngDemSo(tienTruoc, tongTien);
+        Debug.Log($"<color=yellow>[MoneyManager] Đã Reset tiền về: {soTienMacDinh} Vàng!</color>");
+    }
+
+    // Nút bấm trên thanh Menu Unity (ngay cả khi chưa Play game)
+    [ContextMenu("Xóa dữ liệu tiền (Reset PlayerPrefs)")]
+    public void XoaLuuTruTien()
+    {
+        PlayerPrefs.DeleteKey("PlayerMoney");
+        PlayerPrefs.Save();
+        tongTien = 5000;
+        CapNhatGiaoDienTien(tongTien);
+        Debug.Log("<color=cyan>[MoneyManager] Đã xóa PlayerPrefs tiền thành công!</color>");
     }
 
     private void ChayHieuUngDemSo(int tuSo, int denSo)

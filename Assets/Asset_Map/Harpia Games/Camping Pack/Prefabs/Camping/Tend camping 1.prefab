@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3301534505515344349}
   - component: {fileID: 4541373735163274744}
   - component: {fileID: 8215937075387312553}
+  - component: {fileID: 6676657571372529111}
   m_Layer: 0
   m_Name: Collider Tend Camping 1 - 1
   m_TagString: Untagged
@@ -63,6 +64,26 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -1043802968265172766, guid: 651901fd485e47c4c9635c92fe8bf208, type: 3}
+--- !u!114 &6676657571372529111
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5152615181455140511}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a52c649c00be5f342a81e02f64f26234, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractableBed
+  interactPrompt: "Click [Chu\u1ED9t Tr\xE1i] \u0111\u1EC3 Ng\u1EE7"
+  sleepRestoreAmount: 100
+  energyRestoreAmount: 100
+  fadeDuration: 1.5
+  sleepHoldDuration: 1
+  sleepByDuration: 1
+  sleepHours: 3
+  fixedWakeUpTime: 0.25
 --- !u!1 &8029384935560429254
 GameObject:
   m_ObjectHideFlags: 0
@@ -122,6 +143,11 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -143,6 +169,7 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0

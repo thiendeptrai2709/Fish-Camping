@@ -11,11 +11,10 @@ public class ItemActionMenu : MonoBehaviour
     public Button btnUse;
     public Button btnClose;
     public TextMeshProUGUI btnUseText;
-    public TextMeshProUGUI notificationText; // (Tùy chọn) Chữ báo lỗi xe đầy xăng
+    public TextMeshProUGUI notificationText;
 
     private InventoryItemUI currentItem;
 
-     
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -31,29 +30,35 @@ public class ItemActionMenu : MonoBehaviour
     public void ShowMenu(InventoryItemUI item)
     {
         currentItem = item;
-        bool hasAction = false; // Mặc định là món đồ chưa có chức năng gì
+        bool hasAction = false;
 
-        // Đọc ID để kiểm tra chức năng
+        // 1. Kiểm tra Can Xăng
         if (item.GetItemShape().itemID == "fuel_can_01")
         {
             btnUseText.text = "Đổ Xăng";
             btnUse.gameObject.SetActive(true);
-            hasAction = true; // Đánh dấu là món này CÓ chức năng
+            hasAction = true;
+        }
+        // 2. Kiểm tra Đồ Ăn (MỚI THÊM VÀO ĐÂY)
+        else if (item.GetItemShape() is FoodSO)
+        {
+            btnUseText.text = "Ăn";
+            btnUse.gameObject.SetActive(true);
+            hasAction = true;
         }
         else
         {
-            // Các đồ khác (cá, cần câu, mồi...) tạm thời chưa có chức năng
+            // Các đồ khác tạm thời chưa có chức năng
             btnUse.gameObject.SetActive(false);
         }
 
-        // --- BƯỚC CHỐT: CHỈ HIỆN BẢNG KHI CÓ CHỨC NĂNG ---
+        // Hiện bảng nếu item có chức năng
         if (hasAction)
         {
             if (menuPanel != null)
             {
                 menuPanel.SetActive(true);
 
-                // Ép bảng ra chính giữa màn hình như bồ muốn
                 RectTransform rect = menuPanel.GetComponent<RectTransform>();
                 if (rect != null)
                 {
@@ -66,7 +71,6 @@ public class ItemActionMenu : MonoBehaviour
         }
         else
         {
-            // Đảm bảo bảng không thò mặt ra nếu click vào đồ vô dụng
             if (menuPanel != null) menuPanel.SetActive(false);
         }
     }
@@ -81,24 +85,21 @@ public class ItemActionMenu : MonoBehaviour
     {
         if (currentItem == null) return;
 
+        // Xử lý chức năng đổ xăng
         if (currentItem.GetItemShape().itemID == "fuel_can_01")
         {
-            // Tìm component CarFuel của xe trong Map
             CarFuel carFuel = Object.FindFirstObjectByType<CarFuel>();
             if (carFuel != null)
             {
-                // Kiểm tra xăng đầy
                 if (carFuel.currentFuel >= carFuel.maxFuel)
                 {
                     ShowNotif("Xe đã đầy xăng, không thể đổ thêm!");
-                    return; // Chặn lại, không trừ item
+                    return;
                 }
 
-                // Nếu chưa đầy -> Bơm 30 Lít
                 carFuel.AddFuel(30f);
                 ShowNotif("Đã bơm 30 Lít xăng!");
 
-                // XÓA DATA CAN XĂNG KHỎI LƯỚI CỐP/BALO
                 if (currentItem.currentOwner == InventoryItemUI.GridOwner.Trunk && TrunkMinigameUI.Instance != null)
                 {
                     TrunkMinigameUI.Instance.GetGridData().ClearCells(currentItem.GetGridX(), currentItem.GetGridY(), currentItem.GetItemShape(), currentItem.IsRotated());
@@ -108,10 +109,20 @@ public class ItemActionMenu : MonoBehaviour
                     BackpackMinigameUI.Instance.GetGridData().ClearCells(currentItem.GetGridX(), currentItem.GetGridY(), currentItem.GetItemShape(), currentItem.IsRotated());
                 }
 
-                // Hủy luôn hình ảnh UI của can xăng rồi đóng Menu
                 Destroy(currentItem.gameObject);
                 CloseMenu();
             }
+        }
+        // Xử lý chức năng Ăn uống (MỚI THÊM VÀO ĐÂY)
+        else if (currentItem.GetItemShape() is FoodSO)
+        {
+            // Gọi lệnh ăn từ InventoryItemUI (Nó sẽ tự động hồi máu, xóa hình ảnh cá, dọn ô Balo)
+            currentItem.ConsumeItem();
+
+            // Hiện thông báo lên màn hình cho xịn (Tùy chọn)
+            ShowNotif("Đã ăn xong, bụng no căng!");
+
+            CloseMenu();
         }
     }
 

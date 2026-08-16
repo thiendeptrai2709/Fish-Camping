@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c70ed5e815f5b1438ae299b508efa50, type: 3}
+  m_Name: FishFood 17
+  m_EditorClassIdentifier: Assembly-CSharp::CookingRecipeSO
+  recipeName: ca17
+  requiredIngredients:
+  - {fileID: 11400000, guid: 659bda619caea814694813261169637c, type: 2}
+  resultItem: {fileID: 11400000, guid: 0512a0b1dddc7bd46a2234b39e128818, type: 2}

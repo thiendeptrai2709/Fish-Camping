@@ -8,9 +8,14 @@ public class CharacterStatsManager : MonoBehaviour
     private Dictionary<StatType, CharacterStat> statDictionary = new Dictionary<StatType, CharacterStat>();
 
     public event Action<StatType, float, float> OnStatChanged;
+    public static CharacterStatsManager Instance { get; private set; }
 
     private void Awake()
     {
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
+        // ---------------------------
+
         foreach (var stat in initialStats)
         {
             stat.Initialize();

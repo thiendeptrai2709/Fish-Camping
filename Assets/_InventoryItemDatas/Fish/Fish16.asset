@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FishSO
   itemID: fish16
   itemName: "C\xE1 R\u1ED3ng Xo\xE1y N\u01B0\u1EDBc"
-  itemIcon: {fileID: 21300000, guid: 6ec2b58568f7df946b81dd21137bca8f, type: 3}
+  itemIcon: {fileID: -1225908944, guid: 86f4d9300b004174cad68cf7e22410f7, type: 3}
   itemDescription: 
   equippedModelPrefab: {fileID: 4081344713392737649, guid: 1883c2415efda95459f29c9c89b56e94, type: 3}
   width: 2

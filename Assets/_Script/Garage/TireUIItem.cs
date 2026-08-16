@@ -14,7 +14,6 @@ public class TireUIItem : MonoBehaviour
     private int myIndex;
     private GarageZone myGarage;
 
-    // Hàm này được GarageZone gọi lúc sinh ra ô lốp xe
     public void SetupUI(TireData data, int index, GarageZone garage)
     {
         myData = data;
@@ -26,13 +25,23 @@ public class TireUIItem : MonoBehaviour
         txtDescription.text = data.description;
         imgIcon.sprite = data.tireIcon;
 
-        // Gắn sự kiện click nút mua trực tiếp bằng code
+        // Xóa listener cũ trước khi add để tránh bị kích hoạt nhiều lần nếu tái sử dụng ô UI
+        btnBuy.onClick.RemoveListener(OnBuyClicked);
         btnBuy.onClick.AddListener(OnBuyClicked);
     }
 
     void OnBuyClicked()
     {
+        // Kích hoạt âm thanh click ngay khi bấm nút mua
+        if (UIButtonSoundManager.Instance != null)
+        {
+            UIButtonSoundManager.Instance.PlayClickSound();
+        }
+
         // Gửi số thứ tự lốp và giá tiền về cho GarageZone xử lý
-        myGarage.ChangeWheel(myIndex, myData.price);
+        if (myGarage != null && myData != null)
+        {
+            myGarage.ChangeWheel(myIndex, myData.price);
+        }
     }
 }

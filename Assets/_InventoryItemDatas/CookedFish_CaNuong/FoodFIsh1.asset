@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 36ff08f18b5b4a44fbe758f1bbed555f, type: 3}
+  m_Name: FoodFIsh1
+  m_EditorClassIdentifier: Assembly-CSharp::FoodSO
+  itemID: food_fish1
+  itemName: "C\xE1 R\xF4 Bi\u1EC3n V\u1EB1n"
+  itemIcon: {fileID: -75585968, guid: 80e815b0a26dfff4583983a00877e0eb, type: 3}
+  itemDescription: 
+  equippedModelPrefab: {fileID: 585159940412984651, guid: 31a11d7402b580c4ba93bf51319dbca7, type: 3}
+  width: 2
+  height: 2
+  shapeCells: 
+  description: "M\u1ED9t m\xF3n \u0103n n\xF3ng h\u1ED5i v\u1EEBa ra l\xF2."
+  hungerRestore: 20
+  thirstRestore: 15
+  energyRestore: 20
+  sellPrice: 100
