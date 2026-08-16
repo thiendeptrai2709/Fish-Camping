@@ -50949,8 +50949,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
       propertyPath: questList.Array.data[1].progressDialogues.Array.data[0].text
-      value: "H\xE3y l\xE0m ti\u1EBFp nhi\u1EC7m v\u1EE5 \u0111\u01B0\u1EE3c giao
-        \u0111i"
+      value: "H\xE3y ti\u1EBFp t\u1EE5c nhi\u1EC7m v\u1EE5 \u0111i."
       objectReference: {fileID: 0}
     - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
       propertyPath: questList.Array.data[0].offerDialogues.Array.data[0].voiceClip
@@ -50980,6 +50979,10 @@ PrefabInstance:
       propertyPath: questList.Array.data[1].completeDialogues.Array.data[0].voiceClip
       value: 
       objectReference: {fileID: 8300000, guid: d8ff4500aad8f5149aa517c300607283, type: 3}
+    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
+      propertyPath: questList.Array.data[1].progressDialogues.Array.data[0].voiceClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 52c8a2952bee6364fbfc05f0c35795a4, type: 3}
     - target: {fileID: 8898449558618441033, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
       propertyPath: introDialogues.Array.size
       value: 3
