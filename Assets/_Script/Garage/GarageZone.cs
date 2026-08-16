@@ -2,6 +2,7 @@
 using TMPro;
 using UnityEngine.UI;
 using System.Collections;
+using System.Collections.Generic;
 
 public class GarageZone : MonoBehaviour
 {
@@ -13,6 +14,8 @@ public class GarageZone : MonoBehaviour
 
     [Header("=== ẨN UI KHÁC KHI ĐANG MỞ GARAGE ===")]
     public GameObject[] cacUIAnKhiMoGarage;
+    // Lưu lại danh sách những UI thực sự ĐANG BẬT trước lúc mở Garage
+    private List<GameObject> _danhSachUIDangBatTruocDo = new List<GameObject>();
 
     [Header("=== HỆ THỐNG THAY LỐP XE (3D Model) ===")]
     public Transform wheelFL;
@@ -36,25 +39,18 @@ public class GarageZone : MonoBehaviour
     public TMP_Text notificationText;
 
     private System.Action _onGarageClosed;
+    private Coroutine _notifyCoroutine;
 
     private void Awake()
     {
-        // [CODE MẠNH] 1: KIỂM TRA BẢN SAO
-        // Nếu đã có 1 thằng GarageZone từ Map trước sống sót chạy sang đây, 
-        // thì lập tức TIÊU DIỆT thằng mới vừa được sinh ra để bảo vệ dữ liệu cũ!
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
         }
 
-        // [CODE MẠNH] 2: PHONG VƯƠNG VÀ BAN LỆNH BẤT TỬ
         Instance = this;
-
-        // Tự động bứt rễ ra khỏi Map hiện tại để không bị chết khi đổi Scene
         transform.SetParent(null);
-
-        // Gắn mác Bất tử (Sẽ tự động chui vào vùng DontDestroyOnLoad)
         DontDestroyOnLoad(gameObject);
     }
 
@@ -80,7 +76,7 @@ public class GarageZone : MonoBehaviour
 
     void Update()
     {
-        // Bấm phím Z để đóng bảng Garage khi đang mở, tránh trùng lặp với E (NPC) và ESC (Setting)
+        // Bấm phím Z để đóng bảng Garage an toàn
         if (garageUIPanel != null && garageUIPanel.activeInHierarchy)
         {
             if (Input.GetKeyDown(KeyCode.Z))
@@ -92,6 +88,8 @@ public class GarageZone : MonoBehaviour
 
     void LoadTireUI()
     {
+        if (tireContentParent == null || tireUIPrefab == null || allTires == null) return;
+
         foreach (Transform child in tireContentParent) Destroy(child.gameObject);
 
         for (int i = 0; i < allTires.Length; i++)
@@ -101,7 +99,6 @@ public class GarageZone : MonoBehaviour
             if (uiItem != null) uiItem.SetupUI(allTires[i], i, this);
         }
 
-        // Tự động gán âm thanh cho các nút bấm mua lốp xe vừa sinh ra
         if (UIButtonSoundManager.Instance != null)
         {
             UIButtonSoundManager.Instance.RegisterAllButtonsInScene();
@@ -112,21 +109,32 @@ public class GarageZone : MonoBehaviour
     {
         _onGarageClosed = onCloseCallback;
 
+        // 1. Ẩn và ghi nhớ các UI đang bật
+        AnCacUIKhac();
+
+        // 2. Đưa Panel Garage lên lớp trên cùng tuyệt đối
         if (garageUIPanel != null)
         {
             garageUIPanel.SetActive(true);
-            garageUIPanel.transform.SetAsLastSibling(); 
+            garageUIPanel.transform.SetAsLastSibling();
+
+            // Đảm bảo Canvas hiển thị đè lên toàn bộ HUD khác
+            Canvas canvas = garageUIPanel.GetComponentInParent<Canvas>();
+            if (canvas != null)
+            {
+                canvas.overrideSorting = true;
+                canvas.sortingOrder = 999;
+            }
         }
 
-        AnHienCacUIKhac(false);
         UpdateAllUI();
 
-        // Gán âm thanh cho toàn bộ nút trong bảng Garage (nút đóng, nâng cấp cốp...)
         if (UIButtonSoundManager.Instance != null)
         {
             UIButtonSoundManager.Instance.RegisterAllButtonsInScene();
         }
 
+        // Mở khóa chuột
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
     }
@@ -134,9 +142,11 @@ public class GarageZone : MonoBehaviour
     public void CloseGarageUI()
     {
         if (garageUIPanel != null) garageUIPanel.SetActive(false);
-        AnHienCacUIKhac(true);
 
-        // Khóa chuột lại
+        // Khôi phục lại đúng những UI đã bật trước đó
+        KhoiPhucCacUIKhac();
+
+        // Khóa lại chuột
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
 
@@ -144,17 +154,40 @@ public class GarageZone : MonoBehaviour
         _onGarageClosed = null;
     }
 
-    private void AnHienCacUIKhac(bool hienRa)
+    private void AnCacUIKhac()
     {
+        _danhSachUIDangBatTruocDo.Clear();
         if (cacUIAnKhiMoGarage == null) return;
+
         foreach (GameObject obj in cacUIAnKhiMoGarage)
         {
-            if (obj != null) obj.SetActive(hienRa);
+            if (obj != null)
+            {
+                // Nếu UI đang hiển thị thì ghi nhớ lại và tắt đi
+                if (obj.activeSelf)
+                {
+                    _danhSachUIDangBatTruocDo.Add(obj);
+                    obj.SetActive(false);
+                }
+            }
         }
     }
 
+    private void KhoiPhucCacUIKhac()
+    {
+        // Chỉ bật lại các UI nào thực sự mở trước đó
+        foreach (GameObject obj in _danhSachUIDangBatTruocDo)
+        {
+            if (obj != null)
+            {
+                obj.SetActive(true);
+            }
+        }
+        _danhSachUIDangBatTruocDo.Clear();
+    }
+
     // ==========================================
-    // CÁC HÀM XỬ LÝ LỐP XE VÀ CỐP (GIỮ NGUYÊN)
+    // CÁC HÀM XỬ LÝ LỐP XE VÀ CỐP
     // ==========================================
     public Vector3 wheelRotationOffset = new Vector3(0, 0, 90);
     public float wheelScaleMultiplier = 2f;
@@ -181,7 +214,7 @@ public class GarageZone : MonoBehaviour
             stats.UpdateTireStats();
         }
 
-        ShowNotify($"Đã trang bị lốp mới!");
+        ShowNotify("Đã trang bị lốp mới!");
     }
 
     private void ApplyTireVisual(int wheelIndex)
@@ -227,6 +260,7 @@ public class GarageZone : MonoBehaviour
 
     public void UpdateAllUI()
     {
+        if (trunkButtons == null) return;
         for (int i = 0; i < trunkButtons.Length; i++)
         {
             if (trunkButtons[i] == null) continue;
@@ -240,8 +274,8 @@ public class GarageZone : MonoBehaviour
     public void ShowNotify(string message)
     {
         if (notificationText == null) return;
-        StopAllCoroutines();
-        StartCoroutine(FadeOutNotifyRoutine(message));
+        if (_notifyCoroutine != null) StopCoroutine(_notifyCoroutine);
+        _notifyCoroutine = StartCoroutine(FadeOutNotifyRoutine(message));
     }
 
     private IEnumerator FadeOutNotifyRoutine(string msg)

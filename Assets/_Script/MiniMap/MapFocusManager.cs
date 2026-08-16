@@ -38,6 +38,9 @@ public class MapFocusManager : MonoBehaviour
         {
             ShowTargetMarker(target.transform.position);
             SmoothFocusCamera(target.transform.position);
+
+            // Báo cho Tutorial đã bấm icon NPC Shop trên map
+            ForcedTutorialManager.Instance?.NotifyShopIconClicked();
         }
     }
 
@@ -48,6 +51,9 @@ public class MapFocusManager : MonoBehaviour
         {
             ShowTargetMarker(target.transform.position);
             SmoothFocusCamera(target.transform.position);
+
+            // Báo cho Tutorial đã bấm icon NPC Shop trên map
+            ForcedTutorialManager.Instance?.NotifyShopIconClicked();
         }
     }
 

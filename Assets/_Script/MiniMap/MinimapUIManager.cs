@@ -29,6 +29,10 @@ public class MinimapUIManager : MonoBehaviour
         // Bật/tắt UI
         if (smallMapUI != null) smallMapUI.SetActive(!isExpanded);
         if (expandedMapUI != null) expandedMapUI.SetActive(isExpanded);
+        if (isExpanded)
+        {
+            ForcedTutorialManager.Instance?.NotifyMapOpened();
+        }
 
         // Bật/tắt Camera tương ứng
         if (minimapCamera != null) minimapCamera.SetActive(!isExpanded);

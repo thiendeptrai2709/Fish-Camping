@@ -275,9 +275,9 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         }
     }
 
-    public void OnEndDrag(PointerEventData eventData)
+   public void OnEndDrag(PointerEventData eventData)
     {
-        if (eventData.button != PointerEventData.InputButton.Left || minigameUI == null) return;
+        if (eventData.button != PointerEventData.InputButton.Left) return;
         isDragging = false;
         canvasGroup.blocksRaycasts = true;
         canvasGroup.alpha = 1f;
@@ -295,7 +295,11 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             bool isOverXe = TrunkMinigameUI.Instance != null && TrunkMinigameUI.Instance.GetGridRoot() != null && TrunkMinigameUI.Instance.GetGridRoot().gameObject.activeInHierarchy && RectTransformUtility.RectangleContainsScreenPoint(TrunkMinigameUI.Instance.GetGridRoot(), eventData.position, eventData.pressEventCamera);
             bool placedInGrid = false;
 
-            if (isOverXe) { placedInGrid = TrunkMinigameUI.Instance.TryPlaceItemFromExternal(this, eventData.position); if (placedInGrid) currentOwner = GridOwner.Trunk; }
+            if (isOverXe) 
+            { 
+                placedInGrid = TrunkMinigameUI.Instance.TryPlaceItemFromExternal(this, eventData.position); 
+                if (placedInGrid) currentOwner = GridOwner.Trunk; 
+            }
             else if (isOverBalo)
             {
                 placedInGrid = BackpackMinigameUI.Instance.TryPlaceItemFromExternal(this, eventData.position);
@@ -332,7 +336,7 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
         if (isEquipped)
         {
-            bool placedInGrid = minigameUI.TryPlaceItemFromExternal(this, eventData.position);
+            bool placedInGrid = BackpackMinigameUI.Instance != null && BackpackMinigameUI.Instance.TryPlaceItemFromExternal(this, eventData.position);
             if (placedInGrid)
             {
                 if (itemShape != null && QuestManager.Instance != null)
