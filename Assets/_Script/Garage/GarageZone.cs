@@ -14,7 +14,6 @@ public class GarageZone : MonoBehaviour
 
     [Header("=== ẨN UI KHÁC KHI ĐANG MỞ GARAGE ===")]
     public GameObject[] cacUIAnKhiMoGarage;
-    // Lưu lại danh sách những UI thực sự ĐANG BẬT trước lúc mở Garage
     private List<GameObject> _danhSachUIDangBatTruocDo = new List<GameObject>();
 
     [Header("=== HỆ THỐNG THAY LỐP XE (3D Model) ===")]
@@ -40,6 +39,7 @@ public class GarageZone : MonoBehaviour
 
     private System.Action _onGarageClosed;
     private Coroutine _notifyCoroutine;
+    private Canvas _garageCanvas;
 
     private void Awake()
     {
@@ -52,6 +52,23 @@ public class GarageZone : MonoBehaviour
         Instance = this;
         transform.SetParent(null);
         DontDestroyOnLoad(gameObject);
+
+        // Gắn Canvas riêng để kiểm soát thứ tự hiển thị độc lập
+        if (garageUIPanel != null)
+        {
+            _garageCanvas = garageUIPanel.GetComponent<Canvas>();
+            if (_garageCanvas == null)
+            {
+                _garageCanvas = garageUIPanel.AddComponent<Canvas>();
+            }
+            _garageCanvas.overrideSorting = true;
+            _garageCanvas.sortingOrder = 850;
+
+            if (garageUIPanel.GetComponent<GraphicRaycaster>() == null)
+            {
+                garageUIPanel.AddComponent<GraphicRaycaster>();
+            }
+        }
     }
 
     void Start()
@@ -61,12 +78,15 @@ public class GarageZone : MonoBehaviour
 
         currentTrunkLevel = PlayerPrefs.GetInt("SavedTrunkLevel", 0);
 
-        if (btnDongGarage != null) btnDongGarage.onClick.AddListener(CloseGarageUI);
+        if (btnDongGarage != null) 
+        {
+            btnDongGarage.onClick.RemoveAllListeners();
+            btnDongGarage.onClick.AddListener(CloseGarageUI);
+        }
 
         LoadTireUI();
         UpdateAllUI();
 
-        // Khôi phục lốp xe
         int equippedTireIndex = PlayerPrefs.GetInt("EquippedTireIndex", -1);
         if (equippedTireIndex >= 0 && wheelPrefabs != null && equippedTireIndex < wheelPrefabs.Length)
         {
@@ -76,7 +96,6 @@ public class GarageZone : MonoBehaviour
 
     void Update()
     {
-        // Bấm phím Z để đóng bảng Garage an toàn
         if (garageUIPanel != null && garageUIPanel.activeInHierarchy)
         {
             if (Input.GetKeyDown(KeyCode.Z))
@@ -109,22 +128,31 @@ public class GarageZone : MonoBehaviour
     {
         _onGarageClosed = onCloseCallback;
 
-        // 1. Ẩn và ghi nhớ các UI đang bật
+        // 1. Ẩn các UI xung đột
         AnCacUIKhac();
 
-        // 2. Đưa Panel Garage lên lớp trên cùng tuyệt đối
+        // 2. Kích hoạt Panel và đưa lên trên cùng (KHÔNG bóp méo hay đổi Anchor/Kích thước)
         if (garageUIPanel != null)
         {
+            RectTransform rect = garageUIPanel.GetComponent<RectTransform>();
+            if (rect != null)
+            {
+                // Chỉ reset trục Z về 0 để không bị lệch chiều sâu 3D, giữ nguyên tọa độ X, Y và Size
+                Vector3 curPos = rect.localPosition;
+                curPos.z = 0f;
+                rect.localPosition = curPos;
+                rect.localScale = Vector3.one;
+                rect.localRotation = Quaternion.identity;
+            }
+
+            if (_garageCanvas != null)
+            {
+                _garageCanvas.overrideSorting = true;
+                _garageCanvas.sortingOrder = 850;
+            }
+
             garageUIPanel.SetActive(true);
             garageUIPanel.transform.SetAsLastSibling();
-
-            // Đảm bảo Canvas hiển thị đè lên toàn bộ HUD khác
-            Canvas canvas = garageUIPanel.GetComponentInParent<Canvas>();
-            if (canvas != null)
-            {
-                canvas.overrideSorting = true;
-                canvas.sortingOrder = 999;
-            }
         }
 
         UpdateAllUI();
@@ -134,7 +162,6 @@ public class GarageZone : MonoBehaviour
             UIButtonSoundManager.Instance.RegisterAllButtonsInScene();
         }
 
-        // Mở khóa chuột
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
     }
@@ -143,10 +170,8 @@ public class GarageZone : MonoBehaviour
     {
         if (garageUIPanel != null) garageUIPanel.SetActive(false);
 
-        // Khôi phục lại đúng những UI đã bật trước đó
         KhoiPhucCacUIKhac();
 
-        // Khóa lại chuột
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
 
@@ -161,21 +186,16 @@ public class GarageZone : MonoBehaviour
 
         foreach (GameObject obj in cacUIAnKhiMoGarage)
         {
-            if (obj != null)
+            if (obj != null && obj.activeSelf)
             {
-                // Nếu UI đang hiển thị thì ghi nhớ lại và tắt đi
-                if (obj.activeSelf)
-                {
-                    _danhSachUIDangBatTruocDo.Add(obj);
-                    obj.SetActive(false);
-                }
+                _danhSachUIDangBatTruocDo.Add(obj);
+                obj.SetActive(false);
             }
         }
     }
 
     private void KhoiPhucCacUIKhac()
     {
-        // Chỉ bật lại các UI nào thực sự mở trước đó
         foreach (GameObject obj in _danhSachUIDangBatTruocDo)
         {
             if (obj != null)
@@ -186,9 +206,6 @@ public class GarageZone : MonoBehaviour
         _danhSachUIDangBatTruocDo.Clear();
     }
 
-    // ==========================================
-    // CÁC HÀM XỬ LÝ LỐP XE VÀ CỐP
-    // ==========================================
     public Vector3 wheelRotationOffset = new Vector3(0, 0, 90);
     public float wheelScaleMultiplier = 2f;
 
