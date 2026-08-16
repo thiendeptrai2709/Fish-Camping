@@ -1696,9 +1696,16 @@ MonoBehaviour:
   npcName: "D\xE2n L\xE0ng"
   promptMessage: "Tr\xF2 chuy\u1EC7n"
   introDialogues:
-  - "C\u1EADu m\u1EDBi \u0111\u1EBFn \u0111\xE2y \xE0"
-  - "Tr\xF4ng c\u0169ng \u0111\u1EB9p ha"
-  - "Hay l\u01B0\u1EDBt tt kh\xF4ng"
+  - text: "C\u1EADu m\u1EDBi \u0111\u1EBFn th\u1ECB tr\u1EA5n n\xE0y h\u1EA3, \u1EDF
+      \u0111\xE2y y\xEAn b\xECnh m\xE0 m\u1ECDi ng\u01B0\u1EDDi t\u1ED1t b\u1EE5ng
+      l\u1EAFm"
+    voiceClip: {fileID: 8300000, guid: 37329d47647dd8749a8846ef18a7ad3b, type: 3}
+  returningDialogues:
+  - text: "Nay tr\u1EDDi m\xE1t ha, \u01B0\u1EDBc g\xEC \u0111\u01B0\u1EE3c \u0103n
+      c\xE1 h\u1EA5p"
+    voiceClip: {fileID: 8300000, guid: 3ed14689cfebd154e8b013f54a631c24, type: 3}
+  - text: "Th\u1EDDi ti\u1EBFt quanh h\u1ED3 h\xF4m nay \u0111\u1EB9p th\u1EADt \u0111\u1EA5y!"
+    voiceClip: {fileID: 8300000, guid: 66f96a27735447049a69db5338799aec, type: 3}
   _questGiver: {fileID: 0}
   _tireUpgrader: {fileID: 0}
   _fishingShop: {fileID: 0}
@@ -4025,6 +4032,26 @@ PrefabInstance:
       propertyPath: 'patrolPoints.Array.data[2]'
       value: 
       objectReference: {fileID: 784574937}
+    - target: {fileID: 2134691997133339119, guid: 46f84f82921c30f40b799b924db37d9a, type: 3}
+      propertyPath: shopReturningDialogues.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2134691997133339119, guid: 46f84f82921c30f40b799b924db37d9a, type: 3}
+      propertyPath: shopWelcomeDialogues.Array.data[0].voiceClip
+      value: 
+      objectReference: {fileID: 8300000, guid: b20f1fcfa07159448ad24e225b710525, type: 3}
+    - target: {fileID: 2134691997133339119, guid: 46f84f82921c30f40b799b924db37d9a, type: 3}
+      propertyPath: shopWelcomeDialogues.Array.data[1].voiceClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 6274d4effb8c37f4e98da5a67991ae71, type: 3}
+    - target: {fileID: 2134691997133339119, guid: 46f84f82921c30f40b799b924db37d9a, type: 3}
+      propertyPath: shopReturningDialogues.Array.data[0].voiceClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 778bd4dbb531c1b4da77ecdab3699419, type: 3}
+    - target: {fileID: 2134691997133339119, guid: 46f84f82921c30f40b799b924db37d9a, type: 3}
+      propertyPath: shopReturningDialogues.Array.data[1].voiceClip
+      value: 
+      objectReference: {fileID: 8300000, guid: e353326f0ba7697499ffe1f8014d7fc7, type: 3}
     - target: {fileID: 4914294095388213714, guid: 46f84f82921c30f40b799b924db37d9a, type: 3}
       propertyPath: 'introDialogues.Array.data[0]'
       value: "Ch\xE0o c\u1EADu, c\u1EADu mu\u1ED1n mua g\xEC \u1EDF \u0111\xE2y hay
@@ -24790,8 +24817,14 @@ MonoBehaviour:
   npcName: "D\xE2n L\xE0ng"
   promptMessage: "Tr\xF2 chuy\u1EC7n"
   introDialogues:
-  - "\u0110\u1ED5 x\u1EB1ng \xE0"
-  - E10 hay R95
+  - text: "C\u1EADu m\u1EDBi \u0111\u1EBFn \u0111\xE2y \u0111\u1ED5 x\u0103ng \xE0."
+    voiceClip: {fileID: 8300000, guid: 99bed4b9708982b4fb0d4b8d062fc1b8, type: 3}
+  - text: "X\u0103ng \u1EDF th\u1ECB tr\u1EA5n n\xE0y r\u1EBB l\u1EAFm, c\u1EADu
+      c\u1EE9 \u0111\u1ED5 tho\u1EA3i m\xE1i \u0111i."
+    voiceClip: {fileID: 8300000, guid: c6286b6bf9c30d64bae97864a6763c6d, type: 3}
+  returningDialogues:
+  - text: "Xe l\u1EA1i h\u1EBFt X\u0103ng \xE0 c\u1EADu"
+    voiceClip: {fileID: 8300000, guid: 2982290305e9c7f45bebd3b821dad329, type: 3}
   _questGiver: {fileID: 0}
   _tireUpgrader: {fileID: 0}
   _fishingShop: {fileID: 0}
@@ -25264,7 +25297,12 @@ MonoBehaviour:
   npcName: "D\xE2n L\xE0ng"
   promptMessage: "Tr\xF2 chuy\u1EC7n"
   introDialogues:
-  - "\u0110i b\u1ED9 t\xED kh\xF4ng"
+  - text: "T\xF4i l\xE0 m\u1ED9t c\xF4 g\xE1i xinh \u0111\u1EB9p c\u1EADu c\xF3 bi\u1EBFt
+      kh\xF4ng "
+    voiceClip: {fileID: 8300000, guid: 0e7a7534636c0b54bab17bf1865dd23c, type: 3}
+  returningDialogues:
+  - text: "C\u1EADu th\u1EA5y t\xF4i c\xF3 xinh h\u01A1n kh\xF4ng"
+    voiceClip: {fileID: 8300000, guid: e7afc70f9da9be3489ccb955915014d8, type: 3}
   _questGiver: {fileID: 0}
   _tireUpgrader: {fileID: 0}
   _fishingShop: {fileID: 0}
@@ -35463,10 +35501,17 @@ PrefabInstance:
       propertyPath: dialogueCanvas
       value: 
       objectReference: {fileID: 2061992135}
+    - target: {fileID: 4808568891388421988, guid: c79b09643cd5fb44999c2d5b9d3b34c9, type: 3}
+      propertyPath: voiceAudioSource
+      value: 
+      objectReference: {fileID: 1979683481}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2367902036233550742, guid: c79b09643cd5fb44999c2d5b9d3b34c9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1979683481}
   m_SourcePrefab: {fileID: 100100000, guid: c79b09643cd5fb44999c2d5b9d3b34c9, type: 3}
 --- !u!1001 &1202232943
 PrefabInstance:
@@ -42048,8 +42093,13 @@ MonoBehaviour:
   npcName: "D\xE2n L\xE0ng"
   promptMessage: "Tr\xF2 chuy\u1EC7n"
   introDialogues:
-  - "N\u0103m nay t\xF4i 70 tu\u1ED5i r\u1ED3i, haiz nh\u1EDB l\u1EA1i h\u1ED3i x\u01B0a
-    t\xF4i c\u0169ng \u0111\xE3 t\u1EEBng nh\u01B0 c\u1EADu"
+  - text: "N\u0103m nay t\xF4i c\u0169ng 70 tu\u1ED5i r\u1ED3i kh\xF4ng c\xF2n \u0111i
+      \u0111\xE2u \u0111\u01B0\u1EE3c xa ch\u1EC9 quanh \u1EDF th\u1ECB tr\u1EA5n
+      n\xE0y th\xF4i"
+    voiceClip: {fileID: 8300000, guid: 47e6b3038be7da2439e8ae8815523d1a, type: 3}
+  returningDialogues:
+  - text: "C\u1EADu tr\u1EBB nay c\xE2u \u0111\u01B0\u1EE3c con g\xEC r\u1ED3i."
+    voiceClip: {fileID: 8300000, guid: 56dda8efcf871d949b6d735a9e70fc50, type: 3}
   _questGiver: {fileID: 0}
   _tireUpgrader: {fileID: 0}
   _fishingShop: {fileID: 0}
@@ -50783,8 +50833,12 @@ PrefabInstance:
       value: NV2
       objectReference: {fileID: 0}
     - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
+      propertyPath: finalReturningDialogues.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
       propertyPath: questList.Array.data[0].rewardGold
-      value: 1500
+      value: 1000
       objectReference: {fileID: 0}
     - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
       propertyPath: questList.Array.data[0].targetItem
@@ -50814,6 +50868,135 @@ PrefabInstance:
       propertyPath: questList.Array.data[1].questDescription
       value: "C\xE2u 1 con c\xE1 C\xE1 Tr\xEA R\xE2u D\xE0i"
       objectReference: {fileID: 0}
+    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
+      propertyPath: finalReturningDialogues.Array.data[0].voiceClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 8b2279bd01e071c4eb570650f8cd7968, type: 3}
+    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
+      propertyPath: finalReturningDialogues.Array.data[1].voiceClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 1816f0070ab55ec428f83c39212cf69a, type: 3}
+    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
+      propertyPath: questList.Array.data[0].offerDialogues.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
+      propertyPath: questList.Array.data[1].offerDialogues.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
+      propertyPath: questList.Array.data[0].completeDialogues.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
+      propertyPath: 'questList.Array.data[0].offerDialogues.Array.data[0]'
+      value: "Ch\xE0o c\u1EADu tr\u1EBB, t\xF4i s\u1EBD giao nhi\u1EC7m v\u1EE5 cho
+        c\u1EADu"
+      objectReference: {fileID: 0}
+    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
+      propertyPath: questList.Array.data[0].progressDialogues.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
+      propertyPath: questList.Array.data[1].completeDialogues.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
+      propertyPath: questList.Array.data[1].progressDialogues.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
+      propertyPath: questList.Array.data[0].offerDialogues.Array.data[0].text
+      value: "Ch\xE0o c\u1EADu tr\u1EBB, t\xF4i s\u1EBD giao nhi\u1EC7m v\u1EE5 cho
+        c\u1EADu"
+      objectReference: {fileID: 0}
+    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
+      propertyPath: questList.Array.data[0].offerDialogues.Array.data[1].text
+      value: "sau \u0111\xF3 quay l\u1EA1i \u0111\xE2y \u0111\u1EC3 nh\u1EADn th\u01B0\u1EDFng"
+      objectReference: {fileID: 0}
+    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
+      propertyPath: questList.Array.data[0].offerDialogues.Array.data[2].text
+      value: "Nh\u1EA5n V \u0111\u1EC3 xem nhi\u1EC7m v\u1EE5"
+      objectReference: {fileID: 0}
+    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
+      propertyPath: questList.Array.data[1].offerDialogues.Array.data[0].text
+      value: "T\xF4i s\u1EBD giao ti\u1EBFp nhi\u1EC7m v\u1EE5 cho c\u1EADu, c\u1EADu
+        s\u1EB5n s\xE0ng ch\u01B0a?"
+      objectReference: {fileID: 0}
+    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
+      propertyPath: questList.Array.data[0].completeDialogues.Array.data[0].text
+      value: "Con c\xE1 n\xE0y th\u1EADt tuy\u1EC7t"
+      objectReference: {fileID: 0}
+    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
+      propertyPath: questList.Array.data[0].progressDialogues.Array.data[0].text
+      value: "H\xE3y ti\u1EBFp t\u1EE5c nhi\u1EC7m v\u1EE5 \u0111i"
+      objectReference: {fileID: 0}
+    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
+      propertyPath: questList.Array.data[1].completeDialogues.Array.data[0].text
+      value: "C\u1EADu th\u1EADt s\u1EF1 r\u1EA5t gi\u1ECFi \u0111\xF3 "
+      objectReference: {fileID: 0}
+    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
+      propertyPath: questList.Array.data[1].progressDialogues.Array.data[0].text
+      value: "H\xE3y l\xE0m ti\u1EBFp nhi\u1EC7m v\u1EE5 \u0111\u01B0\u1EE3c giao
+        \u0111i"
+      objectReference: {fileID: 0}
+    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
+      propertyPath: questList.Array.data[0].offerDialogues.Array.data[0].voiceClip
+      value: 
+      objectReference: {fileID: 8300000, guid: ee40f30752072ee4bbfc25ebcbc55a47, type: 3}
+    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
+      propertyPath: questList.Array.data[0].offerDialogues.Array.data[1].voiceClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 7cc1dc31c90f60a4d92ab84226c3e7a7, type: 3}
+    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
+      propertyPath: questList.Array.data[0].offerDialogues.Array.data[2].voiceClip
+      value: 
+      objectReference: {fileID: 8300000, guid: fb0c6b50daeca5f44b916cbbdf2f672a, type: 3}
+    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
+      propertyPath: questList.Array.data[1].offerDialogues.Array.data[0].voiceClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 6f68d441a7447894b807c2f0881b67f8, type: 3}
+    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
+      propertyPath: questList.Array.data[0].completeDialogues.Array.data[0].voiceClip
+      value: 
+      objectReference: {fileID: 8300000, guid: f335dc0b8cb167a49abc2cf6ebd647f1, type: 3}
+    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
+      propertyPath: questList.Array.data[0].progressDialogues.Array.data[0].voiceClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 52c8a2952bee6364fbfc05f0c35795a4, type: 3}
+    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
+      propertyPath: questList.Array.data[1].completeDialogues.Array.data[0].voiceClip
+      value: 
+      objectReference: {fileID: 8300000, guid: d8ff4500aad8f5149aa517c300607283, type: 3}
+    - target: {fileID: 8898449558618441033, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
+      propertyPath: introDialogues.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8898449558618441033, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
+      propertyPath: introDialogues.Array.data[0].text
+      value: "Ch\xE0o c\u1EADu tr\u1EBB, t\xF4i s\u1EBD giao nhi\u1EC7m v\u1EE5 cho
+        c\u1EADu"
+      objectReference: {fileID: 0}
+    - target: {fileID: 8898449558618441033, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
+      propertyPath: introDialogues.Array.data[1].text
+      value: "sau \u0111\xF3 quay l\u1EA1i \u0111\xE2y \u0111\u1EC3 nh\u1EADn th\u01B0\u1EDFng"
+      objectReference: {fileID: 0}
+    - target: {fileID: 8898449558618441033, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
+      propertyPath: introDialogues.Array.data[2].text
+      value: "Nh\u1EA5n V \u0111\u1EC3 xem nhi\u1EC7m v\u1EE5"
+      objectReference: {fileID: 0}
+    - target: {fileID: 8898449558618441033, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
+      propertyPath: introDialogues.Array.data[0].voiceClip
+      value: 
+      objectReference: {fileID: 8300000, guid: ee40f30752072ee4bbfc25ebcbc55a47, type: 3}
+    - target: {fileID: 8898449558618441033, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
+      propertyPath: introDialogues.Array.data[1].voiceClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 7cc1dc31c90f60a4d92ab84226c3e7a7, type: 3}
+    - target: {fileID: 8898449558618441033, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
+      propertyPath: introDialogues.Array.data[2].voiceClip
+      value: 
+      objectReference: {fileID: 8300000, guid: fb0c6b50daeca5f44b916cbbdf2f672a, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -52624,6 +52807,31 @@ PrefabInstance:
       propertyPath: 'patrolPoints.Array.data[3]'
       value: 
       objectReference: {fileID: 1919131195}
+    - target: {fileID: 7162119526752386763, guid: 4141093c7a3b52041b11f78dc308f534, type: 3}
+      propertyPath: introDialogues.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7162119526752386763, guid: 4141093c7a3b52041b11f78dc308f534, type: 3}
+      propertyPath: returningDialogues.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7162119526752386763, guid: 4141093c7a3b52041b11f78dc308f534, type: 3}
+      propertyPath: introDialogues.Array.data[0].text
+      value: "Xin ch\xE0o, th\u1EDDi ti\u1EBFt h\xF4m nay kh\xE1 l\xE0 \u0111\u1EB9p
+        c\u1EADu c\xF3 mu\u1ED1n \u0111i \u0111\xE2u ch\u01A1i kh\xF4ng"
+      objectReference: {fileID: 0}
+    - target: {fileID: 7162119526752386763, guid: 4141093c7a3b52041b11f78dc308f534, type: 3}
+      propertyPath: introDialogues.Array.data[1].text
+      value: "T\xF4i ngh\u0129 l\u1EA7n sau ch\xFAng ta g\u1EB7p l\u1EA1i"
+      objectReference: {fileID: 0}
+    - target: {fileID: 7162119526752386763, guid: 4141093c7a3b52041b11f78dc308f534, type: 3}
+      propertyPath: introDialogues.Array.data[0].voiceClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 5cea4cd8014723242919fc2e5b8e223e, type: 3}
+    - target: {fileID: 7162119526752386763, guid: 4141093c7a3b52041b11f78dc308f534, type: 3}
+      propertyPath: introDialogues.Array.data[1].voiceClip
+      value: 
+      objectReference: {fileID: 8300000, guid: e316ca5a99da2184e9a891a8d10a17f4, type: 3}
     - target: {fileID: 7194491774330914254, guid: 4141093c7a3b52041b11f78dc308f534, type: 3}
       propertyPath: m_Name
       value: NPC_Danlang
@@ -52689,6 +52897,30 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 95842515939335115, guid: 2584cfdf4d1d1a449bf4faf1f2f10ca3, type: 3}
+      propertyPath: upgradeReturningDialogues.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 95842515939335115, guid: 2584cfdf4d1d1a449bf4faf1f2f10ca3, type: 3}
+      propertyPath: welcomeDialogues.Array.data[0].voiceClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 763d184ed1808224e84a043a2681cc4d, type: 3}
+    - target: {fileID: 95842515939335115, guid: 2584cfdf4d1d1a449bf4faf1f2f10ca3, type: 3}
+      propertyPath: welcomeDialogues.Array.data[1].voiceClip
+      value: 
+      objectReference: {fileID: 8300000, guid: a3b54b8601a581a4896e105e4428fd37, type: 3}
+    - target: {fileID: 95842515939335115, guid: 2584cfdf4d1d1a449bf4faf1f2f10ca3, type: 3}
+      propertyPath: welcomeDialogues.Array.data[2].voiceClip
+      value: 
+      objectReference: {fileID: 8300000, guid: a5c38f3ed5086f545a21bfc3aa33635e, type: 3}
+    - target: {fileID: 95842515939335115, guid: 2584cfdf4d1d1a449bf4faf1f2f10ca3, type: 3}
+      propertyPath: upgradeReturningDialogues.Array.data[0].voiceClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 06a12cfd370aab14f8276f9e34422653, type: 3}
+    - target: {fileID: 95842515939335115, guid: 2584cfdf4d1d1a449bf4faf1f2f10ca3, type: 3}
+      propertyPath: upgradeReturningDialogues.Array.data[1].voiceClip
+      value: 
+      objectReference: {fileID: 8300000, guid: ef370675c6ba14345b3996dedd29934a, type: 3}
     - target: {fileID: 2339525508738480029, guid: 2584cfdf4d1d1a449bf4faf1f2f10ca3, type: 3}
       propertyPath: m_Name
       value: NPC_Ncap
@@ -55279,6 +55511,108 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 578891423395120205, guid: 40c7f97e6c60a2240b93b4de3b4148c5, type: 3}
   m_PrefabInstance: {fileID: 1543338061}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1979683478 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2367902036233550742, guid: c79b09643cd5fb44999c2d5b9d3b34c9, type: 3}
+  m_PrefabInstance: {fileID: 1197288668}
+  m_PrefabAsset: {fileID: 0}
+--- !u!82 &1979683481
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1979683478}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1001 &1980870212
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -56897,8 +57231,9 @@ MonoBehaviour:
   npcName: "D\xE2n L\xE0ng"
   promptMessage: "Tr\xF2 chuy\u1EC7n"
   introDialogues:
-  - "Mai ch\u1EDF t\xF4i \u0111i ch\u01A1i \u0111\u01B0\u1EE3c kh\xF4ng?"
-  - "Cho t\xF4i SDT "
+  - text: "Ch\xE0o m\u1ED9t bu\u1ED5i s\xE1ng t\u1ED1t l\xE0nh."
+    voiceClip: {fileID: 8300000, guid: 8732f0523f3d91c49bde42923be6ad01, type: 3}
+  returningDialogues: []
   _questGiver: {fileID: 0}
   _tireUpgrader: {fileID: 0}
   _fishingShop: {fileID: 0}

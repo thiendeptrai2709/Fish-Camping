@@ -1,50 +1,95 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro; 
+using TMPro;
 
 public class DialogueManager : MonoBehaviour
 {
     public static DialogueManager Instance { get; private set; }
     public bool IsDialogueActive => dialogueCanvas != null && dialogueCanvas.activeInHierarchy;
 
-
     [Header("UI Elements")]
     [SerializeField] public GameObject dialogueCanvas;
     [SerializeField] private TextMeshProUGUI nameText;
     [SerializeField] private TextMeshProUGUI dialogueText;
 
+    [Header("Audio Settings (Voice AI)")]
+    [SerializeField] private AudioSource voiceAudioSource;
+
     [Header("Settings")]
     [SerializeField] private float typingSpeed = 0.04f; // Tốc độ chạy từng chữ
 
-    private Queue<string> _sentences; // Hàng đợi chứa các câu thoại
+    private Queue<DialogueLine> _voiceDialogueQueue; // Hàng đợi chứa struct câu thoại + voice
+    private Queue<string> _sentences;                // Hàng đợi cho thoại chuỗi thường (tương thích ngược)
+    private bool _isUsingVoiceQueue = false;
+
     private bool _isTyping;
     private string _currentSentence;
-    private System.Action _onDialogueComplete; // Hành động chạy sau khi hết thoại (Ví dụ: mở Shop)
+    private System.Action _onDialogueComplete;
 
     private void Awake()
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
 
+        _voiceDialogueQueue = new Queue<DialogueLine>();
         _sentences = new Queue<string>();
-        dialogueCanvas.SetActive(false); // Đảm bảo UI ẩn khi vào game
+
+        if (voiceAudioSource == null)
+            voiceAudioSource = GetComponent<AudioSource>();
+
+        if (dialogueCanvas != null)
+            dialogueCanvas.SetActive(false);
     }
 
-    // Hàm gọi từ NPC để bắt đầu nói chuyện
+    // 1. HÀM MỚI: Nhận hội thoại kèm file âm thanh Voice AI từ NPCBase
+    public void StartDialogueWithVoice(string npcName, DialogueLine[] dialogues, System.Action onComplete = null)
+    {
+        if (QuestManager.Instance != null)
+        {
+            QuestManager.Instance.ClosePanel();
+        }
+
+        if (dialogues == null || dialogues.Length == 0)
+        {
+            onComplete?.Invoke();
+            return;
+        }
+
+        dialogueCanvas.SetActive(true);
+        nameText.text = npcName;
+        _onDialogueComplete = onComplete;
+        _isUsingVoiceQueue = true;
+
+        _voiceDialogueQueue.Clear();
+        foreach (var line in dialogues)
+        {
+            _voiceDialogueQueue.Enqueue(line);
+        }
+
+        DisplayNextSentence();
+    }
+
+    // 2. HÀM CŨ: Nhận hội thoại dạng string thông thường (giữ nguyên để không lỗi các script khác)
     public void StartDialogue(string npcName, string[] dialogues, System.Action onComplete = null)
     {
         if (QuestManager.Instance != null)
         {
             QuestManager.Instance.ClosePanel();
         }
+
+        if (dialogues == null || dialogues.Length == 0)
+        {
+            onComplete?.Invoke();
+            return;
+        }
+
         dialogueCanvas.SetActive(true);
         nameText.text = npcName;
         _onDialogueComplete = onComplete;
+        _isUsingVoiceQueue = false;
 
         _sentences.Clear();
-
-        // Nạp tất cả các câu thoại của NPC vào hàng đợi
         foreach (string sentence in dialogues)
         {
             _sentences.Enqueue(sentence);
@@ -64,18 +109,49 @@ public class DialogueManager : MonoBehaviour
             return;
         }
 
-        // Nếu đã hết câu thoại trong hàng đợi thì kết thúc hội thoại
-        if (_sentences.Count == 0)
+        // Xử lý nhánh có Voice AI
+        if (_isUsingVoiceQueue)
         {
-            EndDialogue();
-            return;
-        }
+            if (_voiceDialogueQueue.Count == 0)
+            {
+                EndDialogue();
+                return;
+            }
 
-        _currentSentence = _sentences.Dequeue();
-        StartCoroutine(TypeSentence(_currentSentence));
+            DialogueLine currentLine = _voiceDialogueQueue.Dequeue();
+            _currentSentence = currentLine.text;
+
+            // Dừng voice câu trước và phát voice AI câu hiện tại
+            PlayVoiceClip(currentLine.voiceClip);
+            StartCoroutine(TypeSentence(_currentSentence));
+        }
+        // Xử lý nhánh chuỗi thường
+        else
+        {
+            if (_sentences.Count == 0)
+            {
+                EndDialogue();
+                return;
+            }
+
+            _currentSentence = _sentences.Dequeue();
+            StartCoroutine(TypeSentence(_currentSentence));
+        }
     }
 
-    // Hiệu ứng đánh máy chữ chạy từ từ (ASMR)
+    private void PlayVoiceClip(AudioClip clip)
+    {
+        if (voiceAudioSource != null)
+        {
+            voiceAudioSource.Stop();
+            if (clip != null)
+            {
+                voiceAudioSource.clip = clip;
+                voiceAudioSource.Play();
+            }
+        }
+    }
+
     private IEnumerator TypeSentence(string sentence)
     {
         dialogueText.text = "";
@@ -84,7 +160,6 @@ public class DialogueManager : MonoBehaviour
         foreach (char letter in sentence.ToCharArray())
         {
             dialogueText.text += letter;
-            // Ở ĐÂY BẠN CÓ THỂ CHÈN TIẾNG "TÍT TÍT" NHẸ CỦA HỘI THOẠI
             yield return new WaitForSeconds(typingSpeed);
         }
 
@@ -93,16 +168,22 @@ public class DialogueManager : MonoBehaviour
 
     private void EndDialogue()
     {
+        if (voiceAudioSource != null)
+            voiceAudioSource.Stop();
+
         dialogueCanvas.SetActive(false);
         Debug.Log("Kết thúc hội thoại.");
 
-        // Nếu có sự kiện cài cắm phía sau (như mở UI Shop), kích hoạt nó ngay
         _onDialogueComplete?.Invoke();
     }
 
     public void ForceCloseDialogue()
     {
         StopAllCoroutines();
+        if (voiceAudioSource != null)
+            voiceAudioSource.Stop();
+
+        _voiceDialogueQueue.Clear();
         _sentences.Clear();
         dialogueCanvas.SetActive(false);
         _isTyping = false;

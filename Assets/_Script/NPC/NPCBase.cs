@@ -1,16 +1,29 @@
 ﻿using UnityEngine;
 
+[System.Serializable]
+public struct DialogueLine
+{
+    [TextArea(2, 4)]
+    public string text;
+    public AudioClip voiceClip;
+}
+
 public class NPCBase : MonoBehaviour, IInteractable
 {
     [Header("NPC Settings")]
-    [SerializeField] private string npcName = "Bác Thợ Máy";
-    [SerializeField] private string promptMessage = "Nâng cấp xe";
+    [SerializeField] private string npcName = "Dân Làng";
+    [SerializeField] private string promptMessage = "Trò chuyện";
 
-    [Header("Dialogues")]
-    [SerializeField]
-    [TextArea(2, 5)]
-    private string[] introDialogues = new string[] {
-        "Chào cậu, muốn nâng cấp gì cho chiếc xe tải cũ này à?"
+    [Header("=== THOẠI LẦN ĐẦU GẶP MẶT ===")]
+    [Tooltip("Chạy hết tất cả các câu này trong lần đầu người chơi tương tác")]
+    [SerializeField] private DialogueLine[] introDialogues;
+
+    [Header("=== THOẠI CÁC LẦN SAU QUAY LẠI (1 CÂU) ===")]
+    [Tooltip("Từ lần 2 trở đi, NPC sẽ chọn ngẫu nhiên duy nhất 1 câu trong này")]
+    [SerializeField] private DialogueLine[] returningDialogues = new DialogueLine[] {
+        new DialogueLine { text = "Chào cậu! Hôm nay đi câu thế nào rồi?" },
+        new DialogueLine { text = "Thời tiết quanh hồ hôm nay đẹp thật đấy!" },
+        new DialogueLine { text = "Cần giúp gì nữa không cậu bạn?" }
     };
 
     [Header("System Links")]
@@ -21,6 +34,7 @@ public class NPCBase : MonoBehaviour, IInteractable
     private Animator _animator;
     private bool _isInteracting = false;
     private NPCPatrol _npcPatrol;
+    private bool _hasMetPlayer = false; // Ghi nhớ đã nói chuyện lần đầu chưa
 
     private void Awake()
     {
@@ -32,74 +46,77 @@ public class NPCBase : MonoBehaviour, IInteractable
         if (_fishingShop == null) _fishingShop = GetComponent<NPCFishingShop>();
     }
 
-    // Thuộc tính từ Interface trả về chuỗi hiển thị UI
-    // DÒNG MỚI:
     public string InteractionPrompt => $"[{npcName}] \n Click Chuột Trái để {promptMessage}";
 
-    // Hàm gọi khi Player nhấn phím tương tác E
     public void Interact()
     {
-        if (_isInteracting) return; // Chặn trùng lặp hội thoại
+        if (_isInteracting) return;
         _isInteracting = true;
 
-        Debug.Log($"Đang tương tác với NPC: {npcName}");
-
-        // 1. Dừng Agent tuần tra nếu NPC này có đi lại
         if (_npcPatrol != null) _npcPatrol.PausePatrol();
 
-        // 2. Quay mặt về phía Player và chuyển Hoạt ảnh sang Nói chuyện (NPCState = 2)
         RotateTowardsPlayer();
         SetNPCAnimationState(2);
 
-        // NHÁNH 1: Kiểm tra xem đây là NPC có nhiệm vụ cốt truyện
         if (_questGiver != null)
         {
-            _questGiver.HandleQuestInteraction(npcName, _animator, () => {
-                ResetNPCState();
-            });
+            _questGiver.HandleQuestInteraction(npcName, _animator, ResetNPCState);
         }
-        // NHÁNH 2: Nếu là NPC nâng cấp xe (Gara)
         else if (_tireUpgrader != null)
         {
-            _tireUpgrader.HandleUpgradeInteraction(npcName, () => {
-                // Nhận tín hiệu từ NPCOffroadUpgrade báo về là đã xong việc (đóng Garage).
-                // Lập tức gọi hàm Reset để thả cờ _isInteracting = false.
-                ResetNPCState();
-            });
+            _tireUpgrader.HandleUpgradeInteraction(npcName, ResetNPCState);
         }
-        // NHÁNH 3: Nếu là NPC Thuyền trưởng bán đồ câu / thu mua cá
         else if (_fishingShop != null)
         {
-            _fishingShop.HandleShopInteraction(npcName, () => {
-                ResetNPCState();
-            });
+            _fishingShop.HandleShopInteraction(npcName, ResetNPCState);
         }
-        // NHÁNH 4: Dân làng bình thường thoại vu vơ
         else
         {
-            DialogueManager.Instance.StartDialogue(npcName, introDialogues, () => {
-                ResetNPCState();
-            });
+            // Nhánh NPC Dân Làng bình thường
+            DialogueLine[] linesToPlay;
+
+            if (!_hasMetPlayer)
+            {
+                // Lần đầu gặp: Nói toàn bộ danh sách intro
+                _hasMetPlayer = true;
+                linesToPlay = introDialogues;
+            }
+            else
+            {
+                // Các lần sau: Bốc ngẫu nhiên đúng 1 câu chào ngắn
+                linesToPlay = GetRandomReturningLine();
+            }
+
+            DialogueManager.Instance.StartDialogueWithVoice(npcName, linesToPlay, ResetNPCState);
         }
+    }
+
+    private DialogueLine[] GetRandomReturningLine()
+    {
+        if (returningDialogues != null && returningDialogues.Length > 0)
+        {
+            int randomIndex = Random.Range(0, returningDialogues.Length);
+            return new DialogueLine[] { returningDialogues[randomIndex] };
+        }
+
+        if (introDialogues != null && introDialogues.Length > 0)
+        {
+            return new DialogueLine[] { introDialogues[0] };
+        }
+
+        return new DialogueLine[] { new DialogueLine { text = "Chào cậu!" } };
     }
 
     public void SetNPCAnimationState(int stateValue)
     {
-        if (_animator != null)
-        {
-            _animator.SetInteger("NPCState", stateValue);
-        }
+        if (_animator != null) _animator.SetInteger("NPCState", stateValue);
     }
 
     private void ResetNPCState()
     {
         _isInteracting = false;
-        SetNPCAnimationState(0); // Trả hoạt ảnh về Idle đứng im mặc định
-
-        // Tiếp tục hành trình tuần tra nếu có
+        SetNPCAnimationState(0);
         if (_npcPatrol != null) _npcPatrol.ResumePatrol();
-
-        Debug.Log($"Hết tương tác! NPC {npcName} quay về trạng thái bình thường.");
     }
 
     private void RotateTowardsPlayer()
@@ -108,37 +125,19 @@ public class NPCBase : MonoBehaviour, IInteractable
         if (player != null)
         {
             Vector3 lookDirection = player.transform.position - transform.position;
-            lookDirection.y = 0; // Giữ cân bằng trục Y không cho NPC bập bênh
-
+            lookDirection.y = 0;
             if (lookDirection != Vector3.zero)
-            {
                 transform.rotation = Quaternion.LookRotation(lookDirection);
-            }
         }
     }
 
     public void SetWalkingState(bool isWalking)
     {
-        if (_isInteracting) return; // Đang nói chuyện thì không đổi trạng thái di chuyển
-
-        if (_animator != null)
-        {
-            // Đi bộ tuần tra -> NPCState = 1, Đứng im nghỉ mệt -> NPCState = 0
-            _animator.SetInteger("NPCState", isWalking ? 1 : 0);
-        }
-    }
-    public string GetInteractPrompt()
-    {
-        return InteractionPrompt;
+        if (_isInteracting) return;
+        if (_animator != null) _animator.SetInteger("NPCState", isWalking ? 1 : 0);
     }
 
-    public void OnFocus()
-    {
-        // Logic khi Player nhìn vào NPC (ví dụ: hiện viền sáng)
-    }
-
-    public void OnLoseFocus()
-    {
-        // Logic khi Player quay đầu đi chỗ khác (ví dụ: tắt viền sáng)
-    }
+    public string GetInteractPrompt() => InteractionPrompt;
+    public void OnFocus() { }
+    public void OnLoseFocus() { }
 }
