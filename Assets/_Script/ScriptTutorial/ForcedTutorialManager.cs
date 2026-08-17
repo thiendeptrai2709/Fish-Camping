@@ -8,48 +8,49 @@ using UnityEngine.SceneManagement;
 public enum TutorialStage
 {
     // === CÁC NHIỆM VỤ Ở MAP 1 (TOWN) ===
-    Quest0_WelcomeGame,             // NV 0: Chào mừng bạn đến với Fish-Camping
-    Quest1_Movement,                // NV 1: Di chuyển & Chạy nhanh (WASD + Shift hoặc Ctrl)
-    Quest1_2_FindOldTruck,          // NV 1.2: Tìm xe tải cũ (Ctrl tiếp tục)
-    Quest2_OpenAndCloseTrunk,       // NV 2: Mở cốp rồi bấm Tab đóng (Tab hoặc Ctrl)
-    Quest2_2_InspectCar,            // NV 2.2: Di chuột vào xe để kiểm tra xe, lùi ra xa để thoát (Ctrl tiếp tục)
-    Quest2_3_OpenHoodAndRepair,     // NV 2.3: Mở nắp capo lên để kiểm tra động cơ, sửa máy và châm nước cho xe (Ctrl tiếp tục)
-    Quest3_OpenMap,                 // NV 3: Bấm N mở map (N hoặc Ctrl)
-    Quest3_ClickShopIconStep,       // NV 3.1: Nhấp Icon Shop Đồ Câu -> Ctrl tiếp tục
-    Quest4_EnterVehicleStep,        // NV 4: Hướng dẫn lên xe -> Ctrl tiếp tục
-    Quest4_DriveAndRadioGuide,      // NV 4.1: Hướng dẫn lái xe & Radio -> Ctrl tiếp tục
-    Quest5_ShopNPCGuide,            // NV 5: Mua đồ ở Shop -> Bấm E (hoặc Ctrl)
-    Quest6_OpenMapUpgradeGuide,     // NV 6.1: Mở map xem nâng cấp -> Bấm N (hoặc Ctrl)
-    Quest6_InteractUpgradeNPC,      // NV 6.2: Nâng cấp xe -> Bấm Z (hoặc Ctrl)
-    Quest7_FindQuestNPC,            // NV 7: Tìm NPC giao nhiệm vụ -> Ctrl tiếp tục
-    Quest8_FindGasStation,          // NV 8.1: Đi tìm cây xăng và đổ xăng (Bấm F tại cây xăng)
-    Quest8_1_2_TalkToGasNPC,        // NV 8.1.2: Giao tiếp với người đổ xăng (Ctrl tiếp tục)
-    Quest8_GoToPumpAndBuyGas,       // NV 8.2: Xuống xe đi đến trụ xăng để mua can xăng (Ctrl tiếp tục)
-    Quest8_3_CheckFuelInTrunk,      // NV 8.3: Kiểm tra xăng ở cốp xe (Bấm Tab hoặc Ctrl tiếp tục)
-    Quest9_OpenTravelMap,           // NV 9: Bấm M chọn map câu cá
+    Quest0_WelcomeGame,             // NV 0: Chào mừng bạn đến với Fish-Camping[cite: 8]
+    Quest1_Movement,                // NV 1: Di chuyển & Chạy nhanh (WASD + Shift hoặc Ctrl)[cite: 8]
+    Quest1_2_FindOldTruck,          // NV 1.2: Tìm xe tải cũ (Ctrl tiếp tục)[cite: 8]
+    Quest2_OpenAndCloseTrunk,       // NV 2: Mở cốp rồi bấm Tab đóng (Tab hoặc Ctrl)[cite: 8]
+    Quest2_2_InspectCar,            // NV 2.2: Di chuột vào xe để kiểm tra xe, lùi ra xa để thoát (Ctrl tiếp tục)[cite: 8]
+    Quest2_3_OpenHoodAndRepair,     // NV 2.3: Mở nắp capo lên để kiểm tra động cơ, sửa máy và châm nước cho xe (Ctrl tiếp tục)[cite: 8]
+    Quest3_OpenMap,                 // NV 3: Bấm N mở map (N hoặc Ctrl)[cite: 8]
+    Quest3_ClickShopIconStep,       // NV 3.1: Nhấp Icon Shop Đồ Câu -> Ctrl tiếp tục[cite: 8]
+    Quest4_EnterVehicleStep,        // NV 4: Hướng dẫn lên xe -> Ctrl tiếp tục[cite: 8]
+    Quest4_DriveAndRadioGuide,      // NV 4.1: Hướng dẫn lái xe & Radio -> Ctrl tiếp tục[cite: 8]
+    Quest5_ShopNPCGuide,            // NV 5: Mua đồ ở Shop -> Bấm E (hoặc Ctrl)[cite: 8]
+    Quest6_OpenMapUpgradeGuide,     // NV 6.1: Mở map xem nâng cấp -> Bấm N (hoặc Ctrl)[cite: 8]
+    Quest6_InteractUpgradeNPC,      // NV 6.2: Nâng cấp xe -> Bấm Z (hoặc Ctrl)[cite: 8]
+    Quest7_FindQuestNPC,            // NV 7: Tìm NPC giao nhiệm vụ -> Ctrl tiếp tục[cite: 8]
+    Quest8_FindGasStation,          // NV 8.1: Đi tìm cây xăng và đổ xăng (Bấm F tại cây xăng)[cite: 8]
+    Quest8_1_2_TalkToGasNPC,        // NV 8.1.2: Giao tiếp với người đổ xăng (Ctrl tiếp tục)[cite: 8]
+    Quest8_GoToPumpAndBuyGas,       // NV 8.2: Xuống xe đi đến trụ xăng để mua can xăng (Ctrl tiếp tục)[cite: 8]
+    Quest8_3_CheckFuelInTrunk,      // NV 8.3: Kiểm tra xăng ở cốp xe (Bấm Tab hoặc Ctrl tiếp tục)[cite: 8]
+    Quest9_OpenTravelMap,           // NV 9: Bấm M chọn map câu cá[cite: 8]
 
     // === CÁC NHIỆM VỤ Ở MAP 2 (PINE LAKE) ===
-    Map2_Quest1_OpenMapToCamp,          // NV 1: Bấm N mở bản đồ, đi đến địa điểm cắm trại (N hoặc Ctrl)
-    Map2_Quest1_2_CheckFishingGear,     // NV 1.2: Kiểm tra trang bị đồ câu (Ctrl tiếp tục)
-    Map2_Quest2_OpenBackpack,           // NV 2: Bấm Tab mở balo (Tab hoặc Ctrl)
-    Map2_Quest3_EquipFishingItems,      // NV 3: Kéo cần câu, mồi, phao vào trang bị (Ctrl)
-    Map2_Quest3_1_WalkToLakeSide,       // NV 3.1: Đi đến ven hồ để câu cá (Ctrl tiếp tục)
-    Map2_Quest4_CanFishAtLake,          // NV 4: Bạn có thể câu cá ở hồ (Ctrl)
-    Map2_Quest5_FishingGuide,           // NV 5: Click chuột trái vung cần, căn lực giật cá (Chuột trái hoặc Ctrl)
-    Map2_Quest6_KeepOrReleaseFish,      // NV 6: Click chuột trái lấy cá / bấm Space thả cá (Space hoặc Chuột trái hoặc Ctrl)
-    Map2_Quest6_1_OpenBackpackAfterFish,// NV 6.1: Bấm Tab mở balo (Tab hoặc Ctrl)
-    Map2_Quest7_UnequipAndMoveCamp,     // NV 7: Cất cần vào balo, di chuyển lều trại (Ctrl)
-    Map2_Quest7_1_FishUsageGuide,       // NV 7.1: Bạn có thể đem cá về bán lấy tiền hoặc chế biến nấu ăn (Ctrl)
-    Map2_Quest8_PlaceFirewood,          // NV 8: Bấm B mở đồ cắm trại chọn đống củi đặt vị trí thích hợp (B hoặc Ctrl)
-    Map2_Quest9_PlaceCookingRack,       // NV 9: Chọn bộ giá treo nồi dã ngoại lên đống củi (Ctrl)
-    Map2_Quest10_CookFish,              // NV 10: Nấu ăn: Kéo con cá vào bếp (Ctrl)
-    Map2_Quest11_EatFish,               // NV 11: Lấy cá và ăn để tăng sức lực (Ctrl)
-    Map2_Quest12_SleepInTent,           // NV 12: Đi đến lều ngủ, tăng sức lực (Ctrl)
-    Map2_Quest13_PlaceLamp,             // NV 13: Bấm B tìm đèn đặt vị trí thích hợp, bật/tắt (B hoặc Ctrl)
-    Map2_Quest14_BackToTown,            // NV 14: Di chuyển về thị trấn (Ctrl)
-    Map2_Quest15_FishLog,               // NV 15: Bấm J để xem nhật ký cá (J hoặc Ctrl)
-    Map2_Quest16_HelpGuide,             // NV 16: Bấm P để xem các chỉ dẫn (P hoặc Ctrl)
-    Completed                           // Hoàn thành toàn bộ Tutorial
+    Map2_Quest1_OpenMapToCamp,          // NV 1: Bấm N mở bản đồ (N hoặc Ctrl)[cite: 8]
+    Map2_Quest1_1_GoToCampSite,         // NV 1.1: Đi đến địa điểm cắm trại (Ctrl tiếp tục)
+    Map2_Quest1_2_CheckFishingGear,     // NV 1.2: Kiểm tra trang bị đồ câu (Ctrl tiếp tục)[cite: 8]
+    Map2_Quest2_OpenBackpack,           // NV 2: Bấm Tab mở balo (Tab hoặc Ctrl)[cite: 8]
+    Map2_Quest3_EquipFishingItems,      // NV 3: Kéo cần câu, mồi, phao vào trang bị (Ctrl)[cite: 8]
+    Map2_Quest3_1_WalkToLakeSide,       // NV 3.1: Đi đến ven hồ để câu cá (Ctrl tiếp tục)[cite: 8]
+    Map2_Quest4_CanFishAtLake,          // NV 4: Bạn có thể câu cá ở hồ (Ctrl)[cite: 8]
+    Map2_Quest5_FishingGuide,           // NV 5: Click chuột trái vung cần, căn lực giật cá (Chuột trái hoặc Ctrl)[cite: 8]
+    Map2_Quest6_KeepOrReleaseFish,      // NV 6: Click chuột trái lấy cá / bấm Space thả cá (Space hoặc Chuột trái hoặc Ctrl)[cite: 8]
+    Map2_Quest6_1_OpenBackpackAfterFish,// NV 6.1: Bấm Tab mở balo (Tab hoặc Ctrl)[cite: 8]
+    Map2_Quest7_UnequipAndMoveCamp,     // NV 7: Cất cần vào balo, di chuyển lều trại (Ctrl)[cite: 8]
+    Map2_Quest7_1_FishUsageGuide,       // NV 7.1: Bạn có thể đem cá về bán lấy tiền hoặc chế biến nấu ăn (Ctrl)[cite: 8]
+    Map2_Quest8_PlaceFirewood,          // NV 8: Bấm B mở đồ cắm trại chọn đống củi đặt vị trí thích hợp (B hoặc Ctrl)[cite: 8]
+    Map2_Quest9_PlaceCookingRack,       // NV 9: Chọn bộ giá treo nồi dã ngoại lên đống củi (Ctrl)[cite: 8]
+    Map2_Quest10_CookFish,              // NV 10: Nấu ăn: Kéo con cá vào bếp (Ctrl)[cite: 8]
+    Map2_Quest11_EatFish,               // NV 11: Lấy cá và ăn để tăng sức lực (Ctrl)[cite: 8]
+    Map2_Quest12_SleepInTent,           // NV 12: Đi đến lều ngủ, tăng sức lực (Ctrl)[cite: 8]
+    Map2_Quest13_PlaceLamp,             // NV 13: Bấm B tìm đèn đặt vị trí thích hợp, bật/tắt (B hoặc Ctrl)[cite: 8]
+    Map2_Quest14_BackToTown,            // NV 14: Di chuyển về thị trấn (Ctrl)[cite: 8]
+    Map2_Quest15_FishLog,               // NV 15: Bấm J để xem nhật ký cá (J hoặc Ctrl)[cite: 8]
+    Map2_Quest16_HelpGuide,             // NV 16: Bấm P để xem các chỉ dẫn (P hoặc Ctrl)[cite: 8]
+    Completed                           // Hoàn thành toàn bộ Tutorial[cite: 8]
 }
 
 public class ForcedTutorialManager : MonoBehaviour
@@ -113,7 +114,7 @@ public class ForcedTutorialManager : MonoBehaviour
         if (audioSource == null)
             audioSource = GetComponent<AudioSource>();
 
-        // Tải lại tiến trình đã lưu
+        // Tải lại tiến trình đã lưu[cite: 8]
         LoadTutorialProgress();
     }
 
@@ -162,7 +163,7 @@ public class ForcedTutorialManager : MonoBehaviour
 
         if (Keyboard.current == null) return;
 
-        // BẤM R ĐỂ QUAY LẠI HƯỚNG DẪN TRƯỚC ĐÓ
+        // BẤM R ĐỂ QUAY LẠI HƯỚNG DẪN TRƯỚC ĐÓ[cite: 8]
         if (Keyboard.current.rKey.wasPressedThisFrame)
         {
             BackToPreviousStage();
@@ -184,7 +185,7 @@ public class ForcedTutorialManager : MonoBehaviour
         }
 
         // ========================================================
-        // MAP 1 (TOWN)
+        // MAP 1 (TOWN)[cite: 8]
         // ========================================================
         if (currentStage == TutorialStage.Quest0_WelcomeGame)
         {
@@ -285,11 +286,16 @@ public class ForcedTutorialManager : MonoBehaviour
         }
 
         // ========================================================
-        // MAP 2 (PINE LAKE)
+        // MAP 2 (PINE LAKE)[cite: 8]
         // ========================================================
         else if (currentStage == TutorialStage.Map2_Quest1_OpenMapToCamp)
         {
             if (Keyboard.current.nKey.wasPressedThisFrame || isCtrlPressed)
+                AdvanceToStage(TutorialStage.Map2_Quest1_1_GoToCampSite);
+        }
+        else if (currentStage == TutorialStage.Map2_Quest1_1_GoToCampSite)
+        {
+            if (isCtrlPressed)
                 AdvanceToStage(TutorialStage.Map2_Quest1_2_CheckFishingGear);
         }
         else if (currentStage == TutorialStage.Map2_Quest1_2_CheckFishingGear)
@@ -567,10 +573,14 @@ public class ForcedTutorialManager : MonoBehaviour
                 currentPromptText = "Nhấn [M] hoặc [Ctrl] để tiếp tục | [R] Quay lại";
                 break;
 
-            // === MAP 2 ===
+            // === MAP 2 ===[cite: 8]
             case TutorialStage.Map2_Quest1_OpenMapToCamp:
-                currentInstructionText = "Nhấn phím <color=#B388FF><b>N</b></color> mở bản đồ, sau đó di chuyển đến <color=#B388FF><b>Địa điểm cắm trại</b></color>.";
+                currentInstructionText = "Nhấn phím <color=#B388FF><b>N</b></color> để mở Bản đồ xem vị trí cắm trại.";
                 currentPromptText = "Nhấn [N] hoặc [Ctrl] để tiếp tục | [R] Quay lại";
+                break;
+            case TutorialStage.Map2_Quest1_1_GoToCampSite:
+                currentInstructionText = "Di chuyển đến khu vực <color=#B388FF><b>Địa điểm cắm trại</b></color> ven hồ.";
+                currentPromptText = "Nhấn [Ctrl] để tiếp tục | [R] Quay lại";
                 break;
             case TutorialStage.Map2_Quest1_2_CheckFishingGear:
                 currentInstructionText = "Hãy kiểm tra lại toàn bộ <color=#B388FF><b>Trang bị đồ câu</b></color> trước khi bắt đầu.";
