@@ -6,11 +6,7 @@ using System.Collections;
 public class FuelShop : MonoBehaviour
 {
     [Header("=== KẾT NỐI HỆ THỐNG ===")]
-    public InventoryGridData trunkGrid;
     public ItemShapeSO fuelCanItem;
-
-    [Header("=== GIAO DIỆN UI TÚI ĐỒ ===")]
-    public GameObject itemUIPrefab;
 
     [Header("=== GIÁ TIỀN & ÂM THANH ===")]
     public int pricePerCan = 50;
@@ -35,7 +31,6 @@ public class FuelShop : MonoBehaviour
 
     private void FindUI()
     {
-        // Luôn luôn cho phép quét lại nếu phát hiện bị mất kết nối (phòng hờ khi đổi Scene)
         if (interactUI == null || notificationText == null)
         {
             TrunkMinigameUI trunk = Object.FindFirstObjectByType<TrunkMinigameUI>(FindObjectsInactive.Include);
@@ -53,7 +48,6 @@ public class FuelShop : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        // Cho phép cả người chơi đi bộ VÀ ngồi trên xe đều có thể mua
         if (other.CompareTag("Player") || other.GetComponentInParent<CarFuel>() != null)
         {
             playerCollider = other;
@@ -74,7 +68,6 @@ public class FuelShop : MonoBehaviour
 
     private void Update()
     {
-        // Ẩn chữ nếu đang đi bộ mà bấm leo lên xe (Collider tắt)
         if (isPlayerNearby && playerCollider != null && !playerCollider.enabled && playerCollider.CompareTag("Player"))
         {
             isPlayerNearby = false;
@@ -89,13 +82,11 @@ public class FuelShop : MonoBehaviour
 
     private void TryBuyFuelCan()
     {
-        // Cứu cánh nếu mất đường dẫn Cốp xe khi đổi map
-        if (trunkGrid == null && TrunkMinigameUI.Instance != null)
+        if (fuelCanItem == null)
         {
-            trunkGrid = TrunkMinigameUI.Instance.GetGridData();
+            Debug.LogWarning("[FuelShop] Chưa gán file ScriptableObject can xăng vào fuelCanItem!");
+            return;
         }
-
-        if (trunkGrid == null || fuelCanItem == null || itemUIPrefab == null) return;
 
         if (MoneyManager.Instance != null && !MoneyManager.Instance.CoDuTien(pricePerCan))
         {
@@ -104,36 +95,26 @@ public class FuelShop : MonoBehaviour
             return;
         }
 
-        bool isPlaced = false;
-        int width = trunkGrid.GetGridWidth();
-        int height = trunkGrid.GetGridHeight();
-
-        for (int x = 0; x < width; x++)
+        // 1. Tìm TrunkMinigameUI (quét cả khi Panel đang bị ẩn/inactive)
+        TrunkMinigameUI trunkUI = TrunkMinigameUI.Instance;
+        if (trunkUI == null)
         {
-            for (int y = 0; y < height; y++)
-            {
-                if (trunkGrid.CanPlaceItem(x, y, fuelCanItem, false))
-                {
-                    GameObject newItemObj = Instantiate(itemUIPrefab);
-                    InventoryItemUI itemUI = newItemObj.GetComponent<InventoryItemUI>();
-
-                    BackpackMinigameUI backpackUI = Object.FindFirstObjectByType<BackpackMinigameUI>(FindObjectsInactive.Include);
-                    itemUI.Setup(fuelCanItem, backpackUI, x, y, false);
-                    itemUI.currentOwner = InventoryItemUI.GridOwner.Trunk;
-
-                    if (TrunkMinigameUI.Instance != null) TrunkMinigameUI.Instance.PlaceItemDirectlyToGrid(itemUI, x, y, false);
-
-                    isPlaced = true;
-                    break;
-                }
-            }
-            if (isPlaced) break;
+            trunkUI = Object.FindFirstObjectByType<TrunkMinigameUI>(FindObjectsInactive.Include);
         }
+
+        if (trunkUI == null)
+        {
+            Debug.LogError("[FuelShop] Không tìm thấy TrunkMinigameUI trong Scene!");
+            return;
+        }
+
+        // 2. Thêm đồ trực tiếp vào Cốp
+        bool isPlaced = trunkUI.AddItemToTrunk(fuelCanItem);
 
         if (isPlaced)
         {
             if (MoneyManager.Instance != null) MoneyManager.Instance.TruTien(pricePerCan);
-            ShowNotification("Đã mua 1 Can Xăng (-" + pricePerCan + "K)", Color.green);
+            ShowNotification($"Đã mua 1 Can Xăng (-{pricePerCan}K)", Color.green);
             if (audioSource != null && buySuccessSound != null) audioSource.PlayOneShot(buySuccessSound);
         }
         else

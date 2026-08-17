@@ -56,6 +56,14 @@ public class TrunkMinigameUI : MonoBehaviour
 
         CreateVisualGrid();
 
+        // Tự động tìm lại itemsContainer nếu bị rỗng
+        if (itemsContainer == null && gridRootRect != null)
+        {
+            Transform found = gridRootRect.Find("ItemsContainer");
+            if (found != null) itemsContainer = found.GetComponent<RectTransform>();
+            else itemsContainer = gridRootRect;
+        }
+
         if (itemsContainer != null && gridRootRect != null)
         {
             if (itemsContainer.parent != gridRootRect)
@@ -79,6 +87,45 @@ public class TrunkMinigameUI : MonoBehaviour
         }
 
         isGridInitialized = true;
+    }
+
+    // ==========================================
+    // HỆ THỐNG THÊM ĐỒ VÀO CỐP XE TỰ ĐỘNG (DÀNH CHO SHOP / TRỤ XĂNG)
+    // ==========================================
+    public bool AddItemToTrunk(ItemShapeSO shape)
+    {
+        if (shape == null) return false;
+
+        if (!isGridInitialized || gridData == null)
+        {
+            InitializeTrunkUI();
+            LoadTrunk();
+        }
+
+        int width = gridData.GetGridWidth();
+        int height = gridData.GetGridHeight();
+
+        // Tìm vị trí ô trống đầu tiên để nhét vừa
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                if (gridData.CanPlaceItem(x, y, shape, false))
+                {
+                    InventoryItemUI spawned = ForceSpawnLoadedItem(shape, x, y, false);
+                    if (spawned != null)
+                    {
+                        spawned.currentOwner = InventoryItemUI.GridOwner.Trunk;
+                    }
+                    SaveTrunk();
+                    Debug.Log($"<color=green>[Trunk] Đã thêm thành công {shape.itemName} vào cốp tại ô ({x}, {y})!</color>");
+                    return true;
+                }
+            }
+        }
+
+        Debug.LogWarning("[Trunk] Cốp xe đã đầy, không còn vị trí trống!");
+        return false;
     }
 
     // ==========================================
@@ -146,7 +193,6 @@ public class TrunkMinigameUI : MonoBehaviour
             ItemShapeSO foundShape = FindItemShapeByID(saved.itemID);
             if (foundShape != null)
             {
-                // Gọi hàm ForceSpawnItem để đảm bảo đồ luôn được sinh ra hiển thị lên UI
                 InventoryItemUI spawned = ForceSpawnLoadedItem(foundShape, saved.gridX, saved.gridY, saved.isRotated);
                 if (spawned != null)
                 {
@@ -164,12 +210,14 @@ public class TrunkMinigameUI : MonoBehaviour
         }
     }
 
-    // Hàm chuyên dụng để tải lại Item từ Save mà không bị hàm CanPlaceItem chặn nhầm
+    // Luôn đảm bảo sinh con đúng trong itemsContainer / Canvas của Cốp
     private InventoryItemUI ForceSpawnLoadedItem(ItemShapeSO shape, int startX, int startY, bool rotated)
     {
-        if (itemUIPrefab == null || itemsContainer == null) return null;
+        if (itemUIPrefab == null) return null;
 
-        GameObject itemObj = Instantiate(itemUIPrefab, itemsContainer);
+        Transform targetParent = itemsContainer != null ? itemsContainer : (gridRootRect != null ? gridRootRect : transform);
+
+        GameObject itemObj = Instantiate(itemUIPrefab, targetParent);
         RectTransform rect = itemObj.GetComponent<RectTransform>();
         rect.pivot = rotated ? new Vector2(0, 0) : new Vector2(0, 1);
         rect.anchorMin = new Vector2(0, 1);
@@ -192,7 +240,7 @@ public class TrunkMinigameUI : MonoBehaviour
 
     public InventoryItemUI SpawnItem(ItemShapeSO shape, int startX, int startY, bool rotated = false)
     {
-        if (gridData == null || itemUIPrefab == null || itemsContainer == null) return null;
+        if (gridData == null || itemUIPrefab == null) return null;
 
         if (gridData.CanPlaceItem(startX, startY, shape, rotated))
         {
@@ -231,7 +279,6 @@ public class TrunkMinigameUI : MonoBehaviour
     {
         if (gridData == null || cellVisualPrefab == null || gridRootRect == null) return;
 
-        // Dọn dẹp cell visual cũ nếu có
         foreach (Transform child in gridRootRect)
         {
             if (child != itemsContainer && (highlightOverlay == null || child != highlightOverlay.transform))
@@ -323,7 +370,7 @@ public class TrunkMinigameUI : MonoBehaviour
             dragGridOffsetY = 0;
         }
 
-        itemUI.transform.SetParent(itemsContainer);
+        itemUI.transform.SetParent(itemsContainer != null ? itemsContainer : gridRootRect);
         itemUI.transform.SetAsLastSibling();
 
         gridData.ClearCells(startDragX, startDragY, itemUI.GetItemShape(), startDragRotated);
@@ -331,7 +378,7 @@ public class TrunkMinigameUI : MonoBehaviour
         if (highlightOverlay != null)
         {
             highlightOverlay.gameObject.SetActive(true);
-            highlightOverlay.transform.SetParent(itemsContainer);
+            highlightOverlay.transform.SetParent(itemsContainer != null ? itemsContainer : gridRootRect);
             highlightOverlay.transform.SetSiblingIndex(itemUI.transform.GetSiblingIndex());
             highlightOverlay.rectTransform.sizeDelta = itemUI.GetComponent<RectTransform>().sizeDelta;
             highlightOverlay.rectTransform.localRotation = Quaternion.Euler(0f, 0f, startDragRotated ? -90f : 0f);
@@ -369,9 +416,10 @@ public class TrunkMinigameUI : MonoBehaviour
                     highlightOverlay.color = canPlace ? new Color(0f, 1f, 0f, 0.4f) : new Color(1f, 0f, 0f, 0.4f);
                 }
 
-                if (itemUI.transform.parent != itemsContainer)
+                Transform container = itemsContainer != null ? itemsContainer : gridRootRect;
+                if (itemUI.transform.parent != container)
                 {
-                    itemUI.transform.SetParent(itemsContainer, false);
+                    itemUI.transform.SetParent(container, false);
                     itemUI.transform.SetAsLastSibling();
                 }
                 itemUI.GetComponent<RectTransform>().anchoredPosition = snappedPosition;
@@ -407,7 +455,7 @@ public class TrunkMinigameUI : MonoBehaviour
 
     public void OnItemEndDrag(InventoryItemUI itemUI, Vector2 screenPosition)
     {
-        itemUI.transform.SetParent(itemsContainer);
+        itemUI.transform.SetParent(itemsContainer != null ? itemsContainer : gridRootRect);
 
         RectTransform itemRect = itemUI.GetComponent<RectTransform>();
         itemRect.anchorMin = new Vector2(0, 1);
@@ -467,7 +515,8 @@ public class TrunkMinigameUI : MonoBehaviour
 
     public void PlaceItemDirectlyToGrid(InventoryItemUI itemUI, int x, int y, bool rotated)
     {
-        itemUI.transform.SetParent(itemsContainer, false);
+        Transform container = itemsContainer != null ? itemsContainer : gridRootRect;
+        itemUI.transform.SetParent(container, false);
         itemUI.transform.SetAsLastSibling();
 
         RectTransform itemRect = itemUI.GetComponent<RectTransform>();
@@ -491,7 +540,8 @@ public class TrunkMinigameUI : MonoBehaviour
 
     public bool TrySwapItems(InventoryItemUI draggedItem, int targetX, int targetY)
     {
-        InventoryItemUI[] allItems = itemsContainer.GetComponentsInChildren<InventoryItemUI>();
+        Transform container = itemsContainer != null ? itemsContainer : gridRootRect;
+        InventoryItemUI[] allItems = container.GetComponentsInChildren<InventoryItemUI>();
         InventoryItemUI targetItem = null;
         int dragWidth = draggedItem.GetItemShape().GetWidth(draggedItem.IsRotated());
         int dragHeight = draggedItem.GetItemShape().GetHeight(draggedItem.IsRotated());
@@ -555,8 +605,9 @@ public class TrunkMinigameUI : MonoBehaviour
 
     public bool CanSwapItems(InventoryItemUI draggedItem, int targetX, int targetY)
     {
-        if (draggedItem == null || itemsContainer == null || draggedItem.IsEquipped()) return false;
-        InventoryItemUI[] allItems = itemsContainer.GetComponentsInChildren<InventoryItemUI>();
+        Transform container = itemsContainer != null ? itemsContainer : gridRootRect;
+        if (draggedItem == null || container == null || draggedItem.IsEquipped()) return false;
+        InventoryItemUI[] allItems = container.GetComponentsInChildren<InventoryItemUI>();
         InventoryItemUI targetItem = null;
         int dragWidth = draggedItem.GetItemShape().GetWidth(draggedItem.IsRotated());
         int dragHeight = draggedItem.GetItemShape().GetHeight(draggedItem.IsRotated());
@@ -621,8 +672,9 @@ public class TrunkMinigameUI : MonoBehaviour
 
     public bool CanSwapItemsExternal(InventoryItemUI draggedItem, int targetX, int targetY)
     {
-        if (draggedItem == null || itemsContainer == null || draggedItem.IsEquipped()) return false;
-        InventoryItemUI[] allItems = itemsContainer.GetComponentsInChildren<InventoryItemUI>();
+        Transform container = itemsContainer != null ? itemsContainer : gridRootRect;
+        if (draggedItem == null || container == null || draggedItem.IsEquipped()) return false;
+        InventoryItemUI[] allItems = container.GetComponentsInChildren<InventoryItemUI>();
         InventoryItemUI targetItem = null;
         int dragWidth = draggedItem.GetItemShape().GetWidth(draggedItem.IsRotated());
         int dragHeight = draggedItem.GetItemShape().GetHeight(draggedItem.IsRotated());
@@ -662,7 +714,8 @@ public class TrunkMinigameUI : MonoBehaviour
 
     public bool TrySwapItemsExternal(InventoryItemUI draggedItem, int targetX, int targetY)
     {
-        InventoryItemUI[] allItems = itemsContainer.GetComponentsInChildren<InventoryItemUI>();
+        Transform container = itemsContainer != null ? itemsContainer : gridRootRect;
+        InventoryItemUI[] allItems = container.GetComponentsInChildren<InventoryItemUI>();
         InventoryItemUI targetItem = null;
         int dragWidth = draggedItem.GetItemShape().GetWidth(draggedItem.IsRotated());
         int dragHeight = draggedItem.GetItemShape().GetHeight(draggedItem.IsRotated());

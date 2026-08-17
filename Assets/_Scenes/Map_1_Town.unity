@@ -29398,7 +29398,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4712704025220209879, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: allDatabaseItems.Array.size
-      value: 60
+      value: 61
       objectReference: {fileID: 0}
     - target: {fileID: 4712704025220209879, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: 'allDatabaseItems.Array.data[0]'
@@ -29640,6 +29640,10 @@ PrefabInstance:
       propertyPath: 'allDatabaseItems.Array.data[59]'
       value: 
       objectReference: {fileID: 11400000, guid: 8d494f569ee95cd4a9c1820ba183a727, type: 2}
+    - target: {fileID: 4712704025220209879, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
+      propertyPath: 'allDatabaseItems.Array.data[60]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 7635c80f6020f004e8c18f74318ffd18, type: 2}
     - target: {fileID: 4787469529099079590, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: 'tireMinigames.Array.data[0]'
       value: 
