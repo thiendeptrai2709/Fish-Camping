@@ -288,7 +288,7 @@ Light:
   m_Type: 2
   m_Color: {r: 1, g: 0.9295865, b: 0, a: 1}
   m_Intensity: 50
-  m_Range: 40
+  m_Range: 20
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
@@ -383,8 +383,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SignalBeaconLight
   mode: 0
-  minIntensity: 40
+  minIntensity: 0
   maxIntensity: 50
-  onDuration: 0.5
-  offDuration: 0.5
+  onDuration: 1
+  offDuration: 2
   pulseSpeed: 3
