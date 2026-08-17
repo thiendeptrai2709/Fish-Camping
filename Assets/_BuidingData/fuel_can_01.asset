@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 915fc19d6119cf842a5bea88bae3964c, type: 3}
-  m_Name: Item_FuelCan
+  m_Name: fuel_can_01
   m_EditorClassIdentifier: Assembly-CSharp::ItemShapeSO
   itemID: fuel_can_01
   itemName: "Can X\u0103ng D\u1EF1 Tr\u1EEF"
