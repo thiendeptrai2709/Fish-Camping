@@ -56,6 +56,8 @@ public class ForcedTutorialManager : MonoBehaviour
 {
     public static ForcedTutorialManager Instance { get; private set; }
 
+    private const string TUTORIAL_SAVE_KEY = "Saved_TutorialStage";
+
     [Header("UI Hiển Thị")]
     [SerializeField] private GameObject questUIPanel;
     [SerializeField] private TextMeshProUGUI instructionTMP;
@@ -110,6 +112,9 @@ public class ForcedTutorialManager : MonoBehaviour
 
         if (audioSource == null)
             audioSource = GetComponent<AudioSource>();
+
+        // Tải lại tiến trình đã lưu
+        LoadTutorialProgress();
     }
 
     private void OnEnable() => SceneManager.sceneLoaded += OnSceneLoaded;
@@ -145,6 +150,8 @@ public class ForcedTutorialManager : MonoBehaviour
                 AdvanceToStage(TutorialStage.Map2_Quest1_OpenMapToCamp);
             }
         }
+
+        UpdateQuestUI();
     }
 
     private void Start() => UpdateQuestUI();
@@ -374,7 +381,6 @@ public class ForcedTutorialManager : MonoBehaviour
 
     private void BackToPreviousStage()
     {
-        // Nếu đang ở màn 1 và chưa tới đích thì lùi tối đa về Quest0
         if (currentStage > TutorialStage.Quest0_WelcomeGame)
         {
             AdvanceToStage(currentStage - 1);
@@ -421,6 +427,7 @@ public class ForcedTutorialManager : MonoBehaviour
     public void AdvanceToStage(TutorialStage nextStage)
     {
         currentStage = nextStage;
+        SaveTutorialProgress();
 
         if (audioSource != null && nextQuestSFX != null)
             audioSource.PlayOneShot(nextQuestSFX);
@@ -429,18 +436,44 @@ public class ForcedTutorialManager : MonoBehaviour
         UpdateQuestUI();
     }
 
+    private void SaveTutorialProgress()
+    {
+        PlayerPrefs.SetInt(TUTORIAL_SAVE_KEY, (int)currentStage);
+        PlayerPrefs.Save();
+    }
+
+    private void LoadTutorialProgress()
+    {
+        if (PlayerPrefs.HasKey(TUTORIAL_SAVE_KEY))
+        {
+            int savedIndex = PlayerPrefs.GetInt(TUTORIAL_SAVE_KEY);
+            currentStage = (TutorialStage)savedIndex;
+        }
+    }
+
+    [ContextMenu("Reset Tutorial Progress")]
+    public void ResetTutorialProgress()
+    {
+        PlayerPrefs.DeleteKey(TUTORIAL_SAVE_KEY);
+        PlayerPrefs.Save();
+        currentStage = TutorialStage.Quest0_WelcomeGame;
+        UpdateQuestUI();
+    }
+
     private void UpdateQuestUI()
     {
+        if (currentStage == TutorialStage.Completed)
+        {
+            if (questUIPanel != null) questUIPanel.SetActive(false);
+            return;
+        }
+
         if (questUIPanel != null) questUIPanel.SetActive(true);
         if (instructionTMP == null) return;
 
         if (progressTMP != null)
         {
-            if (currentStage == TutorialStage.Completed)
-            {
-                progressTMP.text = "HOÀN THÀNH";
-            }
-            else if (currentStage < TutorialStage.Map2_Quest1_OpenMapToCamp)
+            if (currentStage < TutorialStage.Map2_Quest1_OpenMapToCamp)
             {
                 int currentMap1 = (int)currentStage;
                 int totalMap1 = (int)TutorialStage.Quest9_OpenTravelMap;
@@ -617,8 +650,6 @@ public class ForcedTutorialManager : MonoBehaviour
                 break;
 
             case TutorialStage.Completed:
-                currentInstructionText = "Đã hoàn thành nv.";
-                currentPromptText = "[R] Xem lại hướng dẫn trước";
                 break;
         }
 
