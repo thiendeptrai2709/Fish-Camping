@@ -8,8 +8,15 @@ public class MoneyManager : MonoBehaviour
 {
     public static MoneyManager Instance { get; private set; }
 
+    private const string SAVE_MONEY_KEY = "PlayerMoney";
+    private const string INIT_MONEY_KEY = "HasInitializedMoney";
+
+    [Header("--- CÀI ĐẶT TIỀN CHO USER MỚI ---")]
+    [Tooltip("Số tiền cố định cấp cho người chơi mới lần đầu vào game")]
+    [SerializeField] private int soTienKhoiTaoChoUserMoi = 5000;
+
     [Header("--- SỐ TIỀN THẬT CỦA NGƯỜI CHƠI ---")]
-    public int tongTien = 5000;
+    public int tongTien;
 
     [Tooltip("Kéo TẤT CẢ các Text hiển thị tiền trong game vào đây (Shop câu cá, Garage lốp xe, HUD ngoài map...)")]
     public TextMeshProUGUI[] cacTextHienThiTien;
@@ -33,11 +40,28 @@ public class MoneyManager : MonoBehaviour
             DontDestroyOnLoad(gameObject);
             SceneManager.sceneLoaded += OnSceneLoaded;
 
-            tongTien = PlayerPrefs.GetInt("PlayerMoney", 5000);
+            KhoiTaoTienNguoiChoi();
         }
         else
         {
             Destroy(gameObject);
+        }
+    }
+
+    private void KhoiTaoTienNguoiChoi()
+    {
+        // Kiểm tra xem user này đã từng vào game và nhận tiền khởi tạo chưa
+        if (!PlayerPrefs.HasKey(INIT_MONEY_KEY))
+        {
+            tongTien = soTienKhoiTaoChoUserMoi;
+            PlayerPrefs.SetInt(SAVE_MONEY_KEY, tongTien);
+            PlayerPrefs.SetInt(INIT_MONEY_KEY, 1);
+            PlayerPrefs.Save();
+            Debug.Log($"<color=cyan>[MoneyManager] Khởi tạo tài khoản mới: Cấp {tongTien} tiền cố định ban đầu.</color>");
+        }
+        else
+        {
+            tongTien = PlayerPrefs.GetInt(SAVE_MONEY_KEY, soTienKhoiTaoChoUserMoi);
         }
     }
 
@@ -53,10 +77,10 @@ public class MoneyManager : MonoBehaviour
 
     private void Update()
     {
-        // Bấm F9 để Reset tiền về 5000 (hoặc xóa sạch dữ liệu tiền)
+        // Bấm F9 để Reset tiền về mặc định
         if (Input.GetKeyDown(phimResetTien))
         {
-            ResetTien(5000);
+            ResetTien(soTienKhoiTaoChoUserMoi);
         }
 
         // Bấm F10 để buff nhanh +5000 tiền test mua đồ
@@ -108,7 +132,7 @@ public class MoneyManager : MonoBehaviour
         int tienTruoc = tongTien;
         tongTien -= soTien;
 
-        PlayerPrefs.SetInt("PlayerMoney", tongTien);
+        PlayerPrefs.SetInt(SAVE_MONEY_KEY, tongTien);
         PlayerPrefs.Save();
 
         ChayHieuUngDemSo(tienTruoc, tongTien);
@@ -120,7 +144,7 @@ public class MoneyManager : MonoBehaviour
         int tienTruoc = tongTien;
         tongTien += soTien;
 
-        PlayerPrefs.SetInt("PlayerMoney", tongTien);
+        PlayerPrefs.SetInt(SAVE_MONEY_KEY, tongTien);
         PlayerPrefs.Save();
 
         ChayHieuUngDemSo(tienTruoc, tongTien);
@@ -130,28 +154,29 @@ public class MoneyManager : MonoBehaviour
     // CÁC HÀM RESET TIỀN ĐỂ TEST GAME
     // ==========================================
 
-    // Gọi bằng code hoặc phím F9
-    public void ResetTien(int soTienMacDinh = 5000)
+    public void ResetTien(int soTienMacDinh)
     {
         int tienTruoc = tongTien;
         tongTien = soTienMacDinh;
 
-        PlayerPrefs.SetInt("PlayerMoney", tongTien);
+        PlayerPrefs.SetInt(SAVE_MONEY_KEY, tongTien);
+        PlayerPrefs.SetInt(INIT_MONEY_KEY, 1);
         PlayerPrefs.Save();
 
         ChayHieuUngDemSo(tienTruoc, tongTien);
         Debug.Log($"<color=yellow>[MoneyManager] Đã Reset tiền về: {soTienMacDinh} Vàng!</color>");
     }
 
-    // Nút bấm trên thanh Menu Unity (ngay cả khi chưa Play game)
     [ContextMenu("Xóa dữ liệu tiền (Reset PlayerPrefs)")]
     public void XoaLuuTruTien()
     {
-        PlayerPrefs.DeleteKey("PlayerMoney");
+        PlayerPrefs.DeleteKey(SAVE_MONEY_KEY);
+        PlayerPrefs.DeleteKey(INIT_MONEY_KEY);
         PlayerPrefs.Save();
-        tongTien = 5000;
+
+        tongTien = soTienKhoiTaoChoUserMoi;
         CapNhatGiaoDienTien(tongTien);
-        Debug.Log("<color=cyan>[MoneyManager] Đã xóa PlayerPrefs tiền thành công!</color>");
+        Debug.Log("<color=cyan>[MoneyManager] Đã xóa PlayerPrefs tiền và đưa về trạng thái user mới thành công!</color>");
     }
 
     private void ChayHieuUngDemSo(int tuSo, int denSo)
