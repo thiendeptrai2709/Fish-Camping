@@ -5,14 +5,18 @@ public class FullMapCameraController : MonoBehaviour
 {
     public float panSpeed = 50f;
 
+    [Header("Giới Hạn Bản Đồ (Chỉnh tay trên Inspector)")]
     public float minX;
     public float maxX;
     public float minZ;
     public float maxZ;
 
-    private Camera cam;
+    [Header("Cấu Hình Mượt")]
     public float smoothFocusSpeed = 5f;
+
+    private Camera cam;
     private Coroutine smoothFocusCoroutine;
+
     private void Awake()
     {
         cam = GetComponent<Camera>();
@@ -45,29 +49,43 @@ public class FullMapCameraController : MonoBehaviour
 
     private Vector3 GetClampedPosition(Vector3 targetPos)
     {
+        if (cam == null) cam = GetComponent<Camera>();
+
+        // Chuẩn hóa aspect ratio chuẩn theo Render Texture hoặc màn hình Build
+        float aspect = (cam.targetTexture != null)
+            ? (float)cam.targetTexture.width / cam.targetTexture.height
+            : cam.aspect;
+
         float orthoSize = cam.orthographicSize;
-        float orthoWidth = orthoSize * cam.aspect;
+        float orthoWidth = orthoSize * aspect;
 
         float limitMinX = minX + orthoWidth;
         float limitMaxX = maxX - orthoWidth;
         float limitMinZ = minZ + orthoSize;
         float limitMaxZ = maxZ - orthoSize;
 
-        if (limitMinX > limitMaxX)
+        // Tránh tình trạng bị kẹp dạt về mép khi Build ra màn hình Fullscreen
+        if (limitMinX >= limitMaxX)
         {
-            limitMinX = limitMaxX = (minX + maxX) / 2f;
+            targetPos.x = (minX + maxX) / 2f;
+        }
+        else
+        {
+            targetPos.x = Mathf.Clamp(targetPos.x, limitMinX, limitMaxX);
         }
 
-        if (limitMinZ > limitMaxZ)
+        if (limitMinZ >= limitMaxZ)
         {
-            limitMinZ = limitMaxZ = (minZ + maxZ) / 2f;
+            targetPos.z = (minZ + maxZ) / 2f;
         }
-
-        targetPos.x = Mathf.Clamp(targetPos.x, limitMinX, limitMaxX);
-        targetPos.z = Mathf.Clamp(targetPos.z, limitMinZ, limitMaxZ);
+        else
+        {
+            targetPos.z = Mathf.Clamp(targetPos.z, limitMinZ, limitMaxZ);
+        }
 
         return targetPos;
     }
+
     public void FocusOnPosition(Vector3 targetPosition)
     {
         if (smoothFocusCoroutine != null) StopCoroutine(smoothFocusCoroutine);
@@ -89,9 +107,9 @@ public class FullMapCameraController : MonoBehaviour
         targetPos.y = transform.position.y;
         targetPos = GetClampedPosition(targetPos);
 
-        while (Vector3.Distance(transform.position, targetPos) > 0.1f)
+        while (Vector3.Distance(new Vector3(transform.position.x, 0, transform.position.z), 
+                                new Vector3(targetPos.x, 0, targetPos.z)) > 0.1f)
         {
-            // Hủy trôi camera nếu người chơi bấm chuột kéo map đi chỗ khác
             if (Mouse.current != null && Mouse.current.leftButton.isPressed)
             {
                 yield break;
