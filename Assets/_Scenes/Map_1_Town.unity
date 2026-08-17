@@ -29130,11 +29130,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3127973283743639419, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: rainChance
-      value: 40
+      value: 35
       objectReference: {fileID: 0}
     - target: {fileID: 3127973283743639419, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: maxFogDensity
       value: 0.03
+      objectReference: {fileID: 0}
+    - target: {fileID: 3127973283743639419, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
+      propertyPath: maxRainVolume
+      value: 0.7
       objectReference: {fileID: 0}
     - target: {fileID: 3127973283743639419, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: dayNightSystem
@@ -29940,6 +29944,10 @@ PrefabInstance:
       propertyPath: moonLight
       value: 
       objectReference: {fileID: 957024034}
+    - target: {fileID: 7372342699422987304, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
+      propertyPath: currentTime
+      value: 0.6
+      objectReference: {fileID: 0}
     - target: {fileID: 7372342699422987304, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: maxMoonIntensity
       value: 0.2
@@ -56621,7 +56629,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2f7adab5e52b6d449620d9a93ff198a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MoneyManager
-  tongTien: 1000
+  tongTien: 300
   cacTextHienThiTien:
   - {fileID: 1734858131}
   - {fileID: 309806480}
