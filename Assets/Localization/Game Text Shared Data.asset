@@ -15,12 +15,212 @@ MonoBehaviour:
   m_TableCollectionName: Game Text
   m_TableCollectionNameGuidString: f1a165d24478b5741b965a38ede7488c
   m_Entries:
-  - m_Id: 57265807360
-    m_Key: menu_play
+  - m_Id: 20645879879753728
+    m_Key: NPCQUEST
     m_Metadata:
       m_Items: []
-  - m_Id: 210693447680
-    m_Key: setting-sound
+  - m_Id: 20646425034416128
+    m_Key: NPCQUEST1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20646556181913600
+    m_Key: NPCQUEST2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20646706207973376
+    m_Key: NPCQUEST3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20646995824664576
+    m_Key: NPCQUEST4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20647203899891712
+    m_Key: NPCQUEST5
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20647805719601152
+    m_Key: NPCQUEST6
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20647965673578496
+    m_Key: NPCQUEST7
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20648069956558848
+    m_Key: NPCQUEST8
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20648337284718592
+    m_Key: NPCQUEST9
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20648415256829952
+    m_Key: NPCQUEST10
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20648528440123392
+    m_Key: NPCQUEST11
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20648653614931968
+    m_Key: NPCQUEST12
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20648726562267136
+    m_Key: NPCQUEST13
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20656073783304192
+    m_Key: NPCU
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20656537341976576
+    m_Key: NPCU1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20656611547602944
+    m_Key: NPCU2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20656681022054400
+    m_Key: NPCU3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20656765742800896
+    m_Key: NPCU4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20660019486711808
+    m_Key: NPCB
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20660121836118016
+    m_Key: NPCB1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20660222079983616
+    m_Key: NPCB2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20660339122036736
+    m_Key: NPCB3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20660400321126400
+    m_Key: NPCB4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20660979663560704
+    m_Key: STT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20661061809004544
+    m_Key: STT1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20661192734203904
+    m_Key: STT2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20661362926477312
+    m_Key: STT3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20661473421221888
+    m_Key: STT4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20661599820767232
+    m_Key: STT5
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20661672877154304
+    m_Key: STT6
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20668835653672960
+    m_Key: TUI1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20668960526491648
+    m_Key: TUI2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20669154622103552
+    m_Key: TUI3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20669283060080640
+    m_Key: TUI4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20669438257717248
+    m_Key: TUI5
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20669527155990528
+    m_Key: TUI6
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20669637210333184
+    m_Key: TUI7
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20669716436541440
+    m_Key: TUI8
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20671095188152320
+    m_Key: NPCD
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20671173885878272
+    m_Key: NPCD1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20671253959335936
+    m_Key: NPCD2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20672994616467456
+    m_Key: NPCD3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20673163135213568
+    m_Key: NPCD4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20673312829923328
+    m_Key: NPCD5
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20673419402993664
+    m_Key: NPCD6
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20673630233878528
+    m_Key: NPCD7
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20673742670585856
+    m_Key: NPCD8
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20673913437478912
+    m_Key: NPCD9
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20674051920814080
+    m_Key: NPCD10
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20674220166930432
+    m_Key: NPCD11
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20677417157713920
+    m_Key: QC
     m_Metadata:
       m_Items: []
   m_Metadata:

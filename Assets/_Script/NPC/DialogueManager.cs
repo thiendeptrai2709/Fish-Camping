@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Localization.Settings; // Thêm thư viện tra cứu Localization
 using TMPro;
 
 public class DialogueManager : MonoBehaviour
@@ -12,6 +13,9 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] public GameObject dialogueCanvas;
     [SerializeField] private TextMeshProUGUI nameText;
     [SerializeField] private TextMeshProUGUI dialogueText;
+
+    [Header("Localization Config")]
+    [SerializeField] private string tableName = "Game Text"; // Tên bảng Localization của bạn
 
     [Header("Audio Settings (Voice AI)")]
     [SerializeField] private AudioSource voiceAudioSource;
@@ -57,7 +61,7 @@ public class DialogueManager : MonoBehaviour
         }
 
         dialogueCanvas.SetActive(true);
-        nameText.text = npcName;
+        nameText.text = GetLocalizedText(npcName); // Tự động dịch tên NPC nếu là Key
         _onDialogueComplete = onComplete;
         _isUsingVoiceQueue = true;
 
@@ -70,7 +74,7 @@ public class DialogueManager : MonoBehaviour
         DisplayNextSentence();
     }
 
-    // 2. HÀM CŨ: Nhận hội thoại dạng string thông thường (giữ nguyên để không lỗi các script khác)
+    // 2. HÀM CŨ: Nhận hội thoại dạng string thông thường
     public void StartDialogue(string npcName, string[] dialogues, System.Action onComplete = null)
     {
         if (QuestManager.Instance != null)
@@ -85,14 +89,15 @@ public class DialogueManager : MonoBehaviour
         }
 
         dialogueCanvas.SetActive(true);
-        nameText.text = npcName;
+        nameText.text = GetLocalizedText(npcName); // Tự động dịch tên NPC nếu là Key
         _onDialogueComplete = onComplete;
         _isUsingVoiceQueue = false;
 
         _sentences.Clear();
         foreach (string sentence in dialogues)
         {
-            _sentences.Enqueue(sentence);
+            // Tự động dịch câu thoại theo ngôn ngữ đang chọn trước khi đưa vào hàng đợi
+            _sentences.Enqueue(GetLocalizedText(sentence));
         }
 
         DisplayNextSentence();
@@ -119,7 +124,8 @@ public class DialogueManager : MonoBehaviour
             }
 
             DialogueLine currentLine = _voiceDialogueQueue.Dequeue();
-            _currentSentence = currentLine.text;
+            // Tự động tra cứu bản dịch cho câu thoại Voice AI
+            _currentSentence = GetLocalizedText(currentLine.text);
 
             // Dừng voice câu trước và phát voice AI câu hiện tại
             PlayVoiceClip(currentLine.voiceClip);
@@ -136,6 +142,30 @@ public class DialogueManager : MonoBehaviour
 
             _currentSentence = _sentences.Dequeue();
             StartCoroutine(TypeSentence(_currentSentence));
+        }
+    }
+
+    // Hàm phụ trợ tra từ điển: Tự động dịch nếu là Key trong bảng, nếu không có Key thì giữ nguyên chữ gốc
+    private string GetLocalizedText(string keyOrText)
+    {
+        if (string.IsNullOrEmpty(keyOrText)) return "";
+
+        try
+        {
+            var table = LocalizationSettings.StringDatabase.GetTable(tableName);
+            if (table != null)
+            {
+                var entry = table.GetEntry(keyOrText);
+                if (entry != null)
+                {
+                    return entry.GetLocalizedString();
+                }
+            }
+            return keyOrText;
+        }
+        catch
+        {
+            return keyOrText;
         }
     }
 

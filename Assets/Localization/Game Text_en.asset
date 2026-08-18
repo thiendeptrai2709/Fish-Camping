@@ -18,12 +18,219 @@ MonoBehaviour:
   m_Metadata:
     m_Items: []
   m_TableData:
-  - m_Id: 57265807360
-    m_Localized: Play
+  - m_Id: 20646425034416128
+    m_Localized: Hello, young man; I am going to assign you a task.
     m_Metadata:
       m_Items: []
-  - m_Id: 210693447680
-    m_Localized: Sound
+  - m_Id: 20645879879753728
+    m_Localized: Quest NPC
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20646556181913600
+    m_Localized: Then come back here to claim your reward.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20646706207973376
+    m_Localized: Press V to view missions.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20646995824664576
+    m_Localized: Hi there! How did the fishing go today?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20647203899891712
+    m_Localized: The weather around the lake is truly beautiful today!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20647805719601152
+    m_Localized: Do you need any more help, my friend?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20647965673578496
+    m_Localized: Continue with the mission.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20648069956558848
+    m_Localized: This fish is amazing.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20648337284718592
+    m_Localized: I am going to assign you a task; are you ready?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20648415256829952
+    m_Localized: Carry on with the mission.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20648528440123392
+    m_Localized: You're really good.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20648653614931968
+    m_Localized: Thanks a lot! Thanks to you, everything went smoothly.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20648726562267136
+    m_Localized: "The weather is really nice today\u2014take a break!"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20656073783304192
+    m_Localized: The Mechanic
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20656537341976576
+    m_Localized: Hi there! This truck looks really rusty, doesn't it?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20656611547602944
+    m_Localized: If you want to head into the Misty Swamp area, standard tires will
+      likely slip.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20656681022054400
+    m_Localized: Let me see if I can upgrade you to a set of off-road tires!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20656765742800896
+    m_Localized: Looking to add any more mods to your car?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20660019486711808
+    m_Localized: Salesman
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20660121836118016
+    m_Localized: Hey there, young friend! Need some killer bait or top-notch gear
+      for your fishing trip?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20660222079983616
+    m_Localized: "Or if you catch any fresh, delicious fish, just bring them all
+      here and I\u2019ll buy them from you at a good price!"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20660339122036736
+    m_Localized: Stopping by the fishing shop again, young man?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20660400321126400
+    m_Localized: Any fresh catch today?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20660979663560704
+    m_Localized: SETTING
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20661061809004544
+    m_Localized: SOUND
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20661192734203904
+    m_Localized: EFFECT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20661362926477312
+    m_Localized: LOG OUT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20661473421221888
+    m_Localized: EXIT GAME
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20661599820767232
+    m_Localized: SCREEN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20661672877154304
+    m_Localized: LANGUAGE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20668835653672960
+    m_Localized: Move character
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20668960526491648
+    m_Localized: Interact with NPC, exit vehicle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20669154622103552
+    m_Localized: Backpack
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20669283060080640
+    m_Localized: Closing the garage shop
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20669438257717248
+    m_Localized: Select a map to play
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20669527155990528
+    m_Localized: Make the character run fast.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20669637210333184
+    m_Localized: Decorate
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20669716436541440
+    m_Localized: Setting
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20671095188152320
+    m_Localized: Villagers
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20671173885878272
+    m_Localized: "Hi there, the weather is quite nice today\u2014would you like to
+      go out somewhere?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20671253959335936
+    m_Localized: I think we'll meet again next time.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20672994616467456
+    m_Localized: "Are you new to this town? It\u2019s peaceful here, and the people
+      are very kind."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20673163135213568
+    m_Localized: Did you just come here to fill up?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20673312829923328
+    m_Localized: Gasoline in this town is really cheap, so feel free to fill up as
+      much as you want.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20673419402993664
+    m_Localized: "I'm a beautiful girl\u2014did you know that?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20673630233878528
+    m_Localized: Is your bike out of gas again?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20673742670585856
+    m_Localized: Do you think I look prettier?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20673913437478912
+    m_Localized: Wishing you a good morning.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20674051920814080
+    m_Localized: "I\u2019m 70 years old now, so I can\u2019t travel far anymore\u2014I
+      just stay around this town."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20674220166930432
+    m_Localized: What have you caught so far, young man?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20677417157713920
+    m_Localized: QUEST
     m_Metadata:
       m_Items: []
   references:

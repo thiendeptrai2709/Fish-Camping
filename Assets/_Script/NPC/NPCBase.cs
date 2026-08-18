@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
+using UnityEngine.Localization.Settings;
 
 [System.Serializable]
-public struct DialogueLine
+public class DialogueLine
 {
     [TextArea(2, 4)]
     public string text;
@@ -21,9 +22,9 @@ public class NPCBase : MonoBehaviour, IInteractable
     [Header("=== THOẠI CÁC LẦN SAU QUAY LẠI (1 CÂU) ===")]
     [Tooltip("Từ lần 2 trở đi, NPC sẽ chọn ngẫu nhiên duy nhất 1 câu trong này")]
     [SerializeField] private DialogueLine[] returningDialogues = new DialogueLine[] {
-        new DialogueLine { text = "Chào cậu! Hôm nay đi câu thế nào rồi?" },
-        new DialogueLine { text = "Thời tiết quanh hồ hôm nay đẹp thật đấy!" },
-        new DialogueLine { text = "Cần giúp gì nữa không cậu bạn?" }
+        new DialogueLine { text = "NPCQUEST4" },
+        new DialogueLine { text = "NPCQUEST5" },
+        new DialogueLine { text = "NPCQUEST6" }
     };
 
     [Header("System Links")]
@@ -46,7 +47,24 @@ public class NPCBase : MonoBehaviour, IInteractable
         if (_fishingShop == null) _fishingShop = GetComponent<NPCFishingShop>();
     }
 
-    public string InteractionPrompt => $"[{npcName}] \n Click Chuột Trái để {promptMessage}";
+    public string InteractionPrompt
+    {
+        get
+        {
+            string localizedName = LocalizationSettings.StringDatabase.GetLocalizedString("Game Text", npcName);
+            bool isVietnamese = LocalizationSettings.SelectedLocale != null &&
+                                LocalizationSettings.SelectedLocale.Identifier.Code.StartsWith("vi");
+
+            if (isVietnamese)
+            {
+                return $"[{localizedName}] \n Click Chuột Trái để {promptMessage}";
+            }
+            else
+            {
+                return $"[{localizedName}] \n Left Click to Talk";
+            }
+        }
+    }
 
     public void Interact()
     {
