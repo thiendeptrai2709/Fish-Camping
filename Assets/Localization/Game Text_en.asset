@@ -233,6 +233,353 @@ MonoBehaviour:
     m_Localized: QUEST
     m_Metadata:
       m_Items: []
+  - m_Id: 21001049943760896
+    m_Localized: RECEIVE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21001898094944256
+    m_Localized: 'Item 1: Spotted Orange Lake Fish'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21002071130955776
+    m_Localized: 'Question 1: Long-whiskered catfish'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21008988964315136
+    m_Localized: 'Refueling [F]'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21009400131936256
+    m_Localized: Press the [B] key to enter the Garage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21010978775687168
+    m_Localized: Equipment
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21011363292700672
+    m_Localized: Fishing Rod
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21011594046529536
+    m_Localized: Bait
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21011779342491648
+    m_Localized: Lifebuoy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21012247317766144
+    m_Localized: Trunk
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21014235413667840
+    m_Localized: Machine Repair
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21014397666123776
+    m_Localized: Top up with water
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21015029726765056
+    m_Localized: Move
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21015394492801024
+    m_Localized: Diary
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21017909972099072
+    m_Localized: Build
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21018370594758656
+    m_Localized: Cook
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21022656837902336
+    m_Localized: GARAGE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21023071197388800
+    m_Localized: '[F] Stocking Up on Gasoline'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21023280585433088
+    m_Localized: Purchased
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21023716780466176
+    m_Localized: Refuel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21023881075548160
+    m_Localized: Close
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836161613824
+    m_Localized: GUIDE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836161613825
+    m_Localized: Press [Ctrl] to start
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836165808128
+    m_Localized: Press [Ctrl] to continue | [R] Back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836165808129
+    m_Localized: Press [Tab] or [Ctrl] to continue | [R] Back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836165808130
+    m_Localized: Press [N] or [Ctrl] to continue | [R] Back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836165808131
+    m_Localized: Press [E] or [Ctrl] to continue | [R] Back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836165808132
+    m_Localized: Press [Z] or [Ctrl] to continue | [R] Back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836165808133
+    m_Localized: Press [M] or [Ctrl] to continue | [R] Back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836165808134
+    m_Localized: Press [B] or [Ctrl] to continue | [R] Back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836165808135
+    m_Localized: Press [J] or [Ctrl] to continue | [R] Back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836165808136
+    m_Localized: Press [P] or [Ctrl] to complete | [R] Back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836165808137
+    m_Localized: Press [Space] or [Ctrl] to continue | [R] Back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836165808138
+    m_Localized: '[R] Back'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836165808139
+    m_Localized: Welcome to <color=#B388FF><b>Fish-Camping</b></color>!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836165808140
+    m_Localized: Use <color=#B388FF><b>W, A, S, D</b></color> to move and hold <color=#B388FF><b>Shift</b></color>
+      to sprint.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836165808141
+    m_Localized: Look around and locate your <color=#B388FF><b>Old Truck</b></color>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836165808142
+    m_Localized: <color=#B388FF><b>Left Click</b></color> the trunk to inspect, press
+      <color=#B388FF><b>Tab</b></color> to close.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836165808143
+    m_Localized: Hover your <color=#B388FF><b>Cursor</b></color> over the vehicle
+      to inspect, step back to exit.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836165808144
+    m_Localized: Open the <color=#B388FF><b>Hood</b></color> to inspect engine, repair
+      and refill coolant.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836165808145
+    m_Localized: Press <color=#B388FF><b>N</b></color> to open the Map.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836165808146
+    m_Localized: Click the <color=#B388FF><b>Tackle Shop Icon</b></color> on the
+      map to set waypoint.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836165808147
+    m_Localized: Approach vehicle door and <color=#B388FF><b>Left Click</b></color>
+      to get in.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836165808148
+    m_Localized: 'Drive to Shop (Press <color=#B388FF><b>E</b></color> to exit).
+      (Radio: <color=#B388FF><b>L</b></color> Power | <color=#B388FF><b>K</b></color>
+      Track | <color=#B388FF><b>[ ]</b></color> Vol | <color=#B388FF><b>G</b></color>
+      Lights).'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836170002432
+    m_Localized: Approach <color=#B388FF><b>Shopkeeper</b></color> to buy gear, press
+      <color=#B388FF><b>E</b></color> to close.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836170002433
+    m_Localized: Press <color=#B388FF><b>N</b></color> to open map and locate the
+      <color=#B388FF><b>Mechanic NPC</b></color>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836170002434
+    m_Localized: Interact with <color=#B388FF><b>Mechanic</b></color> to upgrade
+      your vehicle, press <color=#B388FF><b>Z</b></color> to exit.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836170002435
+    m_Localized: Find the <color=#B388FF><b>Quest NPC</b></color> in town to receive
+      your first quest.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836170002436
+    m_Localized: Drive around town to find the <color=#B388FF><b>Gas Station</b></color>
+      and refuel your vehicle.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836170002437
+    m_Localized: Talk to the <color=#B388FF><b>Gas Attendant</b></color> to learn
+      more details.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836170002438
+    m_Localized: Exit the truck and walk to the fuel pump to buy a spare fuel can.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836170002439
+    m_Localized: Open the <color=#B388FF><b>Trunk</b></color> to verify the fuel
+      can is stored inside.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836170002440
+    m_Localized: Press <color=#B388FF><b>M</b></color> to open the travel map and
+      travel to <color=#B388FF><b>Pine Lake</b></color>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836170002441
+    m_Localized: Press <color=#B388FF><b>N</b></color> to open the map and find the
+      campsite.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836170002442
+    m_Localized: Head over to the lakeside <color=#B388FF><b>Campsite</b></color>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836170002443
+    m_Localized: Double check your <color=#B388FF><b>Fishing Gear</b></color> before
+      casting.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836170002444
+    m_Localized: Press <color=#B388FF><b>Tab</b></color> to open your Backpack.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836170002445
+    m_Localized: Drag the <color=#B388FF><b>Rod, Bait, and Bobber</b></color> into
+      your equipment slots.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836170002446
+    m_Localized: Walk over to the <color=#B388FF><b>Lakeshore</b></color> to prepare
+      for fishing.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836170002447
+    m_Localized: You can fish along the shorelines of Pine Lake.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836170002448
+    m_Localized: <color=#B388FF><b>Fishing:</b></color> <color=#B388FF><b>Left Click</b></color>
+      to cast, hold/click <color=#B388FF><b>Left Click</b></color> to control tension.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836170002449
+    m_Localized: <color=#B388FF><b>Left Click</b></color> to keep the fish or press
+      <color=#B388FF><b>Space</b></color> to release it.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836170002450
+    m_Localized: Press <color=#B388FF><b>Tab</b></color> to open your Backpack and
+      inspect your catch.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836170002451
+    m_Localized: Unequip your rod and head over to the <color=#B388FF><b>Campfire</b></color>
+      area.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836170002452
+    m_Localized: You can sell fish for gold or cook them for sustenance.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836170002453
+    m_Localized: Press <color=#B388FF><b>B</b></color> to open camping menu, pick
+      <color=#B388FF><b>Firewood</b></color> and place it.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836170002454
+    m_Localized: Select the <color=#B388FF><b>Cooking Tripod</b></color> and snap
+      it over the firewood.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836170002455
+    m_Localized: <color=#B388FF><b>Cooking:</b></color> Drag a caught fish onto the
+      campfire grill.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836170002456
+    m_Localized: Pick up the grilled fish and eat it to restore your energy.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836174196736
+    m_Localized: Enter your tent and sleep to fully recover your energy.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836174196737
+    m_Localized: Press <color=#B388FF><b>B</b></color> to find the <color=#B388FF><b>Lantern</b></color>
+      and place it (can be toggled on/off).
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836174196738
+    m_Localized: After camping, get into your truck and drive back to <color=#B388FF><b>Town</b></color>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836174196739
+    m_Localized: Press <color=#B388FF><b>J</b></color> to view your <color=#B388FF><b>Fish
+      Journal</b></color>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21027836174196740
+    m_Localized: Press <color=#B388FF><b>P</b></color> anytime to review <color=#B388FF><b>Controls
+      and Help Guide</b></color>.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21033738956627968
+    m_Localized: '[Left Click] Enter vehicle'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21033736372936704
+    m_Localized: '[Left Click] Open trunk'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21033739812265984
+    m_Localized: '[Left Click] View vehicle stats'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21033952706748416
+    m_Localized: '[Left Click] Check tires'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21033955172999168
+    m_Localized: '[Left Click] Open hood'
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.Localization.Settings; // Thêm thư viện Localization
 
 public class QuestItemUI : MonoBehaviour
 {
@@ -8,7 +9,7 @@ public class QuestItemUI : MonoBehaviour
     public TMP_Text titleText;
     public TMP_Text descriptionText;
     public TMP_Text progressText;
-    public TMP_Text rewardText; // <-- Bổ sung biến hiển thị tiền thưởng
+    public TMP_Text rewardText;
     public Button actionButton;
     public TMP_Text buttonText;
 
@@ -18,17 +19,23 @@ public class QuestItemUI : MonoBehaviour
     {
         currentQuest = quest;
 
-        if (titleText != null) titleText.text = quest.title;
-        if (descriptionText != null) descriptionText.text = quest.description;
+        // 1. Tự động tra từ điển cho Tên và Mô tả nhiệm vụ
+        if (titleText != null)
+            titleText.text = GetLocalizedText(quest.title);
 
-        // Hiển thị số tiền thưởng (Ví dụ: +1500G hoặc +1500K tùy bạn chỉnh chữ 'G' hay 'K')
-        if (rewardText != null) rewardText.text = $"+{quest.goldReward}G";
+        if (descriptionText != null)
+            descriptionText.text = GetLocalizedText(quest.description);
+
+        if (rewardText != null)
+            rewardText.text = $"+{quest.goldReward}G";
 
         RefreshUI();
     }
 
     public void RefreshUI()
     {
+        if (currentQuest == null) return;
+
         if (progressText != null)
         {
             progressText.text = $"{currentQuest.currentAmount}/{currentQuest.targetAmount}";
@@ -38,27 +45,35 @@ public class QuestItemUI : MonoBehaviour
 
         actionButton.onClick.RemoveAllListeners();
 
+        // 2. Kiểm tra ngôn ngữ hiện tại để dịch chữ trên Nút Bấm
+        bool isVietnamese = LocalizationSettings.SelectedLocale != null &&
+                            LocalizationSettings.SelectedLocale.Identifier.Code.StartsWith("vi");
+
         switch (currentQuest.state)
         {
             case QuestState.NotStarted:
-                if (buttonText != null) buttonText.text = "Nhận";
+                if (buttonText != null)
+                    buttonText.text = isVietnamese ? "Nhận" : "Accept";
                 actionButton.interactable = true;
                 actionButton.onClick.AddListener(OnAcceptClick);
                 break;
 
             case QuestState.InProgress:
-                if (buttonText != null) buttonText.text = "Đang làm";
+                if (buttonText != null)
+                    buttonText.text = isVietnamese ? "Đang làm" : "In Progress";
                 actionButton.interactable = false;
                 break;
 
             case QuestState.CanClaim:
-                if (buttonText != null) buttonText.text = "Nhận thưởng";
+                if (buttonText != null)
+                    buttonText.text = isVietnamese ? "Nhận thưởng" : "Claim";
                 actionButton.interactable = true;
                 actionButton.onClick.AddListener(OnClaimClick);
                 break;
 
             case QuestState.Claimed:
-                if (buttonText != null) buttonText.text = "Đã xong";
+                if (buttonText != null)
+                    buttonText.text = isVietnamese ? "Đã xong" : "Completed";
                 actionButton.interactable = false;
                 break;
         }
@@ -74,5 +89,31 @@ public class QuestItemUI : MonoBehaviour
     {
         QuestManager.Instance.ClaimReward(currentQuest.id);
         RefreshUI();
+    }
+
+    // Hàm phụ trợ tra từ điển: Dùng trực tiếp hàm tra của QuestManager
+    private string GetLocalizedText(string keyOrText)
+    {
+        if (QuestManager.Instance != null)
+        {
+            return QuestManager.Instance.GetLocalizedText(keyOrText);
+        }
+
+        if (string.IsNullOrEmpty(keyOrText)) return "";
+
+        try
+        {
+            var table = LocalizationSettings.StringDatabase.GetTable("Game Text");
+            if (table != null)
+            {
+                var entry = table.GetEntry(keyOrText);
+                if (entry != null) return entry.GetLocalizedString();
+            }
+            return keyOrText;
+        }
+        catch
+        {
+            return keyOrText;
+        }
     }
 }

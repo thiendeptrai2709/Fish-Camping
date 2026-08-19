@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Localization.Settings; // Thư viện Localization
 
 public class QuestManager : MonoBehaviour
 {
@@ -23,6 +24,26 @@ public class QuestManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
+        }
+    }
+
+    private void OnEnable()
+    {
+        // Tự động lắng nghe sự kiện khi người chơi đổi ngôn ngữ ở menu Cài đặt
+        LocalizationSettings.SelectedLocaleChanged += OnLanguageChanged;
+    }
+
+    private void OnDisable()
+    {
+        LocalizationSettings.SelectedLocaleChanged -= OnLanguageChanged;
+    }
+
+    // Tự động vẽ lại toàn bộ danh sách nhiệm vụ khi đổi ngôn ngữ
+    private void OnLanguageChanged(UnityEngine.Localization.Locale locale)
+    {
+        if (questPanel != null && questPanel.activeSelf)
+        {
+            RenderQuestList();
         }
     }
 
@@ -92,7 +113,6 @@ public class QuestManager : MonoBehaviour
         }
         return false;
     }
-
 
     // Tự động nối lại UI khi chuyển Scene
     private void EnsureUIAttached()
@@ -192,6 +212,35 @@ public class QuestManager : MonoBehaviour
             }
 
             RenderQuestList();
+        }
+    }
+
+    // Hàm tiện ích tra cứu từ điển (hỗ trợ cả Game Text và NPC Text)
+    public string GetLocalizedText(string keyOrText)
+    {
+        if (string.IsNullOrEmpty(keyOrText)) return "";
+
+        try
+        {
+            var gameTable = LocalizationSettings.StringDatabase.GetTable("Game Text");
+            if (gameTable != null)
+            {
+                var entry = gameTable.GetEntry(keyOrText);
+                if (entry != null) return entry.GetLocalizedString();
+            }
+
+            var npcTable = LocalizationSettings.StringDatabase.GetTable("NPC Text");
+            if (npcTable != null)
+            {
+                var entry = npcTable.GetEntry(keyOrText);
+                if (entry != null) return entry.GetLocalizedString();
+            }
+
+            return keyOrText;
+        }
+        catch
+        {
+            return keyOrText;
         }
     }
 }

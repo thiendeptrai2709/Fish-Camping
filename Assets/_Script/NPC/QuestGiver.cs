@@ -1,30 +1,31 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Localization.Settings; // Thêm thư viện Localization
 
 [System.Serializable]
 public class QuestData
 {
     [Header("--- THÔNG TIN NHIỆM VỤ ---")]
-    public string questId = "Quest1";              // ID riêng (Quest1, Quest2...)
-    public string questName = "NV1";                // Tên hiển thị (NV1, NV2...)
+    public string questId = "Quest1";               // ID riêng (Quest1, Quest2...)
+    public string questName = "NV1";                // Mã Key hoặc Tên hiển thị
     [TextArea(2, 3)]
-    public string questDescription = "Mô tả nhiệm vụ...";
-    public string targetItem = "Cá Hồ Cam Đốm";     // Tên cá / vật phẩm
+    public string questDescription = "QP1";         // Mã Key hoặc Nội dung mô tả
+    public string targetItem = "Cá Hồ Cam Đốm";     // Mã Key hoặc Tên cá/vật phẩm
     public int targetAmount = 1;                    // Số lượng
     public int rewardGold = 1500;                   // Tiền thưởng
 
     [Header("--- HỘI THOẠI & VOICE AI RIÊNG CHO NHIỆM VỤ NÀY ---")]
     [Tooltip("Thoại lúc đầu giao nhiệm vụ (chạy hết tất cả các câu)")]
-    public DialogueLine[] offerDialogues;    
+    public DialogueLine[] offerDialogues;
 
     [Tooltip("Thoại nhắc nhở khi đang làm (chọn ngẫu nhiên 1 câu mỗi khi quay lại)")]
     public DialogueLine[] progressDialogues = new DialogueLine[] {
         new DialogueLine { text = "Cậu vẫn đang làm nhiệm vụ đúng không? Cố lên nhé!" },
         new DialogueLine { text = "Tiến độ tới đâu rồi? Nhớ mang đủ đồ về cho ta nhé!" }
-    }; 
+    };
 
     [Tooltip("Thoại khen thưởng khi hoàn thành (chạy hết các câu trả thưởng)")]
-    public DialogueLine[] completeDialogues; 
+    public DialogueLine[] completeDialogues;
 }
 
 public class QuestGiver : MonoBehaviour
@@ -87,17 +88,18 @@ public class QuestGiver : MonoBehaviour
                 // LẦN ĐẦU NHẬN NV: Chạy toàn bộ câu thoại giao việc
                 DialogueLine[] offerLines = (currentQuestData.offerDialogues != null && currentQuestData.offerDialogues.Length > 0)
                     ? currentQuestData.offerDialogues
-                    : new DialogueLine[] { new DialogueLine { text = $"Ta có việc nhờ cậu: {currentQuestData.questDescription}" } };
+                    : new DialogueLine[] { new DialogueLine { text = $"Ta có việc nhờ cậu: {GetLocalizedText(currentQuestData.questDescription)}" } };
 
                 DialogueManager.Instance.StartDialogueWithVoice(npcName, offerLines, () => {
                     if (QuestManager.Instance != null)
                     {
+                        // Tự động dịch Tên, Mô tả và Tên cá trước khi đưa vào hệ thống Quest
                         Quest newQuest = new Quest
                         {
                             id = currentQuestData.questId,
-                            title = currentQuestData.questName,
-                            description = currentQuestData.questDescription,
-                            targetItem = currentQuestData.targetItem,
+                            title = GetLocalizedText(currentQuestData.questName),
+                            description = GetLocalizedText(currentQuestData.questDescription),
+                            targetItem = GetLocalizedText(currentQuestData.targetItem),
                             currentAmount = 0,
                             targetAmount = currentQuestData.targetAmount,
                             goldReward = currentQuestData.rewardGold,
@@ -141,5 +143,36 @@ public class QuestGiver : MonoBehaviour
             return new DialogueLine[] { sourceList[randomIndex] };
         }
         return new DialogueLine[] { new DialogueLine { text = defaultText } };
+    }
+
+    // Hàm phụ trợ tra từ điển: Dò cả 2 bảng "Game Text" và "NPC Text"
+    private string GetLocalizedText(string keyOrText)
+    {
+        if (string.IsNullOrEmpty(keyOrText)) return "";
+
+        try
+        {
+            // 1. Tìm trong bảng "Game Text" trước
+            var gameTable = LocalizationSettings.StringDatabase.GetTable("Game Text");
+            if (gameTable != null)
+            {
+                var entry = gameTable.GetEntry(keyOrText);
+                if (entry != null) return entry.GetLocalizedString();
+            }
+
+            // 2. Nếu không có, tìm tiếp trong bảng "NPC Text"
+            var npcTable = LocalizationSettings.StringDatabase.GetTable("NPC Text");
+            if (npcTable != null)
+            {
+                var entry = npcTable.GetEntry(keyOrText);
+                if (entry != null) return entry.GetLocalizedString();
+            }
+
+            return keyOrText;
+        }
+        catch
+        {
+            return keyOrText;
+        }
     }
 }

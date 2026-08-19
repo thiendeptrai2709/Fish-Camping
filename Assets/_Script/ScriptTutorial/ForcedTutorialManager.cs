@@ -4,53 +4,52 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.Localization.Settings; // Thêm thư viện Localization
 
 public enum TutorialStage
 {
-    // === CÁC NHIỆM VỤ Ở MAP 1 (TOWN) ===
-    Quest0_WelcomeGame,             // NV 0: Chào mừng bạn đến với Fish-Camping[cite: 8]
-    Quest1_Movement,                // NV 1: Di chuyển & Chạy nhanh (WASD + Shift hoặc Ctrl)[cite: 8]
-    Quest1_2_FindOldTruck,          // NV 1.2: Tìm xe tải cũ (Ctrl tiếp tục)[cite: 8]
-    Quest2_OpenAndCloseTrunk,       // NV 2: Mở cốp rồi bấm Tab đóng (Tab hoặc Ctrl)[cite: 8]
-    Quest2_2_InspectCar,            // NV 2.2: Di chuột vào xe để kiểm tra xe, lùi ra xa để thoát (Ctrl tiếp tục)[cite: 8]
-    Quest2_3_OpenHoodAndRepair,     // NV 2.3: Mở nắp capo lên để kiểm tra động cơ, sửa máy và châm nước cho xe (Ctrl tiếp tục)[cite: 8]
-    Quest3_OpenMap,                 // NV 3: Bấm N mở map (N hoặc Ctrl)[cite: 8]
-    Quest3_ClickShopIconStep,       // NV 3.1: Nhấp Icon Shop Đồ Câu -> Ctrl tiếp tục[cite: 8]
-    Quest4_EnterVehicleStep,        // NV 4: Hướng dẫn lên xe -> Ctrl tiếp tục[cite: 8]
-    Quest4_DriveAndRadioGuide,      // NV 4.1: Hướng dẫn lái xe & Radio -> Ctrl tiếp tục[cite: 8]
-    Quest5_ShopNPCGuide,            // NV 5: Mua đồ ở Shop -> Bấm E (hoặc Ctrl)[cite: 8]
-    Quest6_OpenMapUpgradeGuide,     // NV 6.1: Mở map xem nâng cấp -> Bấm N (hoặc Ctrl)[cite: 8]
-    Quest6_InteractUpgradeNPC,      // NV 6.2: Nâng cấp xe -> Bấm Z (hoặc Ctrl)[cite: 8]
-    Quest7_FindQuestNPC,            // NV 7: Tìm NPC giao nhiệm vụ -> Ctrl tiếp tục[cite: 8]
-    Quest8_FindGasStation,          // NV 8.1: Đi tìm cây xăng và đổ xăng (Bấm F tại cây xăng)[cite: 8]
-    Quest8_1_2_TalkToGasNPC,        // NV 8.1.2: Giao tiếp với người đổ xăng (Ctrl tiếp tục)[cite: 8]
-    Quest8_GoToPumpAndBuyGas,       // NV 8.2: Xuống xe đi đến trụ xăng để mua can xăng (Ctrl tiếp tục)[cite: 8]
-    Quest8_3_CheckFuelInTrunk,      // NV 8.3: Kiểm tra xăng ở cốp xe (Bấm Tab hoặc Ctrl tiếp tục)[cite: 8]
-    Quest9_OpenTravelMap,           // NV 9: Bấm M chọn map câu cá[cite: 8]
+    Quest0_WelcomeGame,
+    Quest1_Movement,
+    Quest1_2_FindOldTruck,
+    Quest2_OpenAndCloseTrunk,
+    Quest2_2_InspectCar,
+    Quest2_3_OpenHoodAndRepair,
+    Quest3_OpenMap,
+    Quest3_ClickShopIconStep,
+    Quest4_EnterVehicleStep,
+    Quest4_DriveAndRadioGuide,
+    Quest5_ShopNPCGuide,
+    Quest6_OpenMapUpgradeGuide,
+    Quest6_InteractUpgradeNPC,
+    Quest7_FindQuestNPC,
+    Quest8_FindGasStation,
+    Quest8_1_2_TalkToGasNPC,
+    Quest8_GoToPumpAndBuyGas,
+    Quest8_3_CheckFuelInTrunk,
+    Quest9_OpenTravelMap,
 
-    // === CÁC NHIỆM VỤ Ở MAP 2 (PINE LAKE) ===
-    Map2_Quest1_OpenMapToCamp,          // NV 1: Bấm N mở bản đồ (N hoặc Ctrl)[cite: 8]
-    Map2_Quest1_1_GoToCampSite,         // NV 1.1: Đi đến địa điểm cắm trại (Ctrl tiếp tục)
-    Map2_Quest1_2_CheckFishingGear,     // NV 1.2: Kiểm tra trang bị đồ câu (Ctrl tiếp tục)[cite: 8]
-    Map2_Quest2_OpenBackpack,           // NV 2: Bấm Tab mở balo (Tab hoặc Ctrl)[cite: 8]
-    Map2_Quest3_EquipFishingItems,      // NV 3: Kéo cần câu, mồi, phao vào trang bị (Ctrl)[cite: 8]
-    Map2_Quest3_1_WalkToLakeSide,       // NV 3.1: Đi đến ven hồ để câu cá (Ctrl tiếp tục)[cite: 8]
-    Map2_Quest4_CanFishAtLake,          // NV 4: Bạn có thể câu cá ở hồ (Ctrl)[cite: 8]
-    Map2_Quest5_FishingGuide,           // NV 5: Click chuột trái vung cần, căn lực giật cá (Chuột trái hoặc Ctrl)[cite: 8]
-    Map2_Quest6_KeepOrReleaseFish,      // NV 6: Click chuột trái lấy cá / bấm Space thả cá (Space hoặc Chuột trái hoặc Ctrl)[cite: 8]
-    Map2_Quest6_1_OpenBackpackAfterFish,// NV 6.1: Bấm Tab mở balo (Tab hoặc Ctrl)[cite: 8]
-    Map2_Quest7_UnequipAndMoveCamp,     // NV 7: Cất cần vào balo, di chuyển lều trại (Ctrl)[cite: 8]
-    Map2_Quest7_1_FishUsageGuide,       // NV 7.1: Bạn có thể đem cá về bán lấy tiền hoặc chế biến nấu ăn (Ctrl)[cite: 8]
-    Map2_Quest8_PlaceFirewood,          // NV 8: Bấm B mở đồ cắm trại chọn đống củi đặt vị trí thích hợp (B hoặc Ctrl)[cite: 8]
-    Map2_Quest9_PlaceCookingRack,       // NV 9: Chọn bộ giá treo nồi dã ngoại lên đống củi (Ctrl)[cite: 8]
-    Map2_Quest10_CookFish,              // NV 10: Nấu ăn: Kéo con cá vào bếp (Ctrl)[cite: 8]
-    Map2_Quest11_EatFish,               // NV 11: Lấy cá và ăn để tăng sức lực (Ctrl)[cite: 8]
-    Map2_Quest12_SleepInTent,           // NV 12: Đi đến lều ngủ, tăng sức lực (Ctrl)[cite: 8]
-    Map2_Quest13_PlaceLamp,             // NV 13: Bấm B tìm đèn đặt vị trí thích hợp, bật/tắt (B hoặc Ctrl)[cite: 8]
-    Map2_Quest14_BackToTown,            // NV 14: Di chuyển về thị trấn (Ctrl)[cite: 8]
-    Map2_Quest15_FishLog,               // NV 15: Bấm J để xem nhật ký cá (J hoặc Ctrl)[cite: 8]
-    Map2_Quest16_HelpGuide,             // NV 16: Bấm P để xem các chỉ dẫn (P hoặc Ctrl)[cite: 8]
-    Completed                           // Hoàn thành toàn bộ Tutorial[cite: 8]
+    Map2_Quest1_OpenMapToCamp,
+    Map2_Quest1_1_GoToCampSite,
+    Map2_Quest1_2_CheckFishingGear,
+    Map2_Quest2_OpenBackpack,
+    Map2_Quest3_EquipFishingItems,
+    Map2_Quest3_1_WalkToLakeSide,
+    Map2_Quest4_CanFishAtLake,
+    Map2_Quest5_FishingGuide,
+    Map2_Quest6_KeepOrReleaseFish,
+    Map2_Quest6_1_OpenBackpackAfterFish,
+    Map2_Quest7_UnequipAndMoveCamp,
+    Map2_Quest7_1_FishUsageGuide,
+    Map2_Quest8_PlaceFirewood,
+    Map2_Quest9_PlaceCookingRack,
+    Map2_Quest10_CookFish,
+    Map2_Quest11_EatFish,
+    Map2_Quest12_SleepInTent,
+    Map2_Quest13_PlaceLamp,
+    Map2_Quest14_BackToTown,
+    Map2_Quest15_FishLog,
+    Map2_Quest16_HelpGuide,
+    Completed
 }
 
 public class ForcedTutorialManager : MonoBehaviour
@@ -59,12 +58,15 @@ public class ForcedTutorialManager : MonoBehaviour
 
     private const string TUTORIAL_SAVE_KEY = "Saved_TutorialStage";
 
+    [Header("Localization Config")]
+    [SerializeField] private string tableName = "Game Text";
+
     [Header("UI Hiển Thị")]
     [SerializeField] private GameObject questUIPanel;
     [SerializeField] private TextMeshProUGUI instructionTMP;
     [SerializeField] private TextMeshProUGUI progressTMP;
 
-    [Header("Cấu Hình Hiệu Ứng Nhấp Nháy (Dòng gợi ý)")]
+    [Header("Cấu Hình Hiệu Ứng Nhấp Nháy")]
     [SerializeField] private float blinkSpeed = 3.5f;
     [SerializeField] private float minAlpha = 0.2f;
     [SerializeField] private float maxAlpha = 1.0f;
@@ -76,7 +78,7 @@ public class ForcedTutorialManager : MonoBehaviour
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip typeSFX;
     [SerializeField] private AudioClip nextQuestSFX;
-    [Range(0.05f, 1f)] [SerializeField] private float typeSFXVolume = 0.4f;
+    [Range(0.05f, 1f)][SerializeField] private float typeSFXVolume = 0.4f;
     [SerializeField] private bool randomizePitch = true;
     [SerializeField] private int soundFrequency = 2;
 
@@ -114,12 +116,25 @@ public class ForcedTutorialManager : MonoBehaviour
         if (audioSource == null)
             audioSource = GetComponent<AudioSource>();
 
-        // Tải lại tiến trình đã lưu[cite: 8]
         LoadTutorialProgress();
     }
 
-    private void OnEnable() => SceneManager.sceneLoaded += OnSceneLoaded;
-    private void OnDisable() => SceneManager.sceneLoaded -= OnSceneLoaded;
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+        LocalizationSettings.SelectedLocaleChanged += OnLanguageChanged;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+        LocalizationSettings.SelectedLocaleChanged -= OnLanguageChanged;
+    }
+
+    private void OnLanguageChanged(UnityEngine.Localization.Locale locale)
+    {
+        UpdateQuestUI();
+    }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
@@ -163,7 +178,6 @@ public class ForcedTutorialManager : MonoBehaviour
 
         if (Keyboard.current == null) return;
 
-        // BẤM R ĐỂ QUAY LẠI HƯỚNG DẪN TRƯỚC ĐÓ[cite: 8]
         if (Keyboard.current.rKey.wasPressedThisFrame)
         {
             BackToPreviousStage();
@@ -172,7 +186,7 @@ public class ForcedTutorialManager : MonoBehaviour
 
         if (currentStage == TutorialStage.Completed) return;
 
-        bool isCtrlPressed = Keyboard.current.leftCtrlKey.wasPressedThisFrame || 
+        bool isCtrlPressed = Keyboard.current.leftCtrlKey.wasPressedThisFrame ||
                              Keyboard.current.rightCtrlKey.wasPressedThisFrame;
 
         bool isPointerOverUI = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
@@ -185,7 +199,7 @@ public class ForcedTutorialManager : MonoBehaviour
         }
 
         // ========================================================
-        // MAP 1 (TOWN)[cite: 8]
+        // MAP 1 (TOWN)
         // ========================================================
         if (currentStage == TutorialStage.Quest0_WelcomeGame)
         {
@@ -286,7 +300,7 @@ public class ForcedTutorialManager : MonoBehaviour
         }
 
         // ========================================================
-        // MAP 2 (PINE LAKE)[cite: 8]
+        // MAP 2 (PINE LAKE)
         // ========================================================
         else if (currentStage == TutorialStage.Map2_Quest1_OpenMapToCamp)
         {
@@ -477,6 +491,9 @@ public class ForcedTutorialManager : MonoBehaviour
         if (questUIPanel != null) questUIPanel.SetActive(true);
         if (instructionTMP == null) return;
 
+        // Dịch tiêu đề "HƯỚNG DẪN"
+        string guideTitle = GetLocalizedText("tut_guide_header", "HƯỚNG DẪN");
+
         if (progressTMP != null)
         {
             if (currentStage < TutorialStage.Map2_Quest1_OpenMapToCamp)
@@ -484,181 +501,181 @@ public class ForcedTutorialManager : MonoBehaviour
                 int currentMap1 = (int)currentStage;
                 int totalMap1 = (int)TutorialStage.Quest9_OpenTravelMap;
                 if (currentMap1 == 0) currentMap1 = 1;
-                progressTMP.text = $"HƯỚNG DẪN ({currentMap1}/{totalMap1})";
+                progressTMP.text = $"{guideTitle} ({currentMap1}/{totalMap1})";
             }
             else
             {
                 int currentMap2 = (int)currentStage - (int)TutorialStage.Map2_Quest1_OpenMapToCamp + 1;
                 int totalMap2 = (int)TutorialStage.Completed - (int)TutorialStage.Map2_Quest1_OpenMapToCamp;
-                progressTMP.text = $"HƯỚNG DẪN ({currentMap2}/{totalMap2})";
+                progressTMP.text = $"{guideTitle} ({currentMap2}/{totalMap2})";
             }
         }
 
+        // Tự động gán Key theo từng Stage (có Fallback tiếng Việt nếu chưa nhập Key)
         switch (currentStage)
         {
             case TutorialStage.Quest0_WelcomeGame:
-                currentInstructionText = "Chào mừng bạn đến với <color=#B388FF><b>Fish-Camping</b></color>!";
-                currentPromptText = "Nhấn [Ctrl] để bắt đầu";
+                currentInstructionText = GetLocalizedText("TUT_Quest0_WelcomeGame", "Chào mừng bạn đến với <color=#B388FF><b>Fish-Camping</b></color>!");
+                currentPromptText = GetLocalizedText("tut_prompt_start", "Nhấn [Ctrl] để bắt đầu");
                 break;
             case TutorialStage.Quest1_Movement:
-                currentInstructionText = "Dùng phím <color=#B388FF><b>W, A, S, D</b></color> để di chuyển và giữ <color=#B388FF><b>Shift</b></color> để chạy nhanh.";
-                currentPromptText = "Nhấn [Ctrl] để tiếp tục | [R] Quay lại";
+                currentInstructionText = GetLocalizedText("TUT_Quest1_Movement", "Dùng phím <color=#B388FF><b>W, A, S, D</b></color> để di chuyển và giữ <color=#B388FF><b>Shift</b></color> để chạy nhanh.");
+                currentPromptText = GetLocalizedText("tut_prompt_ctrl_r", "Nhấn [Ctrl] để tiếp tục | [R] Quay lại");
                 break;
             case TutorialStage.Quest1_2_FindOldTruck:
-                currentInstructionText = "Hãy quan sát xung quanh và tìm chiếc <color=#B388FF><b>Xe tải cũ</b></color> của bạn.";
-                currentPromptText = "Nhấn [Ctrl] để tiếp tục | [R] Quay lại";
+                currentInstructionText = GetLocalizedText("TUT_Quest1_2_FindOldTruck", "Hãy quan sát xung quanh và tìm chiếc <color=#B388FF><b>Xe tải cũ</b></color> của bạn.");
+                currentPromptText = GetLocalizedText("tut_prompt_ctrl_r", "Nhấn [Ctrl] để tiếp tục | [R] Quay lại");
                 break;
             case TutorialStage.Quest2_OpenAndCloseTrunk:
-                currentInstructionText = "Nhấp <color=#B388FF><b>Chuột trái</b></color> vào cốp xe để xem và nhấn phím <color=#B388FF><b>Tab</b></color> để đóng.";
-                currentPromptText = "Nhấn [Tab] hoặc [Ctrl] để tiếp tục | [R] Quay lại";
+                currentInstructionText = GetLocalizedText("TUT_Quest2_OpenAndCloseTrunk", "Nhấp <color=#B388FF><b>Chuột trái</b></color> vào cốp xe để xem và nhấn phím <color=#B388FF><b>Tab</b></color> để đóng.");
+                currentPromptText = GetLocalizedText("tut_prompt_tab_ctrl_r", "Nhấn [Tab] hoặc [Ctrl] để tiếp tục | [R] Quay lại");
                 break;
             case TutorialStage.Quest2_2_InspectCar:
-                currentInstructionText = "Di <color=#B388FF><b>Chuột</b></color> vào xe để kiểm tra tình trạng xe, lùi ra xa để thoát.";
-                currentPromptText = "Nhấn [Ctrl] để tiếp tục | [R] Quay lại";
+                currentInstructionText = GetLocalizedText("TUT_Quest2_2_InspectCar", "Di <color=#B388FF><b>Chuột</b></color> vào xe để kiểm tra tình trạng xe, lùi ra xa để thoát.");
+                currentPromptText = GetLocalizedText("tut_prompt_ctrl_r", "Nhấn [Ctrl] để tiếp tục | [R] Quay lại");
                 break;
             case TutorialStage.Quest2_3_OpenHoodAndRepair:
-                currentInstructionText = "Mở <color=#B388FF><b>Nắp capo</b></color> lên để kiểm tra động cơ, sửa máy và châm nước làm mát cho xe.";
-                currentPromptText = "Nhấn [Ctrl] để tiếp tục | [R] Quay lại";
+                currentInstructionText = GetLocalizedText("TUT_Quest2_3_OpenHoodAndRepair", "Mở <color=#B388FF><b>Nắp capo</b></color> lên để kiểm tra động cơ, sửa máy và châm nước làm mát cho xe.");
+                currentPromptText = GetLocalizedText("tut_prompt_ctrl_r", "Nhấn [Ctrl] để tiếp tục | [R] Quay lại");
                 break;
             case TutorialStage.Quest3_OpenMap:
-                currentInstructionText = "Nhấn phím <color=#B388FF><b>N</b></color> để mở Bản đồ.";
-                currentPromptText = "Nhấn [N] hoặc [Ctrl] để tiếp tục | [R] Quay lại";
+                currentInstructionText = GetLocalizedText("TUT_Quest3_OpenMap", "Nhấn phím <color=#B388FF><b>N</b></color> để mở Bản đồ.");
+                currentPromptText = GetLocalizedText("tut_prompt_n_ctrl_r", "Nhấn [N] hoặc [Ctrl] để tiếp tục | [R] Quay lại");
                 break;
             case TutorialStage.Quest3_ClickShopIconStep:
-                currentInstructionText = "Nhấp vào <color=#B388FF><b>Icon Shop Đồ Câu</b></color> trên bản đồ để định vị đường đi.";
-                currentPromptText = "Nhấn [Ctrl] để tiếp tục | [R] Quay lại";
+                currentInstructionText = GetLocalizedText("TUT_Quest3_ClickShopIconStep", "Nhấp vào <color=#B388FF><b>Icon Shop Đồ Câu</b></color> trên bản đồ để định vị đường đi.");
+                currentPromptText = GetLocalizedText("tut_prompt_ctrl_r", "Nhấn [Ctrl] để tiếp tục | [R] Quay lại");
                 break;
             case TutorialStage.Quest4_EnterVehicleStep:
-                currentInstructionText = "Đi đến cửa xe và nhấp <color=#B388FF><b>Chuột trái</b></color> để lên xe bán tải.";
-                currentPromptText = "Nhấn [Ctrl] để tiếp tục | [R] Quay lại";
+                currentInstructionText = GetLocalizedText("TUT_Quest4_EnterVehicleStep", "Đi đến cửa xe và nhấp <color=#B388FF><b>Chuột trái</b></color> để lên xe bán tải.");
+                currentPromptText = GetLocalizedText("tut_prompt_ctrl_r", "Nhấn [Ctrl] để tiếp tục | [R] Quay lại");
                 break;
             case TutorialStage.Quest4_DriveAndRadioGuide:
-                currentInstructionText = "Lái xe đến Shop (Bấm <color=#B388FF><b>E</b></color> xuống xe).\n(Radio: <color=#B388FF><b>L</b></color> Bật/Tắt | <color=#B388FF><b>K</b></color> Đổi bài | <color=#B388FF><b>[ ]</b></color> Âm lượng | <color=#B388FF><b>G</b></color> Đèn pha).";
-                currentPromptText = "Nhấn [Ctrl] để tiếp tục | [R] Quay lại";
+                currentInstructionText = GetLocalizedText("TUT_Quest4_DriveAndRadioGuide", "Lái xe đến Shop (Bấm <color=#B388FF><b>E</b></color> xuống xe).\n(Radio: <color=#B388FF><b>L</b></color> Bật/Tắt | <color=#B388FF><b>K</b></color> Đổi bài | <color=#B388FF><b>[ ]</b></color> Âm lượng | <color=#B388FF><b>G</b></color> Đèn pha).");
+                currentPromptText = GetLocalizedText("tut_prompt_ctrl_r", "Nhấn [Ctrl] để tiếp tục | [R] Quay lại");
                 break;
             case TutorialStage.Quest5_ShopNPCGuide:
-                currentInstructionText = "Đến gần <color=#B388FF><b>NPC Bán Đồ</b></color> để mua vật phẩm, nhấn <color=#B388FF><b>E</b></color> để đóng cửa hàng.";
-                currentPromptText = "Nhấn [E] hoặc [Ctrl] để tiếp tục | [R] Quay lại";
+                currentInstructionText = GetLocalizedText("TUT_Quest5_ShopNPCGuide", "Đến gần <color=#B388FF><b>NPC Bán Đồ</b></color> để mua vật phẩm, nhấn <color=#B388FF><b>E</b></color> để đóng cửa hàng.");
+                currentPromptText = GetLocalizedText("tut_prompt_e_ctrl_r", "Nhấn [E] hoặc [Ctrl] để tiếp tục | [R] Quay lại");
                 break;
             case TutorialStage.Quest6_OpenMapUpgradeGuide:
-                currentInstructionText = "Nhấn phím <color=#B388FF><b>N</b></color> mở bản đồ để xem vị trí của <color=#B388FF><b>NPC Nâng Cấp Xe</b></color>.";
-                currentPromptText = "Nhấn [N] hoặc [Ctrl] để tiếp tục | [R] Quay lại";
+                currentInstructionText = GetLocalizedText("TUT_Quest6_OpenMapUpgradeGuide", "Nhấn phím <color=#B388FF><b>N</b></color> mở bản đồ để xem vị trí của <color=#B388FF><b>NPC Nâng Cấp Xe</b></color>.");
+                currentPromptText = GetLocalizedText("tut_prompt_n_ctrl_r", "Nhấn [N] hoặc [Ctrl] để tiếp tục | [R] Quay lại");
                 break;
             case TutorialStage.Quest6_InteractUpgradeNPC:
-                currentInstructionText = "Tương tác với <color=#B388FF><b>NPC Nâng Cấp</b></color> để nâng cấp xe của bạn, nhấn <color=#B388FF><b>Z</b></color> để thoát.";
-                currentPromptText = "Nhấn [Z] hoặc [Ctrl] để tiếp tục | [R] Quay lại";
+                currentInstructionText = GetLocalizedText("TUT_Quest6_InteractUpgradeNPC", "Tương tác với <color=#B388FF><b>NPC Nâng Cấp</b></color> để nâng cấp xe của bạn, nhấn <color=#B388FF><b>Z</b></color> để thoát.");
+                currentPromptText = GetLocalizedText("tut_prompt_z_ctrl_r", "Nhấn [Z] hoặc [Ctrl] để tiếp tục | [R] Quay lại");
                 break;
             case TutorialStage.Quest7_FindQuestNPC:
-                currentInstructionText = "Tìm <color=#B388FF><b>NPC Giao Nhiệm Vụ</b></color> trong khu vực để nhận nhiệm vụ đầu tiên.";
-                currentPromptText = "Nhấn [Ctrl] để tiếp tục | [R] Quay lại";
+                currentInstructionText = GetLocalizedText("TUT_Quest7_FindQuestNPC", "Tìm <color=#B388FF><b>NPC Giao Nhiệm Vụ</b></color> trong khu vực để nhận nhiệm vụ đầu tiên.");
+                currentPromptText = GetLocalizedText("tut_prompt_ctrl_r", "Nhấn [Ctrl] để tiếp tục | [R] Quay lại");
                 break;
             case TutorialStage.Quest8_FindGasStation:
-                currentInstructionText = "Hãy lái xe đi quanh thị trấn tìm <color=#B388FF><b>Cây Xăng</b></color> và nạp đầy nhiên liệu cho xe.";
-                currentPromptText = "[R] Quay lại";
+                currentInstructionText = GetLocalizedText("TUT_Quest8_FindGasStation", "Hãy lái xe đi quanh thị trấn tìm <color=#B388FF><b>Cây Xăng</b></color> và nạp đầy nhiên liệu cho xe.");
+                currentPromptText = GetLocalizedText("tut_prompt_r", "[R] Quay lại");
                 break;
             case TutorialStage.Quest8_1_2_TalkToGasNPC:
-                currentInstructionText = "Giao tiếp với <color=#B388FF><b>Người đổ xăng</b></color> để tìm hiểu thêm thông tin.";
-                currentPromptText = "Nhấn [Ctrl] để tiếp tục | [R] Quay lại";
+                currentInstructionText = GetLocalizedText("TUT_Quest8_1_2_TalkToGasNPC", "Giao tiếp với <color=#B388FF><b>Người đổ xăng</b></color> để tìm hiểu thêm thông tin.");
+                currentPromptText = GetLocalizedText("tut_prompt_ctrl_r", "Nhấn [Ctrl] để tiếp tục | [R] Quay lại");
                 break;
             case TutorialStage.Quest8_GoToPumpAndBuyGas:
-                currentInstructionText = "Xuống xe đi đến trụ xăng để mua can xăng dự trữ.";
-                currentPromptText = "Nhấn [Ctrl] để tiếp tục | [R] Quay lại";
+                currentInstructionText = GetLocalizedText("TUT_Quest8_GoToPumpAndBuyGas", "Xuống xe đi đến trụ xăng để mua can xăng dự trữ.");
+                currentPromptText = GetLocalizedText("tut_prompt_ctrl_r", "Nhấn [Ctrl] để tiếp tục | [R] Quay lại");
                 break;
             case TutorialStage.Quest8_3_CheckFuelInTrunk:
-                currentInstructionText = "Mở <color=#B388FF><b>Cốp xe</b></color> ra để kiểm tra xem can xăng dự trữ đã nằm trong cốp chưa.";
-                currentPromptText = "Nhấn [Tab] hoặc [Ctrl] để tiếp tục | [R] Quay lại";
+                currentInstructionText = GetLocalizedText("TUT_Quest8_3_CheckFuelInTrunk", "Mở <color=#B388FF><b>Cốp xe</b></color> ra để kiểm tra xem can xăng dự trữ đã nằm trong cốp chưa.");
+                currentPromptText = GetLocalizedText("tut_prompt_tab_ctrl_r", "Nhấn [Tab] hoặc [Ctrl] để tiếp tục | [R] Quay lại");
                 break;
             case TutorialStage.Quest9_OpenTravelMap:
-                currentInstructionText = "Nhấn phím <color=#B388FF><b>M</b></color> để mở bản đồ du lịch và chọn di chuyển tới <color=#B388FF><b>Pine Lake</b></color>.";
-                currentPromptText = "Nhấn [M] hoặc [Ctrl] để tiếp tục | [R] Quay lại";
+                currentInstructionText = GetLocalizedText("TUT_Quest9_OpenTravelMap", "Nhấn phím <color=#B388FF><b>M</b></color> để mở bản đồ du lịch và chọn di chuyển tới <color=#B388FF><b>Pine Lake</b></color>.");
+                currentPromptText = GetLocalizedText("tut_prompt_m_ctrl_r", "Nhấn [M] hoặc [Ctrl] để tiếp tục | [R] Quay lại");
                 break;
 
-            // === MAP 2 ===[cite: 8]
+            // === MAP 2 ===
             case TutorialStage.Map2_Quest1_OpenMapToCamp:
-                currentInstructionText = "Nhấn phím <color=#B388FF><b>N</b></color> để mở Bản đồ xem vị trí cắm trại.";
-                currentPromptText = "Nhấn [N] hoặc [Ctrl] để tiếp tục | [R] Quay lại";
+                currentInstructionText = GetLocalizedText("TUT_Map2_Quest1_OpenMapToCamp", "Nhấn phím <color=#B388FF><b>N</b></color> để mở Bản đồ xem vị trí cắm trại.");
+                currentPromptText = GetLocalizedText("tut_prompt_n_ctrl_r", "Nhấn [N] hoặc [Ctrl] để tiếp tục | [R] Quay lại");
                 break;
             case TutorialStage.Map2_Quest1_1_GoToCampSite:
-                currentInstructionText = "Di chuyển đến khu vực <color=#B388FF><b>Địa điểm cắm trại</b></color> ven hồ.";
-                currentPromptText = "Nhấn [Ctrl] để tiếp tục | [R] Quay lại";
+                currentInstructionText = GetLocalizedText("TUT_Map2_Quest1_1_GoToCampSite", "Di chuyển đến khu vực <color=#B388FF><b>Địa điểm cắm trại</b></color> ven hồ.");
+                currentPromptText = GetLocalizedText("tut_prompt_ctrl_r", "Nhấn [Ctrl] để tiếp tục | [R] Quay lại");
                 break;
             case TutorialStage.Map2_Quest1_2_CheckFishingGear:
-                currentInstructionText = "Hãy kiểm tra lại toàn bộ <color=#B388FF><b>Trang bị đồ câu</b></color> trước khi bắt đầu.";
-                currentPromptText = "Nhấn [Ctrl] để tiếp tục | [R] Quay lại";
+                currentInstructionText = GetLocalizedText("TUT_Map2_Quest1_2_CheckFishingGear", "Hãy kiểm tra lại toàn bộ <color=#B388FF><b>Trang bị đồ câu</b></color> trước khi bắt đầu.");
+                currentPromptText = GetLocalizedText("tut_prompt_ctrl_r", "Nhấn [Ctrl] để tiếp tục | [R] Quay lại");
                 break;
             case TutorialStage.Map2_Quest2_OpenBackpack:
-                currentInstructionText = "Nhấn phím <color=#B388FF><b>Tab</b></color> để mở Balo của bạn.";
-                currentPromptText = "Nhấn [Tab] hoặc [Ctrl] để tiếp tục | [R] Quay lại";
+                currentInstructionText = GetLocalizedText("TUT_Map2_Quest2_OpenBackpack", "Nhấn phím <color=#B388FF><b>Tab</b></color> để mở Balo của bạn.");
+                currentPromptText = GetLocalizedText("tut_prompt_tab_ctrl_r", "Nhấn [Tab] hoặc [Ctrl] để tiếp tục | [R] Quay lại");
                 break;
             case TutorialStage.Map2_Quest3_EquipFishingItems:
-                currentInstructionText = "Kéo <color=#B388FF><b>Cần câu, Mồi câu, Phao câu</b></color> vào ô Trang bị tương ứng.";
-                currentPromptText = "Nhấn [Ctrl] để tiếp tục | [R] Quay lại";
+                currentInstructionText = GetLocalizedText("TUT_Map2_Quest3_EquipFishingItems", "Kéo <color=#B388FF><b>Cần câu, Mồi câu, Phao câu</b></color> vào ô Trang bị tương ứng.");
+                currentPromptText = GetLocalizedText("tut_prompt_ctrl_r", "Nhấn [Ctrl] để tiếp tục | [R] Quay lại");
                 break;
             case TutorialStage.Map2_Quest3_1_WalkToLakeSide:
-                currentInstructionText = "Di chuyển đến khu vực <color=#B388FF><b>Ven bờ hồ</b></color> để chuẩn bị buông cần.";
-                currentPromptText = "Nhấn [Ctrl] để tiếp tục | [R] Quay lại";
+                currentInstructionText = GetLocalizedText("TUT_Map2_Quest3_1_WalkToLakeSide", "Di chuyển đến khu vực <color=#B388FF><b>Ven bờ hồ</b></color> để chuẩn bị buông cần.");
+                currentPromptText = GetLocalizedText("tut_prompt_ctrl_r", "Nhấn [Ctrl] để tiếp tục | [R] Quay lại");
                 break;
             case TutorialStage.Map2_Quest4_CanFishAtLake:
-                currentInstructionText = "Bạn có thể câu cá tại các khu vực ven bờ hồ Pine Lake.";
-                currentPromptText = "Nhấn [Ctrl] để tiếp tục | [R] Quay lại";
+                currentInstructionText = GetLocalizedText("TUT_Map2_Quest4_CanFishAtLake", "Bạn có thể câu cá tại các khu vực ven bờ hồ Pine Lake.");
+                currentPromptText = GetLocalizedText("tut_prompt_ctrl_r", "Nhấn [Ctrl] để tiếp tục | [R] Quay lại");
                 break;
             case TutorialStage.Map2_Quest5_FishingGuide:
-                currentInstructionText = "<color=#B388FF><b>Câu cá:</b></color> Nhấp <color=#B388FF><b>Chuột trái</b></color> để vung cần, giữ hoặc nhấp <color=#B388FF><b>Chuột trái</b></color> để căn lực giật cá.";
-                currentPromptText = "Nhấn [Ctrl] để tiếp tục | [R] Quay lại";
+                currentInstructionText = GetLocalizedText("TUT_Map2_Quest5_FishingGuide", "<color=#B388FF><b>Câu cá:</b></color> Nhấp <color=#B388FF><b>Chuột trái</b></color> để vung cần, giữ hoặc nhấp <color=#B388FF><b>Chuột trái</b></color> để căn lực giật cá.");
+                currentPromptText = GetLocalizedText("tut_prompt_ctrl_r", "Nhấn [Ctrl] để tiếp tục | [R] Quay lại");
                 break;
             case TutorialStage.Map2_Quest6_KeepOrReleaseFish:
-                currentInstructionText = "Nhấp <color=#B388FF><b>Chuột trái</b></color> để lấy cá bỏ vào balo hoặc nhấn <color=#B388FF><b>Space</b></color> để thả cá.";
-                currentPromptText = "Nhấn [Space] hoặc [Ctrl] để tiếp tục | [R] Quay lại";
+                currentInstructionText = GetLocalizedText("TUT_Map2_Quest6_KeepOrReleaseFish", "Nhấp <color=#B388FF><b>Chuột trái</b></color> để lấy cá bỏ vào balo hoặc nhấn <color=#B388FF><b>Space</b></color> để thả cá.");
+                currentPromptText = GetLocalizedText("tut_prompt_space_ctrl_r", "Nhấn [Space] hoặc [Ctrl] để tiếp tục | [R] Quay lại");
                 break;
             case TutorialStage.Map2_Quest6_1_OpenBackpackAfterFish:
-                currentInstructionText = "Nhấn phím <color=#B388FF><b>Tab</b></color> để mở Balo kiểm tra lại chiến lợi phẩm.";
-                currentPromptText = "Nhấn [Tab] hoặc [Ctrl] để tiếp tục | [R] Quay lại";
+                currentInstructionText = GetLocalizedText("TUT_Map2_Quest6_1_OpenBackpackAfterFish", "Nhấn phím <color=#B388FF><b>Tab</b></color> để mở Balo kiểm tra lại chiến lợi phẩm.");
+                currentPromptText = GetLocalizedText("tut_prompt_tab_ctrl_r", "Nhấn [Tab] hoặc [Ctrl] để tiếp tục | [R] Quay lại");
                 break;
             case TutorialStage.Map2_Quest7_UnequipAndMoveCamp:
-                currentInstructionText = "Cất cần câu vào balo và di chuyển về khu vực <color=#B388FF><b>Lều trại</b></color>.";
-                currentPromptText = "Nhấn [Ctrl] để tiếp tục | [R] Quay lại";
+                currentInstructionText = GetLocalizedText("TUT_Map2_Quest7_UnequipAndMoveCamp", "Cất cần câu vào balo và di chuyển về khu vực <color=#B388FF><b>Lều trại</b></color>.");
+                currentPromptText = GetLocalizedText("tut_prompt_ctrl_r", "Nhấn [Ctrl] để tiếp tục | [R] Quay lại");
                 break;
             case TutorialStage.Map2_Quest7_1_FishUsageGuide:
-                currentInstructionText = "Bạn có thể đem cá về bán lấy tiền hoặc chế biến nấu ăn.";
-                currentPromptText = "Nhấn [Ctrl] để tiếp tục | [R] Quay lại";
+                currentInstructionText = GetLocalizedText("TUT_Map2_Quest7_1_FishUsageGuide", "Bạn có thể đem cá về bán lấy tiền hoặc chế biến nấu ăn.");
+                currentPromptText = GetLocalizedText("tut_prompt_ctrl_r", "Nhấn [Ctrl] để tiếp tục | [R] Quay lại");
                 break;
             case TutorialStage.Map2_Quest8_PlaceFirewood:
-                currentInstructionText = "Nhấn phím <color=#B388FF><b>B</b></color> mở đồ cắm trại, chọn <color=#B388FF><b>Đống củi</b></color> và đặt tại vị trí thích hợp.";
-                currentPromptText = "Nhấn [B] hoặc [Ctrl] để tiếp tục | [R] Quay lại";
+                currentInstructionText = GetLocalizedText("TUT_Map2_Quest8_PlaceFirewood", "Nhấn phím <color=#B388FF><b>B</b></color> mở đồ cắm trại, chọn <color=#B388FF><b>Đống củi</b></color> và đặt tại vị trí thích hợp.");
+                currentPromptText = GetLocalizedText("tut_prompt_b_ctrl_r", "Nhấn [B] hoặc [Ctrl] để tiếp tục | [R] Quay lại");
                 break;
             case TutorialStage.Map2_Quest9_PlaceCookingRack:
-                currentInstructionText = "Chọn <color=#B388FF><b>Bộ giá treo nồi dã ngoại</b></color> đặt khớp lên đống củi vừa dựng.";
-                currentPromptText = "Nhấn [Ctrl] để tiếp tục | [R] Quay lại";
+                currentInstructionText = GetLocalizedText("TUT_Map2_Quest9_PlaceCookingRack", "Chọn <color=#B388FF><b>Bộ giá treo nồi dã ngoại</b></color> đặt khớp lên đống củi vừa dựng.");
+                currentPromptText = GetLocalizedText("tut_prompt_ctrl_r", "Nhấn [Ctrl] để tiếp tục | [R] Quay lại");
                 break;
             case TutorialStage.Map2_Quest10_CookFish:
-                currentInstructionText = "<color=#B388FF><b>Nấu ăn:</b></color> Kéo con cá vừa câu được vào bếp lửa để nướng.";
-                currentPromptText = "Nhấn [Ctrl] để tiếp tục | [R] Quay lại";
+                currentInstructionText = GetLocalizedText("TUT_Map2_Quest10_CookFish", "<color=#B388FF><b>Nấu ăn:</b></color> Kéo con cá vừa câu được vào bếp lửa để nướng.");
+                currentPromptText = GetLocalizedText("tut_prompt_ctrl_r", "Nhấn [Ctrl] để tiếp tục | [R] Quay lại");
                 break;
             case TutorialStage.Map2_Quest11_EatFish:
-                currentInstructionText = "Lấy cá đã nướng chín và ăn để hồi phục lại sức lực.";
-                currentPromptText = "Nhấn [Ctrl] để tiếp tục | [R] Quay lại";
+                currentInstructionText = GetLocalizedText("TUT_Map2_Quest11_EatFish", "Lấy cá đã nướng chín và ăn để hồi phục lại sức lực.");
+                currentPromptText = GetLocalizedText("tut_prompt_ctrl_r", "Nhấn [Ctrl] để tiếp tục | [R] Quay lại");
                 break;
             case TutorialStage.Map2_Quest12_SleepInTent:
-                currentInstructionText = "Đi đến bên trong lều để ngủ giúp hồi phục tối đa sức lực.";
-                currentPromptText = "Nhấn [Ctrl] để tiếp tục | [R] Quay lại";
+                currentInstructionText = GetLocalizedText("TUT_Map2_Quest12_SleepInTent", "Đi đến bên trong lều để ngủ giúp hồi phục tối đa sức lực.");
+                currentPromptText = GetLocalizedText("tut_prompt_ctrl_r", "Nhấn [Ctrl] để tiếp tục | [R] Quay lại");
                 break;
             case TutorialStage.Map2_Quest13_PlaceLamp:
-                currentInstructionText = "Nhấn phím <color=#B388FF><b>B</b></color> tìm đến <color=#B388FF><b>Chiếc đèn</b></color>, đặt tại vị trí thích hợp (có thể Bật/Tắt).";
-                currentPromptText = "Nhấn [B] hoặc [Ctrl] để tiếp tục | [R] Quay lại";
+                currentInstructionText = GetLocalizedText("TUT_Map2_Quest13_PlaceLamp", "Nhấn phím <color=#B388FF><b>B</b></color> tìm đến <color=#B388FF><b>Chiếc đèn</b></color>, đặt tại vị trí thích hợp (có thể Bật/Tắt).");
+                currentPromptText = GetLocalizedText("tut_prompt_b_ctrl_r", "Nhấn [B] hoặc [Ctrl] để tiếp tục | [R] Quay lại");
                 break;
             case TutorialStage.Map2_Quest14_BackToTown:
-                currentInstructionText = "Sau khi cắm trại, hãy lên xe và lái về lại <color=#B388FF><b>Thị trấn</b></color>.";
-                currentPromptText = "Nhấn [Ctrl] để tiếp tục | [R] Quay lại";
+                currentInstructionText = GetLocalizedText("TUT_Map2_Quest14_BackToTown", "Sau khi cắm trại, hãy lên xe và lái về lại <color=#B388FF><b>Thị trấn</b></color>.");
+                currentPromptText = GetLocalizedText("tut_prompt_ctrl_r", "Nhấn [Ctrl] để tiếp tục | [R] Quay lại");
                 break;
             case TutorialStage.Map2_Quest15_FishLog:
-                currentInstructionText = "Nhấn phím <color=#B388FF><b>J</b></color> để mở xem <color=#B388FF><b>Nhật ký các loài cá</b></color> bạn đã câu được.";
-                currentPromptText = "Nhấn [J] hoặc [Ctrl] để tiếp tục | [R] Quay lại";
+                currentInstructionText = GetLocalizedText("TUT_Map2_Quest15_FishLog", "Nhấn phím <color=#B388FF><b>J</b></color> để mở xem <color=#B388FF><b>Nhật ký các loài cá</b></color> bạn đã câu được.");
+                currentPromptText = GetLocalizedText("tut_prompt_j_ctrl_r", "Nhấn [J] hoặc [Ctrl] để tiếp tục | [R] Quay lại");
                 break;
             case TutorialStage.Map2_Quest16_HelpGuide:
-                currentInstructionText = "Nhấn phím <color=#B388FF><b>P</b></color> bất kỳ lúc nào để xem lại toàn bộ <color=#B388FF><b>Chỉ dẫn và phím bấm</b></color>.";
-                currentPromptText = "Nhấn [P] hoặc [Ctrl] để hoàn thành | [R] Quay lại";
+                currentInstructionText = GetLocalizedText("TUT_Map2_Quest16_HelpGuide", "Nhấn phím <color=#B388FF><b>P</b></color> bất kỳ lúc nào để xem lại toàn bộ <color=#B388FF><b>Chỉ dẫn và phím bấm</b></color>.");
+                currentPromptText = GetLocalizedText("tut_prompt_p_ctrl_r", "Nhấn [P] hoặc [Ctrl] để hoàn thành | [R] Quay lại");
                 break;
-
             case TutorialStage.Completed:
                 break;
         }
@@ -668,6 +685,25 @@ public class ForcedTutorialManager : MonoBehaviour
             : $"{currentInstructionText}\n<size=80%><color=#F1C40F>({currentPromptText})</color></size>";
 
         PlayTypewriterEffect(fullText);
+    }
+
+    private string GetLocalizedText(string key, string fallbackText)
+    {
+        if (string.IsNullOrEmpty(key)) return fallbackText;
+        try
+        {
+            var table = LocalizationSettings.StringDatabase.GetTable(tableName);
+            if (table != null)
+            {
+                var entry = table.GetEntry(key);
+                if (entry != null) return entry.GetLocalizedString();
+            }
+            return fallbackText;
+        }
+        catch
+        {
+            return fallbackText;
+        }
     }
 
     private void CompleteTypingInstantly()
