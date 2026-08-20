@@ -185,6 +185,17 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         }
     }
 
+    private Canvas cachedDragCanvas;
+    private RectTransform cachedDragCanvasRect;
+    private Camera cachedPressCamera;
+
+    private Camera GetEventCamera(Canvas canvas)
+    {
+        if (canvas == null || canvas.renderMode == RenderMode.ScreenSpaceOverlay)
+            return null;
+        return canvas.worldCamera != null ? canvas.worldCamera : Camera.main;
+    }
+
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (eventData.button != PointerEventData.InputButton.Left) return;
@@ -201,11 +212,18 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             ItemInfoPanelUI.Instance.ClearInfo();
         }
 
+        cachedDragCanvas = GetComponentInParent<Canvas>();
+        if (cachedDragCanvas != null)
+        {
+            cachedDragCanvasRect = cachedDragCanvas.GetComponent<RectTransform>();
+            cachedPressCamera = GetEventCamera(cachedDragCanvas);
+        }
+
         if (isFromCooking || originIngredientSlot != null)
         {
-            Canvas rootCanvas = GetComponentInParent<Canvas>();
-            if (rootCanvas != null) transform.SetParent(rootCanvas.transform, true);
+            if (cachedDragCanvas != null) transform.SetParent(cachedDragCanvas.transform, true);
 
+            rectTransform.pivot = new Vector2(0, 1);
             rectTransform.anchorMin = new Vector2(0, 1);
             rectTransform.anchorMax = new Vector2(0, 1);
             UpdateVisualSize();
@@ -218,15 +236,22 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             currentSlot.RemoveEquippedItem();
 
             Canvas rootCanvas = currentSlot.GetComponentInParent<Canvas>();
-            if (rootCanvas != null) transform.SetParent(rootCanvas.transform, true);
+            if (rootCanvas != null)
+            {
+                cachedDragCanvas = rootCanvas;
+                cachedDragCanvasRect = rootCanvas.GetComponent<RectTransform>();
+                cachedPressCamera = GetEventCamera(rootCanvas);
+                transform.SetParent(rootCanvas.transform, true);
+            }
             else transform.SetParent(currentSlot.transform.root, true);
 
+            rectTransform.pivot = new Vector2(0, 1);
             rectTransform.anchorMin = new Vector2(0, 1);
             rectTransform.anchorMax = new Vector2(0, 1);
             UpdateVisualSize();
 
             transform.SetAsLastSibling();
-            BackpackMinigameUI.Instance.OnItemBeginDragFromExternal(this, eventData.position);
+            if (BackpackMinigameUI.Instance != null) BackpackMinigameUI.Instance.OnItemBeginDragFromExternal(this, eventData.position);
         }
         else
         {
@@ -242,8 +267,16 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         if (eventData.button != PointerEventData.InputButton.Left) return;
         lastDragPosition = eventData.position;
 
-        bool overBackpack = BackpackMinigameUI.Instance != null && BackpackMinigameUI.Instance.GetGridRoot() != null && BackpackMinigameUI.Instance.GetGridRoot().gameObject.activeInHierarchy && RectTransformUtility.RectangleContainsScreenPoint(BackpackMinigameUI.Instance.GetGridRoot(), eventData.position, eventData.pressEventCamera);
-        bool overTrunk = TrunkMinigameUI.Instance != null && TrunkMinigameUI.Instance.GetGridRoot() != null && TrunkMinigameUI.Instance.GetGridRoot().gameObject.activeInHierarchy && RectTransformUtility.RectangleContainsScreenPoint(TrunkMinigameUI.Instance.GetGridRoot(), eventData.position, eventData.pressEventCamera);
+        Camera backpackCam = (BackpackMinigameUI.Instance != null && BackpackMinigameUI.Instance.GetRootCanvas() != null)
+            ? GetEventCamera(BackpackMinigameUI.Instance.GetRootCanvas())
+            : eventData.pressEventCamera;
+
+        Camera trunkCam = (TrunkMinigameUI.Instance != null && TrunkMinigameUI.Instance.GetRootCanvas() != null)
+            ? GetEventCamera(TrunkMinigameUI.Instance.GetRootCanvas())
+            : eventData.pressEventCamera;
+
+        bool overBackpack = BackpackMinigameUI.Instance != null && BackpackMinigameUI.Instance.GetGridRoot() != null && BackpackMinigameUI.Instance.GetGridRoot().gameObject.activeInHierarchy && RectTransformUtility.RectangleContainsScreenPoint(BackpackMinigameUI.Instance.GetGridRoot(), eventData.position, backpackCam);
+        bool overTrunk = TrunkMinigameUI.Instance != null && TrunkMinigameUI.Instance.GetGridRoot() != null && TrunkMinigameUI.Instance.GetGridRoot().gameObject.activeInHierarchy && RectTransformUtility.RectangleContainsScreenPoint(TrunkMinigameUI.Instance.GetGridRoot(), eventData.position, trunkCam);
 
         isHoveringBackpack = overBackpack;
         isHoveringTrunk = overTrunk;
@@ -263,19 +296,30 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             if (BackpackMinigameUI.Instance != null) BackpackMinigameUI.Instance.HideHighlight();
             if (TrunkMinigameUI.Instance != null) TrunkMinigameUI.Instance.HideHighlight();
 
-            Canvas rootCanvas = GetComponentInParent<Canvas>();
-            if (rootCanvas != null)
+            if (cachedDragCanvas == null)
             {
-                if (transform.parent != rootCanvas.transform) { transform.SetParent(rootCanvas.transform, true); transform.SetAsLastSibling(); }
-                Camera pressCamera = rootCanvas.renderMode != RenderMode.ScreenSpaceOverlay ? rootCanvas.worldCamera : null;
-                if (pressCamera == null) pressCamera = Camera.main;
-                if (RectTransformUtility.ScreenPointToWorldPointInRectangle(rootCanvas.GetComponent<RectTransform>(), eventData.position, pressCamera, out Vector3 worldPoint))
+                cachedDragCanvas = GetComponentInParent<Canvas>();
+                if (cachedDragCanvas != null)
+                {
+                    cachedDragCanvasRect = cachedDragCanvas.GetComponent<RectTransform>();
+                    cachedPressCamera = GetEventCamera(cachedDragCanvas);
+                }
+            }
+
+            if (cachedDragCanvas != null && cachedDragCanvasRect != null)
+            {
+                if (transform.parent != cachedDragCanvas.transform)
+                {
+                    transform.SetParent(cachedDragCanvas.transform, true);
+                    transform.SetAsLastSibling();
+                }
+                if (RectTransformUtility.ScreenPointToWorldPointInRectangle(cachedDragCanvasRect, eventData.position, cachedPressCamera, out Vector3 worldPoint))
                     transform.position = worldPoint;
             }
         }
     }
 
-   public void OnEndDrag(PointerEventData eventData)
+    public void OnEndDrag(PointerEventData eventData)
     {
         if (eventData.button != PointerEventData.InputButton.Left) return;
         isDragging = false;
@@ -286,13 +330,22 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         {
             isHandledBySlot = false;
             if (BackpackMinigameUI.Instance != null) BackpackMinigameUI.Instance.HideHighlight();
+            if (TrunkMinigameUI.Instance != null) TrunkMinigameUI.Instance.HideHighlight();
             return;
         }
 
+        Camera backpackCam = (BackpackMinigameUI.Instance != null && BackpackMinigameUI.Instance.GetRootCanvas() != null)
+            ? GetEventCamera(BackpackMinigameUI.Instance.GetRootCanvas())
+            : eventData.pressEventCamera;
+
+        Camera trunkCam = (TrunkMinigameUI.Instance != null && TrunkMinigameUI.Instance.GetRootCanvas() != null)
+            ? GetEventCamera(TrunkMinigameUI.Instance.GetRootCanvas())
+            : eventData.pressEventCamera;
+
         if (isFromCooking || originIngredientSlot != null)
         {
-            bool isOverBalo = BackpackMinigameUI.Instance != null && BackpackMinigameUI.Instance.GetGridRoot() != null && BackpackMinigameUI.Instance.GetGridRoot().gameObject.activeInHierarchy && RectTransformUtility.RectangleContainsScreenPoint(BackpackMinigameUI.Instance.GetGridRoot(), eventData.position, eventData.pressEventCamera);
-            bool isOverXe = TrunkMinigameUI.Instance != null && TrunkMinigameUI.Instance.GetGridRoot() != null && TrunkMinigameUI.Instance.GetGridRoot().gameObject.activeInHierarchy && RectTransformUtility.RectangleContainsScreenPoint(TrunkMinigameUI.Instance.GetGridRoot(), eventData.position, eventData.pressEventCamera);
+            bool isOverBalo = BackpackMinigameUI.Instance != null && BackpackMinigameUI.Instance.GetGridRoot() != null && BackpackMinigameUI.Instance.GetGridRoot().gameObject.activeInHierarchy && RectTransformUtility.RectangleContainsScreenPoint(BackpackMinigameUI.Instance.GetGridRoot(), eventData.position, backpackCam);
+            bool isOverXe = TrunkMinigameUI.Instance != null && TrunkMinigameUI.Instance.GetGridRoot() != null && TrunkMinigameUI.Instance.GetGridRoot().gameObject.activeInHierarchy && RectTransformUtility.RectangleContainsScreenPoint(TrunkMinigameUI.Instance.GetGridRoot(), eventData.position, trunkCam);
             bool placedInGrid = false;
 
             if (isOverXe) 
@@ -300,7 +353,7 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
                 placedInGrid = TrunkMinigameUI.Instance.TryPlaceItemFromExternal(this, eventData.position); 
                 if (placedInGrid) currentOwner = GridOwner.Trunk; 
             }
-            else if (isOverBalo)
+            else if (isOverBalo || BackpackMinigameUI.Instance != null)
             {
                 placedInGrid = BackpackMinigameUI.Instance.TryPlaceItemFromExternal(this, eventData.position);
                 if (placedInGrid)
@@ -336,9 +389,28 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
         if (isEquipped)
         {
-            bool placedInGrid = BackpackMinigameUI.Instance != null && BackpackMinigameUI.Instance.TryPlaceItemFromExternal(this, eventData.position);
+            bool isOverXe = TrunkMinigameUI.Instance != null && TrunkMinigameUI.Instance.GetGridRoot() != null && TrunkMinigameUI.Instance.GetGridRoot().gameObject.activeInHierarchy && RectTransformUtility.RectangleContainsScreenPoint(TrunkMinigameUI.Instance.GetGridRoot(), eventData.position, trunkCam);
+            bool isOverBalo = BackpackMinigameUI.Instance != null && BackpackMinigameUI.Instance.GetGridRoot() != null && BackpackMinigameUI.Instance.GetGridRoot().gameObject.activeInHierarchy && RectTransformUtility.RectangleContainsScreenPoint(BackpackMinigameUI.Instance.GetGridRoot(), eventData.position, backpackCam);
+            bool placedInGrid = false;
+
+            if (isOverXe)
+            {
+                placedInGrid = TrunkMinigameUI.Instance.TryPlaceItemFromExternal(this, eventData.position);
+                if (placedInGrid) currentOwner = GridOwner.Trunk;
+            }
+            else
+            {
+                if (BackpackMinigameUI.Instance != null)
+                {
+                    placedInGrid = BackpackMinigameUI.Instance.TryPlaceItemFromExternal(this, eventData.position);
+                    if (placedInGrid) currentOwner = GridOwner.Backpack;
+                }
+            }
+
             if (placedInGrid)
             {
+                isEquipped = false;
+                currentSlot = null;
                 if (itemShape != null && QuestManager.Instance != null)
                 {
                     string itemName = string.IsNullOrEmpty(itemShape.itemName) ? itemShape.name : itemShape.itemName;
@@ -353,19 +425,20 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
                 }
             }
             if (BackpackMinigameUI.Instance != null) BackpackMinigameUI.Instance.HideHighlight();
+            if (TrunkMinigameUI.Instance != null) TrunkMinigameUI.Instance.HideHighlight();
             return;
         }
 
-        bool overBackpack = BackpackMinigameUI.Instance != null && BackpackMinigameUI.Instance.GetGridRoot() != null && BackpackMinigameUI.Instance.GetGridRoot().gameObject.activeInHierarchy && RectTransformUtility.RectangleContainsScreenPoint(BackpackMinigameUI.Instance.GetGridRoot(), eventData.position, eventData.pressEventCamera);
-        bool overTrunk = TrunkMinigameUI.Instance != null && TrunkMinigameUI.Instance.GetGridRoot() != null && TrunkMinigameUI.Instance.GetGridRoot().gameObject.activeInHierarchy && RectTransformUtility.RectangleContainsScreenPoint(TrunkMinigameUI.Instance.GetGridRoot(), eventData.position, eventData.pressEventCamera);
+        bool overBackpackGrid = BackpackMinigameUI.Instance != null && BackpackMinigameUI.Instance.GetGridRoot() != null && BackpackMinigameUI.Instance.GetGridRoot().gameObject.activeInHierarchy && RectTransformUtility.RectangleContainsScreenPoint(BackpackMinigameUI.Instance.GetGridRoot(), eventData.position, backpackCam);
+        bool overTrunkGrid = TrunkMinigameUI.Instance != null && TrunkMinigameUI.Instance.GetGridRoot() != null && TrunkMinigameUI.Instance.GetGridRoot().gameObject.activeInHierarchy && RectTransformUtility.RectangleContainsScreenPoint(TrunkMinigameUI.Instance.GetGridRoot(), eventData.position, trunkCam);
 
         bool placed = false;
-        if (overTrunk)
+        if (overTrunkGrid)
         {
             placed = TrunkMinigameUI.Instance.TryPlaceItemFromExternal(this, eventData.position);
             if (placed) currentOwner = GridOwner.Trunk;
         }
-        else if (overBackpack)
+        else if (overBackpackGrid)
         {
             placed = BackpackMinigameUI.Instance.TryPlaceItemFromExternal(this, eventData.position);
             if (placed)

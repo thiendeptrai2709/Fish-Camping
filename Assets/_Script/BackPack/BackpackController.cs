@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class BackpackController : MonoBehaviour
 {
@@ -14,6 +14,7 @@ public class BackpackController : MonoBehaviour
 
     [SerializeField] private MonoBehaviour freeLookCamera;
 
+    public bool IsOpen => isOpen;
     private bool isOpen = false;
     private void Awake()
     {
@@ -44,8 +45,33 @@ public class BackpackController : MonoBehaviour
             return;
         }
 
+        // Nếu chuẩn bị mở Balo, tự động đóng các UI toàn màn hình khác (Map, Building, Sổ tay)
+        if (!isOpen)
+        {
+            if (MapUIManager.Instance != null && MapUIManager.Instance.IsOpen)
+                MapUIManager.Instance.CloseMap();
+
+            if (BuildingUIManager.Instance != null && BuildingUIManager.Instance.IsOpen)
+                BuildingUIManager.Instance.CloseBuildingUI();
+
+            if (FishJournalUI.Instance != null && FishJournalUI.Instance.IsOpen)
+                FishJournalUI.Instance.ToggleJournal();
+
+            if (ShopManager.Instance != null && ShopManager.Instance.shopPanel != null && ShopManager.Instance.shopPanel.activeInHierarchy)
+                ShopManager.Instance.DongShop();
+        }
+
         isOpen = !isOpen;
         SetUIState(isOpen, true);
+    }
+
+    public void CloseBackpack()
+    {
+        if (isOpen)
+        {
+            isOpen = false;
+            SetUIState(false, true);
+        }
     }
 
     public void OpenForCooking(bool open)

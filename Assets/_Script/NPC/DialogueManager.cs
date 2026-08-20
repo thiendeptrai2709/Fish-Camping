@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Localization.Settings; // Thêm thư viện tra cứu Localization
@@ -182,15 +182,22 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
+    private WaitForSeconds _cachedTypingWait;
+
     private IEnumerator TypeSentence(string sentence)
     {
-        dialogueText.text = "";
         _isTyping = true;
+        dialogueText.text = sentence;
+        dialogueText.maxVisibleCharacters = 0;
+        dialogueText.ForceMeshUpdate();
 
-        foreach (char letter in sentence.ToCharArray())
+        int totalChars = dialogueText.textInfo.characterCount;
+        if (_cachedTypingWait == null) _cachedTypingWait = new WaitForSeconds(typingSpeed);
+
+        for (int i = 0; i <= totalChars; i++)
         {
-            dialogueText.text += letter;
-            yield return new WaitForSeconds(typingSpeed);
+            dialogueText.maxVisibleCharacters = i;
+            yield return _cachedTypingWait;
         }
 
         _isTyping = false;

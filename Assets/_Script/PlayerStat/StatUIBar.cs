@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class StatUIBar : MonoBehaviour
@@ -15,7 +15,15 @@ public class StatUIBar : MonoBehaviour
     {
         if (statSlider != null)
         {
-            statSlider.value = Mathf.Lerp(statSlider.value, targetPercentage, Time.deltaTime * lerpSpeed);
+            float current = statSlider.value;
+            if (Mathf.Abs(current - targetPercentage) > 0.001f)
+            {
+                statSlider.value = Mathf.Lerp(current, targetPercentage, Time.deltaTime * lerpSpeed);
+            }
+            else if (current != targetPercentage)
+            {
+                statSlider.value = targetPercentage;
+            }
         }
     }
 

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
 using UnityEngine.Localization.Settings;
@@ -48,8 +48,63 @@ public class SettingManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            ToggleSetting();
+            HandleEscapePress();
         }
+    }
+
+    public void HandleEscapePress()
+    {
+        // 1. Đóng Nồi nấu ăn nếu đang mở
+        if (CookingUIManager.Instance != null && CookingUIManager.Instance.IsOpen())
+        {
+            CookingUIManager.Instance.CloseCookingUI();
+            return;
+        }
+
+        // 2. Đóng Cốp xe nếu đang mở
+        if (TrunkInventory.CurrentOpenTrunk != null)
+        {
+            TrunkInventory.CurrentOpenTrunk.ForceCloseAll();
+            return;
+        }
+
+        // 3. Đóng Shop nếu đang mở
+        if (ShopManager.Instance != null && ShopManager.Instance.shopPanel != null && ShopManager.Instance.shopPanel.activeInHierarchy)
+        {
+            ShopManager.Instance.DongShop();
+            return;
+        }
+
+        // 4. Đóng Balo nếu đang mở
+        if (BackpackController.Instance != null && BackpackController.Instance.IsOpen)
+        {
+            BackpackController.Instance.CloseBackpack();
+            return;
+        }
+
+        // 5. Đóng Map nếu đang mở
+        if (MapUIManager.Instance != null && MapUIManager.Instance.IsOpen)
+        {
+            MapUIManager.Instance.CloseMap();
+            return;
+        }
+
+        // 6. Đóng Menu Xây dựng nếu đang mở
+        if (BuildingUIManager.Instance != null && BuildingUIManager.Instance.IsOpen)
+        {
+            BuildingUIManager.Instance.CloseBuildingUI();
+            return;
+        }
+
+        // 7. Đóng Sổ tay nếu đang mở
+        if (FishJournalUI.Instance != null && FishJournalUI.Instance.IsOpen)
+        {
+            FishJournalUI.Instance.ToggleJournal();
+            return;
+        }
+
+        // 8. Nếu không có UI nào đang mở, bật/tắt bảng Cài đặt
+        ToggleSetting();
     }
 
     public void ToggleSetting()

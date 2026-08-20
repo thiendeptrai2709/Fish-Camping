@@ -1716,6 +1716,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NPCBase
   npcName: NPCD
   promptMessage: "Tr\xF2 chuy\u1EC7n"
+  proximityDistance: 3.5
   introDialogues:
   - text: NPCD3
     voiceClip: {fileID: 8300000, guid: 37329d47647dd8749a8846ef18a7ad3b, type: 3}
@@ -3553,6 +3554,8 @@ MonoBehaviour:
   btnUse: {fileID: 770834268}
   btnClose: {fileID: 1250771969}
   btnUseText: {fileID: 549209064}
+  btnCloseText: {fileID: 0}
+  titleText: {fileID: 0}
   notificationText: {fileID: 1633534322}
 --- !u!114 &254691421
 MonoBehaviour:
@@ -25287,6 +25290,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NPCBase
   npcName: NPCD
   promptMessage: "Tr\xF2 chuy\u1EC7n"
+  proximityDistance: 3.5
   introDialogues:
   - text: NPCD4
     voiceClip: {fileID: 8300000, guid: 99bed4b9708982b4fb0d4b8d062fc1b8, type: 3}
@@ -25807,6 +25811,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NPCBase
   npcName: NPCD
   promptMessage: "Tr\xF2 chuy\u1EC7n"
+  proximityDistance: 3.5
   introDialogues:
   - text: NPCD6
     voiceClip: {fileID: 8300000, guid: 0e7a7534636c0b54bab17bf1865dd23c, type: 3}
@@ -37502,7 +37507,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1226535850
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -43724,6 +43729,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NPCBase
   npcName: NPCD
   promptMessage: "Tr\xF2 chuy\u1EC7n"
+  proximityDistance: 3.5
   introDialogues:
   - text: NPCD10
     voiceClip: {fileID: 8300000, guid: 47e6b3038be7da2439e8ae8815523d1a, type: 3}
@@ -51969,6 +51975,8 @@ MonoBehaviour:
   truckDetectionRadius: 5
   shopTransform: {fileID: 0}
   shopDetectionRadius: 12
+  campTransform: {fileID: 0}
+  campDetectionRadius: 25
   raycastMaxDistance: 15
   currentStage: 0
 --- !u!114 &1689199054
@@ -52068,7 +52076,7 @@ AudioSource:
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 1
-  m_Pitch: 1.0553504
+  m_Pitch: 1.0020944
   Loop: 0
   Mute: 0
   Spatialize: 0
@@ -59222,6 +59230,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NPCBase
   npcName: NPCD
   promptMessage: "Tr\xF2 chuy\u1EC7n"
+  proximityDistance: 3.5
   introDialogues:
   - text: NPCD9
     voiceClip: {fileID: 8300000, guid: 8732f0523f3d91c49bde42923be6ad01, type: 3}

@@ -31,26 +31,39 @@ public class PlayerNpcInteraction : MonoBehaviour
         HandleNpcInput();
     }
 
+    private static readonly RaycastHit[] npcHitBuffer = new RaycastHit[8];
+
     private void CheckForNpc()
     {
         if (Cursor.lockState != CursorLockMode.Locked) return;
 
         Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
-        RaycastHit[] hits = Physics.RaycastAll(ray, interactDistance, npcLayer, QueryTriggerInteraction.Ignore);
+        int hitCount = Physics.RaycastNonAlloc(ray, npcHitBuffer, interactDistance, npcLayer, QueryTriggerInteraction.Ignore);
 
-        if (hits != null && hits.Length > 0)
+        if (hitCount > 0)
         {
-            System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
-
-            foreach (var hit in hits)
+            // Sắp xếp theo khoảng cách gần nhất (Non-alloc)
+            for (int i = 0; i < hitCount - 1; i++)
             {
-                if (hit.collider == null || hit.collider.isTrigger) continue;
-
-                INpcInteractable npcInteractable = hit.collider.GetComponent<INpcInteractable>();
-                if (npcInteractable == null)
+                int minIdx = i;
+                for (int j = i + 1; j < hitCount; j++)
                 {
-                    npcInteractable = hit.collider.GetComponentInParent<INpcInteractable>();
+                    if (npcHitBuffer[j].distance < npcHitBuffer[minIdx].distance) minIdx = j;
                 }
+                if (minIdx != i)
+                {
+                    RaycastHit temp = npcHitBuffer[i];
+                    npcHitBuffer[i] = npcHitBuffer[minIdx];
+                    npcHitBuffer[minIdx] = temp;
+                }
+            }
+
+            for (int i = 0; i < hitCount; i++)
+            {
+                var hitCol = npcHitBuffer[i].collider;
+                if (hitCol == null || hitCol.isTrigger) continue;
+
+                INpcInteractable npcInteractable = hitCol.GetComponent<INpcInteractable>() ?? hitCol.GetComponentInParent<INpcInteractable>();
 
                 if (npcInteractable != null)
                 {
@@ -86,14 +99,20 @@ public class PlayerNpcInteraction : MonoBehaviour
         }
     }
 
+    private float lastNpcInteractTime = 0f;
+    private const float NPC_INTERACT_COOLDOWN = 0.2f;
+
     private void HandleNpcInput()
     {
-        // Kiểm tra xem Dialogue Canvas có đang mở sẵn không (nếu có thì dùng Click chuột trái để tua chữ tiếp theo)
-        bool dialogueActive = GameObject.Find("DialogueCanvas") != null && GameObject.Find("DialogueCanvas").activeInHierarchy;
-
         if (inputHandler != null && inputHandler.InteractTriggered)
         {
-            if (dialogueActive && DialogueManager.Instance != null)
+            if (Time.unscaledTime - lastNpcInteractTime < NPC_INTERACT_COOLDOWN)
+            {
+                return;
+            }
+            lastNpcInteractTime = Time.unscaledTime;
+
+            if (DialogueManager.Instance != null && DialogueManager.Instance.IsDialogueActive)
             {
                 DialogueManager.Instance.DisplayNextSentence();
             }

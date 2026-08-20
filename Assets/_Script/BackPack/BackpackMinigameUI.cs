@@ -27,10 +27,37 @@ public class BackpackMinigameUI : MonoBehaviour
     private int dragGridOffsetX;
     private int dragGridOffsetY;
 
+    private Canvas cachedRootCanvas;
+    private RectTransform cachedRootCanvasRect;
+    private Camera cachedPressCamera;
+
+    public Canvas GetRootCanvas()
+    {
+        if (cachedRootCanvas == null) CacheCanvasReferences();
+        return cachedRootCanvas;
+    }
+
     private void Awake()
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
+
+        CacheCanvasReferences();
+    }
+
+    private void CacheCanvasReferences()
+    {
+        if (gridRootRect != null)
+        {
+            cachedRootCanvas = gridRootRect.GetComponentInParent<Canvas>();
+            if (cachedRootCanvas != null)
+            {
+                cachedRootCanvasRect = cachedRootCanvas.GetComponent<RectTransform>();
+                cachedPressCamera = cachedRootCanvas.renderMode != RenderMode.ScreenSpaceOverlay 
+                    ? (cachedRootCanvas.worldCamera != null ? cachedRootCanvas.worldCamera : Camera.main) 
+                    : null;
+            }
+        }
     }
 
     private void Start()
@@ -334,10 +361,9 @@ public class BackpackMinigameUI : MonoBehaviour
         y = -1;
         if (gridRootRect == null || gridData == null) return false;
 
-        Canvas rootCanvas = gridRootRect.GetComponentInParent<Canvas>();
-        Camera pressCamera = (rootCanvas != null && rootCanvas.renderMode != RenderMode.ScreenSpaceOverlay) ? rootCanvas.worldCamera : null;
+        if (cachedRootCanvas == null) CacheCanvasReferences();
 
-        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(gridRootRect, screenPosition, pressCamera, out Vector2 localPoint))
+        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(gridRootRect, screenPosition, cachedPressCamera, out Vector2 localPoint))
         {
             float cellSize = gridData.GetCellSize();
             float offsetX = localPoint.x - gridRootRect.rect.xMin;
@@ -360,10 +386,9 @@ public class BackpackMinigameUI : MonoBehaviour
         y = 0;
         if (gridRootRect == null || gridData == null) return false;
 
-        Canvas rootCanvas = gridRootRect.GetComponentInParent<Canvas>();
-        Camera pressCamera = (rootCanvas != null && rootCanvas.renderMode != RenderMode.ScreenSpaceOverlay) ? rootCanvas.worldCamera : null;
+        if (cachedRootCanvas == null) CacheCanvasReferences();
 
-        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(gridRootRect, screenPosition, pressCamera, out Vector2 localPoint))
+        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(gridRootRect, screenPosition, cachedPressCamera, out Vector2 localPoint))
         {
             float cellSize = gridData.GetCellSize();
             float offsetX = localPoint.x - gridRootRect.rect.xMin;
@@ -414,18 +439,18 @@ public class BackpackMinigameUI : MonoBehaviour
             dragGridOffsetY = 0;
         }
 
-        itemUI.transform.SetParent(itemsContainer);
-        itemUI.transform.SetAsLastSibling();
-
         gridData.ClearCells(startDragX, startDragY, itemUI.GetItemShape(), startDragRotated);
 
         if (highlightOverlay != null)
         {
-            highlightOverlay.gameObject.SetActive(true);
-            highlightOverlay.transform.SetParent(itemsContainer);
-            highlightOverlay.transform.SetSiblingIndex(itemUI.transform.GetSiblingIndex());
-            highlightOverlay.rectTransform.sizeDelta = itemUI.GetComponent<RectTransform>().sizeDelta;
-            highlightOverlay.rectTransform.localRotation = Quaternion.Euler(0f, 0f, startDragRotated ? -90f : 0f);
+            highlightOverlay.gameObject.SetActive(false);
+        }
+
+        if (cachedRootCanvas == null) CacheCanvasReferences();
+        if (cachedRootCanvas != null)
+        {
+            itemUI.transform.SetParent(cachedRootCanvas.transform, true);
+            itemUI.transform.SetAsLastSibling();
         }
 
         OnItemDragging(itemUI, screenPosition);
@@ -441,10 +466,10 @@ public class BackpackMinigameUI : MonoBehaviour
             highlightOverlay.gameObject.SetActive(false);
         }
 
-        Canvas rootCanvas = gridRootRect.GetComponentInParent<Canvas>();
-        if (rootCanvas != null)
+        if (cachedRootCanvas == null) CacheCanvasReferences();
+        if (cachedRootCanvas != null)
         {
-            itemUI.transform.SetParent(rootCanvas.transform, true);
+            itemUI.transform.SetParent(cachedRootCanvas.transform, true);
             itemUI.transform.SetAsLastSibling();
         }
 
@@ -494,23 +519,16 @@ public class BackpackMinigameUI : MonoBehaviour
                 highlightOverlay.gameObject.SetActive(false);
             }
 
-            Canvas rootCanvas = gridRootRect.GetComponentInParent<Canvas>();
-            if (rootCanvas != null)
+            if (cachedRootCanvas == null) CacheCanvasReferences();
+            if (cachedRootCanvas != null && cachedRootCanvasRect != null)
             {
-                if (itemUI.transform.parent != rootCanvas.transform)
+                if (itemUI.transform.parent != cachedRootCanvas.transform)
                 {
-                    itemUI.transform.SetParent(rootCanvas.transform, true);
+                    itemUI.transform.SetParent(cachedRootCanvas.transform, true);
                     itemUI.transform.SetAsLastSibling();
                 }
 
-                Camera pressCamera = null;
-                if (rootCanvas.renderMode != RenderMode.ScreenSpaceOverlay)
-                {
-                    pressCamera = rootCanvas.worldCamera;
-                    if (pressCamera == null) pressCamera = Camera.main;
-                }
-
-                if (RectTransformUtility.ScreenPointToWorldPointInRectangle(rootCanvas.GetComponent<RectTransform>(), screenPosition, pressCamera, out Vector3 worldPoint))
+                if (RectTransformUtility.ScreenPointToWorldPointInRectangle(cachedRootCanvasRect, screenPosition, cachedPressCamera, out Vector3 worldPoint))
                 {
                     itemUI.transform.position = worldPoint;
                 }
@@ -749,7 +767,7 @@ public class BackpackMinigameUI : MonoBehaviour
 
     public void PlaceItemDirectlyToGrid(InventoryItemUI itemUI, int x, int y, bool rotated)
     {
-        if (gridData == null) return;
+        if (gridData == null || itemUI == null || itemUI.GetItemShape() == null) return;
 
         itemUI.transform.SetParent(itemsContainer);
         RectTransform itemRect = itemUI.GetComponent<RectTransform>();
@@ -761,6 +779,7 @@ public class BackpackMinigameUI : MonoBehaviour
         itemUI.SetGridPosition(x, y);
         itemRect.anchoredPosition = GetAnchoredPositionFromGridIndex(x, y);
         itemUI.SetEquippedState(false, null);
+        itemUI.currentOwner = InventoryItemUI.GridOwner.Backpack;
         itemUI.UpdateVisualSize();
 
         SaveBackpack();
@@ -768,7 +787,7 @@ public class BackpackMinigameUI : MonoBehaviour
 
     public bool TryPlaceItemFromExternal(InventoryItemUI itemUI, Vector2 screenPosition)
     {
-        if (gridRootRect == null || gridData == null) return false;
+        if (gridRootRect == null || gridData == null || itemUI == null || itemUI.GetItemShape() == null) return false;
 
         if (GetClampedGridIndex(screenPosition, itemUI.GetItemShape(), itemUI.IsRotated(), out int targetX, out int targetY))
         {
@@ -779,9 +798,51 @@ public class BackpackMinigameUI : MonoBehaviour
             }
             else
             {
-                return TrySwapItemsExternal(itemUI, targetX, targetY);
+                if (TrySwapItemsExternal(itemUI, targetX, targetY))
+                {
+                    return true;
+                }
             }
         }
+
+        // Dự phòng an toàn: Tự động xếp vào ô trống khả dụng bất kỳ trong Balo
+        return TryAutoFitItemToGrid(itemUI);
+    }
+
+    public bool TryAutoFitItemToGrid(InventoryItemUI itemUI)
+    {
+        if (gridData == null || itemUI == null || itemUI.GetItemShape() == null) return false;
+        int width = gridData.GetGridWidth();
+        int height = gridData.GetGridHeight();
+        ItemShapeSO shape = itemUI.GetItemShape();
+
+        // 1. Thử theo hướng xoay hiện tại
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                if (gridData.CanPlaceItem(x, y, shape, itemUI.IsRotated()))
+                {
+                    PlaceItemDirectlyToGrid(itemUI, x, y, itemUI.IsRotated());
+                    return true;
+                }
+            }
+        }
+
+        // 2. Thử xoay 90 độ nếu chưa vừa
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                if (gridData.CanPlaceItem(x, y, shape, !itemUI.IsRotated()))
+                {
+                    itemUI.ToggleRotate();
+                    PlaceItemDirectlyToGrid(itemUI, x, y, itemUI.IsRotated());
+                    return true;
+                }
+            }
+        }
+
         return false;
     }
 

@@ -114,6 +114,66 @@ public class ForcedTutorialManager : MonoBehaviour
 
     public TutorialStage currentStage = TutorialStage.Quest0_WelcomeGame;
 
+    // Performance Caching
+    private Camera mainCamera;
+    private Transform cachedPlayerTransform;
+    private VehicleEnterExit cachedVehicleEnterExit;
+    private VehicleController cachedVehicleController;
+    private NPCFishingShop cachedFishingShop;
+    private FishingZone[] cachedFishingZones;
+    private float distCheckTimer = 0f;
+    private const float DIST_CHECK_INTERVAL = 0.1f;
+    private WaitForSeconds cachedTypingWait;
+
+    private static readonly RaycastHit[] tutorialHitBuffer = new RaycastHit[16];
+    private static readonly Collider[] waterHitBuffer = new Collider[16];
+
+    private Transform GetPlayerTransform()
+    {
+        if (cachedPlayerTransform == null)
+        {
+            var p = GameObject.FindGameObjectWithTag("Player");
+            if (p != null) cachedPlayerTransform = p.transform;
+        }
+        return cachedPlayerTransform;
+    }
+
+    private VehicleEnterExit GetVehicleEnterExit()
+    {
+        if (cachedVehicleEnterExit == null)
+        {
+            cachedVehicleEnterExit = Object.FindFirstObjectByType<VehicleEnterExit>(FindObjectsInactive.Include);
+        }
+        return cachedVehicleEnterExit;
+    }
+
+    private VehicleController GetVehicleController()
+    {
+        if (cachedVehicleController == null)
+        {
+            cachedVehicleController = Object.FindFirstObjectByType<VehicleController>(FindObjectsInactive.Include);
+        }
+        return cachedVehicleController;
+    }
+
+    private NPCFishingShop GetFishingShop()
+    {
+        if (cachedFishingShop == null)
+        {
+            cachedFishingShop = Object.FindFirstObjectByType<NPCFishingShop>(FindObjectsInactive.Include);
+        }
+        return cachedFishingShop;
+    }
+
+    private FishingZone[] GetFishingZones()
+    {
+        if (cachedFishingZones == null || cachedFishingZones.Length == 0)
+        {
+            cachedFishingZones = Object.FindObjectsByType<FishingZone>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        }
+        return cachedFishingZones;
+    }
+
     private void Awake()
     {
         if (Instance == null)
@@ -132,6 +192,9 @@ public class ForcedTutorialManager : MonoBehaviour
 
         if (audioSource == null)
             audioSource = GetComponent<AudioSource>();
+
+        cachedTypingWait = new WaitForSeconds(typingSpeed);
+        mainCamera = Camera.main;
 
         LoadTutorialProgress();
     }
@@ -155,6 +218,16 @@ public class ForcedTutorialManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        cachedPlayerTransform = null;
+        cachedVehicleEnterExit = null;
+        cachedVehicleController = null;
+        cachedFishingShop = null;
+        cachedFishingZones = null;
+        truckTransform = null;
+        shopTransform = null;
+        campTransform = null;
+        mainCamera = Camera.main;
+
         if (questUIPanel == null || instructionTMP == null || progressTMP == null)
         {
             var foundPanel = GameObject.Find("QuestUIPanel");
@@ -244,14 +317,14 @@ public class ForcedTutorialManager : MonoBehaviour
         {
             if (truckTransform == null)
             {
-                var vehicle = Object.FindFirstObjectByType<VehicleEnterExit>(FindObjectsInactive.Include);
+                var vehicle = GetVehicleEnterExit();
                 if (vehicle != null) truckTransform = vehicle.transform;
             }
 
             if (truckTransform != null)
             {
-                var player = GameObject.FindGameObjectWithTag("Player");
-                if (player != null && Vector3.Distance(player.transform.position, truckTransform.position) <= truckDetectionRadius)
+                var player = GetPlayerTransform();
+                if (player != null && Vector3.Distance(player.position, truckTransform.position) <= truckDetectionRadius)
                 {
                     AdvanceToStage(TutorialStage.Quest2_1_OpenTrunk);
                 }
@@ -271,19 +344,19 @@ public class ForcedTutorialManager : MonoBehaviour
         {
             if (shopTransform == null)
             {
-                var shop = Object.FindFirstObjectByType<NPCFishingShop>(FindObjectsInactive.Include);
+                var shop = GetFishingShop();
                 if (shop != null) shopTransform = shop.transform;
             }
 
             if (shopTransform != null)
             {
-                var vehicle = Object.FindFirstObjectByType<VehicleController>(FindObjectsInactive.Include);
+                var vehicle = GetVehicleController();
                 Transform targetTransform = vehicle != null ? vehicle.transform : null;
 
                 if (targetTransform == null)
                 {
-                    var player = GameObject.FindGameObjectWithTag("Player");
-                    if (player != null) targetTransform = player.transform;
+                    var player = GetPlayerTransform();
+                    if (player != null) targetTransform = player;
                 }
 
                 if (targetTransform != null && Vector3.Distance(targetTransform.position, shopTransform.position) <= shopDetectionRadius)
@@ -339,13 +412,13 @@ public class ForcedTutorialManager : MonoBehaviour
         else if (currentStage == TutorialStage.Map2_Quest1_2_GoToCampSite)
         {
             Transform targetTransform = null;
-            var vehicle = Object.FindFirstObjectByType<VehicleController>(FindObjectsInactive.Include);
+            var vehicle = GetVehicleController();
             if (vehicle != null && vehicle.gameObject.activeInHierarchy) targetTransform = vehicle.transform;
 
             if (targetTransform == null)
             {
-                var player = GameObject.FindGameObjectWithTag("Player");
-                if (player != null) targetTransform = player.transform;
+                var player = GetPlayerTransform();
+                if (player != null) targetTransform = player;
             }
 
             if (targetTransform != null)
@@ -425,17 +498,17 @@ public class ForcedTutorialManager : MonoBehaviour
         }
         else if (currentStage == TutorialStage.Map2_Quest3_WalkToLakeSide)
         {
-            var player = GameObject.FindGameObjectWithTag("Player");
+            var player = GetPlayerTransform();
             if (player != null)
             {
                 bool isNearWater = false;
 
-                // 1. Kiểm tra OverlapSphere quanh người chơi với Layer "Water" (Layer 4)
+                // 1. Kiểm tra OverlapSphereNonAlloc quanh người chơi với Layer "Water" (Zero-Alloc)
                 int waterMask = LayerMask.GetMask("Water");
                 if (waterMask == 0) waterMask = 1 << 4;
 
-                Collider[] hits = Physics.OverlapSphere(player.transform.position, 15f, waterMask);
-                if (hits != null && hits.Length > 0)
+                int waterHitsCount = Physics.OverlapSphereNonAlloc(player.position, 15f, waterHitBuffer, waterMask);
+                if (waterHitsCount > 0)
                 {
                     isNearWater = true;
                 }
@@ -443,33 +516,37 @@ public class ForcedTutorialManager : MonoBehaviour
                 // 2. Kiểm tra Raycast thẳng về phía trước / xuống dưới xem có mặt nước không
                 if (!isNearWater)
                 {
-                    if (Physics.Raycast(player.transform.position + Vector3.up * 2f + player.transform.forward * 4f, Vector3.down, out RaycastHit hit, 10f, waterMask))
+                    if (Physics.Raycast(player.position + Vector3.up * 2f + player.forward * 4f, Vector3.down, out RaycastHit hit, 10f, waterMask))
                     {
                         isNearWater = true;
                     }
                 }
 
-                // 3. Kiểm tra khoảng cách tới mép nước của FishingZone hoặc Water plane
+                // 3. Kiểm tra khoảng cách tới mép nước của FishingZone
                 if (!isNearWater)
                 {
-                    FishingZone[] fishingZones = Object.FindObjectsByType<FishingZone>(FindObjectsInactive.Include, FindObjectsSortMode.None);
-                    foreach (var fz in fishingZones)
+                    FishingZone[] fishingZones = GetFishingZones();
+                    if (fishingZones != null)
                     {
-                        if (fz == null) continue;
-                        Collider col = fz.GetComponent<Collider>();
-                        if (col != null)
+                        for (int i = 0; i < fishingZones.Length; i++)
                         {
-                            Vector3 closest = col.ClosestPoint(player.transform.position);
-                            if (Vector3.Distance(player.transform.position, closest) <= 15f)
+                            var fz = fishingZones[i];
+                            if (fz == null) continue;
+                            Collider col = fz.GetComponent<Collider>();
+                            if (col != null)
+                            {
+                                Vector3 closest = col.ClosestPoint(player.position);
+                                if (Vector3.Distance(player.position, closest) <= 15f)
+                                {
+                                    isNearWater = true;
+                                    break;
+                                }
+                            }
+                            else if (Vector3.Distance(player.position, fz.transform.position) <= 50f)
                             {
                                 isNearWater = true;
                                 break;
                             }
-                        }
-                        else if (Vector3.Distance(player.transform.position, fz.transform.position) <= 50f)
-                        {
-                            isNearWater = true;
-                            break;
                         }
                     }
                 }
@@ -497,18 +574,18 @@ public class ForcedTutorialManager : MonoBehaviour
         }
         else if (currentStage == TutorialStage.Map2_Quest5_0_GoToTentCampArea)
         {
-            var player = GameObject.FindGameObjectWithTag("Player");
+            var player = GetPlayerTransform();
             if (player != null)
             {
                 if (CampBuildZone.Instance != null)
                 {
-                    if (CampBuildZone.Instance.IsInsideBuildZone(player.transform.position) ||
-                        Vector3.Distance(player.transform.position, CampBuildZone.Instance.transform.position) <= campDetectionRadius)
+                    if (CampBuildZone.Instance.IsInsideBuildZone(player.position) ||
+                        Vector3.Distance(player.position, CampBuildZone.Instance.transform.position) <= campDetectionRadius)
                     {
                         AdvanceToStage(TutorialStage.Map2_Quest5_1_OpenBuildMenu);
                     }
                 }
-                else if (campTransform != null && Vector3.Distance(player.transform.position, campTransform.position) <= campDetectionRadius)
+                else if (campTransform != null && Vector3.Distance(player.position, campTransform.position) <= campDetectionRadius)
                 {
                     AdvanceToStage(TutorialStage.Map2_Quest5_1_OpenBuildMenu);
                 }
@@ -555,35 +632,52 @@ public class ForcedTutorialManager : MonoBehaviour
     }
 
     // ========================================================
-    // XỬ LÝ RAYCAST 3D CLICK TƯƠNG TÁC TRỰC TIẾP
+    // XỬ LÝ RAYCAST 3D CLICK TƯƠNG TÁC TRỰC TIẾP (Zero-Alloc)
     // ========================================================
 
     private void Handle3DObjectClick()
     {
-        if (Camera.main == null) return;
+        if (mainCamera == null) mainCamera = Camera.main;
+        if (mainCamera == null) return;
 
         Ray ray;
         if (Cursor.lockState == CursorLockMode.Locked)
         {
-            ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
+            ray = new Ray(mainCamera.transform.position, mainCamera.transform.forward);
         }
         else if (Mouse.current != null)
         {
             Vector2 mousePos = Mouse.current.position.ReadValue();
-            ray = Camera.main.ScreenPointToRay(mousePos);
+            ray = mainCamera.ScreenPointToRay(mousePos);
         }
         else
         {
-            ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            ray = mainCamera.ScreenPointToRay(Input.mousePosition);
         }
 
-        RaycastHit[] hits = Physics.RaycastAll(ray, raycastMaxDistance);
-        if (hits == null || hits.Length == 0) return;
+        int hitCount = Physics.RaycastNonAlloc(ray, tutorialHitBuffer, raycastMaxDistance);
+        if (hitCount == 0) return;
 
-        System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
-
-        foreach (var hit in hits)
+        // In-place sort
+        for (int i = 0; i < hitCount - 1; i++)
         {
+            int minIdx = i;
+            for (int j = i + 1; j < hitCount; j++)
+            {
+                if (tutorialHitBuffer[j].distance < tutorialHitBuffer[minIdx].distance) minIdx = j;
+            }
+            if (minIdx != i)
+            {
+                RaycastHit temp = tutorialHitBuffer[i];
+                tutorialHitBuffer[i] = tutorialHitBuffer[minIdx];
+                tutorialHitBuffer[minIdx] = temp;
+            }
+        }
+
+        for (int i = 0; i < hitCount; i++)
+        {
+            var hit = tutorialHitBuffer[i];
+            if (hit.collider == null) continue;
             GameObject hitObj = hit.collider.gameObject;
             string objName = hitObj.name.ToLower();
 
@@ -1172,10 +1266,47 @@ public class ForcedTutorialManager : MonoBehaviour
     // CORE STAGE MANAGEMENT & PROGRESS
     // ========================================================
 
+    private float lastAdvanceTime = 0f;
+    private const float ADVANCE_COOLDOWN = 0.2f;
+
     public TutorialStage GetCurrentStage() => currentStage;
+    public bool IsTutorialCompleted => currentStage == TutorialStage.Completed;
+
+    public bool CanEnterVehicle()
+    {
+        if (currentStage == TutorialStage.Completed) return true;
+
+        // Map 1: Phải đến bước Quest4_1_EnterVehicle mới cho lên xe
+        if (currentStage < TutorialStage.Quest4_1_EnterVehicle)
+        {
+            return false;
+        }
+
+        // Map 2: Sau khi xuống xe tại trại cắm trại (Map2_Quest1_3), khóa lên xe cho đến khi hoàn thành xong cắm trại (Map2_Quest6_BackToTown)
+        if (currentStage >= TutorialStage.Map2_Quest1_3_ExitVehicle && currentStage < TutorialStage.Map2_Quest6_BackToTown)
+        {
+            return false;
+        }
+
+        return true;
+    }
 
     public void AdvanceToStage(TutorialStage nextStage)
     {
+        if (currentStage == nextStage) return;
+        if (currentStage == TutorialStage.Completed) return;
+
+        // Chống spam phím / double-triggering liên tục nhiều stage trong 1 frame
+        if (Time.unscaledTime - lastAdvanceTime < ADVANCE_COOLDOWN)
+        {
+            return;
+        }
+        lastAdvanceTime = Time.unscaledTime;
+
+        // Reset các cờ/timer tạm thời khi chuyển stage
+        moveTimer = 0f;
+        hasShiftSprint = false;
+
         currentStage = nextStage;
         SaveTutorialProgress();
 
@@ -1207,6 +1338,8 @@ public class ForcedTutorialManager : MonoBehaviour
         PlayerPrefs.DeleteKey(TUTORIAL_SAVE_KEY);
         PlayerPrefs.Save();
         currentStage = TutorialStage.Quest0_WelcomeGame;
+        moveTimer = 0f;
+        hasShiftSprint = false;
         UpdateQuestUI();
     }
 
@@ -1468,7 +1601,8 @@ public class ForcedTutorialManager : MonoBehaviour
             }
 
             currentVisibleCharacters++;
-            yield return new WaitForSeconds(typingSpeed);
+            if (cachedTypingWait == null) cachedTypingWait = new WaitForSeconds(typingSpeed);
+            yield return cachedTypingWait;
         }
 
         isTyping = false;

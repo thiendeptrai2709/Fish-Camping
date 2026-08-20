@@ -17,6 +17,15 @@ public class BuildingPlacementController : MonoBehaviour
     private bool isPlacing = false;
     private float currentRotationY = 0f;
     private bool isInsideValidZone = true;
+    private Transform mainCameraTransform;
+    private LayerMask combinedLayer;
+
+    private void Awake()
+    {
+        if (Camera.main != null) mainCameraTransform = Camera.main.transform;
+        combinedLayer = groundLayer | buildableSurfaceLayer;
+    }
+
     private void Update()
     {
         if (!isPlacing || currentPreview == null) return;
@@ -58,8 +67,13 @@ public class BuildingPlacementController : MonoBehaviour
 
     private void UpdatePreviewPositionAndRotation()
     {
-        Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
-        LayerMask combinedLayer = groundLayer | buildableSurfaceLayer;
+        if (mainCameraTransform == null)
+        {
+            if (Camera.main != null) mainCameraTransform = Camera.main.transform;
+            else return;
+        }
+
+        Ray ray = new Ray(mainCameraTransform.position, mainCameraTransform.forward);
         if (Physics.Raycast(ray, out RaycastHit hit, maxBuildDistance, combinedLayer))
         {
             currentPreview.transform.position = hit.point;

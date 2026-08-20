@@ -27,6 +27,7 @@ public class EquipmentSlotUI : MonoBehaviour, IDropHandler
     private void Awake()
     {
         originalSlotSize = GetComponent<RectTransform>().sizeDelta;
+        if (minigameUI == null) minigameUI = BackpackMinigameUI.Instance != null ? BackpackMinigameUI.Instance : FindFirstObjectByType<BackpackMinigameUI>();
     }
 
     public bool CanEquip(ItemShapeSO itemShape)
@@ -46,6 +47,8 @@ public class EquipmentSlotUI : MonoBehaviour, IDropHandler
 
         if (CanEquip(incomingItem.GetItemShape()))
         {
+            if (minigameUI == null) minigameUI = BackpackMinigameUI.Instance != null ? BackpackMinigameUI.Instance : FindFirstObjectByType<BackpackMinigameUI>();
+
             if (equippedItem == null)
             {
                 EquipItem(incomingItem);
@@ -68,11 +71,15 @@ public class EquipmentSlotUI : MonoBehaviour, IDropHandler
                     int oldY = incomingItem.GetGridY();
                     bool oldRot = incomingItem.IsRotated();
 
-                    if (minigameUI.CanPlaceItemAt(oldX, oldY, equippedItem.GetItemShape(), oldRot))
+                    if (minigameUI != null && minigameUI.CanPlaceItemAt(oldX, oldY, equippedItem.GetItemShape(), oldRot))
                     {
                         InventoryItemUI tempOld = equippedItem;
                         EquipItem(incomingItem);
                         minigameUI.PlaceItemDirectlyToGrid(tempOld, oldX, oldY, oldRot);
+                    }
+                    else if (minigameUI != null && minigameUI.TryAutoFitItemToGrid(equippedItem))
+                    {
+                        EquipItem(incomingItem);
                     }
                 }
             }

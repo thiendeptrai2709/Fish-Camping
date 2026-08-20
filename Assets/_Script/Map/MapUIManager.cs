@@ -1,8 +1,11 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class MapUIManager : MonoBehaviour
 {
+    public static MapUIManager Instance { get; private set; }
+    public bool IsOpen => mapUIPanel != null && mapUIPanel.activeSelf;
+
     [SerializeField] private GameObject mapUIPanel;
     [SerializeField] private MapInteractionManager mapInteractionManager;
     [SerializeField] private PlayerInputHandler playerInputHandler;
@@ -11,6 +14,13 @@ public class MapUIManager : MonoBehaviour
     [SerializeField] private PlayerCursor playerCursor;
     [SerializeField] private MonoBehaviour freeLookCamera;
     [SerializeField] private GameObject smallMapUI;
+
+    private void Awake()
+    {
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
+    }
+
     private void OnEnable()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
@@ -48,6 +58,7 @@ public class MapUIManager : MonoBehaviour
             ToggleMap();
         }
     }
+
     public void OpenMap()
     {
         if (mapUIPanel != null && !mapUIPanel.activeSelf)
@@ -55,13 +66,39 @@ public class MapUIManager : MonoBehaviour
             ToggleMap();
         }
     }
+
+    public void CloseMap()
+    {
+        if (mapUIPanel != null && mapUIPanel.activeSelf)
+        {
+            ToggleMap();
+        }
+    }
+
     private void ToggleMap()
     {
         if (mapUIPanel != null)
         {
             bool isActive = !mapUIPanel.activeSelf;
+
+            // Nếu chuẩn bị mở Map, tự động đóng các UI khác
+            if (isActive)
+            {
+                if (BackpackController.Instance != null && BackpackController.Instance.IsOpen)
+                    BackpackController.Instance.CloseBackpack();
+
+                if (BuildingUIManager.Instance != null && BuildingUIManager.Instance.IsOpen)
+                    BuildingUIManager.Instance.CloseBuildingUI();
+
+                if (FishJournalUI.Instance != null && FishJournalUI.Instance.IsOpen)
+                    FishJournalUI.Instance.ToggleJournal();
+
+                if (ShopManager.Instance != null && ShopManager.Instance.shopPanel != null && ShopManager.Instance.shopPanel.activeInHierarchy)
+                    ShopManager.Instance.DongShop();
+            }
+
             mapUIPanel.SetActive(isActive);
-            playerInputHandler.IsUIOpen = isActive;
+            if (playerInputHandler != null) playerInputHandler.IsUIOpen = isActive;
 
             if (smallMapUI != null)
             {

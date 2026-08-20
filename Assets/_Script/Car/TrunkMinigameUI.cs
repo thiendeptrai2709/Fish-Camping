@@ -28,10 +28,37 @@ public class TrunkMinigameUI : MonoBehaviour
     private bool isGridInitialized = false;
     private bool isLoading = false;
 
+    private Canvas cachedRootCanvas;
+    private RectTransform cachedRootCanvasRect;
+    private Camera cachedPressCamera;
+
+    public Canvas GetRootCanvas()
+    {
+        if (cachedRootCanvas == null) CacheCanvasReferences();
+        return cachedRootCanvas;
+    }
+
     private void Awake()
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
+
+        CacheCanvasReferences();
+    }
+
+    private void CacheCanvasReferences()
+    {
+        if (gridRootRect != null)
+        {
+            cachedRootCanvas = gridRootRect.GetComponentInParent<Canvas>();
+            if (cachedRootCanvas != null)
+            {
+                cachedRootCanvasRect = cachedRootCanvas.GetComponent<RectTransform>();
+                cachedPressCamera = cachedRootCanvas.renderMode != RenderMode.ScreenSpaceOverlay 
+                    ? (cachedRootCanvas.worldCamera != null ? cachedRootCanvas.worldCamera : Camera.main) 
+                    : null;
+            }
+        }
     }
 
     private void Start()
@@ -370,10 +397,9 @@ public class TrunkMinigameUI : MonoBehaviour
     {
         x = -1; y = -1;
         if (gridRootRect == null || gridData == null) return false;
-        Canvas rootCanvas = gridRootRect.GetComponentInParent<Canvas>();
-        Camera pressCamera = (rootCanvas != null && rootCanvas.renderMode != RenderMode.ScreenSpaceOverlay) ? rootCanvas.worldCamera : null;
+        if (cachedRootCanvas == null) CacheCanvasReferences();
 
-        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(gridRootRect, screenPosition, pressCamera, out Vector2 localPoint))
+        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(gridRootRect, screenPosition, cachedPressCamera, out Vector2 localPoint))
         {
             float cellSize = gridData.GetCellSize();
             x = Mathf.FloorToInt((localPoint.x - gridRootRect.rect.xMin) / cellSize);
@@ -387,10 +413,9 @@ public class TrunkMinigameUI : MonoBehaviour
     {
         x = 0; y = 0;
         if (gridRootRect == null || gridData == null) return false;
-        Canvas rootCanvas = gridRootRect.GetComponentInParent<Canvas>();
-        Camera pressCamera = (rootCanvas != null && rootCanvas.renderMode != RenderMode.ScreenSpaceOverlay) ? rootCanvas.worldCamera : null;
+        if (cachedRootCanvas == null) CacheCanvasReferences();
 
-        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(gridRootRect, screenPosition, pressCamera, out Vector2 localPoint))
+        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(gridRootRect, screenPosition, cachedPressCamera, out Vector2 localPoint))
         {
             float cellSize = gridData.GetCellSize();
             int rawMouseX = Mathf.FloorToInt((localPoint.x - gridRootRect.rect.xMin) / cellSize);
@@ -480,23 +505,16 @@ public class TrunkMinigameUI : MonoBehaviour
         {
             HideHighlight();
 
-            Canvas rootCanvas = gridRootRect.GetComponentInParent<Canvas>();
-            if (rootCanvas != null)
+            if (cachedRootCanvas == null) CacheCanvasReferences();
+            if (cachedRootCanvas != null && cachedRootCanvasRect != null)
             {
-                if (itemUI.transform.parent != rootCanvas.transform)
+                if (itemUI.transform.parent != cachedRootCanvas.transform)
                 {
-                    itemUI.transform.SetParent(rootCanvas.transform, true);
+                    itemUI.transform.SetParent(cachedRootCanvas.transform, true);
                     itemUI.transform.SetAsLastSibling();
                 }
 
-                Camera pressCamera = null;
-                if (rootCanvas.renderMode != RenderMode.ScreenSpaceOverlay)
-                {
-                    pressCamera = rootCanvas.worldCamera;
-                    if (pressCamera == null) pressCamera = Camera.main;
-                }
-
-                if (RectTransformUtility.ScreenPointToWorldPointInRectangle(rootCanvas.GetComponent<RectTransform>(), screenPosition, pressCamera, out Vector3 worldPoint))
+                if (RectTransformUtility.ScreenPointToWorldPointInRectangle(cachedRootCanvasRect, screenPosition, cachedPressCamera, out Vector3 worldPoint))
                 {
                     itemUI.transform.position = worldPoint;
                 }
@@ -549,6 +567,8 @@ public class TrunkMinigameUI : MonoBehaviour
 
     public bool TryPlaceItemFromExternal(InventoryItemUI itemUI, Vector2 screenPosition)
     {
+        if (gridRootRect == null || gridData == null || itemUI == null || itemUI.GetItemShape() == null) return false;
+
         if (GetClampedGridIndex(screenPosition, itemUI.GetItemShape(), itemUI.IsRotated(), out int targetX, out int targetY))
         {
             if (gridData.CanPlaceItem(targetX, targetY, itemUI.GetItemShape(), itemUI.IsRotated()))
@@ -558,9 +578,51 @@ public class TrunkMinigameUI : MonoBehaviour
             }
             else
             {
-                return TrySwapItemsExternal(itemUI, targetX, targetY);
+                if (TrySwapItemsExternal(itemUI, targetX, targetY))
+                {
+                    return true;
+                }
             }
         }
+
+        // Dự phòng an toàn: Tự động xếp vào ô trống khả dụng bất kỳ trong Cốp xe
+        return TryAutoFitItemToGrid(itemUI);
+    }
+
+    public bool TryAutoFitItemToGrid(InventoryItemUI itemUI)
+    {
+        if (gridData == null || itemUI == null || itemUI.GetItemShape() == null) return false;
+        int width = gridData.GetGridWidth();
+        int height = gridData.GetGridHeight();
+        ItemShapeSO shape = itemUI.GetItemShape();
+
+        // 1. Thử theo hướng xoay hiện tại
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                if (gridData.CanPlaceItem(x, y, shape, itemUI.IsRotated()))
+                {
+                    PlaceItemDirectlyToGrid(itemUI, x, y, itemUI.IsRotated());
+                    return true;
+                }
+            }
+        }
+
+        // 2. Thử xoay 90 độ nếu chưa vừa
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                if (gridData.CanPlaceItem(x, y, shape, !itemUI.IsRotated()))
+                {
+                    itemUI.ToggleRotate();
+                    PlaceItemDirectlyToGrid(itemUI, x, y, itemUI.IsRotated());
+                    return true;
+                }
+            }
+        }
+
         return false;
     }
 

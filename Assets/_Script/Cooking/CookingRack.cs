@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -74,12 +74,17 @@ public class CookingRack : MonoBehaviour, IInteractable
         }
         return null;
     }
+    private static readonly Collider[] campfireHitBuffer = new Collider[4];
+
     private bool DetectCampfire()
     {
-        Collider[] hits = Physics.OverlapSphere(groundCheckPoint.position, 0.5f, campfireLayer);
-        foreach (var hit in hits)
+        if (groundCheckPoint == null) return false;
+        int hitCount = Physics.OverlapSphereNonAlloc(groundCheckPoint.position, 0.5f, campfireHitBuffer, campfireLayer);
+        for (int i = 0; i < hitCount; i++)
         {
-            currentCampfire = hit.GetComponent<Campfire>();
+            var hit = campfireHitBuffer[i];
+            if (hit == null) continue;
+            currentCampfire = hit.GetComponent<Campfire>() ?? hit.GetComponentInParent<Campfire>();
             if (currentCampfire != null) return true;
         }
         return false;

@@ -1,22 +1,35 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class FPSManager : MonoBehaviour
 {
-    [Header("Cài đặt FPS (Nhập -1 để thả ga)")]
-    public int targetFPS = 60; // Bạn có thể sửa số này thành 90, 120 ngay ngoài Inspector
+    [Header("Cài đặt FPS (Nhập 120 hoặc -1 để không giới hạn)")]
+    public int targetFPS = 120; // 120 FPS
 
     [Header("Hiển thị FPS lên màn hình")]
     public bool showFPS = true;
 
     private float deltaTime = 0.0f;
 
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    private static void SetTargetFPS()
+    {
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = 120;
+    }
+
+    void Awake()
+    {
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = targetFPS > 0 ? targetFPS : 120;
+    }
+
     void Start()
     {
         // 1. TẮT V-SYNC (Bắt buộc): Nếu không tắt, Unity sẽ tự khóa FPS theo tần số màn hình
         QualitySettings.vSyncCount = 0;
 
-        // 2. ÉP FPS: Buộc game chạy ở mức FPS được chỉ định
-        Application.targetFrameRate = targetFPS;
+        // 2. ÉP FPS: Mức 120 FPS
+        Application.targetFrameRate = targetFPS > 0 ? targetFPS : 120;
     }
 
     void Update()

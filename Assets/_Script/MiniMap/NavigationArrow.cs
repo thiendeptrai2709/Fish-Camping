@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class NavigationArrow : MonoBehaviour
 {
@@ -27,6 +27,12 @@ public class NavigationArrow : MonoBehaviour
         targetPosition = targetPos;
         isActive = true;
 
+        if (playerTransform == null)
+        {
+            GameObject p = GameObject.FindGameObjectWithTag("Player");
+            if (p != null) playerTransform = p.transform;
+        }
+
         if (arrowVisual != null) arrowVisual.SetActive(true);
     }
 
@@ -41,7 +47,6 @@ public class NavigationArrow : MonoBehaviour
     {
         if (!isActive) return;
 
-        // Tự động tìm người chơi (chỉ tìm 1 lần hoặc khi người chơi bị mất/đổi map)
         if (playerTransform == null)
         {
             GameObject p = GameObject.FindGameObjectWithTag("Player");
@@ -56,19 +61,15 @@ public class NavigationArrow : MonoBehaviour
         Vector3 direction = targetPosition - transform.position;
         direction.y = 0;
 
-        if (direction.sqrMagnitude > 0.1f)
+        float sqrMag = direction.sqrMagnitude;
+        if (sqrMag > 0.01f)
         {
             Quaternion targetRotation = Quaternion.LookRotation(direction);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
         }
 
-        // 3. Tự động tắt nếu đã đến đích
-        float distanceToTarget = Vector3.Distance(
-            new Vector3(transform.position.x, 0, transform.position.z),
-            new Vector3(targetPosition.x, 0, targetPosition.z)
-        );
-
-        if (distanceToTarget <= stopDistance)
+        // 3. Tự động tắt nếu đã đến đích (so sánh bình phương khoảng cách để tránh căn bậc 2)
+        if (sqrMag <= stopDistance * stopDistance)
         {
             StopNavigation();
         }

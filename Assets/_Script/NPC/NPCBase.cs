@@ -38,7 +38,19 @@ public class NPCBase : MonoBehaviour, IInteractable, INpcInteractable
     private NPCPatrol _npcPatrol;
     private bool _hasMetPlayer = false; // Ghi nhớ đã nói chuyện lần đầu chưa
 
+    public static readonly System.Collections.Generic.List<NPCBase> ActiveNpcs = new System.Collections.Generic.List<NPCBase>();
+
     public float ProximityDistance => proximityDistance;
+
+    private void OnEnable()
+    {
+        if (!ActiveNpcs.Contains(this)) ActiveNpcs.Add(this);
+    }
+
+    private void OnDisable()
+    {
+        ActiveNpcs.Remove(this);
+    }
 
     private void Awake()
     {

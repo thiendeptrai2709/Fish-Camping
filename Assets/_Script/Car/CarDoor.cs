@@ -47,6 +47,12 @@ public class CarDoor : MonoBehaviour, IInteractable
     {
         OnLoseFocus();
 
+        if (ForcedTutorialManager.Instance != null && !ForcedTutorialManager.Instance.CanEnterVehicle())
+        {
+            Debug.LogWarning("<color=yellow>[CarDoor] Chưa thể lên xe lúc này! Hãy hoàn thành nhiệm vụ hiện tại trước.</color>");
+            return;
+        }
+
         if (vehicleSystem == null)
         {
             vehicleSystem = GetComponentInParent<VehicleEnterExit>();
@@ -70,6 +76,10 @@ public class CarDoor : MonoBehaviour, IInteractable
 
     public string GetInteractPrompt()
     {
+        if (ForcedTutorialManager.Instance != null && !ForcedTutorialManager.Instance.CanEnterVehicle())
+        {
+            return "Cần hoàn thành nhiệm vụ trước khi lên xe";
+        }
         return "[Chuột Trái] Lên xe";
     }
 }

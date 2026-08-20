@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class FishJournalUI : MonoBehaviour
 {
@@ -11,6 +11,7 @@ public class FishJournalUI : MonoBehaviour
     [SerializeField] private GameObject journalPanel; // Panel chính của UI Sổ tay
     [SerializeField] private MonoBehaviour freeLookCamera; // Camera của Cinemachine
 
+    public bool IsOpen => isOpen;
     private bool isOpen = false;
 
     private void Awake()
@@ -36,11 +37,19 @@ public class FishJournalUI : MonoBehaviour
 
     public void ToggleJournal()
     {
-        // Nếu Balo hoặc Nồi nấu ăn đang mở thì không cho mở đè Sổ tay lên (tránh lỗi chồng chéo UI)
-        if (!isOpen && playerInput.IsUIOpen)
+        if (!isOpen)
         {
-            // Bỏ qua nếu đang mở UI khác
-            return;
+            if (BackpackController.Instance != null && BackpackController.Instance.IsOpen)
+                BackpackController.Instance.CloseBackpack();
+
+            if (MapUIManager.Instance != null && MapUIManager.Instance.IsOpen)
+                MapUIManager.Instance.CloseMap();
+
+            if (BuildingUIManager.Instance != null && BuildingUIManager.Instance.IsOpen)
+                BuildingUIManager.Instance.CloseBuildingUI();
+
+            if (ShopManager.Instance != null && ShopManager.Instance.shopPanel != null && ShopManager.Instance.shopPanel.activeInHierarchy)
+                ShopManager.Instance.DongShop();
         }
 
         isOpen = !isOpen;
