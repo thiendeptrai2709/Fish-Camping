@@ -1,25 +1,46 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 [RequireComponent(typeof(BoxCollider))]
 public class InteractableEngine : MonoBehaviour, IInteractable
 {
     [Header("Liên kết chức năng")]
     [SerializeField] private EngineRepairMinigame engineRepairMinigame;
+    [SerializeField] private InteractableHood interactableHood;
 
     private int normalLayer;
     private int outlineLayer;
 
     private void Awake()
     {
-        // Setup layer để làm Outline
         normalLayer = LayerMask.NameToLayer("Interactable");
         outlineLayer = LayerMask.NameToLayer("Outlined");
+
+        if (engineRepairMinigame == null)
+        {
+            engineRepairMinigame = GetComponent<EngineRepairMinigame>() ?? GetComponentInParent<EngineRepairMinigame>() ?? Object.FindFirstObjectByType<EngineRepairMinigame>(FindObjectsInactive.Include);
+        }
+
+        if (interactableHood == null)
+        {
+            interactableHood = GetComponentInParent<InteractableHood>() ?? Object.FindFirstObjectByType<InteractableHood>(FindObjectsInactive.Include);
+        }
 
         SetLayerRecursively(gameObject, normalLayer);
     }
 
+    public bool CanInteract()
+    {
+        // Chỉ cho phép tương tác với động cơ khi nắp Capo đang MỞ
+        if (interactableHood != null && !interactableHood.IsHoodOpen)
+        {
+            return false;
+        }
+        return true;
+    }
+
     public void OnFocus()
     {
+        if (!CanInteract()) return;
         SetLayerRecursively(gameObject, outlineLayer);
     }
 
@@ -30,28 +51,33 @@ public class InteractableEngine : MonoBehaviour, IInteractable
 
     public void Interact()
     {
+        if (!CanInteract()) return;
+
         if (engineRepairMinigame != null && !engineRepairMinigame.IsEngineOut)
         {
             engineRepairMinigame.TryToggleRepairMode();
+            ForcedTutorialManager.Instance?.NotifyEngineRepaired();
         }
     }
 
     public string GetInteractPrompt()
     {
+        if (!CanInteract()) return "";
+
         if (engineRepairMinigame != null && engineRepairMinigame.IsEngineOut)
         {
-            // Khi máy đang ở ngoài, ta trả về chuỗi rỗng để ẩn dòng chữ gợi ý đi
-            // vì bây giờ người chơi sẽ dùng chuột để bấm các nút trên bảng Menu.
             return "";
         }
         return "[Chuột Trái] Kiểm tra động cơ";
     }
+
     private void SetLayerRecursively(GameObject obj, int newLayer)
     {
+        if (obj == null) return;
         obj.layer = newLayer;
         foreach (Transform child in obj.transform)
         {
-            SetLayerRecursively(child.gameObject, newLayer);
+            if (child != null) SetLayerRecursively(child.gameObject, newLayer);
         }
     }
 }

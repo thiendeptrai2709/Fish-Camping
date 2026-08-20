@@ -2747,6 +2747,7 @@ GameObject:
   - component: {fileID: 4467038138247310086}
   - component: {fileID: 3940383848763555858}
   - component: {fileID: 2317499194567251144}
+  - component: {fileID: 1344735691555866845}
   m_Layer: 3
   m_Name: PickupBody
   m_TagString: Untagged
@@ -2871,6 +2872,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableVehicleStats
   vehicleStats: {fileID: 6911055058645893938}
+--- !u!114 &1344735691555866845
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6715426423681580902}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99eb6e1438b7ce94b90a828a2a1bfd74, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TutorialTruckTriggerZone
+  playerTag: Player
+  disableAfterTrigger: 1
+  visualIndicator: {fileID: 0}
+  gizmoColor: {r: 0, g: 1, b: 0.4, a: 0.35}
 --- !u!1 &6734672487587284790
 GameObject:
   m_ObjectHideFlags: 0

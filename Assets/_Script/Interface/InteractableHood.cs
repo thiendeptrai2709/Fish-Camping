@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 [RequireComponent(typeof(BoxCollider))]
 public class InteractableHood : MonoBehaviour, IInteractable
@@ -9,10 +9,17 @@ public class InteractableHood : MonoBehaviour, IInteractable
     private int outlineLayer;
     private bool isHoodOpen = false;
 
+    public bool IsHoodOpen => isHoodOpen;
+
     private void Awake()
     {
         normalLayer = LayerMask.NameToLayer("Interactable");
         outlineLayer = LayerMask.NameToLayer("Outlined");
+
+        if (hoodHinge == null)
+        {
+            hoodHinge = GetComponent<ProceduralHinge>() ?? GetComponentInChildren<ProceduralHinge>() ?? GetComponentInParent<ProceduralHinge>();
+        }
 
         SetLayerRecursively(gameObject, normalLayer);
     }
@@ -35,14 +42,27 @@ public class InteractableHood : MonoBehaviour, IInteractable
         {
             hoodHinge.Toggle();
         }
+
+        if (isHoodOpen)
+        {
+            ForcedTutorialManager.Instance?.NotifyHoodOpened();
+        }
+        else
+        {
+            ForcedTutorialManager.Instance?.NotifyHoodClosed();
+        }
     }
+
     public void ForceClose()
     {
         if (!isHoodOpen) return;
         isHoodOpen = false;
 
         if (hoodHinge != null) hoodHinge.ForceClose();
+
+        ForcedTutorialManager.Instance?.NotifyHoodClosed();
     }
+
     public string GetInteractPrompt()
     {
         return isHoodOpen ? "[Chuột Trái] Đóng nắp Capo" : "[Chuột Trái] Mở nắp Capo";
@@ -53,10 +73,11 @@ public class InteractableHood : MonoBehaviour, IInteractable
      */
     private void SetLayerRecursively(GameObject obj, int newLayer)
     {
+        if (obj == null) return;
         obj.layer = newLayer;
         foreach (Transform child in obj.transform)
         {
-            SetLayerRecursively(child.gameObject, newLayer);
+            if (child != null) SetLayerRecursively(child.gameObject, newLayer);
         }
     }
 }

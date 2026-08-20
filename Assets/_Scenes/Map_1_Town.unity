@@ -3469,6 +3469,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7545302691513997211, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
   m_PrefabInstance: {fileID: 883674292}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &250813401 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 615303143391905309, guid: 46f84f82921c30f40b799b924db37d9a, type: 3}
+  m_PrefabInstance: {fileID: 278762742}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &251498619 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5256764529280909251, guid: 56e3f715ad78ae648aff217ab7ce7274, type: 3}
@@ -4243,7 +4248,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7153113100508286376, guid: 46f84f82921c30f40b799b924db37d9a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1598445998}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 615303143391905309, guid: 46f84f82921c30f40b799b924db37d9a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1226350893}
   m_SourcePrefab: {fileID: 100100000, guid: 46f84f82921c30f40b799b924db37d9a, type: 3}
 --- !u!1 &280363682 stripped
 GameObject:
@@ -31955,7 +31963,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: New Text
+  m_text: "Ch\xE0o m\u1EEBng b\u1EA1n \u0111\u1EBFn v\u1EDBi <color=#B388FF><b>Fish-Camping</b></color>!
+    Nh\u1EA5n ph\xEDm b\u1EA5t k\u1EF3 \u0111\u1EC3 b\u1EAFt \u0111\u1EA7u."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9670759eeae0b04458d9a2724e8c77cb, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 9670759eeae0b04458d9a2724e8c77cb, type: 2}
@@ -37457,6 +37466,23 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7153113100508286376, guid: 46f84f82921c30f40b799b924db37d9a, type: 3}
   m_PrefabInstance: {fileID: 278762742}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1226350893
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 250813401}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 252e097a259df8a4087c784f33f41f2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TutorialShopArrivalTriggerZone
+  carTag: Car
+  playerTag: Player
+  detectionRadius: 12
+  disableAfterTrigger: 1
+  gizmoColor: {r: 0.2, g: 0.6, b: 1, a: 0.35}
 --- !u!1 &1226535849
 GameObject:
   m_ObjectHideFlags: 0
@@ -51931,9 +51957,6 @@ MonoBehaviour:
   questUIPanel: {fileID: 989107371}
   instructionTMP: {fileID: 915253905}
   progressTMP: {fileID: 2051752387}
-  blinkSpeed: 3.5
-  minAlpha: 0.2
-  maxAlpha: 1
   typingSpeed: 0.025
   audioSource: {fileID: 1689199058}
   typeSFX: {fileID: 8300000, guid: 2d660e4de1ff2a045bfd260552d9c4ea, type: 3}
@@ -51942,6 +51965,11 @@ MonoBehaviour:
   randomizePitch: 1
   soundFrequency: 2
   requiredWalkTime: 2.5
+  truckTransform: {fileID: 0}
+  truckDetectionRadius: 5
+  shopTransform: {fileID: 0}
+  shopDetectionRadius: 12
+  raycastMaxDistance: 15
   currentStage: 0
 --- !u!114 &1689199054
 MonoBehaviour:
@@ -52040,7 +52068,7 @@ AudioSource:
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 1
-  m_Pitch: 1
+  m_Pitch: 1.0553504
   Loop: 0
   Mute: 0
   Spatialize: 0
@@ -59363,7 +59391,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: New Text
+  m_text: "H\u01AF\u1EDANG D\u1EAAN (1/26)"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c4df8d68a252a664885d49ca4983b741, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: c4df8d68a252a664885d49ca4983b741, type: 2}
@@ -59390,7 +59418,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 22.9
+  m_fontSize: 21.65
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1

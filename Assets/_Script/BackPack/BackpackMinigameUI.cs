@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
@@ -77,16 +77,31 @@ public class BackpackMinigameUI : MonoBehaviour
     // ==========================================
     // HỆ THỐNG SAVE & LOAD BALO
     // ==========================================
+    public InventoryItemUI CreateItemUI(ItemShapeSO shape, bool rotated = false)
+    {
+        if (itemUIPrefab == null || shape == null || itemsContainer == null) return null;
+        GameObject itemObj = Instantiate(itemUIPrefab, itemsContainer);
+        InventoryItemUI itemUI = itemObj.GetComponent<InventoryItemUI>();
+        itemUI.Setup(shape, this, 0, 0, rotated);
+        return itemUI;
+    }
+
     public void SaveBackpack()
     {
         if (itemsContainer == null) return;
 
-        BackpackSaveContainer container = new BackpackSaveContainer();
         InventoryItemUI[] allItems = itemsContainer.GetComponentsInChildren<InventoryItemUI>();
+        BackpackSaveContainer container = new BackpackSaveContainer();
+        HashSet<string> recordedPositions = new HashSet<string>();
 
         foreach (var item in allItems)
         {
             if (item == null || item.GetItemShape() == null) continue;
+            if (item.transform.parent != itemsContainer) continue;
+
+            string posKey = $"{item.GetGridX()}_{item.GetGridY()}";
+            if (recordedPositions.Contains(posKey)) continue;
+            recordedPositions.Add(posKey);
 
             ItemShapeSO shape = item.GetItemShape();
             string finalID = !string.IsNullOrEmpty(shape.itemID) ? shape.itemID : shape.name;
@@ -97,10 +112,38 @@ public class BackpackMinigameUI : MonoBehaviour
                 gridX = item.GetGridX(),
                 gridY = item.GetGridY(),
                 isRotated = item.IsRotated(),
-                isFish = (shape is FishSO)
+                isFish = (shape is FishSO),
+                fishLength = item.GetLength(),
+                fishWeight = item.GetWeight(),
+                fishGrade = (int)item.GetGrade()
             };
 
             container.items.Add(data);
+        }
+
+        // LƯU CÁC Ô TRANG BỊ (EQUIPMENT SLOTS)
+        EquipmentSlotUI[] allSlots = Object.FindObjectsByType<EquipmentSlotUI>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        foreach (var slot in allSlots)
+        {
+            if (slot == null) continue;
+            InventoryItemUI eqItem = slot.GetEquippedItem();
+            if (eqItem != null && eqItem.GetItemShape() != null)
+            {
+                ItemShapeSO shape = eqItem.GetItemShape();
+                string finalID = !string.IsNullOrEmpty(shape.itemID) ? shape.itemID : shape.name;
+
+                SavedEquippedSlotData slotData = new SavedEquippedSlotData
+                {
+                    slotRequirement = (int)slot.GetSlotRequirement(),
+                    itemID = finalID,
+                    isRotated = eqItem.IsRotated(),
+                    isFish = (shape is FishSO),
+                    fishLength = eqItem.GetLength(),
+                    fishWeight = eqItem.GetWeight(),
+                    fishGrade = (int)eqItem.GetGrade()
+                };
+                container.equippedSlots.Add(slotData);
+            }
         }
 
         string json = JsonUtility.ToJson(container);
@@ -114,23 +157,81 @@ public class BackpackMinigameUI : MonoBehaviour
         if (string.IsNullOrEmpty(json)) return;
 
         BackpackSaveContainer container = JsonUtility.FromJson<BackpackSaveContainer>(json);
-        if (container == null || container.items == null) return;
+        if (container == null) return;
 
         // Xóa sạch các item visual cũ nếu có
-        InventoryItemUI[] oldItems = itemsContainer.GetComponentsInChildren<InventoryItemUI>();
-        foreach (var old in oldItems) Destroy(old.gameObject);
+        if (itemsContainer != null)
+        {
+            InventoryItemUI[] oldItems = itemsContainer.GetComponentsInChildren<InventoryItemUI>(true);
+            foreach (var old in oldItems)
+            {
+                if (old != null)
+                {
+                    old.transform.SetParent(null);
+                    Destroy(old.gameObject);
+                }
+            }
+        }
 
         if (gridData != null) gridData.InitGrid();
 
-        foreach (var saved in container.items)
+        if (container.items != null)
         {
-            ItemShapeSO foundShape = FindItemShapeByID(saved.itemID);
-            if (foundShape != null)
+            HashSet<string> loadedPositions = new HashSet<string>();
+
+            foreach (var saved in container.items)
             {
-                InventoryItemUI spawned = SpawnItem(foundShape, saved.gridX, saved.gridY, saved.isRotated);
-                if (spawned != null && saved.isFish)
+                if (saved == null) continue;
+                string posKey = $"{saved.gridX}_{saved.gridY}";
+                if (loadedPositions.Contains(posKey)) continue;
+                loadedPositions.Add(posKey);
+
+                ItemShapeSO foundShape = FindItemShapeByID(saved.itemID);
+                if (foundShape != null)
                 {
-                    spawned.SetFishInstanceData(saved.fishLength, saved.fishWeight, (FishGrade)saved.fishGrade);
+                    InventoryItemUI spawned = SpawnItem(foundShape, saved.gridX, saved.gridY, saved.isRotated);
+                    if (spawned != null && saved.isFish)
+                    {
+                        spawned.SetFishInstanceData(saved.fishLength, saved.fishWeight, (FishGrade)saved.fishGrade);
+                    }
+                }
+            }
+        }
+
+        // Nạp lại các item đã trang bị vào các ô EquipmentSlotUI
+        if (container.equippedSlots != null && container.equippedSlots.Count > 0)
+        {
+            EquipmentSlotUI[] allSlots = Object.FindObjectsByType<EquipmentSlotUI>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            HashSet<EquipmentSlotUI> usedSlots = new HashSet<EquipmentSlotUI>();
+
+            foreach (var eqData in container.equippedSlots)
+            {
+                if (eqData == null) continue;
+                ItemShapeSO foundShape = FindItemShapeByID(eqData.itemID);
+                if (foundShape == null) continue;
+
+                EquipmentSlotUI targetSlot = null;
+                foreach (var slot in allSlots)
+                {
+                    if (slot != null && !usedSlots.Contains(slot) && (int)slot.GetSlotRequirement() == eqData.slotRequirement)
+                    {
+                        targetSlot = slot;
+                        break;
+                    }
+                }
+
+                if (targetSlot != null)
+                {
+                    usedSlots.Add(targetSlot);
+                    InventoryItemUI spawnedItem = CreateItemUI(foundShape, eqData.isRotated);
+                    if (spawnedItem != null)
+                    {
+                        if (eqData.isFish)
+                        {
+                            spawnedItem.SetFishInstanceData(eqData.fishLength, eqData.fishWeight, (FishGrade)eqData.fishGrade);
+                        }
+                        targetSlot.EquipItemDirectly(spawnedItem);
+                    }
                 }
             }
         }
@@ -138,6 +239,8 @@ public class BackpackMinigameUI : MonoBehaviour
 
     private ItemShapeSO FindItemShapeByID(string id)
     {
+        if (string.IsNullOrEmpty(id)) return null;
+
         if (allDatabaseItems != null)
         {
             foreach (var item in allDatabaseItems)
@@ -145,14 +248,29 @@ public class BackpackMinigameUI : MonoBehaviour
                 if (item != null)
                 {
                     string checkID = !string.IsNullOrEmpty(item.itemID) ? item.itemID : item.name;
-                    if (checkID == id) return item;
+                    if (checkID == id || item.name == id) return item;
                 }
             }
         }
 
         // Tự động fallback tìm trong thư mục Resources nếu chưa kéo vào Inspector
         ItemShapeSO loaded = Resources.Load<ItemShapeSO>(id);
-        return loaded;
+        if (loaded != null) return loaded;
+
+        ItemShapeSO[] allResources = Resources.LoadAll<ItemShapeSO>("");
+        if (allResources != null)
+        {
+            foreach (var item in allResources)
+            {
+                if (item != null)
+                {
+                    string checkID = !string.IsNullOrEmpty(item.itemID) ? item.itemID : item.name;
+                    if (checkID == id || item.name == id) return item;
+                }
+            }
+        }
+
+        return null;
     }
 
     [ContextMenu("Xóa dữ liệu Balo (Reset Backpack)")]
@@ -161,6 +279,11 @@ public class BackpackMinigameUI : MonoBehaviour
         PlayerPrefs.DeleteKey(SAVE_KEY);
         PlayerPrefs.Save();
         Debug.Log("<color=yellow>[Backpack] Đã xóa dữ liệu lưu trữ balo thành công!</color>");
+    }
+
+    private void OnDisable()
+    {
+        SaveBackpack();
     }
 
     private void OnApplicationQuit()

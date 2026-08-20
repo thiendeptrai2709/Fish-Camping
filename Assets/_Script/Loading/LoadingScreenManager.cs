@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Collections;
@@ -87,15 +87,23 @@ public class LoadingScreenManager : MonoBehaviour
     {
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
 
-        if (playerObj == null && currentCorePrefab != null)
+        if (playerObj == null)
         {
-            Instantiate(currentCorePrefab);
+            if (currentCorePrefab != null)
+            {
+                Instantiate(currentCorePrefab);
+            }
+            else
+            {
+                GameplayCoreManager.EnsureGameplayCoreExists();
+            }
             playerObj = GameObject.FindGameObjectWithTag("Player");
         }
 
         if (playerObj != null && !string.IsNullOrEmpty(targetSpawnPointID))
         {
             MovePlayerToSpawnPoint(playerObj);
+            targetSpawnPointID = "";
         }
     }
 

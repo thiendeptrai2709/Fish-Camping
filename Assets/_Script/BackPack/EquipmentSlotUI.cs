@@ -115,6 +115,17 @@ public class EquipmentSlotUI : MonoBehaviour, IDropHandler
             handVisual.EquipItemVisual(itemUI.GetItemShape());
         }
         OnItemEquipped?.Invoke(itemUI.GetItemShape());
+
+        if (slotRequirement == SlotRequirement.OnlyFishingRod)
+        {
+            ForcedTutorialManager.Instance?.NotifyRodEquipped();
+        }
+        else if (slotRequirement == SlotRequirement.OnlyBait || slotRequirement == SlotRequirement.OnlyBobber)
+        {
+            ForcedTutorialManager.Instance?.NotifyBaitAndBobberEquipped();
+        }
+
+        BackpackMinigameUI.Instance?.SaveBackpack();
     }
 
     public void EquipItemDirectly(InventoryItemUI itemUI)
@@ -152,6 +163,15 @@ public class EquipmentSlotUI : MonoBehaviour, IDropHandler
             handVisual.EquipItemVisual(itemUI.GetItemShape());
         }
         OnItemEquipped?.Invoke(itemUI.GetItemShape());
+
+        if (slotRequirement == SlotRequirement.OnlyFishingRod)
+        {
+            ForcedTutorialManager.Instance?.NotifyRodEquipped();
+        }
+        else if (slotRequirement == SlotRequirement.OnlyBait || slotRequirement == SlotRequirement.OnlyBobber)
+        {
+            ForcedTutorialManager.Instance?.NotifyBaitAndBobberEquipped();
+        }
     }
 
     public void RemoveEquippedItem()
@@ -169,6 +189,7 @@ public class EquipmentSlotUI : MonoBehaviour, IDropHandler
             GetComponent<RectTransform>().sizeDelta = originalSlotSize;
         }
         OnItemRemoved?.Invoke();
+        BackpackMinigameUI.Instance?.SaveBackpack();
     }
     public void ReturnItemToSlot(InventoryItemUI itemUI)
     {
@@ -176,4 +197,5 @@ public class EquipmentSlotUI : MonoBehaviour, IDropHandler
     }
 
     public InventoryItemUI GetEquippedItem() => equippedItem;
+    public SlotRequirement GetSlotRequirement() => slotRequirement;
 }

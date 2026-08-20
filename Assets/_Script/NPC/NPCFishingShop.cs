@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class NPCFishingShop : MonoBehaviour
 {
@@ -38,22 +38,37 @@ public class NPCFishingShop : MonoBehaviour
             linesToPlay = GetRandomReturningLine();
         }
 
-        // 1. Chạy thoại kèm Voice AI
-        DialogueManager.Instance.StartDialogueWithVoice(npcName, linesToPlay, () => {
+        // 1. Chạy thoại kèm Voice AI (nếu có DialogueManager)
+        if (DialogueManager.Instance != null)
+        {
+            DialogueManager.Instance.StartDialogueWithVoice(npcName, linesToPlay, () => {
+                OpenShopUI(onComplete);
+            });
+        }
+        else
+        {
+            OpenShopUI(onComplete);
+        }
+    }
 
-            // 2. Thoại kết thúc -> Mở giao diện Shop ngay lập tức
-            if (ShopManager.Instance != null)
-            {
-                ShopManager.Instance.MoShop(() => {
-                    // 3. Khi đóng UI Shop -> Hoàn tất tương tác trả NPC về Idle
-                    onComplete?.Invoke();
-                });
-            }
-            else
-            {
+    private void OpenShopUI(System.Action onComplete)
+    {
+        if (ShopManager.Instance == null)
+        {
+            ShopManager.Instance = Object.FindFirstObjectByType<ShopManager>(FindObjectsInactive.Include);
+        }
+
+        if (ShopManager.Instance != null)
+        {
+            ShopManager.Instance.MoShop(() => {
                 onComplete?.Invoke();
-            }
-        });
+            });
+        }
+        else
+        {
+            Debug.LogWarning("[NPCFishingShop] Không tìm thấy ShopManager trong Scene!");
+            onComplete?.Invoke();
+        }
     }
 
     private DialogueLine[] GetRandomReturningLine()

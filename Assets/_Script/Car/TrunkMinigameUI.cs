@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 
@@ -26,6 +26,7 @@ public class TrunkMinigameUI : MonoBehaviour
     private int dragGridOffsetX;
     private int dragGridOffsetY;
     private bool isGridInitialized = false;
+    private bool isLoading = false;
 
     private void Awake()
     {
@@ -43,6 +44,14 @@ public class TrunkMinigameUI : MonoBehaviour
         InitializeTrunkUI();
         LoadTrunk();
         ForcedTutorialManager.Instance?.NotifyTrunkOpened();
+    }
+
+    private void OnDisable()
+    {
+        if (!isLoading)
+        {
+            SaveTrunk();
+        }
     }
 
     private void InitializeTrunkUI()
@@ -133,14 +142,23 @@ public class TrunkMinigameUI : MonoBehaviour
     // ==========================================
     public void SaveTrunk()
     {
-        if (itemsContainer == null) return;
+        if (isLoading || itemsContainer == null) return;
 
         InventoryItemUI[] allItems = itemsContainer.GetComponentsInChildren<InventoryItemUI>();
         BackpackSaveContainer container = new BackpackSaveContainer();
+        HashSet<string> recordedPositions = new HashSet<string>();
 
         foreach (var item in allItems)
         {
             if (item == null || item.GetItemShape() == null) continue;
+            if (item.transform.parent != itemsContainer) continue;
+
+            string posKey = $"{item.GetGridX()}_{item.GetGridY()}";
+            if (recordedPositions.Contains(posKey))
+            {
+                continue; // Tránh lưu đè 2 item cùng 1 vị trí / vật phẩm song sinh
+            }
+            recordedPositions.Add(posKey);
 
             ItemShapeSO shape = item.GetItemShape();
             string finalID = !string.IsNullOrEmpty(shape.itemID) ? shape.itemID : shape.name;
@@ -168,44 +186,77 @@ public class TrunkMinigameUI : MonoBehaviour
 
     public void LoadTrunk()
     {
-        string json = PlayerPrefs.GetString(TRUNK_SAVE_KEY, "");
-        if (string.IsNullOrEmpty(json)) return;
-
-        BackpackSaveContainer container = JsonUtility.FromJson<BackpackSaveContainer>(json);
-        if (container == null || container.items == null) return;
-
-        if (itemsContainer != null)
+        isLoading = true;
+        try
         {
-            InventoryItemUI[] oldItems = itemsContainer.GetComponentsInChildren<InventoryItemUI>();
-            foreach (var old in oldItems)
+            string json = PlayerPrefs.GetString(TRUNK_SAVE_KEY, "");
+            if (string.IsNullOrEmpty(json))
             {
-                if (old != null) Destroy(old.gameObject);
+                // Nếu chưa có dữ liệu lưu thì xóa các item visual đang tồn tại
+                ClearAllVisualItems();
+                if (gridData != null) gridData.InitGrid();
+                return;
             }
-        }
 
-        if (gridData != null)
-        {
-            gridData.InitGrid();
-        }
-
-        foreach (var saved in container.items)
-        {
-            ItemShapeSO foundShape = FindItemShapeByID(saved.itemID);
-            if (foundShape != null)
+            BackpackSaveContainer container = JsonUtility.FromJson<BackpackSaveContainer>(json);
+            if (container == null || container.items == null)
             {
-                InventoryItemUI spawned = ForceSpawnLoadedItem(foundShape, saved.gridX, saved.gridY, saved.isRotated);
-                if (spawned != null)
+                ClearAllVisualItems();
+                if (gridData != null) gridData.InitGrid();
+                return;
+            }
+
+            ClearAllVisualItems();
+
+            if (gridData != null)
+            {
+                gridData.InitGrid();
+            }
+
+            HashSet<string> loadedPositions = new HashSet<string>();
+
+            foreach (var saved in container.items)
+            {
+                if (saved == null) continue;
+                string posKey = $"{saved.gridX}_{saved.gridY}";
+                if (loadedPositions.Contains(posKey)) continue; // Ngăn chặn tạo trùng lặp
+                loadedPositions.Add(posKey);
+
+                ItemShapeSO foundShape = FindItemShapeByID(saved.itemID);
+                if (foundShape != null)
                 {
-                    spawned.currentOwner = InventoryItemUI.GridOwner.Trunk;
-                    if (saved.isFish)
+                    InventoryItemUI spawned = ForceSpawnLoadedItem(foundShape, saved.gridX, saved.gridY, saved.isRotated);
+                    if (spawned != null)
                     {
-                        spawned.SetFishInstanceData(saved.fishLength, saved.fishWeight, (FishGrade)saved.fishGrade);
+                        spawned.currentOwner = InventoryItemUI.GridOwner.Trunk;
+                        if (saved.isFish)
+                        {
+                            spawned.SetFishInstanceData(saved.fishLength, saved.fishWeight, (FishGrade)saved.fishGrade);
+                        }
                     }
                 }
+                else
+                {
+                    Debug.LogWarning($"<color=red>[Trunk] Không tìm thấy ScriptableObject với ID: {saved.itemID}</color>");
+                }
             }
-            else
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void ClearAllVisualItems()
+    {
+        Transform targetParent = itemsContainer != null ? itemsContainer : (gridRootRect != null ? gridRootRect : transform);
+        InventoryItemUI[] oldItems = targetParent.GetComponentsInChildren<InventoryItemUI>(true);
+        foreach (var old in oldItems)
+        {
+            if (old != null)
             {
-                Debug.LogWarning($"<color=red>[Trunk] Không tìm thấy ScriptableObject với ID: {saved.itemID}</color>");
+                old.transform.SetParent(null); // Gỡ cha ngay lập tức để không bị quét trúng
+                Destroy(old.gameObject);
             }
         }
     }

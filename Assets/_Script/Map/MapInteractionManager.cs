@@ -82,6 +82,8 @@ public class MapInteractionManager : MonoBehaviour
     {
         if (!string.IsNullOrEmpty(targetSceneName))
         {
+            PlayerLocationSaveManager.Instance?.SetTargetSceneOnTravel(targetSceneName);
+
             if (LoadingScreenManager.Instance != null)
             {
                 LoadingScreenManager.Instance.LoadScene(targetSceneName, targetSpawnID, gameplayCorePrefab);

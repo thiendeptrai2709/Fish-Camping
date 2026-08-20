@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.Events;
 using TMPro;
 
@@ -44,6 +44,36 @@ public class VehicleStats : MonoBehaviour
 
     public UnityEvent OnStatsChanged;
     private PlayerMovement playerMovement;
+
+    private void Awake()
+    {
+        if (playerTransform == null)
+        {
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            if (player != null) playerTransform = player.transform;
+        }
+
+        if (statsCanvasObject == null)
+        {
+            GameObject statOverview = GameObject.Find("Stat_Overview");
+            if (statOverview != null)
+            {
+                statsCanvasObject = statOverview;
+            }
+            else
+            {
+                var allCanvas = Resources.FindObjectsOfTypeAll<Transform>();
+                foreach (var t in allCanvas)
+                {
+                    if (t != null && t.name == "Stat_Overview")
+                    {
+                        statsCanvasObject = t.gameObject;
+                        break;
+                    }
+                }
+            }
+        }
+    }
 
     private void Start()
     {
@@ -146,6 +176,13 @@ public class VehicleStats : MonoBehaviour
             ApplyDegradationToPhysics();
             UpdateUI();
         }
+    }
+
+    public bool IsOverviewPanelOpen => statsCanvasObject != null && statsCanvasObject.activeSelf;
+
+    public void OpenOverviewPanel()
+    {
+        if (statsCanvasObject) statsCanvasObject.SetActive(true);
     }
 
     public void ToggleOverviewPanel()

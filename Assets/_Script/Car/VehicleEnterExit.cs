@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class VehicleEnterExit : MonoBehaviour
@@ -125,11 +125,26 @@ public class VehicleEnterExit : MonoBehaviour
     {
         if (isInCar) return;
 
+        if (playerObject == null)
+            playerObject = GameObject.FindGameObjectWithTag("Player");
+
+        if (playerObject != null)
+        {
+            if (playerMovement == null) playerMovement = playerObject.GetComponent<PlayerMovement>();
+            if (playerInputHandler == null) playerInputHandler = playerObject.GetComponent<PlayerInputHandler>();
+            if (playerInteraction == null) playerInteraction = playerObject.GetComponent<PlayerInteraction>();
+            if (playerAnimation == null) playerAnimation = playerObject.GetComponent<PlayerAnimation>();
+            if (playerCollider == null) playerCollider = playerObject.GetComponent<Collider>();
+            if (playerRigidbody == null) playerRigidbody = playerObject.GetComponent<Rigidbody>();
+        }
+
+        if (driverSeatPoint == null)
+            driverSeatPoint = transform;
+
         if (engineRepair != null && engineRepair.IsEngineOut) engineRepair.ExitRepairMode();
         if (interactableHood != null) interactableHood.ForceClose();
         if (interactableTrunk != null) interactableTrunk.ForceClose();
         if (vehicleStats != null) vehicleStats.CloseOverviewPanel();
-
 
         currentExitPoint = doorExitPoint;
         isInCar = true;
@@ -139,9 +154,12 @@ public class VehicleEnterExit : MonoBehaviour
         TogglePlayerPhysics(false);
 
         // Snap ngay lập tức vào ghế lái
-        playerObject.transform.SetParent(driverSeatPoint);
-        playerObject.transform.localPosition = Vector3.zero;
-        playerObject.transform.localRotation = Quaternion.identity;
+        if (playerObject != null)
+        {
+            playerObject.transform.SetParent(driverSeatPoint);
+            playerObject.transform.localPosition = Vector3.zero;
+            playerObject.transform.localRotation = Quaternion.identity;
+        }
 
         if (playerAnimation != null)
         {
@@ -176,24 +194,71 @@ public class VehicleEnterExit : MonoBehaviour
             playerAnimation.SetDrivingState(false);
         }
 
-        playerObject.transform.SetParent(null);
+        if (playerObject == null)
+            playerObject = GameObject.FindGameObjectWithTag("Player");
 
-        // Kiểm tra xem điểm thoát hiểm có còn tồn tại (hoặc có bị đổi scene xóa mất không)
-        if (currentExitPoint != null)
+        if (playerObject != null)
         {
-            playerObject.transform.position = currentExitPoint.position;
-            playerObject.transform.rotation = currentExitPoint.rotation;
-        }
-        else
-        {
-            // Nếu không có, đặt nhân vật đứng ngay cạnh xe để tránh lỗi
-            playerObject.transform.position = transform.position + transform.right * 2f;
+            playerObject.transform.SetParent(null);
+
+            // Kiểm tra xem điểm thoát hiểm có còn tồn tại (hoặc có bị đổi scene xóa mất không)
+            if (currentExitPoint != null)
+            {
+                playerObject.transform.position = currentExitPoint.position;
+                playerObject.transform.rotation = currentExitPoint.rotation;
+            }
+            else
+            {
+                // Nếu không có, đặt nhân vật đứng ngay cạnh xe để tránh lỗi
+                playerObject.transform.position = transform.position + transform.right * 2f;
+            }
         }
 
         TogglePlayerPhysics(true);
 
         carCamera.SetActive(false);
         playerCamera.SetActive(true);
+        if (playerUI != null) playerUI.SetActive(true);
+
+        OnExitedVehicle?.Invoke();
+        ForcedTutorialManager.Instance?.NotifyExitedVehicle();
+        if (myCarRadio != null) myCarRadio.PlayerExitedCar();
+        if (carFuel != null) carFuel.PlayerExitCar();
+    }
+
+    public void ForceExitVehicle()
+    {
+        if (!isInCar) return;
+
+        isInCar = false;
+        if (vehicleInput != null) vehicleInput.enabled = false;
+
+        if (playerAnimation != null)
+        {
+            playerAnimation.SetDrivingState(false);
+        }
+
+        if (playerObject == null)
+            playerObject = GameObject.FindGameObjectWithTag("Player");
+
+        if (playerObject != null)
+        {
+            playerObject.transform.SetParent(null);
+            if (currentExitPoint != null)
+            {
+                playerObject.transform.position = currentExitPoint.position;
+                playerObject.transform.rotation = currentExitPoint.rotation;
+            }
+            else
+            {
+                playerObject.transform.position = transform.position + transform.right * 2f;
+            }
+        }
+
+        TogglePlayerPhysics(true);
+
+        if (carCamera != null) carCamera.SetActive(false);
+        if (playerCamera != null) playerCamera.SetActive(true);
         if (playerUI != null) playerUI.SetActive(true);
 
         OnExitedVehicle?.Invoke();

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
@@ -442,6 +442,29 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             if (currentOwner == GridOwner.Backpack && BackpackMinigameUI.Instance != null)
             {
                 BackpackMinigameUI.Instance.RemoveItem(this);
+            }
+            ForcedTutorialManager.Instance?.NotifyEatFish();
+        }
+        else if (itemShape != null)
+        {
+            string id = itemShape.itemID != null ? itemShape.itemID.ToLower() : "";
+            string assetName = itemShape.name != null ? itemShape.name.ToLower() : "";
+            string itemName = itemShape.itemName != null ? itemShape.itemName.ToLower() : "";
+
+            if (id.Contains("food") || assetName.Contains("food") || itemName.Contains("cá") || itemName.Contains("nướng"))
+            {
+                if (CharacterStatsManager.Instance != null)
+                {
+                    CharacterStatsManager.Instance.ModifyStat(StatType.Hunger, 25);
+                    CharacterStatsManager.Instance.ModifyStat(StatType.Thirst, 15);
+                    CharacterStatsManager.Instance.ModifyStat(StatType.Energy, 25);
+                }
+
+                if (currentOwner == GridOwner.Backpack && BackpackMinigameUI.Instance != null)
+                {
+                    BackpackMinigameUI.Instance.RemoveItem(this);
+                }
+                ForcedTutorialManager.Instance?.NotifyEatFish();
             }
         }
     }

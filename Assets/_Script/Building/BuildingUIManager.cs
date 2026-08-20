@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 public class BuildingUIManager : MonoBehaviour
 {
@@ -46,6 +46,7 @@ public class BuildingUIManager : MonoBehaviour
             if (playerCursor != null) playerCursor.SetCursorState(false);
             if (placementController != null) placementController.CancelPlacement();
             if (CampBuildZone.Instance != null) CampBuildZone.Instance.ToggleZoneVisual(true);
+            ForcedTutorialManager.Instance?.NotifyOpenBuildMenu();
         }
         else
         {

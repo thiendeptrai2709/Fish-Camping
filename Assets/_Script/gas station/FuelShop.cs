@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
 using System.Collections;
@@ -20,19 +20,63 @@ public class FuelShop : MonoBehaviour
 
     private bool isPlayerNearby = false;
     private Collider playerCollider;
+    private Coroutine notificationCoroutine;
+
+    private void Awake()
+    {
+        FindUI();
+        HideAllUI();
+    }
 
     private void Start()
     {
         if (audioSource == null) audioSource = GetComponent<AudioSource>();
         FindUI();
+        DisableLocalization(notificationText);
+        HideAllUI();
+    }
+
+    private void OnEnable()
+    {
+        FindUI();
+        HideAllUI();
+    }
+
+    private void OnDisable()
+    {
+        HideAllUI();
+    }
+
+    public void HideAllUI()
+    {
+        if (notificationCoroutine != null)
+        {
+            StopCoroutine(notificationCoroutine);
+            notificationCoroutine = null;
+        }
+
         if (interactUI != null) interactUI.SetActive(false);
         if (notificationText != null) notificationText.gameObject.SetActive(false);
+    }
+
+    private void DisableLocalization(Component target)
+    {
+        if (target == null) return;
+        var components = target.GetComponents<MonoBehaviour>();
+        foreach (var comp in components)
+        {
+            if (comp != null && comp.GetType().Name.Contains("LocalizeStringEvent"))
+            {
+                comp.enabled = false;
+            }
+        }
     }
 
     private void FindUI()
     {
         if (interactUI == null || notificationText == null)
         {
+            // 1. Tìm trong GameplayCorePrefab (TrunkMinigameUI)
             TrunkMinigameUI trunk = Object.FindFirstObjectByType<TrunkMinigameUI>(FindObjectsInactive.Include);
             if (trunk != null)
             {
@@ -43,13 +87,29 @@ public class FuelShop : MonoBehaviour
                     if (notificationText == null && t.name == "dONE") notificationText = t.GetComponent<TextMeshProUGUI>();
                 }
             }
+
+            // 2. Nếu chưa thấy, tìm trong toàn bộ Scene (bao gồm cả Rongas)
+            if (interactUI == null || notificationText == null)
+            {
+                var allTransforms = Object.FindObjectsByType<Transform>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+                foreach (var t in allTransforms)
+                {
+                    if (interactUI == null && t.name == "Gas") interactUI = t.gameObject;
+                    if (notificationText == null && t.name == "dONE") notificationText = t.GetComponent<TextMeshProUGUI>();
+                }
+            }
         }
+        DisableLocalization(notificationText);
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player") || other.GetComponentInParent<CarFuel>() != null)
+        // Chỉ kích hoạt khi người chơi đi bộ lại gần (không ngồi trên xe)
+        if (other.CompareTag("Player"))
         {
+            VehicleEnterExit vehicle = Object.FindFirstObjectByType<VehicleEnterExit>(FindObjectsInactive.Include);
+            if (vehicle != null && vehicle.IsInCar) return;
+
             playerCollider = other;
             isPlayerNearby = true;
             FindUI();
@@ -62,21 +122,30 @@ public class FuelShop : MonoBehaviour
         if (other.CompareTag("Player") || other.GetComponentInParent<CarFuel>() != null)
         {
             isPlayerNearby = false;
-            if (interactUI != null) interactUI.SetActive(false);
+            playerCollider = null;
+            HideAllUI();
         }
     }
 
     private void Update()
     {
-        if (isPlayerNearby && playerCollider != null && !playerCollider.enabled && playerCollider.CompareTag("Player"))
+        if (isPlayerNearby)
         {
-            isPlayerNearby = false;
-            if (interactUI != null) interactUI.SetActive(false);
-        }
+            VehicleEnterExit vehicle = Object.FindFirstObjectByType<VehicleEnterExit>(FindObjectsInactive.Include);
+            bool isInCar = (vehicle != null && vehicle.IsInCar);
 
-        if (isPlayerNearby && Keyboard.current != null && Keyboard.current.fKey.wasPressedThisFrame)
-        {
-            TryBuyFuelCan();
+            if (isInCar || (playerCollider != null && !playerCollider.enabled))
+            {
+                isPlayerNearby = false;
+                playerCollider = null;
+                HideAllUI();
+                return;
+            }
+
+            if (Keyboard.current != null && Keyboard.current.fKey.wasPressedThisFrame)
+            {
+                TryBuyFuelCan();
+            }
         }
     }
 
@@ -116,6 +185,9 @@ public class FuelShop : MonoBehaviour
             if (MoneyManager.Instance != null) MoneyManager.Instance.TruTien(pricePerCan);
             ShowNotification($"Đã mua 1 Can Xăng (-{pricePerCan}K)", Color.green);
             if (audioSource != null && buySuccessSound != null) audioSource.PlayOneShot(buySuccessSound);
+
+            // Báo hoàn thành bước mua can xăng trong Tutorial
+            ForcedTutorialManager.Instance?.NotifyGasCanisterBought();
         }
         else
         {
@@ -126,20 +198,26 @@ public class FuelShop : MonoBehaviour
 
     private void ShowNotification(string message, Color color)
     {
+        FindUI();
         if (notificationText == null) return;
-        StopAllCoroutines();
-        StartCoroutine(FadeOutText(message, color));
+
+        if (notificationCoroutine != null)
+        {
+            StopCoroutine(notificationCoroutine);
+        }
+        notificationCoroutine = StartCoroutine(FadeOutText(message, color));
     }
 
     private IEnumerator FadeOutText(string message, Color color)
     {
+        notificationText.gameObject.SetActive(true);
+        DisableLocalization(notificationText);
         notificationText.text = message;
         notificationText.color = color;
-        notificationText.gameObject.SetActive(true);
 
         yield return new WaitForSeconds(1.5f);
 
-        float duration = 1f;
+        float duration = 0.8f;
         float currentTime = 0f;
         while (currentTime < duration)
         {
@@ -150,6 +228,8 @@ public class FuelShop : MonoBehaviour
             notificationText.color = newColor;
             yield return null;
         }
+
         notificationText.gameObject.SetActive(false);
+        notificationCoroutine = null;
     }
 }

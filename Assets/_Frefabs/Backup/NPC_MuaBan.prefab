@@ -174,6 +174,7 @@ GameObject:
   - component: {fileID: 2134691997133339119}
   - component: {fileID: 7947836579319225288}
   - component: {fileID: 668813311151101422}
+  - component: {fileID: 3112154703831013921}
   m_Layer: 3
   m_Name: NPC_MuaBan
   m_TagString: Untagged
@@ -249,8 +250,15 @@ MonoBehaviour:
   npcName: "Ng\u01B0\u1EDDi B\xE1n H\xE0ng"
   promptMessage: "N\xE2ng c\u1EA5p xe"
   introDialogues:
-  - "Ch\xE0o c\u1EADu, mu\u1ED1n n\xE2ng c\u1EA5p g\xEC cho chi\u1EBFc xe t\u1EA3i
-    c\u0169 n\xE0y \xE0?"
+  - text: 
+    voiceClip: {fileID: 0}
+  returningDialogues:
+  - text: NPCQUEST4
+    voiceClip: {fileID: 0}
+  - text: NPCQUEST5
+    voiceClip: {fileID: 0}
+  - text: NPCQUEST6
+    voiceClip: {fileID: 0}
   _questGiver: {fileID: 0}
   _tireUpgrader: {fileID: 0}
   _fishingShop: {fileID: 2134691997133339119}
@@ -266,12 +274,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87ec8fa4957a64344a84d7e06ac5f0f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NPCFishingShop
-  shopWelcomeDialogues:
-  - "Ch\xE0o c\u1EADu b\u1EA1n tr\u1EBB! C\u1EA7n m\u1ED9t v\xE0i m\u1ED3i c\xE2u
-    b\xE9n hay c\u1EA7n x\u1ECBn \u0111\u1EC3 ra h\u1ED3 \xE0?"
-  - "Ho\u1EB7c n\u1EBFu c\xE2u \u0111\u01B0\u1EE3c con c\xE1 n\xE0o t\u01B0\u01A1i
-    ngon, c\u1EE9 \u0111em h\u1EBFt l\u1EA1i \u0111\xE2y ta thu mua gi\xE1 t\u1ED1t
-    cho nh\xE9!"
+  shopFirstTimeDialogues:
+  - text: "Ch\xE0o c\u1EADu b\u1EA1n tr\u1EBB! C\u1EA7n m\u1ED9t v\xE0i m\u1ED3i
+      c\xE2u b\xE9n hay c\u1EA7n x\u1ECBn \u0111\u1EC3 ra h\u1ED3 \xE0?"
+    voiceClip: {fileID: 0}
+  - text: "Ho\u1EB7c n\u1EBFu c\xE2u \u0111\u01B0\u1EE3c con c\xE1 n\xE0o t\u01B0\u01A1i
+      ngon, c\u1EE9 \u0111em h\u1EBFt l\u1EA1i \u0111\xE2y ta thu mua gi\xE1 t\u1ED1t
+      cho nh\xE9!"
+    voiceClip: {fileID: 0}
+  shopReturningDialogues:
+  - text: "L\u1EA1i gh\xE9 ti\u1EC7m c\xE2u c\xE1 \xE0 c\u1EADu b\u1EA1n tr\u1EBB?"
+    voiceClip: {fileID: 0}
+  - text: "H\xF4m nay c\xF3 chi\u1EBFn l\u1EE3i ph\u1EA9m n\xE0o t\u01B0\u01A1i ngon
+      kh\xF4ng?"
+    voiceClip: {fileID: 0}
+  - text: "Xem qua ch\xFAt m\u1ED3i c\xE2u v\xE0 d\u1EE5ng c\u1EE5 m\u1EDBi v\u1EC1
+      nh\xE9!"
+    voiceClip: {fileID: 0}
 --- !u!195 &7947836579319225288
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -312,6 +331,27 @@ MonoBehaviour:
   - {fileID: 0}
   movementSpeed: 2
   stopDuration: 2
+--- !u!65 &3112154703831013921
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 615303143391905309}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 12.00412, y: 6.5914745, z: 8.637989}
+  m_Center: {x: -0.71752167, y: 1.374877, z: 3.8189945}
 --- !u!1 &1198131185327288680
 GameObject:
   m_ObjectHideFlags: 0

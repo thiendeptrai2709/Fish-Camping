@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 [RequireComponent(typeof(BoxCollider))]
 public class InteractableTrunk : MonoBehaviour, IInteractable
@@ -52,6 +52,16 @@ public class InteractableTrunk : MonoBehaviour, IInteractable
         {
             trunkInventory.ToggleTrunkAndUI();
         }
+
+        // 3. Thông báo cho Tutorial Manager
+        if (isTrunkOpen)
+        {
+            ForcedTutorialManager.Instance?.NotifyTrunkOpened();
+        }
+        else
+        {
+            ForcedTutorialManager.Instance?.NotifyTrunkClosed();
+        }
     }
     public void ForceClose()
     {
@@ -60,6 +70,8 @@ public class InteractableTrunk : MonoBehaviour, IInteractable
 
         if (trunkHinge != null) trunkHinge.ForceClose();
         if (trunkInventory != null) trunkInventory.ForceCloseUI();
+
+        ForcedTutorialManager.Instance?.NotifyTrunkClosed();
     }
     public string GetInteractPrompt()
     {

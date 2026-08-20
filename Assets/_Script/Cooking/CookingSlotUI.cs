@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -33,6 +33,9 @@ public class CookingSlotUI : MonoBehaviour, IDropHandler, IPointerClickHandler, 
                 draggedItem.SetHandledBySlot(true);
                 draggedItem.gameObject.SetActive(false);
                 Destroy(draggedItem.gameObject, 0.1f);
+
+                // Thông báo nhiệm vụ kéo cá vào UI nấu ăn
+                ForcedTutorialManager.Instance?.NotifyCookFish();
             }
         }
     }

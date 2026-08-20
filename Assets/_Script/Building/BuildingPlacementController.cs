@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class BuildingPlacementController : MonoBehaviour
 {
@@ -134,6 +134,20 @@ public class BuildingPlacementController : MonoBehaviour
             {
                 comfortController.ModifyCampComfort(currentItem.comfortBonus); //[cite: 10]
                 Debug.Log($"<color=cyan>[Building System] Điểm thoải mái khu trại tăng thêm: +{currentItem.comfortBonus}</color>"); //[cite: 10]
+            }
+
+            if (currentItem != null)
+            {
+                string iName = (currentItem.itemName ?? "").ToLower();
+                string aName = (currentItem.name ?? "").ToLower();
+                if (iName.Contains("camp") || iName.Contains("củi") || aName.Contains("camp") || aName.Contains("cui"))
+                {
+                    ForcedTutorialManager.Instance?.NotifyFirewoodPlaced();
+                }
+                else if (iName.Contains("cook") || iName.Contains("treo") || aName.Contains("cook") || aName.Contains("treo"))
+                {
+                    ForcedTutorialManager.Instance?.NotifyCookingRackPlaced();
+                }
             }
 
             CancelPlacement(); //[cite: 10]

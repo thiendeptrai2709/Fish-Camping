@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 [RequireComponent(typeof(BoxCollider))]
 public class InteractableVehicleStats : MonoBehaviour, IInteractable
@@ -14,6 +14,15 @@ public class InteractableVehicleStats : MonoBehaviour, IInteractable
         normalLayer = LayerMask.NameToLayer("Interactable");
         outlineLayer = LayerMask.NameToLayer("Outlined");
 
+        if (vehicleStats == null)
+        {
+            vehicleStats = GetComponentInParent<VehicleStats>();
+            if (vehicleStats == null)
+            {
+                vehicleStats = Object.FindFirstObjectByType<VehicleStats>(FindObjectsInactive.Include);
+            }
+        }
+
         SetLayerRecursively(gameObject, normalLayer);
     }
 
@@ -25,15 +34,30 @@ public class InteractableVehicleStats : MonoBehaviour, IInteractable
     public void OnLoseFocus()
     {
         SetLayerRecursively(gameObject, normalLayer);
+
+        if (vehicleStats != null && vehicleStats.IsOverviewPanelOpen)
+        {
+            vehicleStats.CloseOverviewPanel();
+        }
     }
 
     public void Interact()
     {
+        if (vehicleStats == null)
+        {
+            vehicleStats = GetComponentInParent<VehicleStats>();
+            if (vehicleStats == null)
+            {
+                vehicleStats = Object.FindFirstObjectByType<VehicleStats>(FindObjectsInactive.Include);
+            }
+        }
+
         if (vehicleStats != null)
         {
-            // Gọi hàm bật/tắt Canvas thông số đã có sẵn trong VehicleStats của mày
             vehicleStats.ToggleOverviewPanel();
         }
+
+        ForcedTutorialManager.Instance?.NotifyInspectCar();
     }
 
     public string GetInteractPrompt()
@@ -43,10 +67,11 @@ public class InteractableVehicleStats : MonoBehaviour, IInteractable
 
     private void SetLayerRecursively(GameObject obj, int newLayer)
     {
+        if (obj == null) return;
         obj.layer = newLayer;
         foreach (Transform child in obj.transform)
         {
-            SetLayerRecursively(child.gameObject, newLayer);
+            if (child != null) SetLayerRecursively(child.gameObject, newLayer);
         }
     }
 }

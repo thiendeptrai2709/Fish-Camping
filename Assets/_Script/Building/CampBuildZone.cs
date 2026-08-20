@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 [RequireComponent(typeof(BoxCollider))]
 public class CampBuildZone : MonoBehaviour
 {
@@ -85,6 +85,29 @@ public class CampBuildZone : MonoBehaviour
     {
         if (zoneCollider == null) return true;
         return zoneCollider.bounds.Contains(worldPosition);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        CheckCampsiteArrival(other);
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        CheckCampsiteArrival(other);
+    }
+
+    private void CheckCampsiteArrival(Collider other)
+    {
+        if (other == null) return;
+        if (other.CompareTag("Player") ||
+            other.GetComponentInParent<VehicleController>() != null ||
+            other.GetComponentInParent<CarFuel>() != null ||
+            other.GetComponentInParent<VehicleStats>() != null ||
+            other.GetComponentInParent<VehicleEnterExit>() != null)
+        {
+            ForcedTutorialManager.Instance?.NotifyGoToCampSite();
+        }
     }
 
     private void OnDrawGizmos()

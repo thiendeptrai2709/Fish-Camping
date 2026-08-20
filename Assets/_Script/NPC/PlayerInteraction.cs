@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
@@ -36,28 +36,39 @@ public class PlayerNpcInteraction : MonoBehaviour
         if (Cursor.lockState != CursorLockMode.Locked) return;
 
         Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
-        RaycastHit hit;
+        RaycastHit[] hits = Physics.RaycastAll(ray, interactDistance, npcLayer, QueryTriggerInteraction.Ignore);
 
-        if (Physics.Raycast(ray, out hit, interactDistance, npcLayer))
+        if (hits != null && hits.Length > 0)
         {
-            INpcInteractable npcInteractable = hit.collider.GetComponent<INpcInteractable>();
+            System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
 
-            if (npcInteractable != null)
+            foreach (var hit in hits)
             {
-                if (npcInteractable != currentNpcInteractable)
-                {
-                    if (currentNpcInteractable != null)
-                    {
-                        currentNpcInteractable.OnLoseFocus();
-                    }
+                if (hit.collider == null || hit.collider.isTrigger) continue;
 
-                    currentNpcInteractable = npcInteractable;
-                    currentNpcInteractable.OnFocus();
+                INpcInteractable npcInteractable = hit.collider.GetComponent<INpcInteractable>();
+                if (npcInteractable == null)
+                {
+                    npcInteractable = hit.collider.GetComponentInParent<INpcInteractable>();
                 }
 
-                if (crosshairImage != null) crosshairImage.color = highlightCrosshairColor;
-                if (promptUI != null) promptUI.DisplayPrompt(true, currentNpcInteractable.GetInteractPrompt());
-                return;
+                if (npcInteractable != null)
+                {
+                    if (npcInteractable != currentNpcInteractable)
+                    {
+                        if (currentNpcInteractable != null)
+                        {
+                            currentNpcInteractable.OnLoseFocus();
+                        }
+
+                        currentNpcInteractable = npcInteractable;
+                        currentNpcInteractable.OnFocus();
+                    }
+
+                    if (crosshairImage != null) crosshairImage.color = highlightCrosshairColor;
+                    if (promptUI != null) promptUI.DisplayPrompt(true, currentNpcInteractable.GetInteractPrompt());
+                    return;
+                }
             }
         }
 
@@ -77,19 +88,19 @@ public class PlayerNpcInteraction : MonoBehaviour
 
     private void HandleNpcInput()
     {
-        // Kiểm tra xem Dialogue Canvas có đang mở sẵn không (nếu có thì dùng phím E để tua chữ tiếp theo)
+        // Kiểm tra xem Dialogue Canvas có đang mở sẵn không (nếu có thì dùng Click chuột trái để tua chữ tiếp theo)
         bool dialogueActive = GameObject.Find("DialogueCanvas") != null && GameObject.Find("DialogueCanvas").activeInHierarchy;
 
-        if (inputHandler.InteractTriggered)
+        if (inputHandler != null && inputHandler.InteractTriggered)
         {
-            if (dialogueActive)
+            if (dialogueActive && DialogueManager.Instance != null)
             {
                 DialogueManager.Instance.DisplayNextSentence();
             }
             else if (currentNpcInteractable != null)
             {
                 MonoBehaviour targetNpc = currentNpcInteractable as MonoBehaviour;
-                if (targetNpc != null)
+                if (targetNpc != null && playerMovement != null)
                 {
                     playerMovement.FaceTarget(targetNpc.transform.position);
                 }

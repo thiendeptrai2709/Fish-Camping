@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class FishingController : MonoBehaviour
 {
@@ -116,6 +116,7 @@ public class FishingController : MonoBehaviour
             if (catchingLockTimer <= 0f)
             {
                 Debug.Log("<color=yellow>[Fishing Controller] Bấm Space -> Thả cá đi!</color>");
+                ForcedTutorialManager.Instance?.NotifyKeepOrReleaseFish();
                 ResetToIdle();
             }
         }
@@ -162,6 +163,8 @@ public class FishingController : MonoBehaviour
                 }
 
                 StartWindUp();
+                ForcedTutorialManager.Instance?.NotifyWalkToLakeSide();
+                ForcedTutorialManager.Instance?.NotifyWindUpRod();
             }
             else
             {
@@ -214,6 +217,7 @@ public class FishingController : MonoBehaviour
             {
                 Debug.Log("<color=yellow>[Fishing Controller] Thiếu data cá hoặc chưa có BackpackMinigameUI trong Scene -> Thả cá đi!</color>");
             }
+            ForcedTutorialManager.Instance?.NotifyKeepOrReleaseFish();
             ResetToIdle();
         }
     }
@@ -222,6 +226,7 @@ public class FishingController : MonoBehaviour
     {
         isWaitingForBite = false;
         isFishBiting = true;
+        ForcedTutorialManager.Instance?.NotifyReelFish();
 
         if (currentFishingZone != null)
         {
@@ -304,6 +309,7 @@ public class FishingController : MonoBehaviour
 
             currentState = FishingState.Catching;
             catchingLockTimer = 1.5f; // Khóa thao tác 1.5s để người chơi ngắm cá
+            ForcedTutorialManager.Instance?.NotifyFishCaught();
             if (playerAnimation != null)
             {
                 playerAnimation.TriggerCatchSuccess();
@@ -313,6 +319,10 @@ public class FishingController : MonoBehaviour
         {
             Debug.Log("<color=red>[Fishing Controller] CÂN BẰNG THẤT BẠI!</color>");
             currentState = FishingState.Failed;
+            if (ForcedTutorialManager.Instance != null && ForcedTutorialManager.Instance.GetCurrentStage() == TutorialStage.Map2_Quest4_3_ReelFish)
+            {
+                ForcedTutorialManager.Instance.AdvanceToStage(TutorialStage.Map2_Quest4_1_WindUpRod);
+            }
             if (playerAnimation != null)
             {
                 playerAnimation.SetFishingState(false);
@@ -389,10 +399,15 @@ public class FishingController : MonoBehaviour
         {
             currentState = FishingState.Idle;
             if (playerAnimation != null) playerAnimation.ResetAnimationSpeed();
+            if (ForcedTutorialManager.Instance != null && ForcedTutorialManager.Instance.GetCurrentStage() == TutorialStage.Map2_Quest4_2_TimingPower)
+            {
+                ForcedTutorialManager.Instance.AdvanceToStage(TutorialStage.Map2_Quest4_1_WindUpRod);
+            }
             return;
         }
 
         currentState = FishingState.Casting;
+        ForcedTutorialManager.Instance?.NotifyRodCasted();
         if (playerAnimation != null)
         {
             playerAnimation.ResumeAnimation();

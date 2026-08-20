@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
@@ -27,6 +27,14 @@ public class PlayerInteraction : MonoBehaviour
         playerMovement = GetComponent<PlayerMovement>();
         cameraTransform = Camera.main.transform;
         fishingController = GetComponent<FishingController>();
+
+        int interactableLayerIndex = LayerMask.NameToLayer("Interactable");
+        int outlinedLayerIndex = LayerMask.NameToLayer("Outlined");
+
+        if (interactableLayerIndex != -1)
+            interactableLayer |= (1 << interactableLayerIndex);
+        if (outlinedLayerIndex != -1)
+            interactableLayer |= (1 << outlinedLayerIndex);
     }
     private void OnDisable()
     {
@@ -80,40 +88,116 @@ public class PlayerInteraction : MonoBehaviour
             ClearCurrentInteractable();
             return;
         }
+
         Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
         Debug.DrawRay(ray.origin, ray.direction * interactDistance, Color.red);
-        RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit, interactDistance, interactableLayer))
+        // 1. Kiểm tra Raycast ngắm trực tiếp (Cửa xe, Cốp xe, Nắp Capo, Động cơ, Lốp xe, Đồ cắm trại,...)
+        RaycastHit[] hits = Physics.RaycastAll(ray, interactDistance, interactableLayer, QueryTriggerInteraction.Collide);
+        if (hits != null && hits.Length > 0)
         {
-            IInteractable interactable = hit.collider.GetComponent<IInteractable>();
+            System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
 
-            if (interactable != null)
+            IInteractable candidate = null;
+
+            foreach (var hit in hits)
             {
-                if (TireRepairMinigame.ActiveTire != null)
+                if (hit.collider == null) continue;
+
+                // Bỏ qua các trigger zone nhiệm vụ / bản đồ
+                if (hit.collider.GetComponent<TutorialTruckTriggerZone>() != null ||
+                    hit.collider.GetComponent<TutorialShopArrivalTriggerZone>() != null ||
+                    hit.collider.GetComponent<MapTriggerZone>() != null)
                 {
-                    InteractableTire hitTire = hit.collider.GetComponent<InteractableTire>();
-                    if (hitTire == null || (hitTire.GetComponent<IInteractable>() != currentInteractable && hitTire.gameObject != TireRepairMinigame.ActiveTire.gameObject))
-                    {
-                        ClearCurrentInteractable();
-                        return;
-                    }
+                    continue;
                 }
 
-                if (interactable != currentInteractable)
+                IInteractable interactable = hit.collider.GetComponent<IInteractable>();
+                if (interactable == null)
+                {
+                    interactable = hit.collider.GetComponentInParent<IInteractable>();
+                }
+
+                if (interactable != null)
+                {
+                    // Nếu là Động cơ mà nắp Capo đang đóng thì bỏ qua không nhận tương tác
+                    if (interactable is InteractableEngine engine && !engine.CanInteract())
+                    {
+                        continue;
+                    }
+
+                    if (TireRepairMinigame.ActiveTire != null)
+                    {
+                        InteractableTire hitTire = hit.collider.GetComponent<InteractableTire>() ?? hit.collider.GetComponentInParent<InteractableTire>();
+                        if (hitTire == null || (hitTire.GetComponent<IInteractable>() != currentInteractable && hitTire.gameObject != TireRepairMinigame.ActiveTire.gameObject))
+                        {
+                            continue;
+                        }
+                    }
+
+                    // Nếu gặp chức năng cụ thể (Cửa xe, Cốp, Capo, Động cơ, Lốp, NPC...), ưu tiên chọn ngay lập tức!
+                    bool isGenericVehicleStats = (interactable is InteractableVehicleStats || interactable is VehicleBody);
+                    if (!isGenericVehicleStats)
+                    {
+                        candidate = interactable;
+                        break;
+                    }
+                    else if (candidate == null)
+                    {
+                        candidate = interactable;
+                    }
+                }
+            }
+
+            if (candidate != null)
+            {
+                if (candidate != currentInteractable)
                 {
                     if (currentInteractable != null)
                     {
                         currentInteractable.OnLoseFocus();
                     }
 
-                    currentInteractable = interactable;
+                    currentInteractable = candidate;
                     currentInteractable.OnFocus();
                 }
 
-                SetCrosshairState(true, interactable.GetInteractPrompt());
+                SetCrosshairState(true, candidate.GetInteractPrompt());
                 return;
             }
+        }
+
+        // 2. Kiểm tra khoảng cách đứng gần NPC (Proximity)
+        NPCBase[] allNpcs = Object.FindObjectsByType<NPCBase>(FindObjectsSortMode.None);
+        NPCBase nearestNpc = null;
+        float minDistance = interactDistance;
+
+        foreach (var npc in allNpcs)
+        {
+            if (npc == null || !npc.gameObject.activeInHierarchy) continue;
+            float dist = Vector3.Distance(transform.position, npc.transform.position);
+            if (dist <= npc.ProximityDistance && dist < minDistance)
+            {
+                minDistance = dist;
+                nearestNpc = npc;
+            }
+        }
+
+        if (nearestNpc != null)
+        {
+            if (currentInteractable != nearestNpc)
+            {
+                if (currentInteractable != null)
+                {
+                    currentInteractable.OnLoseFocus();
+                }
+
+                currentInteractable = nearestNpc;
+                currentInteractable.OnFocus();
+            }
+
+            SetCrosshairState(true, nearestNpc.GetInteractPrompt());
+            return;
         }
 
         ClearCurrentInteractable();
@@ -144,10 +228,10 @@ public class PlayerInteraction : MonoBehaviour
 
     private void HandleInteractInput()
     {
-        if (inputHandler.InteractTriggered && currentInteractable != null)
+        if (inputHandler != null && inputHandler.InteractTriggered && currentInteractable != null)
         {
             MonoBehaviour targetObject = currentInteractable as MonoBehaviour;
-            if (targetObject != null)
+            if (targetObject != null && playerMovement != null)
             {
                 playerMovement.FaceTarget(targetObject.transform.position);
             }

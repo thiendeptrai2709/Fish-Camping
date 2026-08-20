@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.Localization.Settings;
 
 [System.Serializable]
@@ -9,11 +9,12 @@ public class DialogueLine
     public AudioClip voiceClip;
 }
 
-public class NPCBase : MonoBehaviour, IInteractable
+public class NPCBase : MonoBehaviour, IInteractable, INpcInteractable
 {
     [Header("NPC Settings")]
     [SerializeField] private string npcName = "Dân Làng";
     [SerializeField] private string promptMessage = "Trò chuyện";
+    [SerializeField] private float proximityDistance = 3.5f;
 
     [Header("=== THOẠI LẦN ĐẦU GẶP MẶT ===")]
     [Tooltip("Chạy hết tất cả các câu này trong lần đầu người chơi tương tác")]
@@ -37,6 +38,8 @@ public class NPCBase : MonoBehaviour, IInteractable
     private NPCPatrol _npcPatrol;
     private bool _hasMetPlayer = false; // Ghi nhớ đã nói chuyện lần đầu chưa
 
+    public float ProximityDistance => proximityDistance;
+
     private void Awake()
     {
         _animator = GetComponent<Animator>();
@@ -45,23 +48,48 @@ public class NPCBase : MonoBehaviour, IInteractable
         if (_questGiver == null) _questGiver = GetComponent<QuestGiver>();
         if (_tireUpgrader == null) _tireUpgrader = GetComponent<NPCOffroadUpgrade>();
         if (_fishingShop == null) _fishingShop = GetComponent<NPCFishingShop>();
+
+        // 1. Đảm bảo Layer là Interactable để hệ thống tương tác nhận diện
+        int interactableLayer = LayerMask.NameToLayer("Interactable");
+        if (interactableLayer != -1)
+        {
+            gameObject.layer = interactableLayer;
+        }
+
+        // 2. Tự động thêm Collider nếu NPC chưa có collider nào
+        Collider existingCol = GetComponentInChildren<Collider>();
+        if (existingCol == null)
+        {
+            CapsuleCollider col = gameObject.AddComponent<CapsuleCollider>();
+            col.center = new Vector3(0, 1f, 0);
+            col.radius = 0.6f;
+            col.height = 2f;
+            col.isTrigger = false;
+        }
     }
 
     public string InteractionPrompt
     {
         get
         {
+            string actionText = promptMessage;
+            if (_fishingShop != null) actionText = "Mở Cửa Hàng Đồ Câu";
+            else if (_tireUpgrader != null) actionText = "Nâng cấp xe";
+            else if (_questGiver != null) actionText = "Nhận nhiệm vụ";
+
             string localizedName = LocalizationSettings.StringDatabase.GetLocalizedString("Game Text", npcName);
+            if (string.IsNullOrEmpty(localizedName)) localizedName = npcName;
+
             bool isVietnamese = LocalizationSettings.SelectedLocale != null &&
                                 LocalizationSettings.SelectedLocale.Identifier.Code.StartsWith("vi");
 
             if (isVietnamese)
             {
-                return $"[{localizedName}] \n Click Chuột Trái để {promptMessage}";
+                return $"[{localizedName}] \n Click Chuột Trái để {actionText}";
             }
             else
             {
-                return $"[{localizedName}] \n Left Click to Talk";
+                return $"[{localizedName}] \n Left Click to {actionText}";
             }
         }
     }
@@ -105,7 +133,16 @@ public class NPCBase : MonoBehaviour, IInteractable
                 linesToPlay = GetRandomReturningLine();
             }
 
-            DialogueManager.Instance.StartDialogueWithVoice(npcName, linesToPlay, ResetNPCState);
+            if (DialogueManager.Instance != null)
+            {
+                DialogueManager.Instance.StartDialogueWithVoice(npcName, linesToPlay, ResetNPCState);
+            }
+            else
+            {
+                ResetNPCState();
+            }
+
+            ForcedTutorialManager.Instance?.NotifyGasNPCTalked();
         }
     }
 

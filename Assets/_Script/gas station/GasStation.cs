@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
 using System.Collections;
@@ -104,6 +104,9 @@ public class GasStation : MonoBehaviour
             currentCarFuel = car;
             isCarInZone = true;
             isRefillFinishedForThisEntry = false;
+
+            // Khi xe đi vào cây xăng, lập tức chuyển sang nhiệm vụ đổ xăng cho xe
+            ForcedTutorialManager.Instance?.NotifyGasStationFound();
         }
 
         UpdateUIState();
@@ -169,12 +172,18 @@ public class GasStation : MonoBehaviour
                     totalCostThisSession = 0;
                     isRefilling = true;
                     UpdateUIState();
+
+                    // Lập tức chuyển sang nhiệm vụ tiếp theo khi người chơi bấm F đổ xăng
+                    ForcedTutorialManager.Instance?.NotifyRefueled();
                 }
                 else
                 {
                     isRefillFinishedForThisEntry = true;
                     UpdateUIState();
                     ShowMessage("Binh xang da day san!");
+
+                    // Bình xăng đã đầy sẵn, bấm F cũng lập tức chuyển sang nhiệm vụ tiếp theo
+                    ForcedTutorialManager.Instance?.NotifyRefueled();
                 }
             }
         }

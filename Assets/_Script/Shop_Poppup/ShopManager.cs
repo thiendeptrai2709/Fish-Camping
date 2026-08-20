@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.InputSystem; // BẮT BUỘC PHẢI CÓ DÒNG NÀY ĐỂ SỬA LỖI KEYBOARD
 
 public class ShopManager : MonoBehaviour
@@ -43,9 +43,22 @@ public class ShopManager : MonoBehaviour
         shopPanel.SetActive(true);
         AnHienCacUIKhac(false); // Ẩn HUD/UI khác đi trong lúc Shop đang mở
 
-        // HIỆN VÀ MỞ KHÓA CHUỘT
-        Cursor.visible = true;
-        Cursor.lockState = CursorLockMode.None;
+        PlayerInputHandler inputHandler = Object.FindFirstObjectByType<PlayerInputHandler>(FindObjectsInactive.Include);
+        if (inputHandler != null) inputHandler.IsUIOpen = true;
+
+        PlayerCursor playerCursor = Object.FindFirstObjectByType<PlayerCursor>(FindObjectsInactive.Include);
+        if (playerCursor != null)
+        {
+            playerCursor.SetCursorState(false);
+        }
+        else
+        {
+            // HIỆN VÀ MỞ KHÓA CHUỘT
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+        }
+
+        ForcedTutorialManager.Instance?.NotifyShopOpened();
     }
 
     public void DongShop()
@@ -56,9 +69,22 @@ public class ShopManager : MonoBehaviour
         _onShopClosed?.Invoke();
         _onShopClosed = null;
 
-        // ẨN VÀ KHÓA CHUỘT LẠI KHI ĐÓNG SHOP
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
+        PlayerInputHandler inputHandler = Object.FindFirstObjectByType<PlayerInputHandler>(FindObjectsInactive.Include);
+        if (inputHandler != null) inputHandler.IsUIOpen = false;
+
+        PlayerCursor playerCursor = Object.FindFirstObjectByType<PlayerCursor>(FindObjectsInactive.Include);
+        if (playerCursor != null)
+        {
+            playerCursor.SetCursorState(true);
+        }
+        else
+        {
+            // ẨN VÀ KHÓA CHUỘT LẠI KHI ĐÓNG SHOP
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+        }
+
+        ForcedTutorialManager.Instance?.NotifyShopClosed();
     }
 
     private void AnHienCacUIKhac(bool hienRa)

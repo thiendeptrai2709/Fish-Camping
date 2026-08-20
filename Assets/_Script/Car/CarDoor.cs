@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 [RequireComponent(typeof(BoxCollider))]
 public class CarDoor : MonoBehaviour, IInteractable
@@ -19,28 +19,52 @@ public class CarDoor : MonoBehaviour, IInteractable
         normalLayer = LayerMask.NameToLayer("Interactable");
         outlineLayer = LayerMask.NameToLayer("Outlined");
 
-        gameObject.layer = normalLayer;
+        SetLayerRecursively(gameObject, normalLayer);
     }
 
     public void OnFocus()
     {
-        gameObject.layer = outlineLayer;
+        SetLayerRecursively(gameObject, outlineLayer);
     }
 
     public void OnLoseFocus()
     {
-        // Nếu object đang trong quá trình bị tiêu diệt thì bỏ qua để tránh lỗi
         if (this == null) return;
-
-        gameObject.layer = normalLayer;
+        SetLayerRecursively(gameObject, normalLayer);
     }
+
+    private void SetLayerRecursively(GameObject obj, int newLayer)
+    {
+        if (obj == null) return;
+        obj.layer = newLayer;
+        foreach (Transform child in obj.transform)
+        {
+            if (child != null) SetLayerRecursively(child.gameObject, newLayer);
+        }
+    }
+
     public void Interact()
     {
         OnLoseFocus();
 
-        if (vehicleSystem != null && exitPoint != null)
+        if (vehicleSystem == null)
         {
-            vehicleSystem.EnterVehicle(exitPoint);
+            vehicleSystem = GetComponentInParent<VehicleEnterExit>();
+            if (vehicleSystem == null)
+            {
+                vehicleSystem = Object.FindFirstObjectByType<VehicleEnterExit>(FindObjectsInactive.Include);
+            }
+        }
+
+        if (vehicleSystem != null)
+        {
+            Transform point = exitPoint != null ? exitPoint : transform;
+            vehicleSystem.EnterVehicle(point);
+            ForcedTutorialManager.Instance?.NotifyEnteredVehicle();
+        }
+        else
+        {
+            Debug.LogWarning("[CarDoor] Không tìm thấy VehicleEnterExit trên xe!");
         }
     }
 

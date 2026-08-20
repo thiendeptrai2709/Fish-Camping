@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class CookingUIManager : MonoBehaviour
@@ -150,6 +150,9 @@ public class CookingUIManager : MonoBehaviour
 
     private void OnStartCookClicked()
     {
+        // Khi người chơi click chuột vào nút nấu ăn -> Lập tức chuyển qua nhiệm vụ khác
+        ForcedTutorialManager.Instance?.NotifyCookFish();
+
         if (currentRack != null)
         {
             System.Collections.Generic.List<ItemShapeSO> ingredients = new System.Collections.Generic.List<ItemShapeSO>();
@@ -171,8 +174,12 @@ public class CookingUIManager : MonoBehaviour
                 {
                     slot.ClearSlot();
                 }
-                CloseCookingUI();
             }
+            CloseCookingUI();
+        }
+        else
+        {
+            CloseCookingUI();
         }
     }
 

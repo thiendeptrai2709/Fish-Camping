@@ -17,7 +17,20 @@ public class SavedItemData
 }
 
 [Serializable]
+public class SavedEquippedSlotData
+{
+    public int slotRequirement; // 0: OnlyFishingRod, 1: OnlyBait, 2: OnlyBobber, 3: Universal
+    public string itemID;
+    public bool isRotated;
+    public bool isFish;
+    public float fishLength;
+    public float fishWeight;
+    public int fishGrade;
+}
+
+[Serializable]
 public class BackpackSaveContainer
 {
     public List<SavedItemData> items = new List<SavedItemData>();
+    public List<SavedEquippedSlotData> equippedSlots = new List<SavedEquippedSlotData>();
 }

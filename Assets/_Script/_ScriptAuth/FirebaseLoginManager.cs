@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Firebase;
@@ -91,7 +91,8 @@ public class Login : MonoBehaviour
             {
                 var user = Task.Result.User;
                 Debug.Log($"Đăng nhập thành công cho: {user.Email}");
-                SceneManager.LoadScene("Map_1_Town");
+                string targetScene = PlayerLocationSaveManager.GetSavedSceneName("Map_1_Town");
+                SceneManager.LoadScene(targetScene);
             }
         });
     }

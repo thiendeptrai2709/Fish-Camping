@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class GameplayCoreManager : MonoBehaviour
 {
@@ -17,6 +17,23 @@ public class GameplayCoreManager : MonoBehaviour
         else if (Instance != this)
         {
             Destroy(gameObject);
+        }
+    }
+
+    public static void EnsureGameplayCoreExists()
+    {
+        if (Instance == null && GameObject.FindGameObjectWithTag("Player") == null)
+        {
+            GameObject prefab = Resources.Load<GameObject>("GameplayCorePrefab");
+            if (prefab != null)
+            {
+                GameObject core = Instantiate(prefab);
+                core.name = "GameplayCorePrefab";
+            }
+            else
+            {
+                Debug.LogWarning("[GameplayCoreManager] Không tìm thấy GameplayCorePrefab trong thư mục Resources!");
+            }
         }
     }
 }
