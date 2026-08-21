@@ -32,31 +32,30 @@ public enum TutorialStage
     Quest6_1_OpenMapUpgrade,        // 16. Bấm N mở bản đồ tìm NPC nâng cấp
     Quest6_2_OpenUpgradeMenu,       // 17. Mở menu nâng cấp xe (Gara)
     Quest6_3_CloseUpgradeMenu,      // 18. Đóng menu nâng cấp xe (Z/Đóng)
-    Quest7_1_TalkToQuestNPC,        // 19. Nói chuyện với NPC giao nhiệm vụ
-    Quest8_1_DriveToGasStation,     // 20. Lái xe đến Cây Xăng
-    Quest8_2_TalkToGasNPC,          // 21. Nói chuyện với NPC đổ xăng
-    Quest8_3_RefuelVehicle,         // 22. Bấm F nạp đầy xăng xe
-    Quest8_4_BuyGasCanister,        // 23. Bấm F mua can xăng dự trữ
-    Quest8_5_CheckFuelInTrunk,      // 24. Mở cốp kiểm tra can xăng
-    Quest9_OpenTravelMap,           // 25. Bấm M mở Travel Map sang Pine Lake
+    Quest8_1_DriveToGasStation,     // 19. Lái xe đến Cây Xăng
+    Quest8_2_TalkToGasNPC,          // 20. Nói chuyện với NPC đổ xăng
+    Quest8_3_RefuelVehicle,         // 21. Bấm F nạp đầy xăng xe
+    Quest8_4_BuyGasCanister,        // 22. Bấm F mua can xăng dự trữ
+    Quest8_5_CheckFuelInTrunk,      // 23. Mở cốp kiểm tra can xăng
+    Quest9_OpenTravelMap,           // 24. Bấm M mở Travel Map sang Pine Lake
 
     // ========================================================
     // MAP 2 (PINE LAKE) - ATOMIC QUESTS
     // ========================================================
-    Map2_Quest1_1_OpenMapToCamp,    // 26. Bấm N mở map xem vị trí cắm trại
-    Map2_Quest1_2_GoToCampSite,     // 27. Di chuyển đến điểm cắm trại
-    Map2_Quest1_3_ExitVehicle,      // 28. Bấm E để xuống xe
-    Map2_Quest2_1_OpenBackpack,     // 29. Bấm Tab mở Balo
-    Map2_Quest2_2_EquipRod,         // 30. Lắp Cần câu vào ô Trang bị
-    Map2_Quest2_3_EquipBaitAndBobber,// 31. Lắp Mồi câu & Phao câu
-    Map2_Quest2_4_CloseBackpack,    // 32. Bấm Tab đóng Balo
-    Map2_Quest3_WalkToLakeSide,     // 33. Đi ra ven bờ hồ
-    Map2_Quest4_1_WindUpRod,        // 34. NV 1: Click chuột trái để vung cần
-    Map2_Quest4_2_TimingPower,      // 35. NV 2: Căn lực vung cần (Màu đỏ, vàng, xanh, trắng)
-    Map2_Quest4_3_ReelFish,         // 36. NV 3: Giữ nhả chuột để giật cá (khi cá cắn câu)
-    Map2_Quest4_4_KeepOrReleaseFish,// 37. NV 4: Click chuột trái nhận cá hoặc Space thả cá
-    Map2_Quest4_5_OpenBackpackAfterFish, // 38. Mở Balo kiểm tra cá vừa câu
-    Map2_Quest5_0_GoToTentCampArea, // 39. Đi đến khu vực cắm trại gần lều
+    Map2_Quest1_1_OpenMapToCamp,    // 25. Bấm N mở map xem vị trí cắm trại
+    Map2_Quest1_2_GoToCampSite,     // 26. Di chuyển đến điểm cắm trại
+    Map2_Quest1_3_ExitVehicle,      // 27. Bấm E để xuống xe
+    Map2_Quest2_1_OpenBackpack,     // 28. Bấm Tab mở Balo
+    Map2_Quest2_2_EquipRod,         // 29. Lắp Cần câu vào ô Trang bị
+    Map2_Quest2_3_EquipBaitAndBobber,// 30. Lắp Mồi câu & Phao câu
+    Map2_Quest2_4_CloseBackpack,    // 31. Bấm Tab đóng Balo
+    Map2_Quest3_WalkToLakeSide,     // 32. Đi ra ven bờ hồ
+    Map2_Quest4_1_WindUpRod,        // 33. NV 1: Click chuột trái để vung cần
+    Map2_Quest4_2_TimingPower,      // 34. NV 2: Căn lực vung cần (Màu đỏ, vàng, xanh, trắng)
+    Map2_Quest4_3_ReelFish,         // 35. NV 3: Giữ nhả chuột để giật cá (khi cá cắn câu)
+    Map2_Quest4_4_KeepOrReleaseFish,// 36. NV 4: Click chuột trái nhận cá hoặc Space thả cá
+    Map2_Quest4_5_OpenBackpackAfterFish, // 37. Mở Balo kiểm tra cá vừa câu
+    Map2_Quest5_0_GoToTentCampArea, // 38. Đi đến khu vực cắm trại gần lều
     Map2_Quest5_1_OpenBuildMenu,    // 39. Bấm B mở bảng công cụ
     Map2_Quest5_2_PlaceFirewood,    // 40. Đặt đống củi (B)
     Map2_Quest5_3_PlaceCookingRack, // 41. Đặt giá treo nấu ăn (B)
@@ -67,7 +66,8 @@ public enum TutorialStage
     Map2_Quest6_BackToTown,         // 46. Lái xe về lại Thị trấn
     Map2_Quest7_FishLog,            // 47. Bấm J mở Sổ tay nhật ký cá
     Map2_Quest8_HelpGuide,          // 48. Bấm P mở Hướng dẫn phím
-    Completed                       // 49. Hoàn thành
+    Final_TalkToQuestNPC,           // 49. Đến gặp Cậu chủ làng (NPC Giao Nhiệm Vụ) nhận nhiệm vụ đầu tiên
+    Completed                       // 50. Hoàn thành
 }
 
 public class ForcedTutorialManager : MonoBehaviour
@@ -401,7 +401,7 @@ public class ForcedTutorialManager : MonoBehaviour
         else if (currentStage == TutorialStage.Quest6_3_CloseUpgradeMenu)
         {
             if (Keyboard.current.zKey.wasPressedThisFrame)
-                AdvanceToStage(TutorialStage.Quest7_1_TalkToQuestNPC);
+                AdvanceToStage(TutorialStage.Quest8_1_DriveToGasStation);
         }
         else if (currentStage == TutorialStage.Quest8_3_RefuelVehicle)
         {
@@ -635,7 +635,7 @@ public class ForcedTutorialManager : MonoBehaviour
         else if (currentStage == TutorialStage.Map2_Quest8_HelpGuide)
         {
             if (Keyboard.current.pKey.wasPressedThisFrame)
-                AdvanceToStage(TutorialStage.Completed);
+                AdvanceToStage(TutorialStage.Final_TalkToQuestNPC);
         }
     }
 
@@ -781,7 +781,10 @@ public class ForcedTutorialManager : MonoBehaviour
             if (hit.collider.GetComponentInParent<QuestGiver>() != null ||
                 objName.Contains("questgiver") || objName.Contains("nhiemvu"))
             {
-                if (currentStage == TutorialStage.Quest7_1_TalkToQuestNPC)
+                if (currentStage == TutorialStage.Final_TalkToQuestNPC ||
+                    currentStage == TutorialStage.Map2_Quest6_BackToTown ||
+                    currentStage == TutorialStage.Map2_Quest7_FishLog ||
+                    currentStage == TutorialStage.Map2_Quest8_HelpGuide)
                 {
                     NotifyQuestNPCTalked();
                     return;
@@ -999,16 +1002,21 @@ public class ForcedTutorialManager : MonoBehaviour
     public void NotifyUpgradeMenuClosed()
     {
         if (currentStage == TutorialStage.Quest6_3_CloseUpgradeMenu)
-            AdvanceToStage(TutorialStage.Quest7_1_TalkToQuestNPC);
+            AdvanceToStage(TutorialStage.Quest8_1_DriveToGasStation);
     }
     public void NotifyGarageClosed() => NotifyUpgradeMenuClosed();
     public void NotifyVehicleUpgraded() => NotifyUpgradeMenuClosed();
 
-    // 19. Nói chuyện NPC Nhiệm vụ
+    // 19. Nói chuyện NPC Nhiệm vụ (khi hoàn thành chuyến đi và nhận quest đầu tiên)
     public void NotifyQuestNPCTalked()
     {
-        if (currentStage == TutorialStage.Quest7_1_TalkToQuestNPC)
-            AdvanceToStage(TutorialStage.Quest8_1_DriveToGasStation);
+        if (currentStage == TutorialStage.Final_TalkToQuestNPC ||
+            currentStage == TutorialStage.Map2_Quest6_BackToTown ||
+            currentStage == TutorialStage.Map2_Quest7_FishLog ||
+            currentStage == TutorialStage.Map2_Quest8_HelpGuide)
+        {
+            AdvanceToStage(TutorialStage.Completed);
+        }
     }
     public void NotifyFindQuestNPC() => NotifyQuestNPCTalked();
     public void NotifyQuestNPCInteracted() => NotifyQuestNPCTalked();
@@ -1273,7 +1281,7 @@ public class ForcedTutorialManager : MonoBehaviour
     public void NotifyHelpGuide()
     {
         if (currentStage == TutorialStage.Map2_Quest8_HelpGuide)
-            AdvanceToStage(TutorialStage.Completed);
+            AdvanceToStage(TutorialStage.Final_TalkToQuestNPC);
     }
     public void NotifyHelpGuideOpened() => NotifyHelpGuide();
 
@@ -1457,14 +1465,14 @@ public class ForcedTutorialManager : MonoBehaviour
                 return currentStage >= TutorialStage.Quest6_1_OpenMapUpgrade;
             }
 
-            // 3. NPC Giao Nhiệm Vụ: Cho phép từ Quest7 trở đi
+            // 3. NPC Giao Nhiệm Vụ: Cho phép khi đến bước nhận nhiệm vụ đầu tiên hoặc sau khi hoàn thành tutorial
             if (npc.IsQuestGiver)
             {
-                return currentStage >= TutorialStage.Quest7_1_TalkToQuestNPC;
+                return currentStage >= TutorialStage.Final_TalkToQuestNPC || currentStage == TutorialStage.Completed;
             }
 
             // 4. Các NPC Cây Xăng / Dân làng khác
-            return currentStage >= TutorialStage.Quest7_1_TalkToQuestNPC;
+            return currentStage >= TutorialStage.Quest8_1_DriveToGasStation;
         }
 
         string currentActiveScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
@@ -1596,6 +1604,7 @@ public class ForcedTutorialManager : MonoBehaviour
     public void ResetTutorialProgress()
     {
         PlayerPrefs.DeleteKey(TUTORIAL_SAVE_KEY);
+        PlayerPrefs.DeleteKey("QuestSystem_Unlocked");
         PlayerPrefs.Save();
         currentStage = TutorialStage.Quest0_WelcomeGame;
         moveTimer = 0f;
@@ -1697,9 +1706,6 @@ public class ForcedTutorialManager : MonoBehaviour
             case TutorialStage.Quest6_3_CloseUpgradeMenu:
                 currentInstructionText = GetLocalizedText("TUT_Quest6_3_CloseUpgradeMenu", "Nhấn phím <color=#B388FF><b>Z</b></color> hoặc nút Đóng để thoát giao diện nâng cấp.");
                 break;
-            case TutorialStage.Quest7_1_TalkToQuestNPC:
-                currentInstructionText = GetLocalizedText("TUT_Quest7_1_TalkToQuestNPC", "Tìm và nói chuyện với <color=#B388FF><b>Cậu chủ làng</b></color> trong khu vực.");
-                break;
             case TutorialStage.Quest8_1_DriveToGasStation:
                 currentInstructionText = GetLocalizedText("TUT_Quest8_1_DriveToGasStation", "Lái xe tìm đến <color=#B388FF><b>Cây Xăng</b></color> của thị trấn.");
                 break;
@@ -1790,7 +1796,10 @@ public class ForcedTutorialManager : MonoBehaviour
                 currentInstructionText = GetLocalizedText("TUT_Map2_Quest7_FishLog", "Nhấn phím <color=#B388FF><b>J</b></color> để mở xem <color=#B388FF><b>Nhật ký các loài cá</b></color> bạn đã câu được.");
                 break;
             case TutorialStage.Map2_Quest8_HelpGuide:
-                currentInstructionText = GetLocalizedText("TUT_Map2_Quest8_HelpGuide", "Nhấn phím <color=#B388FF><b>P</b></color> bất kỳ lúc nào để xem lại toàn bộ <color=#B388FF><b>Chỉ dẫn và phím bấm</b></color>.");
+                currentInstructionText = GetLocalizedText("TUT_Map2_Quest8_HelpGuide", "Nhấn phím <color=#B388FF><b>P</b></color> để xem lại toàn bộ <color=#B388FF><b>Chỉ dẫn và phím bấm</b></color>.");
+                break;
+            case TutorialStage.Final_TalkToQuestNPC:
+                currentInstructionText = GetLocalizedText("TUT_Final_TalkToQuestNPC", "Đến gặp <color=#B388FF><b>Cậu chủ làng (NPC Giao Nhiệm Vụ)</b></color> để nhận nhiệm vụ đầu tiên và hoàn tất hướng dẫn tân thủ.");
                 break;
             case TutorialStage.Completed:
                 break;

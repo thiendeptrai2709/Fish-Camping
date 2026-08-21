@@ -32050,31 +32050,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7487779001576783255, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -40.092453
+      value: -36.485367
       objectReference: {fileID: 0}
     - target: {fileID: 7487779001576783255, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.1100006
+      value: 2.2145748
       objectReference: {fileID: 0}
     - target: {fileID: 7487779001576783255, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -1.9486847
+      value: 0.49709702
       objectReference: {fileID: 0}
     - target: {fileID: 7487779001576783255, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.98159796
+      value: 0.68974245
       objectReference: {fileID: 0}
     - target: {fileID: 7487779001576783255, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.01962421
+      value: 0.026310477
       objectReference: {fileID: 0}
     - target: {fileID: 7487779001576783255, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.18991032
+      value: -0.7230508
       objectReference: {fileID: 0}
     - target: {fileID: 7487779001576783255, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.0037967076
+      value: 0.027581034
       objectReference: {fileID: 0}
     - target: {fileID: 7512315670268604788, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: m_Sprite
@@ -32090,27 +32090,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7530843135742004556, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -40.092453
+      value: -36.485367
       objectReference: {fileID: 0}
     - target: {fileID: 7530843135742004556, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -1.9486847
+      value: 0.49709702
       objectReference: {fileID: 0}
     - target: {fileID: 7530843135742004556, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.98159796
+      value: 0.68974245
       objectReference: {fileID: 0}
     - target: {fileID: 7530843135742004556, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.019624213
+      value: 0.026310474
       objectReference: {fileID: 0}
     - target: {fileID: 7530843135742004556, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.18991034
+      value: -0.7230508
       objectReference: {fileID: 0}
     - target: {fileID: 7530843135742004556, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.0037967071
+      value: 0.027581032
       objectReference: {fileID: 0}
     - target: {fileID: 7551155545077458776, guid: ab699c9f8ae3fc04794a4a5d7c0ab71f, type: 3}
       propertyPath: m_Enabled
@@ -54613,7 +54613,7 @@ AudioSource:
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 1
-  m_Pitch: 0.9444477
+  m_Pitch: 1.0711333
   Loop: 0
   Mute: 0
   Spatialize: 0
@@ -55106,213 +55106,6 @@ PrefabInstance:
       propertyPath: m_TagString
       value: NPC
       objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: questList.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: offerDialogues.Array.size
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: completeDialogues.Array.size
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: 'offerDialogues.Array.data[1]'
-      value: "Ta \u0111ang r\u1EA5t th\xE8m m\u1ED9t b\u1EEFa c\xE1 n\u01B0\u1EDBng
-        , c\u1EADu c\xF3 th\u1EC3 gi\xFAp ta c\xE2u m\u1ED9t con kh\xF4ng?"
-      objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: 'offerDialogues.Array.data[2]'
-      value: "Ta s\u1EBD th\u01B0\u1EDFng cho c\u1EADu ti\u1EC1n \u0111\u1EC3 n\xE2ng
-        c\u1EA5p chi\u1EBFc xe t\u1EA3i c\u0169 \u0111\xF3!"
-      objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: 'offerDialogues.Array.data[3]'
-      value: "Nh\u1EA5n V \u0111\u1EC3 xem nhi\u1EC7m v\u1EE5"
-      objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: 'completeDialogues.Array.data[0]'
-      value: "\xD4i! Con c\xE1 n\xE0y t\u01B0\u01A1i ngon qu\xE1! \u0110\xFAng l\xE0
-        tay ngh\u1EC1 d\xF2ng h\u1ECD c\u1EADu."
-      objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: 'completeDialogues.Array.data[1]'
-      value: "C\u1EA7m l\u1EA5y  ti\u1EC1n  n\xE0y nh\u01B0 \u0111\xE3 h\u1EE9a.
-        H\xE3y ti\u1EBFp t\u1EE5c h\xE0nh tr\xECnh \u0111i\u1EC1n k\xEDn cu\u1ED1n
-        nh\u1EADt k\xFD nh\xE9!"
-      objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: 'completeDialogues.Array.data[2]'
-      value: "C\u1EA3m \u01A1n c\u1EADu v\xEC con c\xE1 nh\xE9! Ch\xFAc c\u1EADu
-        m\u1ED9t ng\xE0y \u0111i c\xE2u vui v\u1EBB."
-      objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: 'progressDialogues.Array.data[0]'
-      value: "C\u1EADu v\u1EABn ch\u01B0a c\xE2u \u0111\u01B0\u1EE3c c\xE1 sao?"
-      objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: questList.Array.data[0].questId
-      value: Quest1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: questList.Array.data[1].questId
-      value: Quest2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: questList.Array.data[0].questName
-      value: NV1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: questList.Array.data[1].questName
-      value: NV2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: finalReturningDialogues.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: questList.Array.data[0].rewardGold
-      value: 1000
-      objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: questList.Array.data[0].targetItem
-      value: "C\xE1 H\u1ED3 Cam \u0110\u1ED1m Ng\u1ECDc"
-      objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: questList.Array.data[1].rewardGold
-      value: 1300
-      objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: questList.Array.data[1].targetItem
-      value: "C\xE1 Tr\xEA R\xE2u D\xE0i"
-      objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: questList.Array.data[0].targetAmount
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: questList.Array.data[1].targetAmount
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: questList.Array.data[0].questDescription
-      value: QP1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: questList.Array.data[1].questDescription
-      value: QP2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: finalReturningDialogues.Array.data[0].text
-      value: NPCQUEST12
-      objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: finalReturningDialogues.Array.data[1].text
-      value: NPCQUEST13
-      objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: finalReturningDialogues.Array.data[0].voiceClip
-      value: 
-      objectReference: {fileID: 8300000, guid: 8b2279bd01e071c4eb570650f8cd7968, type: 3}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: finalReturningDialogues.Array.data[1].voiceClip
-      value: 
-      objectReference: {fileID: 8300000, guid: 1816f0070ab55ec428f83c39212cf69a, type: 3}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: questList.Array.data[0].offerDialogues.Array.size
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: questList.Array.data[1].offerDialogues.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: questList.Array.data[0].completeDialogues.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: 'questList.Array.data[0].offerDialogues.Array.data[0]'
-      value: "Ch\xE0o c\u1EADu tr\u1EBB, t\xF4i s\u1EBD giao nhi\u1EC7m v\u1EE5 cho
-        c\u1EADu"
-      objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: questList.Array.data[0].progressDialogues.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: questList.Array.data[1].completeDialogues.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: questList.Array.data[1].progressDialogues.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: questList.Array.data[0].offerDialogues.Array.data[0].text
-      value: NPCQUEST1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: questList.Array.data[0].offerDialogues.Array.data[1].text
-      value: NPCQUEST2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: questList.Array.data[0].offerDialogues.Array.data[2].text
-      value: NPCQUEST3
-      objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: questList.Array.data[1].offerDialogues.Array.data[0].text
-      value: NPCQUEST9
-      objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: questList.Array.data[0].completeDialogues.Array.data[0].text
-      value: NPCQUEST8
-      objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: questList.Array.data[0].progressDialogues.Array.data[0].text
-      value: NPCQUEST7
-      objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: questList.Array.data[1].completeDialogues.Array.data[0].text
-      value: NPCQUEST11
-      objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: questList.Array.data[1].progressDialogues.Array.data[0].text
-      value: NPCQUEST10
-      objectReference: {fileID: 0}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: questList.Array.data[0].offerDialogues.Array.data[0].voiceClip
-      value: 
-      objectReference: {fileID: 8300000, guid: ee40f30752072ee4bbfc25ebcbc55a47, type: 3}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: questList.Array.data[0].offerDialogues.Array.data[1].voiceClip
-      value: 
-      objectReference: {fileID: 8300000, guid: 7cc1dc31c90f60a4d92ab84226c3e7a7, type: 3}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: questList.Array.data[0].offerDialogues.Array.data[2].voiceClip
-      value: 
-      objectReference: {fileID: 8300000, guid: fb0c6b50daeca5f44b916cbbdf2f672a, type: 3}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: questList.Array.data[1].offerDialogues.Array.data[0].voiceClip
-      value: 
-      objectReference: {fileID: 8300000, guid: 6f68d441a7447894b807c2f0881b67f8, type: 3}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: questList.Array.data[0].completeDialogues.Array.data[0].voiceClip
-      value: 
-      objectReference: {fileID: 8300000, guid: f335dc0b8cb167a49abc2cf6ebd647f1, type: 3}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: questList.Array.data[0].progressDialogues.Array.data[0].voiceClip
-      value: 
-      objectReference: {fileID: 8300000, guid: 52c8a2952bee6364fbfc05f0c35795a4, type: 3}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: questList.Array.data[1].completeDialogues.Array.data[0].voiceClip
-      value: 
-      objectReference: {fileID: 8300000, guid: d8ff4500aad8f5149aa517c300607283, type: 3}
-    - target: {fileID: 7158468785501937978, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
-      propertyPath: questList.Array.data[1].progressDialogues.Array.data[0].voiceClip
-      value: 
-      objectReference: {fileID: 8300000, guid: 52c8a2952bee6364fbfc05f0c35795a4, type: 3}
     - target: {fileID: 8898449558618441033, guid: 131cc526a82980c449a08c340e4d3fdb, type: 3}
       propertyPath: npcName
       value: NPCQUEST
@@ -62656,7 +62449,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "H\u01AF\u1EDANG D\u1EAAN (1/27)"
+  m_text: "H\u01AF\u1EDANG D\u1EAAN (1/26)"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c4df8d68a252a664885d49ca4983b741, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: c4df8d68a252a664885d49ca4983b741, type: 2}

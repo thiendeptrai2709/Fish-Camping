@@ -65,9 +65,19 @@ public class QuestItemUI : MonoBehaviour
                 break;
 
             case QuestState.CanClaim:
-                if (buttonText != null)
-                    buttonText.text = isVietnamese ? "Gặp NPC" : "Return to NPC";
-                actionButton.interactable = false; // Bắt buộc phải quay lại gặp NPC giao việc để nhận thưởng
+                if (currentQuest.isDaily)
+                {
+                    if (buttonText != null)
+                        buttonText.text = isVietnamese ? "Nhận Thưởng" : "Claim";
+                    actionButton.interactable = true; // Nhiệm vụ hàng ngày cho phép nhận thưởng trực tiếp
+                    actionButton.onClick.AddListener(OnClaimClick);
+                }
+                else
+                {
+                    if (buttonText != null)
+                        buttonText.text = isVietnamese ? "Gặp Cậu chủ làng" : "Talk to Village Master";
+                    actionButton.interactable = false; // Nhiệm vụ cốt truyện quay về gặp Cậu chủ làng
+                }
                 break;
 
             case QuestState.Claimed:

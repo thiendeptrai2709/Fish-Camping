@@ -459,6 +459,12 @@ public class FishingController : MonoBehaviour
                     {
                         ShowFishingFeedback($"Đã cất [{currentCaughtFishData.itemName}] ({caughtFishLength:F1}cm) vào Balo!", Color.green);
                         Debug.Log($"<color=green>[Fishing Controller] Đã cất [{currentCaughtFishData.itemName}] vào Balo!</color>");
+
+                        // Tự động cập nhật tiến độ nhiệm vụ
+                        if (QuestManager.Instance != null)
+                        {
+                            QuestManager.Instance.NotifyFishCaught(currentCaughtFishData, caughtFishLength, caughtFishWeight, caughtFishGrade);
+                        }
                     }
                     else
                     {

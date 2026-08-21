@@ -238,6 +238,12 @@ public class CookingRack : MonoBehaviour, IInteractable
         State = CookingState.Finished;
 
         Debug.Log($"<color=green>[Cooking System] Đã nấu xong: {currentCookedResult?.itemName}</color>");
+
+        // Tự động cập nhật tiến độ nhiệm vụ nấu ăn
+        if (QuestManager.Instance != null && currentCookedResult != null)
+        {
+            QuestManager.Instance.NotifyCookingFinished(currentCookedResult);
+        }
     }
 
     public ItemShapeSO GetCookedFood()

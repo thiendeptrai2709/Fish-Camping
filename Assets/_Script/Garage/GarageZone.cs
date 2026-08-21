@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using System.Collections;
@@ -232,6 +232,12 @@ public class GarageZone : MonoBehaviour
         }
 
         ShowNotify("Đã trang bị lốp mới!");
+
+        // Tự động cập nhật tiến độ nhiệm vụ
+        if (QuestManager.Instance != null)
+        {
+            QuestManager.Instance.NotifyVehicleUpgraded();
+        }
     }
 
     private void ApplyTireVisual(int wheelIndex)
@@ -271,6 +277,12 @@ public class GarageZone : MonoBehaviour
             if (TrunkMinigameUI.Instance != null) TrunkMinigameUI.Instance.RefreshGridVisuals();
             UpdateAllUI();
             ShowNotify($"Nâng cấp Cốp Level {targetLevel} thành công!");
+
+            // Tự động cập nhật tiến độ nhiệm vụ
+            if (QuestManager.Instance != null)
+            {
+                QuestManager.Instance.NotifyVehicleUpgraded();
+            }
         }
         else ShowNotify("Không đủ tiền nâng cấp!");
     }

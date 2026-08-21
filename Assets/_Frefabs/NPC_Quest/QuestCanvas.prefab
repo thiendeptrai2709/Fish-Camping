@@ -672,6 +672,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::QuestUIBinder
   questPanel: {fileID: 1112018448479557568}
   questContentParent: {fileID: 4062411912769787476}
+  missionDayPanel: {fileID: 0}
+  missionDayText: {fileID: 0}
 --- !u!1 &5741397511618609092
 GameObject:
   m_ObjectHideFlags: 0
@@ -1065,7 +1067,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2733624513164835434, guid: 7964c9ddb1157064ea2d97f95597faff, type: 3}
       propertyPath: m_fontSize
-      value: 44.75
+      value: 23.7
       objectReference: {fileID: 0}
     - target: {fileID: 2733624513164835434, guid: 7964c9ddb1157064ea2d97f95597faff, type: 3}
       propertyPath: m_margin.x
@@ -1093,7 +1095,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3185852530622509581, guid: 7964c9ddb1157064ea2d97f95597faff, type: 3}
       propertyPath: m_fontSize
-      value: 26.85
+      value: 33.1
       objectReference: {fileID: 0}
     - target: {fileID: 3185852530622509581, guid: 7964c9ddb1157064ea2d97f95597faff, type: 3}
       propertyPath: m_margin.z
@@ -1149,7 +1151,7 @@ PrefabInstance:
       objectReference: {fileID: 21300000, guid: d2e523bc64be10d48b7eb7ef3129808a, type: 3}
     - target: {fileID: 7879271728345040528, guid: 7964c9ddb1157064ea2d97f95597faff, type: 3}
       propertyPath: m_fontSize
-      value: 44.75
+      value: 34.6
       objectReference: {fileID: 0}
     - target: {fileID: 7879271728345040528, guid: 7964c9ddb1157064ea2d97f95597faff, type: 3}
       propertyPath: m_margin.z

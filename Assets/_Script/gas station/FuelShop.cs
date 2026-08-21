@@ -188,6 +188,12 @@ public class FuelShop : MonoBehaviour
 
             // Báo hoàn thành bước mua can xăng trong Tutorial
             ForcedTutorialManager.Instance?.NotifyGasCanisterBought();
+
+            // Tự động cập nhật tiến độ nhiệm vụ
+            if (QuestManager.Instance != null)
+            {
+                QuestManager.Instance.NotifyFuelRefilled();
+            }
         }
         else
         {

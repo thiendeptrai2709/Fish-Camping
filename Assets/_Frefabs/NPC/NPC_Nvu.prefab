@@ -1168,7 +1168,7 @@ MonoBehaviour:
     \u0111\u1EB9p!"
   - "C\u1EADu c\xF3 c\xE2u \u0111\u01B0\u1EE3c con c\xE1 V\u01B0\u1EE3c n\xE0o l\u1EDBn
     kh\xF4ng?"
-  _questGiver: {fileID: 0}
+  _questGiver: {fileID: 5418662015793962713}
 --- !u!114 &5418662015793962713
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1181,29 +1181,160 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2286b62a70f70974d9132fc2d0e8a1e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::QuestGiver
-  questName: "S\u0103n T\xECm C\xE1 V\u01B0\u1EE3c H\u1ED3 Th\xF4ng"
-  targetItem: Largemouth Bass
-  rewardGold: 150
-  offerDialogues:
-  - "Ch\xE0o c\u1EADu l\u1EEF kh\xE1ch! Ta nghe n\xF3i \xF4ng c\u1EE7a c\u1EADu \u0111\u1EC3
-    l\u1EA1i m\u1ED9t cu\u1ED1n nh\u1EADt k\xFD c\xE1 r\u1EA5t gi\xE1 tr\u1ECB."
-  - "Ta \u0111ang r\u1EA5t th\xE8m m\u1ED9t b\u1EEFa c\xE1 V\u01B0\u1EE3c n\u01B0\u1EDBng
-    b\xEAn H\u1ED3 Th\xF4ng, c\u1EADu c\xF3 th\u1EC3 gi\xFAp ta c\xE2u m\u1ED9t con
-    [Largemouth Bass] kh\xF4ng?"
-  - "Ta s\u1EBD th\u01B0\u1EDFng cho c\u1EADu 150G \u0111\u1EC3 n\xE2ng c\u1EA5p
-    chi\u1EBFc xe t\u1EA3i c\u0169 \u0111\xF3!"
-  progressDialogues:
-  - "C\u1EADu v\u1EABn ch\u01B0a c\xE2u \u0111\u01B0\u1EE3c [Largemouth Bass] sao?"
-  - "H\xE3y ki\u1EC3m tra l\u1EA1i m\u1ED3i b\u1ED9t ho\u1EB7c th\u1EED c\xE2u v\xE0o
-    l\xFAc B\xECnh minh/Ho\xE0ng h\xF4n xem nh\xE9!"
-  completeDialogues:
-  - "\xD4i! Con c\xE1 V\u01B0\u1EE3c n\xE0y t\u01B0\u01A1i ngon qu\xE1! \u0110\xFAng
-    l\xE0 tay ngh\u1EC1 d\xF2ng h\u1ECD c\u1EADu."
-  - "C\u1EA7m l\u1EA5y 150G n\xE0y nh\u01B0 \u0111\xE3 h\u1EE9a. H\xE3y ti\u1EBFp
-    t\u1EE5c h\xE0nh tr\xECnh \u0111i\u1EC1n k\xEDn cu\u1ED1n nh\u1EADt k\xFD nh\xE9!"
-  finalDialogues:
-  - "C\u1EA3m \u01A1n c\u1EADu v\xEC con c\xE1 nh\xE9! Ch\xFAc c\u1EADu m\u1ED9t
-    ng\xE0y \u0111i c\xE2u vui v\u1EBB."
+  questList:
+  - questId: Story_1
+    questName: "B\u1EEFa Ti\u1EC7c H\u1ED3 Th\xF4ng"
+    questDescription: "L\xE1i xe \u0111\u1EBFn H\u1ED3 Th\xF4ng (Map 2), c\xE2u 2 con c\xE1 t\u01B0\u01A1i mang v\u1EC1 cho l\xE0ng."
+    targetItem: "C\xE1 T\u01B0\u01A1i"
+    questType: 0
+    requiredGrade: 0
+    requiredMinSize: 0
+    targetAmount: 2
+    rewardGold: 500
+    offerDialogues:
+    - text: "Ch\xE0o c\u1EADu! C\u1EADu m\u1EDBi \u0111\u1EBFn l\xE0ng ta \u0111\xFAng kh\xF4ng? Tr\xF4ng c\u1EADu tr\xE0n \u0111\u1EA7y n\u0103ng l\u01B0\u1EE3ng \u0111\u1EA5y!"
+      voiceClip: {fileID: 0}
+    - text: "L\xE0ng ta \u0111ang chu\u1EA9n b\u1ECB m\u1ED9t b\u1EEFa ti\u1EC7c \u1EA5m c\xFAng, c\u1EADu c\xF3 th\u1EC3 l\xE1i xe \u0111\u1EBFn H\u1ED3 Th\xF4ng (Map 2) c\xE2u 2 con c\xE1 t\u01B0\u01A1i mang v\u1EC1 gi\xFAp ta kh\xF4ng?"
+      voiceClip: {fileID: 0}
+    - text: "Ta s\u1EBD th\u01B0\u1EDFng cho c\u1EADu 500G \u0111\u1EC3 s\u1EAFm s\u1EEDa d\u1EE5ng c\u1EE5 c\xE2u c\xE1!"
+      voiceClip: {fileID: 0}
+    progressDialogues:
+    - text: "C\u1EADu \u0111\xE3 \u0111\u1EBFn H\u1ED3 Th\xF4ng ch\u01B0a? Nh\u1EDB c\xE2u \u0111\u1EE7 2 con c\xE1 t\u01B0\u01A1i mang v\u1EC1 nh\xE9!"
+      voiceClip: {fileID: 0}
+    - text: "M\u1ECDi ng\u01B0\u1EDDi trong l\xE0ng \u0111ang r\u1EA5t mong ch\u1EDD c\xE1 t\u01B0\u01A1i c\u1EE7a c\u1EADu \u0111\u1EA5y!"
+      voiceClip: {fileID: 0}
+    completeDialogues:
+    - text: "Tuy\u1EC7t v\u1EDDi qu\xE1! C\xE1 t\u01B0\u01A1i roi r\xF3i, b\u1EEFa ti\u1EC7c t\u1ED1i nay ch\u1EAFc ch\u1EAFn s\u1EBD r\u1EA5t vui v\u1EBB!"
+      voiceClip: {fileID: 0}
+    - text: "\u0110\xE2y l\xE0 500G ti\u1EC1n c\xF4ng c\u1EE7a c\u1EADu. C\u1EA3m \u01A1n c\u1EADu r\u1EA5t nhi\u1EC1u!"
+      voiceClip: {fileID: 0}
+  - questId: Story_2
+    questName: "H\u01B0\u01A1ng V\u1ECB C\xE1 N\u01B0\u1EDBng"
+    questDescription: "N\u01B0\u1EDBng ch\xEDn 1 \u0111\u0129a C\xE1 N\u01B0\u1EDBng d\xE3 ngo\u1EA1i b\xEAn b\u1EBFp l\u1EEDa tr\u1EA1i mang v\u1EC1 cho C\u1EADu ch\u1EE7 l\xE0ng."
+    targetItem: "C\xE1 N\u01B0\u1EDBng"
+    questType: 3
+    requiredGrade: 0
+    requiredMinSize: 0
+    targetAmount: 1
+    rewardGold: 800
+    offerDialogues:
+    - text: "C\xE1 t\u01B0\u01A1i th\xEC ngon r\u1ED3i, nh\u01B0ng ta nghe n\xF3i m\xF3n C\xE1 N\u01B0\u1EDBng than hoa d\xE3 ngo\u1EA1i b\xEAn b\u1EDD h\u1ED3 m\u1EDBi l\xE0 c\u1EF1c ph\u1EA9m!"
+      voiceClip: {fileID: 0}
+    - text: "C\u1EADu h\xE3y th\u1EED nh\xF3m b\u1EBFp l\u1EEDa d\xE3 ngo\u1EA1i, n\u01B0\u1EDBng ch\xEDn 1 con c\xE1 r\u1ED3i mang v\u1EC1 \u0111\xE2y cho ta th\u01B0\u1EDFng th\u1EE9c nh\xE9!"
+      voiceClip: {fileID: 0}
+    - text: "Ph\u1EA7n th\u01B0\u1EDFng l\u1EA7n n\xE0y l\xE0 800G!"
+      voiceClip: {fileID: 0}
+    progressDialogues:
+    - text: "M\xF9i c\xE1 n\u01B0\u1EDBng th\u01A1m ph\u1EE9c \u0111\xE2u r\u1ED3i nh\u1EC9? Nh\u1EDB d\xF9ng b\u1EBFp d\xE3 ngo\u1EA1i \u0111\u1EC3 n\u01B0\u1EDBng c\xE1 ch\xEDn nh\xE9 c\u1EADu!"
+      voiceClip: {fileID: 0}
+    completeDialogues:
+    - text: "M\xF9i th\u01A1m n\u1EE9c m\u0169i! Th\u1ECBt c\xE1 v\u1EEBa ng\u1ECDt v\u1EEBa \u0111\u1EADm \u0111\xE0, \u0111\xFAng l\xE0 tay ngh\u1EC1 \u0111\u1EA7u b\u1EBFp c\u1EAFm tr\u1EA1i t\xE0i ba!"
+      voiceClip: {fileID: 0}
+    - text: "\u0110\xE2y l\xE0 800G x\u1EE9ng \u0111\xE1ng cho t\xE0i n\u0103ng c\u1EE7a c\u1EADu!"
+      voiceClip: {fileID: 0}
+  - questId: Story_3
+    questName: "B\u1EA3o D\u01B0\u1EE1ng Chuy\u1EBFn \u0110i Xa"
+    questDescription: "\u0110\u1EBFn g\u1EB7p B\xE1c th\u1EE3 m\xE1y n\xE2ng c\u1EA5p l\u1ED1p xe Gai Off-road ho\u1EB7c \u0111\u1ED5 \u0111\u1EA7y b\xECnh x\u0103ng t\u1EA1i Tr\u1EA1m x\u0103ng."
+    targetItem: "N\xE2ng c\u1EA5p xe / \u0110\u1ED5 x\u0103ng"
+    questType: 4
+    requiredGrade: 0
+    requiredMinSize: 0
+    targetAmount: 1
+    rewardGold: 1000
+    offerDialogues:
+    - text: "S\u1EAFp t\u1EDBi ch\xFAng ta c\u1EA7n th\xE1m hi\u1EC3m v\xF9ng \u0110\u1EA7m L\u1EA7y (Map 3), cung \u0111\u01B0\u1EDDng n\xE0y r\u1EA5t g\u1EADp gh\u1EC1nh v\xE0 l\u1EA7y l\u1ED9i."
+      voiceClip: {fileID: 0}
+    - text: "C\u1EADu h\xE3y gh\xE9 Gara c\u1EE7a B\xE1c th\u1EE3 m\xE1y n\xE2ng c\u1EA5p b\u1ED9 l\u1ED1p Gai Off-road ho\u1EB7c gh\xE9 Tr\u1EA1m x\u0103ng n\u1EA1p \u0111\u1EA7y nhi\xEAn li\u1EC7u nh\xE9!"
+      voiceClip: {fileID: 0}
+    - text: "Ho\xE0n th\xE0nh kh\xE2u chu\u1EA9n b\u1ECB, ta s\u1EBD th\u01B0\u1EDFng cho c\u1EADu 1.000G!"
+      voiceClip: {fileID: 0}
+    progressDialogues:
+    - text: "\u0110\u1EEBng m\u1EA1o hi\u1EC3m \u0111i xa khi xe ch\u01B0a \u0111\u01B0\u1EE3c b\u1EA3o d\u01B0\u1EE1ng v\xE0 b\xECnh x\u0103ng ch\u01B0a \u0111\u1EA7y nh\xE9 c\u1EADu!"
+      voiceClip: {fileID: 0}
+    completeDialogues:
+    - text: "Chi\u1EBFc xe tr\xF4ng kh\u1ECFe kho\u1EAFn v\xE0 s\u1EB5n s\xE0ng cho m\u1ECDi \u0111\u1ECBa h\xECnh hi\u1EC3m tr\u1EDF r\u1ED3i \u0111\u1EA5y!"
+      voiceClip: {fileID: 0}
+    - text: "Nh\u1EADn 1.000G n\xE0y v\xE0 chu\u1EA9n b\u1ECB l\xEAn \u0111\u01B0\u1EDDng kh\xE1m ph\xE1 v\xF9ng \u0110\u1EA7m L\u1EA7y nh\xE9!"
+      voiceClip: {fileID: 0}
+  - questId: Story_4
+    questName: "\u0110\u1EB7c S\u1EA3n \u0110\u1EA7m L\u1EA7y"
+    questDescription: "L\xE1i xe v\u01B0\u1EE3t \u0111\u1ECBa h\xECnh v\xE0o \u0110\u1EA7m L\u1EA7y (Map 3) v\xE0 c\xE2u 2 con c\xE1 \u0111\u1EA7m l\u1EA7y."
+    targetItem: "C\xE1 \u0110\u1EA7m L\u1EA7y"
+    questType: 0
+    requiredGrade: 0
+    requiredMinSize: 0
+    targetAmount: 2
+    rewardGold: 1800
+    offerDialogues:
+    - text: "V\xF9ng \u0110\u1EA7m L\u1EA7y (Map 3) c\xF3 h\u1EC7 sinh th\xE1i \u0111\u1ED9c \u0111\xE1o v\u1EDBi nh\u1EEFng lo\xE0i c\xE1 da tr\u01A1n kh\u1ED5ng l\u1ED3 r\u1EA5t qu\xFD hi\u1EBFm."
+      voiceClip: {fileID: 0}
+    - text: "C\u1EADu h\xE3y l\xE1i xe v\xE0o \u0111\xF3, t\xECm v\xF9ng n\u01B0\u1EDBc s\xE2u v\xE0 c\xE2u 2 con c\xE1 \u0111\u1EA7m l\u1EA7y mang v\u1EC1 nh\xE9!"
+      voiceClip: {fileID: 0}
+    - text: "Ta s\u1EBD th\u01B0\u1EDFng h\u1EADu h\u0129nh 1.800G cho chuy\u1EBFn th\xE1m hi\u1EC3m n\xE0y!"
+      voiceClip: {fileID: 0}
+    progressDialogues:
+    - text: "V\xF9ng \u0111\u1EA7m l\u1EA7y nhi\u1EC1u b\xF9n l\u1EA7y, h\xE3y c\u1EA9n th\u1EADn tay l\xE1i v\xE0 ki\xEAn nh\u1EABn khi c\xE2u c\xE1 nh\xE9!"
+      voiceClip: {fileID: 0}
+    completeDialogues:
+    - text: "Th\u1EADt kinh ng\u1EA1c! C\u1EADu \u0111\xE3 v\u01B0\u1EE3t qua \u0111\u1EA7m l\u1EA7y hi\u1EC3m tr\u1EDF v\xE0 mang v\u1EC1 nh\u1EEFng con c\xE1 to th\u1EBF n\xE0y!"
+      voiceClip: {fileID: 0}
+    - text: "1.800G n\xE0y thu\u1ED9c v\u1EC1 c\u1EADu, c\u1EADu b\u1EA1n d\u0169ng c\u1EA3m!"
+      voiceClip: {fileID: 0}
+  - questId: Story_5
+    questName: "C\xE1 V\xE0ng May M\u1EAFn"
+    questDescription: "D\xF9ng M\u1ED3i c\xE2u x\u1ECBn b\u1EAFt \u0111\u01B0\u1EE3c \xEDt nh\u1EA5t 1 con c\xE1 \u0111\u1EA1t ph\u1EA9m ch\u1EA5t V\xE0ng Kim (Gold Grade)."
+    targetItem: "C\xE1 V\xE0ng Kim"
+    questType: 1
+    requiredGrade: 3
+    requiredMinSize: 0
+    targetAmount: 1
+    rewardGold: 2500
+    offerDialogues:
+    - text: "Trong truy\u1EC1n thuy\u1EBFt l\xE0ng ta, ai c\xE2u \u0111\u01B0\u1EE3c m\u1ED9t con c\xE1 V\xE0ng Kim l\u1EA5p l\xE1nh s\u1EBD mang l\u1EA1i th\u1ECBnh v\u01B0\u1EE3ng c\u1EA3 \u0111\u1EDDi."
+      voiceClip: {fileID: 0}
+    - text: "H\xE3y \u0111\u1EBFn Shop c\u1EE7a Anh C\u1EA7n th\u1EE7 mua lo\u1EA1i M\u1ED3i c\xE2u x\u1ECBn nh\u1EA5t v\xE0 th\u1EED v\u1EADn may b\u1EAFt 1 con c\xE1 ph\u1EA9m ch\u1EA5t V\xE0ng Kim xem n\xE0o!"
+      voiceClip: {fileID: 0}
+    - text: "Ph\u1EA7n th\u01B0\u1EDFng s\u1EBD l\xE0 2.500G c\u1EF1c k\u1EF3 gi\xE1 tr\u1ECB!"
+      voiceClip: {fileID: 0}
+    progressDialogues:
+    - text: "C\xE1 V\xE0ng Kim r\u1EA5t tinh kh\xF4n, nh\u1EDB d\xF9ng m\u1ED3i c\xE2u t\u1ED1t nh\u1EA5t v\xE0 k\xE9o c\u1EA7n th\u1EADt kh\xE9o nh\xE9!"
+      voiceClip: {fileID: 0}
+    completeDialogues:
+    - text: "Tr\u1EDDi \u01A1i! \xC1nh v\xE0ng l\u1EA5p l\xE1nh tuy\u1EC7t \u0111\u1EB9p! \u0110\xE2y \u0111\xFAng l\xE0 con c\xE1 V\xE0ng Kim huy\u1EC1n tho\u1EA1i!"
+      voiceClip: {fileID: 0}
+    - text: "C\u1EADu ch\xEDnh l\xE0 th\u1EE3 c\xE2u t\xE0i ba nh\u1EA5t m\xE0 ta t\u1EEBng g\u1EB7p! Nh\u1EADn l\u1EA5y 2.500G n\xE0y nh\xE9!"
+      voiceClip: {fileID: 0}
+  - questId: Story_6
+    questName: "Chinh Ph\u1EE5c \u0110\u1EA1i D\u01B0\u01A1ng"
+    questDescription: "Trang b\u1ECB C\u1EA7n c\xE2u 5 ho\u1EB7c 6 c\xF9ng M\u1ED3i bi\u1EC3n, c\xE2u 2 con c\xE1 bi\u1EC3n l\u1EDBn t\u1EA1i B\u1EDD Bi\u1EC3n (Map 4)."
+    targetItem: "C\xE1 Bi\u1EC3n L\u1EDBn"
+    questType: 0
+    requiredGrade: 0
+    requiredMinSize: 0
+    targetAmount: 2
+    rewardGold: 3500
+    offerDialogues:
+    - text: "Th\u1EED th\xE1ch \u0111\u1EC9nh cao cu\u1ED1i c\xF9ng \u0111\xE3 t\u1EDBi! B\u1EDD Bi\u1EC3n (Map 4) c\xF3 nh\u1EEFng ng\u1ECDn s\xF3ng d\u1EEF d\u1ED9i v\xE0 nh\u1EEFng lo\xE0i c\xE1 ng\u1EEB \u0111\u1EA1i d\u01B0\u01A1ng kh\u1ED5ng l\u1ED3."
+      voiceClip: {fileID: 0}
+    - text: "H\xE3y s\u1EAFm C\u1EA7n c\xE2u bi\u1EC3n (C\u1EA5p 5 ho\u1EB7c 6) v\xE0 M\u1ED3i bi\u1EC3n chuy\xEAn d\u1EE5ng \u0111\u1EC3 chinh ph\u1EE5c \u0111\u1EA1i d\u01B0\u01A1ng, c\xE2u 2 con c\xE1 bi\u1EC3n l\u1EDBn v\u1EC1 \u0111\xE2y!"
+      voiceClip: {fileID: 0}
+    - text: "Ph\u1EA7n th\u01B0\u1EDFng danh gi\xE1 3.500G v\xE0 danh hi\u1EC7u C\u1EA7n Th\u1EE7 Huy\u1EC1n Tho\u1EA1i c\u1EE7a L\xE0ng \u0111ang ch\u1EDD c\u1EADu!"
+      voiceClip: {fileID: 0}
+    progressDialogues:
+    - text: "S\xF3ng bi\u1EC3n \u1EDF Map 4 r\u1EA5t m\u1EA1nh, ch\u1EC9 c\xF3 C\u1EA7n c\xE2u 5 ho\u1EB7c 6 c\xF9ng Phao bi\u1EC3n ch\u1ECBu s\xF3ng m\u1EDBi c\xE2u \u0111\u01B0\u1EE3c th\xF4i \u0111\u1EA5y!"
+      voiceClip: {fileID: 0}
+    completeDialogues:
+    - text: "Kh\xF4ng th\u1EC3 tin \u0111\u01B0\u1EE3c! C\u1EADu \u0111\xE3 chinh ph\u1EE5c \u0111\u01B0\u1EE3c c\u1EA3 nh\u1EEFng \u0111\u1EE3t s\xF3ng d\u1EEF d\u1ED9i c\u1EE7a \u0111\u1EA1i d\u01B0\u01A1ng!"
+      voiceClip: {fileID: 0}
+    - text: "To\xE0n b\u1ED9 d\xE2n l\xE0ng \u0111\u1EC1u t\u1EF1 h\xE0o v\u1EC1 c\u1EADu! \u0110\xE2y l\xE0 3.500G v\xE0 danh hi\u1EC7u C\u1EA7n Th\u1EE7 B\u1EADc Th\u1EA7y c\u1EE7a L\xE0ng Ch\xE0i!"
+      voiceClip: {fileID: 0}
+  finalReturningDialogues:
+  - text: "C\u1EA3m \u01A1n c\u1EADu nh\xE9! Nh\u1EDD c\xF3 c\u1EADu m\xE0 m\u1ECDi vi\u1EC7c \xEAm xu\xF4i r\u1ED3i."
+    voiceClip: {fileID: 0}
+  - text: "H\xF4m nay th\u1EDDi ti\u1EBFt \u0111\u1EB9p th\u1EADt \u0111\u1EA5y, ngh\u1EC9 ng\u01A1i ch\xFAt \u0111i c\u1EADu!"
+    voiceClip: {fileID: 0}
+  - text: "D\u1EA1o n\xE0y kh\u1ECFe ch\u1EE9? Ta v\u1EABn nh\u1EDB c\xF4ng s\u1EE9c c\u1EADu gi\xFAp ta \u0111\u1EA5y!"
+    voiceClip: {fileID: 0}
 --- !u!1 &8662230891309986893
 GameObject:
   m_ObjectHideFlags: 0

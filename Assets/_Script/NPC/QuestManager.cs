@@ -71,6 +71,13 @@ public class QuestManager : MonoBehaviour
         }
     }
 
+    public bool HasUnlockedQuestSystem()
+    {
+        if (PlayerPrefs.GetInt("QuestSystem_Unlocked", 0) == 1) return true;
+        if (questList != null && questList.Exists(q => !q.isDaily)) return true;
+        return false;
+    }
+
     public void LoadQuestData()
     {
         try
@@ -83,9 +90,16 @@ public class QuestManager : MonoBehaviour
                     QuestSaveContainer container = JsonUtility.FromJson<QuestSaveContainer>(json);
                     if (container != null && container.quests != null && container.quests.Count > 0)
                     {
+                        container.quests.RemoveAll(q => q.id == "Quest1" || q.id == "Quest2");
                         questList = container.quests;
                     }
                 }
+            }
+
+            // Nếu chưa được NPC giao nhiệm vụ cốt truyện, xóa bỏ daily quest tạm
+            if (!HasUnlockedQuestSystem())
+            {
+                questList.RemoveAll(q => q.isDaily);
             }
         }
         catch (System.Exception e)
@@ -110,7 +124,16 @@ public class QuestManager : MonoBehaviour
     private void Start()
     {
         EnsureUIAttached();
-        UpdateMissionDayHUD();
+        if (HasUnlockedQuestSystem())
+        {
+            GenerateDailyQuestsIfNeed();
+            UpdateMissionDayHUD();
+        }
+        else
+        {
+            if (missionDayPanel != null) missionDayPanel.SetActive(false);
+            if (questPanel != null) questPanel.SetActive(false);
+        }
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -121,7 +144,87 @@ public class QuestManager : MonoBehaviour
         missionDayText = null;
 
         EnsureUIAttached();
-        UpdateMissionDayHUD();
+        if (HasUnlockedQuestSystem())
+        {
+            GenerateDailyQuestsIfNeed();
+            UpdateMissionDayHUD();
+        }
+        else
+        {
+            if (missionDayPanel != null) missionDayPanel.SetActive(false);
+            if (questPanel != null) questPanel.SetActive(false);
+        }
+    }
+
+    // Tự động tạo và làm mới 3 nhiệm vụ Hàng Ngày (chỉ khi đã được NPC_Nvu giao nhiệm vụ)
+    public void GenerateDailyQuestsIfNeed()
+    {
+        if (!HasUnlockedQuestSystem())
+        {
+            questList.RemoveAll(q => q.isDaily);
+            return;
+        }
+
+        string lastDate = PlayerPrefs.GetString("Last_Daily_Quest_Date", "");
+        string todayDate = System.DateTime.Now.ToString("yyyy-MM-dd");
+
+        bool hasDaily = questList.Exists(q => q.isDaily && q.state != QuestState.Claimed);
+
+        if (!hasDaily || lastDate != todayDate)
+        {
+            PlayerPrefs.SetString("Last_Daily_Quest_Date", todayDate);
+
+            // Dọn dẹp các daily cũ đã hoàn thành
+            questList.RemoveAll(q => q.isDaily && q.state == QuestState.Claimed);
+
+            // Tạo mới bộ 3 nhiệm vụ hàng ngày nếu chưa có
+            if (!questList.Exists(q => q.isDaily))
+            {
+                questList.Add(new Quest
+                {
+                    id = "Daily_Fish_" + todayDate,
+                    title = "Câu Cá Hàng Ngày",
+                    description = "Câu 3 con cá bất kỳ ở hồ nước gần nhất.",
+                    targetItem = "Cá Bất Kỳ",
+                    questType = QuestType.CatchFish,
+                    isDaily = true,
+                    currentAmount = 0,
+                    targetAmount = 3,
+                    goldReward = 300,
+                    state = QuestState.InProgress
+                });
+
+                questList.Add(new Quest
+                {
+                    id = "Daily_Cook_" + todayDate,
+                    title = "Bữa Ăn Dã Ngoại",
+                    description = "Nướng chín 1 đĩa cá tại bếp dã ngoại bên bờ hồ.",
+                    targetItem = "Cá Nướng",
+                    questType = QuestType.CookFish,
+                    isDaily = true,
+                    currentAmount = 0,
+                    targetAmount = 1,
+                    goldReward = 300,
+                    state = QuestState.InProgress
+                });
+
+                questList.Add(new Quest
+                {
+                    id = "Daily_Refuel_" + todayDate,
+                    title = "Bảo Trì Xe Hàng Ngày",
+                    description = "Nạp đầy bình xăng tại Trạm xăng hoặc nâng cấp lốp xe.",
+                    targetItem = "Trạm Xăng / Gara",
+                    questType = QuestType.Refuel,
+                    isDaily = true,
+                    currentAmount = 0,
+                    targetAmount = 1,
+                    goldReward = 400,
+                    state = QuestState.InProgress
+                });
+
+                SaveQuestData();
+            }
+        }
     }
 
     // Tự động vẽ lại toàn bộ danh sách nhiệm vụ khi đổi ngôn ngữ
@@ -136,11 +239,14 @@ public class QuestManager : MonoBehaviour
 
     private void Update()
     {
-        // Nhấn phím V để Bật / Tắt Panel Nhiệm vụ (Hỗ trợ cả New Input System và Legacy Input)
+        // Nhấn phím V để Bật / Tắt Panel Nhiệm vụ (Chỉ cho phép khi đã được NPC giao nhiệm vụ)
         bool vPressed = (Keyboard.current != null && Keyboard.current.vKey.wasPressedThisFrame) || Input.GetKeyDown(KeyCode.V);
         if (vPressed)
         {
-            ToggleQuestPanel();
+            if (HasUnlockedQuestSystem())
+            {
+                ToggleQuestPanel();
+            }
         }
     }
 
@@ -278,14 +384,25 @@ public class QuestManager : MonoBehaviour
     {
         questPanel = panel;
         questContentParent = contentParent;
-        RenderQuestList();
+        if (questPanel != null) questPanel.SetActive(false);
+        if (HasUnlockedQuestSystem())
+        {
+            RenderQuestList();
+        }
     }
 
     public void RegisterMissionDayHUD(GameObject panel, TextMeshProUGUI text)
     {
         missionDayPanel = panel;
         missionDayText = text;
-        UpdateMissionDayHUD();
+        if (!HasUnlockedQuestSystem())
+        {
+            if (missionDayPanel != null) missionDayPanel.SetActive(false);
+        }
+        else
+        {
+            UpdateMissionDayHUD();
+        }
     }
 
     // Lấy trạng thái của nhiệm vụ theo ID
@@ -298,6 +415,10 @@ public class QuestManager : MonoBehaviour
     // Thêm nhiệm vụ mới từ QuestGiver vào danh sách
     public void AddQuestToList(Quest newQuest)
     {
+        // Đánh dấu đã mở khóa bảng nhiệm vụ khi được NPC_Nvu giao nhiệm vụ
+        PlayerPrefs.SetInt("QuestSystem_Unlocked", 1);
+        PlayerPrefs.Save();
+
         Quest q = questList.Find(x => x.id == newQuest.id);
         if (q == null)
         {
@@ -308,7 +429,12 @@ public class QuestManager : MonoBehaviour
             q.state = newQuest.state;
             q.currentAmount = newQuest.currentAmount;
             q.targetAmount = newQuest.targetAmount;
+            q.questType = newQuest.questType;
+            q.requiredGrade = newQuest.requiredGrade;
+            q.requiredMinSize = newQuest.requiredMinSize;
         }
+
+        GenerateDailyQuestsIfNeed();
         RenderQuestList();
         UpdateMissionDayHUD();
         SaveQuestData();
@@ -338,7 +464,13 @@ public class QuestManager : MonoBehaviour
 
         if (missionDayPanel == null) return;
 
-        // Lấy danh sách nhiệm vụ đang làm (InProgress hoặc CanClaim)
+        // Chỉ hiển thị khi đã được NPC_Nvu mở khóa / giao nhiệm vụ
+        if (!HasUnlockedQuestSystem())
+        {
+            missionDayPanel.SetActive(false);
+            return;
+        }
+
         List<Quest> activeQuests = questList.FindAll(q => q.state == QuestState.InProgress || q.state == QuestState.CanClaim);
 
         if (activeQuests == null || activeQuests.Count == 0)
@@ -357,42 +489,230 @@ public class QuestManager : MonoBehaviour
         if (missionDayText != null)
         {
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
-            for (int i = 0; i < activeQuests.Count; i++)
+
+            List<Quest> storyQuests = activeQuests.FindAll(q => !q.isDaily);
+            List<Quest> dailyQuests = activeQuests.FindAll(q => q.isDaily);
+
+            // 1. Hiển thị Nhiệm Vụ Cốt Truyện
+            for (int i = 0; i < storyQuests.Count; i++)
             {
-                var q = activeQuests[i];
-                if (i > 0) sb.Append("\n------------------\n");
+                var q = storyQuests[i];
+                if (sb.Length > 0) sb.Append("\n<color=#546E7A>──────────────</color>\n");
 
                 string title = GetLocalizedText(q.title);
                 string desc = GetLocalizedText(q.description);
-                string target = GetLocalizedText(q.targetItem);
 
-                sb.Append($"<b><color=#FFE082>{title}</color></b>\n");
-
+                sb.Append($"<b><color=#FFD54F>📜 {title}</color></b>\n");
                 if (!string.IsNullOrEmpty(desc))
                 {
-                    sb.Append($"<size=85%><color=#E0E0E0>{desc}</color></size>\n");
+                    sb.Append($"<size=80%><color=#CFD8DC>{desc}</color></size>\n");
                 }
 
                 if (q.state == QuestState.CanClaim)
                 {
-                    sb.Append("<color=#69F0AE><b>[Đã xong]</b> Hãy quay về gặp NPC để nhận thưởng!</color>");
+                    sb.Append("<color=#69F0AE><b>[Đã xong]</b> Gặp Cậu chủ làng nhận thưởng!</color>");
                 }
                 else
                 {
                     sb.Append($"<color=#B0BEC5>Tiến độ:</color> <color=#FFEB3B><b>{q.currentAmount}/{q.targetAmount}</b></color>");
-                    if (!string.IsNullOrEmpty(target))
+                }
+            }
+
+            // 2. Hiển thị Nhiệm Vụ Hàng Ngày
+            if (dailyQuests.Count > 0)
+            {
+                if (sb.Length > 0) sb.Append("\n<color=#546E7A>──────────────</color>\n");
+                sb.Append("<b><color=#4DD0E1>⭐ NHIỆM VỤ HÀNG NGÀY</color></b>\n");
+
+                for (int i = 0; i < dailyQuests.Count; i++)
+                {
+                    var q = dailyQuests[i];
+                    string title = GetLocalizedText(q.title);
+
+                    if (q.state == QuestState.CanClaim)
                     {
-                        sb.Append($" <color=#90CAF9>({target})</color>");
+                        sb.Append($"• <color=#E0E0E0>{title}</color>: <color=#69F0AE><b>[Xong - Nhấn V nhận {q.goldReward}G]</b></color>\n");
+                    }
+                    else
+                    {
+                        sb.Append($"• <color=#E0E0E0>{title}</color>: <color=#FFEB3B><b>{q.currentAmount}/{q.targetAmount}</b></color>\n");
                     }
                 }
             }
-            missionDayText.text = sb.ToString();
+
+            missionDayText.text = sb.ToString().TrimEnd();
         }
     }
 
-    // Cập nhật tiến độ khi nhặt/câu được cá
+    // ==========================================
+    // CÁC HÀM HOOK CẬP NHẬT TIẾN ĐỘ TỰ ĐỘNG
+    // ==========================================
+
+    // 1. Hook khi câu được cá
+    public void NotifyFishCaught(FishSO fish, float length, float weight, FishGrade grade)
+    {
+        if (fish == null) return;
+        string fishName = string.IsNullOrEmpty(fish.itemName) ? fish.name : fish.itemName;
+        string sceneName = SceneManager.GetActiveScene().name;
+        bool isChanged = false;
+
+        foreach (Quest q in questList)
+        {
+            if (q.state != QuestState.InProgress) continue;
+
+            bool matched = false;
+
+            switch (q.questType)
+            {
+                case QuestType.CatchFish:
+                    if (string.IsNullOrEmpty(q.targetItem) || q.targetItem.Equals("Cá Bất Kỳ", System.StringComparison.OrdinalIgnoreCase) || q.targetItem.Equals("Cá Tươi", System.StringComparison.OrdinalIgnoreCase))
+                    {
+                        matched = true;
+                    }
+                    else if (q.targetItem.Contains("Đầm Lầy") && (sceneName.Contains("Map3") || sceneName.Contains("Swamp") || (fish.mapName != null && fish.mapName.Contains("Đầm Lầy"))))
+                    {
+                        matched = true;
+                    }
+                    else if (q.targetItem.Contains("Biển") && (sceneName.Contains("Map4") || sceneName.Contains("Ocean") || (fish.mapName != null && fish.mapName.Contains("Biển"))))
+                    {
+                        matched = true;
+                    }
+                    else if (q.targetItem.Equals(fishName, System.StringComparison.OrdinalIgnoreCase) || (!string.IsNullOrEmpty(q.description) && q.description.Contains(fishName)))
+                    {
+                        matched = true;
+                    }
+                    break;
+
+                case QuestType.CatchGrade:
+                    if ((int)grade >= q.requiredGrade)
+                    {
+                        matched = true;
+                    }
+                    break;
+
+                case QuestType.CatchRecordSize:
+                    if (length >= q.requiredMinSize)
+                    {
+                        matched = true;
+                    }
+                    break;
+
+                case QuestType.GenericItem:
+                    if (!string.IsNullOrEmpty(q.targetItem) && q.targetItem.Equals(fishName, System.StringComparison.OrdinalIgnoreCase))
+                    {
+                        matched = true;
+                    }
+                    break;
+            }
+
+            if (matched)
+            {
+                q.currentAmount += 1;
+                if (q.currentAmount >= q.targetAmount)
+                {
+                    q.currentAmount = q.targetAmount;
+                    q.state = QuestState.CanClaim;
+                }
+                isChanged = true;
+            }
+        }
+
+        if (isChanged)
+        {
+            RenderQuestList();
+            UpdateMissionDayHUD();
+            SaveQuestData();
+        }
+    }
+
+    // 2. Hook khi nướng chín cá
+    public void NotifyCookingFinished(ItemShapeSO cookedItem)
+    {
+        bool isChanged = false;
+        foreach (Quest q in questList)
+        {
+            if (q.state != QuestState.InProgress) continue;
+
+            if (q.questType == QuestType.CookFish || (!string.IsNullOrEmpty(q.targetItem) && q.targetItem.Contains("Nướng")) || (!string.IsNullOrEmpty(q.description) && q.description.Contains("Nướng")))
+            {
+                q.currentAmount += 1;
+                if (q.currentAmount >= q.targetAmount)
+                {
+                    q.currentAmount = q.targetAmount;
+                    q.state = QuestState.CanClaim;
+                }
+                isChanged = true;
+            }
+        }
+
+        if (isChanged)
+        {
+            RenderQuestList();
+            UpdateMissionDayHUD();
+            SaveQuestData();
+        }
+    }
+
+    // 3. Hook khi nâng cấp xe / lốp
+    public void NotifyVehicleUpgraded()
+    {
+        bool isChanged = false;
+        foreach (Quest q in questList)
+        {
+            if (q.state != QuestState.InProgress) continue;
+
+            if (q.questType == QuestType.UpgradeCar || q.questType == QuestType.Refuel)
+            {
+                q.currentAmount += 1;
+                if (q.currentAmount >= q.targetAmount)
+                {
+                    q.currentAmount = q.targetAmount;
+                    q.state = QuestState.CanClaim;
+                }
+                isChanged = true;
+            }
+        }
+
+        if (isChanged)
+        {
+            RenderQuestList();
+            UpdateMissionDayHUD();
+            SaveQuestData();
+        }
+    }
+
+    // 4. Hook khi đổ xăng
+    public void NotifyFuelRefilled()
+    {
+        bool isChanged = false;
+        foreach (Quest q in questList)
+        {
+            if (q.state != QuestState.InProgress) continue;
+
+            if (q.questType == QuestType.Refuel || q.questType == QuestType.UpgradeCar)
+            {
+                q.currentAmount += 1;
+                if (q.currentAmount >= q.targetAmount)
+                {
+                    q.currentAmount = q.targetAmount;
+                    q.state = QuestState.CanClaim;
+                }
+                isChanged = true;
+            }
+        }
+
+        if (isChanged)
+        {
+            RenderQuestList();
+            UpdateMissionDayHUD();
+            SaveQuestData();
+        }
+    }
+
+    // 5. Hook khi nhặt/câu đồ (tương thích ngược)
     public void AddProgressByItem(string itemName, int amount = 1)
     {
+        bool isChanged = false;
         foreach (Quest q in questList)
         {
             if (q.state == QuestState.InProgress)
@@ -408,12 +728,17 @@ public class QuestManager : MonoBehaviour
                         q.currentAmount = q.targetAmount;
                         q.state = QuestState.CanClaim;
                     }
+                    isChanged = true;
                 }
             }
         }
-        RenderQuestList();
-        UpdateMissionDayHUD();
-        SaveQuestData();
+
+        if (isChanged)
+        {
+            RenderQuestList();
+            UpdateMissionDayHUD();
+            SaveQuestData();
+        }
     }
 
     // Bấm nút Nhận thưởng

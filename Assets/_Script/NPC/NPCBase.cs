@@ -130,6 +130,7 @@ public class NPCBase : MonoBehaviour, IInteractable, INpcInteractable
         if (_questGiver != null)
         {
             _questGiver.HandleQuestInteraction(npcName, _animator, ResetNPCState);
+            ForcedTutorialManager.Instance?.NotifyQuestNPCTalked();
         }
         else if (_tireUpgrader != null)
         {
