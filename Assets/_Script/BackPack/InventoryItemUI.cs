@@ -499,17 +499,30 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     public bool IsRotated() => isRotated;
 
     // ==========================================
-    // HÀM ĂN MÓN ĂN - ĐÃ FIX NGOẶC CHUẨN XÁC
+    // HÀM ĂN MÓN ĂN - CHỈ ĂN ĐƯỢC MÓN ĐÃ NẤU CHÍN
     // ==========================================
     public void ConsumeItem()
     {
+        // 1. Nếu là Cá Sống (FishSO) -> Khóa tuyệt đối, không cho ăn
+        if (itemShape is FishSO)
+        {
+            Debug.LogWarning("<color=yellow>[InventoryItemUI] Cá sống chưa thể ăn trực tiếp! Hãy đặt lên Vỉ Nướng để nấu chín.</color>");
+            return;
+        }
+
+        // 2. Nếu là Món Ăn (FoodSO)
         if (itemShape is FoodSO foodData)
         {
             if (CharacterStatsManager.Instance != null)
             {
-                CharacterStatsManager.Instance.ModifyStat(StatType.Hunger, foodData.hungerRestore);
-                CharacterStatsManager.Instance.ModifyStat(StatType.Thirst, foodData.thirstRestore);
-                CharacterStatsManager.Instance.ModifyStat(StatType.Energy, foodData.energyRestore);
+                float hunger = foodData.hungerRestore > 0 ? foodData.hungerRestore : 35f;
+                float thirst = foodData.thirstRestore > 0 ? foodData.thirstRestore : 20f;
+                float energy = foodData.energyRestore > 0 ? foodData.energyRestore : 30f;
+
+                CharacterStatsManager.Instance.ModifyStat(StatType.Hunger, hunger);
+                CharacterStatsManager.Instance.ModifyStat(StatType.Thirst, thirst);
+                CharacterStatsManager.Instance.ModifyStat(StatType.Energy, energy);
+                CharacterStatsManager.Instance.ModifyStat(StatType.Comfort, 15f);
             }
 
             if (currentOwner == GridOwner.Backpack && BackpackMinigameUI.Instance != null)
@@ -518,19 +531,24 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             }
             ForcedTutorialManager.Instance?.NotifyEatFish();
         }
+        // 3. Nếu là các món ăn đã chế biến khác (không phải cá sống)
         else if (itemShape != null)
         {
             string id = itemShape.itemID != null ? itemShape.itemID.ToLower() : "";
             string assetName = itemShape.name != null ? itemShape.name.ToLower() : "";
             string itemName = itemShape.itemName != null ? itemShape.itemName.ToLower() : "";
 
-            if (id.Contains("food") || assetName.Contains("food") || itemName.Contains("cá") || itemName.Contains("nướng"))
+            bool isCookedItem = id.Contains("cooked") || id.Contains("food") || assetName.Contains("food") || 
+                               itemName.Contains("nướng") || itemName.Contains("thức ăn") || itemName.Contains("thịt nướng") || itemName.Contains("bánh");
+
+            if (isCookedItem)
             {
                 if (CharacterStatsManager.Instance != null)
                 {
-                    CharacterStatsManager.Instance.ModifyStat(StatType.Hunger, 25);
-                    CharacterStatsManager.Instance.ModifyStat(StatType.Thirst, 15);
-                    CharacterStatsManager.Instance.ModifyStat(StatType.Energy, 25);
+                    CharacterStatsManager.Instance.ModifyStat(StatType.Hunger, 35f);
+                    CharacterStatsManager.Instance.ModifyStat(StatType.Thirst, 20f);
+                    CharacterStatsManager.Instance.ModifyStat(StatType.Energy, 30f);
+                    CharacterStatsManager.Instance.ModifyStat(StatType.Comfort, 15f);
                 }
 
                 if (currentOwner == GridOwner.Backpack && BackpackMinigameUI.Instance != null)

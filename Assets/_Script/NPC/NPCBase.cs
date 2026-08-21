@@ -41,6 +41,9 @@ public class NPCBase : MonoBehaviour, IInteractable, INpcInteractable
     public static readonly System.Collections.Generic.List<NPCBase> ActiveNpcs = new System.Collections.Generic.List<NPCBase>();
 
     public float ProximityDistance => proximityDistance;
+    public bool IsFishingShop => _fishingShop != null || GetComponent<NPCFishingShop>() != null;
+    public bool IsTireUpgrader => _tireUpgrader != null || GetComponent<NPCOffroadUpgrade>() != null;
+    public bool IsQuestGiver => _questGiver != null || GetComponent<QuestGiver>() != null;
 
     private void OnEnable()
     {

@@ -58,6 +58,12 @@ public class FishingController : MonoBehaviour
     private float inputCooldown = 0f;
     private float catchingLockTimer = 0f;
 
+    [Header("--- AUTO-STOW FISHING ROD ---")]
+    [SerializeField] private float autoStowDistance = 20f;
+    private float zoneCheckTimer = 0f;
+    private FishingZone[] cachedFishingZones;
+    private float lastZoneCacheTime = -10f;
+
     private void Awake()
     {
         playerAnimation = GetComponent<PlayerAnimation>();
@@ -90,6 +96,14 @@ public class FishingController : MonoBehaviour
         // Giảm thời gian đếm ngược chống spam
         if (inputCooldown > 0f) inputCooldown -= Time.deltaTime;
         if (catchingLockTimer > 0f) catchingLockTimer -= Time.deltaTime;
+
+        // Tự động kiểm tra và cất cần câu vào Balo khi rời khỏi khu vực câu cá
+        zoneCheckTimer -= Time.deltaTime;
+        if (zoneCheckTimer <= 0f)
+        {
+            zoneCheckTimer = 0.5f;
+            CheckAutoStowRodWhenLeavingFishingArea();
+        }
 
         if (reelInCooldown > 0f)
         {
@@ -130,6 +144,7 @@ public class FishingController : MonoBehaviour
 
         if (currentState == FishingState.Idle)
         {
+            if (ForcedTutorialManager.Instance != null && !ForcedTutorialManager.Instance.CanStartFishing()) return;
             if (playerInteraction != null && playerInteraction.HasActiveInteractable()) return;
 
             currentRod = (hotbarSlot != null && hotbarSlot.GetEquippedItem() != null)
@@ -561,6 +576,90 @@ public class FishingController : MonoBehaviour
         if (currentState == FishingState.Casting)
         {
             EnterFishingState();
+        }
+    }
+
+    private FishingZone[] GetAllFishingZones()
+    {
+        if (cachedFishingZones == null || cachedFishingZones.Length == 0 || Time.time - lastZoneCacheTime > 5f)
+        {
+            cachedFishingZones = Object.FindObjectsByType<FishingZone>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+            lastZoneCacheTime = Time.time;
+        }
+        return cachedFishingZones;
+    }
+
+    private void CheckAutoStowRodWhenLeavingFishingArea()
+    {
+        if (hotbarSlot == null) return;
+        InventoryItemUI equippedRod = hotbarSlot.GetEquippedItem();
+        if (equippedRod == null) return;
+
+        // Nếu đang câu cá (quăng dây, giằng co, kéo cá) thì không cất
+        if (currentState != FishingState.Idle) return;
+
+        bool isNearLake = false;
+
+        // 1. Kiểm tra Raycast nước dưới chân hoặc trước mặt
+        int waterMask = waterLayer.value;
+        if (waterMask == 0) waterMask = LayerMask.GetMask("Water");
+        if (waterMask == 0) waterMask = 1 << 4;
+
+        if (Physics.Raycast(transform.position + Vector3.up * 2f, Vector3.down, out RaycastHit hit, 5f, waterMask))
+        {
+            isNearLake = true;
+        }
+        else if (Physics.Raycast(transform.position + Vector3.up * 2f + transform.forward * 4f, Vector3.down, out RaycastHit hitFwd, 6f, waterMask))
+        {
+            isNearLake = true;
+        }
+
+        // 2. Kiểm tra khoảng cách tới các FishingZone trong Scene
+        if (!isNearLake)
+        {
+            var zones = GetAllFishingZones();
+            if (zones != null && zones.Length > 0)
+            {
+                for (int i = 0; i < zones.Length; i++)
+                {
+                    var zone = zones[i];
+                    if (zone == null) continue;
+                    Collider col = zone.GetComponent<Collider>();
+                    if (col != null)
+                    {
+                        Vector3 closest = col.ClosestPoint(transform.position);
+                        if (Vector3.Distance(transform.position, closest) <= autoStowDistance)
+                        {
+                            isNearLake = true;
+                            break;
+                        }
+                    }
+                    else if (Vector3.Distance(transform.position, zone.transform.position) <= autoStowDistance)
+                    {
+                        isNearLake = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Nếu người chơi đã đi xa khỏi bờ hồ -> Tự động cất cần câu vào Balo!
+        if (!isNearLake)
+        {
+            AutoStowRodToBackpack(equippedRod);
+        }
+    }
+
+    public void AutoStowRodToBackpack(InventoryItemUI rodItem = null)
+    {
+        if (hotbarSlot == null) return;
+        if (rodItem == null) rodItem = hotbarSlot.GetEquippedItem();
+        if (rodItem == null) return;
+
+        if (BackpackMinigameUI.Instance != null && BackpackMinigameUI.Instance.TryAutoFitItemToGrid(rodItem))
+        {
+            hotbarSlot.RemoveEquippedItem();
+            Debug.Log("<color=green>[FishingController] Đã tự động cất cần câu vào Balo khi rời khỏi khu vực câu cá.</color>");
         }
     }
 }

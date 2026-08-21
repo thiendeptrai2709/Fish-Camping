@@ -39,6 +39,11 @@ public class FishJournalUI : MonoBehaviour
     {
         if (!isOpen)
         {
+            if (ForcedTutorialManager.Instance != null && !ForcedTutorialManager.Instance.CanOpenJournal())
+            {
+                return; // Khóa mở Sổ tay cá khi chưa đến bước hướng dẫn
+            }
+
             if (BackpackController.Instance != null && BackpackController.Instance.IsOpen)
                 BackpackController.Instance.CloseBackpack();
 

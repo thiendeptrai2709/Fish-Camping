@@ -1,6 +1,7 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -13,7 +14,8 @@ public enum TutorialStage
     // ========================================================
     Quest0_WelcomeGame,             // 0. Chào mừng người chơi
     Quest1_Movement,                // 1. Di chuyển WASD + Shift
-    Quest1_2_FindOldTruck,          // 2. Tìm xe tải cũ
+    Quest1_1_TogglePerspective,     // 2. Bấm Y đổi góc nhìn FPP / TPP
+    Quest1_2_FindOldTruck,          // 3. Tìm xe tải cũ
     Quest2_1_OpenTrunk,             // 3. Click mở cốp xe
     Quest2_2_CloseTrunk,            // 4. Bấm Tab đóng cốp xe
     Quest2_3_InspectCar,            // 5. Kiểm tra tình trạng xe
@@ -81,6 +83,13 @@ public class ForcedTutorialManager : MonoBehaviour
     [SerializeField] private GameObject questUIPanel;
     [SerializeField] private TextMeshProUGUI instructionTMP;
     [SerializeField] private TextMeshProUGUI progressTMP;
+    [SerializeField] private Image completionIcon;
+    [SerializeField] private GameObject completionBadge;
+
+    [Header("Cấu Hình Hoàn Thành Nhiệm Vụ")]
+    [Tooltip("Thời gian dừng lại hiển thị chữ HOÀN THÀNH trước khi qua nhiệm vụ tiếp theo (giây)")]
+    [SerializeField] private float completionDisplayDuration = 1.25f;
+    [SerializeField] private AudioClip completionSFX;
 
     [Header("Cấu Hình Hiệu Ứng Gõ Chữ")]
     [SerializeField] private float typingSpeed = 0.025f;
@@ -107,10 +116,13 @@ public class ForcedTutorialManager : MonoBehaviour
     private bool hasShiftSprint = false;
     private Coroutine typingCoroutine;
     private Coroutine popCoroutine;
+    private Coroutine completionCoroutine;
     private RectTransform panelRect;
 
     private bool isTyping = false;
     public bool IsTyping => isTyping;
+    private bool isTransitioning = false;
+    public bool IsTransitioning => isTransitioning;
     private string currentInstructionText = "";
 
     public TutorialStage currentStage = TutorialStage.Quest0_WelcomeGame;
@@ -270,7 +282,7 @@ public class ForcedTutorialManager : MonoBehaviour
 
     private void Update()
     {
-        if (currentStage == TutorialStage.Completed) return;
+        if (currentStage == TutorialStage.Completed || isTransitioning) return;
 
         bool isPointerOverUI = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
         bool isLeftClick = ((Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame) || Input.GetMouseButtonDown(0)) && !isPointerOverUI;
@@ -310,7 +322,14 @@ public class ForcedTutorialManager : MonoBehaviour
             if (isMoving) moveTimer += Time.deltaTime;
 
             if (moveTimer >= requiredWalkTime && hasShiftSprint)
+                AdvanceToStage(TutorialStage.Quest1_1_TogglePerspective);
+        }
+        else if (currentStage == TutorialStage.Quest1_1_TogglePerspective)
+        {
+            if (Keyboard.current.yKey.wasPressedThisFrame || Input.GetKeyDown(KeyCode.Y))
+            {
                 AdvanceToStage(TutorialStage.Quest1_2_FindOldTruck);
+            }
         }
         else if (currentStage == TutorialStage.Quest1_2_FindOldTruck)
         {
@@ -501,27 +520,20 @@ public class ForcedTutorialManager : MonoBehaviour
             if (player != null)
             {
                 bool isNearWater = false;
-
-                // 1. Kiểm tra OverlapSphereNonAlloc quanh người chơi với Layer "Water" (Zero-Alloc)
                 int waterMask = LayerMask.GetMask("Water");
                 if (waterMask == 0) waterMask = 1 << 4;
 
-                int waterHitsCount = Physics.OverlapSphereNonAlloc(player.position, 15f, waterHitBuffer, waterMask);
-                if (waterHitsCount > 0)
+                // 1. Kiểm tra Raycast thẳng phía trước mặt người chơi (xuống dưới mép hồ)
+                if (Physics.Raycast(player.position + Vector3.up * 1.5f + player.forward * 2.5f, Vector3.down, out RaycastHit hitForward, 4f, waterMask))
+                {
+                    isNearWater = true;
+                }
+                else if (Physics.Raycast(player.position + Vector3.up * 1.5f, Vector3.down, out RaycastHit hitDirect, 3f, waterMask))
                 {
                     isNearWater = true;
                 }
 
-                // 2. Kiểm tra Raycast thẳng về phía trước / xuống dưới xem có mặt nước không
-                if (!isNearWater)
-                {
-                    if (Physics.Raycast(player.position + Vector3.up * 2f + player.forward * 4f, Vector3.down, out RaycastHit hit, 10f, waterMask))
-                    {
-                        isNearWater = true;
-                    }
-                }
-
-                // 3. Kiểm tra khoảng cách tới mép nước của FishingZone
+                // 2. Kiểm tra khoảng cách chính xác đến Collider của Hồ Câu Cá (FishingZone)
                 if (!isNearWater)
                 {
                     FishingZone[] fishingZones = GetFishingZones();
@@ -535,16 +547,13 @@ public class ForcedTutorialManager : MonoBehaviour
                             if (col != null)
                             {
                                 Vector3 closest = col.ClosestPoint(player.position);
-                                if (Vector3.Distance(player.position, closest) <= 15f)
+                                float dist = Vector3.Distance(player.position, closest);
+                                float heightDiff = Mathf.Abs(player.position.y - closest.y);
+                                if (dist <= 6.5f && heightDiff <= 3.5f)
                                 {
                                     isNearWater = true;
                                     break;
                                 }
-                            }
-                            else if (Vector3.Distance(player.position, fz.transform.position) <= 50f)
-                            {
-                                isNearWater = true;
-                                break;
                             }
                         }
                     }
@@ -839,6 +848,13 @@ public class ForcedTutorialManager : MonoBehaviour
     public void NotifyMovementCompleted()
     {
         if (currentStage == TutorialStage.Quest1_Movement)
+            AdvanceToStage(TutorialStage.Quest1_1_TogglePerspective);
+    }
+
+    // 1.1 Đổi góc nhìn
+    public void NotifyPerspectiveToggled()
+    {
+        if (currentStage == TutorialStage.Quest1_1_TogglePerspective)
             AdvanceToStage(TutorialStage.Quest1_2_FindOldTruck);
     }
 
@@ -1275,8 +1291,8 @@ public class ForcedTutorialManager : MonoBehaviour
     {
         if (currentStage == TutorialStage.Completed) return true;
 
-        // Map 1: Phải đến bước Quest4_1_EnterVehicle mới cho lên xe
-        if (currentStage < TutorialStage.Quest4_1_EnterVehicle)
+        // Map 1: Sau khi hoàn thành mở nắp Capo (từ Quest2_5_RepairEngine trở đi) -> Cho phép lên xe thoải mái!
+        if (currentStage < TutorialStage.Quest2_5_RepairEngine)
         {
             return false;
         }
@@ -1290,10 +1306,162 @@ public class ForcedTutorialManager : MonoBehaviour
         return true;
     }
 
+    public bool CanOpenBackpack()
+    {
+        if (currentStage == TutorialStage.Completed) return true;
+
+        // Cho phép đóng/mở khi đang mở Cốp xe ở Map 1
+        if (TrunkInventory.CurrentOpenTrunk != null)
+        {
+            return true;
+        }
+
+        // Map 1: Khóa mở Balo tự do, chỉ mở khi tương tác Cốp xe
+        if (currentStage < TutorialStage.Map2_Quest1_1_OpenMapToCamp)
+        {
+            return false;
+        }
+
+        // Map 2: Mở từ Quest2_1 trở đi
+        return currentStage >= TutorialStage.Map2_Quest2_1_OpenBackpack;
+    }
+
+    public bool CanOpenBuildMenu()
+    {
+        if (currentStage == TutorialStage.Completed) return true;
+
+        // Chỉ cho phép mở khi tới nhiệm vụ xây dựng trại cắm ở Map 2 (Quest5_1 trở đi)
+        return currentStage >= TutorialStage.Map2_Quest5_1_OpenBuildMenu;
+    }
+
+    public bool CanOpenJournal()
+    {
+        if (currentStage == TutorialStage.Completed) return true;
+
+        // Mở từ Map2_Quest7_FishLog trở đi
+        return currentStage >= TutorialStage.Map2_Quest7_FishLog;
+    }
+
+    public bool CanOpenMap()
+    {
+        if (currentStage == TutorialStage.Completed) return true;
+
+        // Map 1: Cho phép ở Quest 3.1, 3.2, 6.1, 6.2, 8.1, 9
+        if (currentStage >= TutorialStage.Quest3_1_OpenMap && currentStage <= TutorialStage.Quest3_2_ClickShopIcon) return true;
+        if (currentStage >= TutorialStage.Quest6_1_OpenMapUpgrade && currentStage <= TutorialStage.Quest6_2_OpenUpgradeMenu) return true;
+        if (currentStage >= TutorialStage.Quest8_1_DriveToGasStation) return true;
+
+        // Map 2: Cho phép từ Map2_Quest1_1 trở đi
+        if (currentStage >= TutorialStage.Map2_Quest1_1_OpenMapToCamp) return true;
+
+        return false;
+    }
+
+    public bool CanStartFishing()
+    {
+        if (currentStage == TutorialStage.Completed) return true;
+
+        // Chỉ cho phép câu cá tại bờ hồ Map 2 từ bước vung cần (Map2_Quest4_1) trở đi
+        return currentStage >= TutorialStage.Map2_Quest4_1_WindUpRod;
+    }
+
+    public bool CanTravelToMap2()
+    {
+        if (currentStage == TutorialStage.Completed) return true;
+
+        // Chỉ cho phép đi sang Map 2 khi đã hoàn thành toàn bộ chuỗi nhiệm vụ ở Map 1 (từ Quest9_OpenTravelMap trở đi)
+        return currentStage >= TutorialStage.Quest9_OpenTravelMap;
+    }
+
+    public bool CanInteractWith(IInteractable interactable)
+    {
+        if (currentStage == TutorialStage.Completed) return true;
+        if (interactable == null) return false;
+
+        // ========================================================
+        // 1. TƯƠNG TÁC XE (Cốp, Capo, Động cơ, Thân xe, Cửa, Lốp)
+        // ========================================================
+        if (interactable is InteractableTrunk ||
+            interactable is VehicleBody ||
+            interactable is InteractableVehicleStats ||
+            interactable is InteractableHood ||
+            interactable is InteractableEngine ||
+            interactable is InteractableTire ||
+            interactable is CarDoor)
+        {
+            // Nếu chưa hoàn thành mở nắp Capo (từ Quest 1.2 -> Quest 2.4): Giữ đúng từng bước để hướng dẫn
+            if (currentStage < TutorialStage.Quest2_5_RepairEngine)
+            {
+                if (interactable is InteractableTrunk)
+                {
+                    return currentStage == TutorialStage.Quest1_2_FindOldTruck ||
+                           currentStage == TutorialStage.Quest2_1_OpenTrunk ||
+                           currentStage == TutorialStage.Quest2_2_CloseTrunk;
+                }
+                if (interactable is VehicleBody || interactable is InteractableVehicleStats)
+                {
+                    return currentStage == TutorialStage.Quest2_3_InspectCar;
+                }
+                if (interactable is InteractableHood)
+                {
+                    return currentStage == TutorialStage.Quest2_4_OpenHood;
+                }
+                if (interactable is CarDoor)
+                {
+                    return CanEnterVehicle();
+                }
+                return false;
+            }
+
+            // TỪ BƯỚC MỞ NẮP CAPO XONG (Quest2_5 trở đi) -> MỞ HẾT 100% TƯƠNG TÁC XE!
+            if (interactable is CarDoor)
+            {
+                return CanEnterVehicle();
+            }
+            return true;
+        }
+
+        // Tương tác NPC
+        if (interactable is NPCBase npc)
+        {
+            // 1. NPC Shop Đồ Câu: Cho phép từ lúc lái xe đến shop / xuống xe / mở shop trở đi
+            if (npc.IsFishingShop)
+            {
+                return currentStage >= TutorialStage.Quest4_2_DriveToShop;
+            }
+
+            // 2. NPC Gara Nâng Cấp Xe: Cho phép từ lúc mở map tìm gara trở đi
+            if (npc.IsTireUpgrader)
+            {
+                return currentStage >= TutorialStage.Quest6_1_OpenMapUpgrade;
+            }
+
+            // 3. NPC Giao Nhiệm Vụ: Cho phép từ Quest7 trở đi
+            if (npc.IsQuestGiver)
+            {
+                return currentStage >= TutorialStage.Quest7_1_TalkToQuestNPC;
+            }
+
+            // 4. Các NPC Cây Xăng / Dân làng khác
+            return currentStage >= TutorialStage.Quest7_1_TalkToQuestNPC;
+        }
+
+        // Lều Ngủ (Bed)
+        if (interactable is InteractableBed)
+        {
+            return currentStage == TutorialStage.Map2_Quest5_6_SleepInTent ||
+                   currentStage == TutorialStage.Completed;
+        }
+
+        // Các vật thể tự do khác ở Map 2
+        return currentStage >= TutorialStage.Map2_Quest1_1_OpenMapToCamp;
+    }
+
     public void AdvanceToStage(TutorialStage nextStage)
     {
         if (currentStage == nextStage) return;
         if (currentStage == TutorialStage.Completed) return;
+        if (isTransitioning) return;
 
         // Chống spam phím / double-triggering liên tục nhiều stage trong 1 frame
         if (Time.unscaledTime - lastAdvanceTime < ADVANCE_COOLDOWN)
@@ -1302,18 +1470,72 @@ public class ForcedTutorialManager : MonoBehaviour
         }
         lastAdvanceTime = Time.unscaledTime;
 
-        // Reset các cờ/timer tạm thời khi chuyển stage
+        if (completionCoroutine != null) StopCoroutine(completionCoroutine);
+        completionCoroutine = StartCoroutine(CompleteAndAdvanceRoutine(nextStage));
+    }
+
+    private IEnumerator CompleteAndAdvanceRoutine(TutorialStage nextStage)
+    {
+        isTransitioning = true;
+
+        // 1. Dừng hiệu ứng gõ chữ cũ nếu đang chạy
+        if (typingCoroutine != null)
+        {
+            StopCoroutine(typingCoroutine);
+            typingCoroutine = null;
+        }
+
+        // 2. Phát âm thanh chúc mừng / hoàn thành
+        AudioClip clipToPlay = completionSFX != null ? completionSFX : nextQuestSFX;
+        if (audioSource != null && clipToPlay != null)
+        {
+            audioSource.PlayOneShot(clipToPlay);
+        }
+
+        // 3. Hiển thị chữ và Icon Hoàn Thành nổi bật (dấu v)
+        string completedTitle = GetLocalizedText("tut_quest_completed_title", "v HOÀN THÀNH!");
+        string completedSub = GetLocalizedText("tut_quest_completed_sub", "Đang chuyển tiếp nhiệm vụ mới...");
+
+        if (instructionTMP != null)
+        {
+            instructionTMP.maxVisibleCharacters = 99999;
+            instructionTMP.text = $"<color=#00FF7F><b><size=135%><color=#39FF14>v</color> HOÀN THÀNH!</b></size></color>\n<size=80%><color=#A8E6CF><i>{completedSub}</i></color></size>";
+        }
+
+        if (progressTMP != null)
+        {
+            progressTMP.text = $"<color=#00FF7F><b><color=#39FF14>v</color> HOÀN THÀNH</b></color>";
+        }
+
+        if (completionIcon != null) completionIcon.gameObject.SetActive(true);
+        if (completionBadge != null) completionBadge.SetActive(true);
+
+        // Hiệu ứng nảy Pop ăn mừng
+        TriggerCompletionPopEffect();
+
+        // 4. Giữ nguyên hiệu ứng hoàn thành để người chơi kịp nhìn thấy
+        yield return new WaitForSeconds(completionDisplayDuration);
+
+        // 5. Tắt icon/badge hoàn thành (nếu có)
+        if (completionIcon != null) completionIcon.gameObject.SetActive(false);
+        if (completionBadge != null) completionBadge.SetActive(false);
+
+        // 6. Chuyển sang Stage tiếp theo
         moveTimer = 0f;
         hasShiftSprint = false;
-
         currentStage = nextStage;
         SaveTutorialProgress();
 
-        if (audioSource != null && nextQuestSFX != null)
+        if (audioSource != null && nextQuestSFX != null && completionSFX != null)
+        {
             audioSource.PlayOneShot(nextQuestSFX);
+        }
 
         TriggerPopEffect();
         UpdateQuestUI();
+
+        isTransitioning = false;
+        completionCoroutine = null;
     }
 
     private void SaveTutorialProgress()
@@ -1381,6 +1603,9 @@ public class ForcedTutorialManager : MonoBehaviour
                 break;
             case TutorialStage.Quest1_Movement:
                 currentInstructionText = GetLocalizedText("TUT_Quest1_Movement", "Dùng phím <color=#B388FF><b>W, A, S, D</b></color> để di chuyển và giữ <color=#B388FF><b>Shift</b></color> để chạy nhanh.");
+                break;
+            case TutorialStage.Quest1_1_TogglePerspective:
+                currentInstructionText = GetLocalizedText("TUT_Quest1_1_TogglePerspective", "Nhấn phím <color=#B388FF><b>Y</b></color> để đổi qua lại giữa góc nhìn thứ nhất (FPP) và thứ ba (TPP).");
                 break;
             case TutorialStage.Quest1_2_FindOldTruck:
                 currentInstructionText = GetLocalizedText("TUT_Quest1_2_FindOldTruck", "Hãy quan sát xung quanh và đi đến gần chiếc <color=#B388FF><b>Xe tải cũ</b></color> của bạn.");
@@ -1569,6 +1794,28 @@ public class ForcedTutorialManager : MonoBehaviour
         {
             elapsed += Time.deltaTime;
             panelRect.localScale = Vector3.Lerp(Vector3.one * 1.08f, Vector3.one, elapsed / 0.15f);
+            yield return null;
+        }
+        panelRect.localScale = Vector3.one;
+    }
+
+    private void TriggerCompletionPopEffect()
+    {
+        if (panelRect == null) return;
+        if (popCoroutine != null) StopCoroutine(popCoroutine);
+        popCoroutine = StartCoroutine(CompletionPopRoutine());
+    }
+
+    private IEnumerator CompletionPopRoutine()
+    {
+        float elapsed = 0f;
+        float duration = 0.3f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / duration;
+            float scale = 1.0f + Mathf.Sin(t * Mathf.PI) * 0.14f;
+            panelRect.localScale = Vector3.one * scale;
             yield return null;
         }
         panelRect.localScale = Vector3.one;

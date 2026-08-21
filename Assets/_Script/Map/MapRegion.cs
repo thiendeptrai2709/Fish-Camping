@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Button))]
@@ -26,14 +26,27 @@ public class MapRegion : MonoBehaviour
 
     private void OnEnable()
     {
-        if (requireTireUpgrade)
+        UpdateLockState();
+    }
+
+    private void UpdateLockState()
+    {
+        isLocked = false;
+
+        // 1. Khóa Map 2 (Pine Lake) nếu chưa hoàn thành toàn bộ chuỗi nhiệm vụ Map 1
+        bool isMap2 = !string.IsNullOrEmpty(sceneName) && 
+                      (sceneName.Contains("Map_2") || sceneName.Contains("PineLake") || sceneName.Contains("Map2"));
+
+        if (isMap2 && ForcedTutorialManager.Instance != null && !ForcedTutorialManager.Instance.CanTravelToMap2())
+        {
+            isLocked = true;
+        }
+
+        // 2. Kiểm tra điều kiện nâng cấp lốp xe
+        if (!isLocked && requireTireUpgrade)
         {
             int currentTire = PlayerPrefs.GetInt("EquippedTireIndex", 0);
             isLocked = currentTire < requiredTireIndex;
-        }
-        else
-        {
-            isLocked = false;
         }
 
         if (lockIcon != null)
@@ -44,9 +57,21 @@ public class MapRegion : MonoBehaviour
 
     private void OnClick()
     {
+        UpdateLockState();
+
         if (isLocked)
         {
-            Debug.Log($"Map {sceneName} bị khóa. Yêu cầu lốp xe chỉ số {requiredTireIndex}");
+            bool isMap2 = !string.IsNullOrEmpty(sceneName) && 
+                          (sceneName.Contains("Map_2") || sceneName.Contains("PineLake") || sceneName.Contains("Map2"));
+
+            if (isMap2 && ForcedTutorialManager.Instance != null && !ForcedTutorialManager.Instance.CanTravelToMap2())
+            {
+                Debug.LogWarning("<color=yellow>[MapRegion] Map 2 (Pine Lake) đang bị khóa! Bạn cần hoàn thành tất cả nhiệm vụ ở Map 1 trước.</color>");
+            }
+            else
+            {
+                Debug.Log($"Map {sceneName} bị khóa. Yêu cầu lốp xe chỉ số {requiredTireIndex}");
+            }
             return;
         }
 

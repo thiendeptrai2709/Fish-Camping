@@ -224,6 +224,7 @@ public class DualCameraController : MonoBehaviour
     public void TogglePerspective()
     {
         SetPerspectiveMode(currentMode == PerspectiveMode.FirstPerson ? PerspectiveMode.ThirdPerson : PerspectiveMode.FirstPerson);
+        ForcedTutorialManager.Instance?.NotifyPerspectiveToggled();
     }
 
     public void SetPerspectiveMode(PerspectiveMode newMode)

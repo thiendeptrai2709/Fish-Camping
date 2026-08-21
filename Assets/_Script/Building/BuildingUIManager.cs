@@ -42,6 +42,11 @@ public class BuildingUIManager : MonoBehaviour
         // Nếu chuẩn bị mở Building UI, đóng các UI khác
         if (isOpening)
         {
+            if (ForcedTutorialManager.Instance != null && !ForcedTutorialManager.Instance.CanOpenBuildMenu())
+            {
+                return; // Khóa mở Xây dựng khi chưa tới bước hướng dẫn cắm trại
+            }
+
             if (BackpackController.Instance != null && BackpackController.Instance.IsOpen)
                 BackpackController.Instance.CloseBackpack();
 

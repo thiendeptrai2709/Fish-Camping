@@ -82,6 +82,14 @@ public class MapInteractionManager : MonoBehaviour
     {
         if (!string.IsNullOrEmpty(targetSceneName))
         {
+            // Kiểm tra bảo vệ: Khóa chuyển Map 2 nếu chưa xong nhiệm vụ Map 1
+            bool isMap2 = targetSceneName.Contains("Map_2") || targetSceneName.Contains("PineLake") || targetSceneName.Contains("Map2");
+            if (isMap2 && ForcedTutorialManager.Instance != null && !ForcedTutorialManager.Instance.CanTravelToMap2())
+            {
+                Debug.LogWarning("<color=yellow>[MapInteractionManager] Chưa thể chuyển sang Map 2! Hãy hoàn thành nhiệm vụ ở Map 1 trước.</color>");
+                return;
+            }
+
             PlayerLocationSaveManager.Instance?.SetTargetSceneOnTravel(targetSceneName);
 
             if (LoadingScreenManager.Instance != null)

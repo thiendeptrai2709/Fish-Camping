@@ -84,6 +84,11 @@ public class MapUIManager : MonoBehaviour
             // Nếu chuẩn bị mở Map, tự động đóng các UI khác
             if (isActive)
             {
+                if (ForcedTutorialManager.Instance != null && !ForcedTutorialManager.Instance.CanOpenMap())
+                {
+                    return; // Khóa mở Bản đồ khi chưa tới bước hướng dẫn
+                }
+
                 if (BackpackController.Instance != null && BackpackController.Instance.IsOpen)
                     BackpackController.Instance.CloseBackpack();
 

@@ -151,6 +151,12 @@ public class PlayerInteraction : MonoBehaviour
 
                 if (interactable != null)
                 {
+                    // Khóa các tương tác không thuộc nhiệm vụ tutorial hiện tại
+                    if (ForcedTutorialManager.Instance != null && !ForcedTutorialManager.Instance.CanInteractWith(interactable))
+                    {
+                        continue;
+                    }
+
                     // Nếu là Động cơ mà nắp Capo đang đóng thì bỏ qua không nhận tương tác
                     if (interactable is InteractableEngine engine && !engine.CanInteract())
                     {
@@ -208,6 +214,7 @@ public class PlayerInteraction : MonoBehaviour
         {
             NPCBase npc = allNpcs[i];
             if (npc == null || !npc.gameObject.activeInHierarchy) continue;
+            if (ForcedTutorialManager.Instance != null && !ForcedTutorialManager.Instance.CanInteractWith(npc)) continue;
             float dist = Vector3.Distance(playerPos, npc.transform.position);
             if (dist <= npc.ProximityDistance && dist < minDistance)
             {

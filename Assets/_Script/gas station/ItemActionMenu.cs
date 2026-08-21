@@ -228,11 +228,13 @@ public class ItemActionMenu : MonoBehaviour
         // 1. Kiểm tra Can Xăng
         bool isFuel = (id == "fuel_can_01" || id.Contains("fuel") || assetName.Contains("fuel") || itemName.Contains("xăng"));
 
-        // 2. Kiểm tra Đồ Ăn / Cá nướng / Cá / Thức ăn
-        bool isFood = (shape is FoodSO || shape is FishSO || id.Contains("food") || id.Contains("fish") || id.Contains("ca_") ||
-                       assetName.Contains("food") || assetName.Contains("fish") || itemName.Contains("cá") ||
-                       itemName.Contains("nướng") || itemName.Contains("thức ăn") || itemName.Contains("food") ||
-                       itemName.Contains("thịt") || itemName.Contains("bánh"));
+        // 2. Kiểm tra Cá Sống (FishSO) -> CHƯA THỂ ĂN, PHẢI NƯỚNG CHÍN
+        bool isRawFish = (shape is FishSO);
+
+        // 3. Kiểm tra Món Ăn Đã Nấu Chín (FoodSO hoặc các món chế biến)
+        bool isCookedFood = (shape is FoodSO) || 
+                            (!isRawFish && (id.Contains("cooked") || id.Contains("food") || assetName.Contains("food") || 
+                                           itemName.Contains("nướng") || itemName.Contains("thức ăn") || itemName.Contains("thịt nướng") || itemName.Contains("bánh")));
 
         if (isFuel)
         {
@@ -240,10 +242,17 @@ public class ItemActionMenu : MonoBehaviour
             if (btnUse != null) btnUse.gameObject.SetActive(true);
             hasAction = true;
         }
-        else if (isFood)
+        else if (isCookedFood)
         {
-            SetButtonLabel(btnUse, "Ăn Vật Phẩm");
+            SetButtonLabel(btnUse, "Ăn Món Này");
             if (btnUse != null) btnUse.gameObject.SetActive(true);
+            hasAction = true;
+        }
+        else if (isRawFish)
+        {
+            // Cá sống: Không có nút ăn trực tiếp
+            if (btnUse != null) btnUse.gameObject.SetActive(false);
+            ShowNotif("Cá sống chưa thể ăn! Hãy đặt lên Vỉ Nướng để nướng chín trước.");
             hasAction = true;
         }
         else

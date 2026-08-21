@@ -48,6 +48,11 @@ public class BackpackController : MonoBehaviour
         // Nếu chuẩn bị mở Balo, tự động đóng các UI toàn màn hình khác (Map, Building, Sổ tay)
         if (!isOpen)
         {
+            if (ForcedTutorialManager.Instance != null && !ForcedTutorialManager.Instance.CanOpenBackpack())
+            {
+                return; // Khóa mở Balo khi chưa tới bước hướng dẫn
+            }
+
             if (MapUIManager.Instance != null && MapUIManager.Instance.IsOpen)
                 MapUIManager.Instance.CloseMap();
 
