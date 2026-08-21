@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 
 public class InteractableBed : MonoBehaviour, IInteractable
@@ -31,7 +31,10 @@ public class InteractableBed : MonoBehaviour, IInteractable
     {
         normalLayer = LayerMask.NameToLayer("Interactable");
         outlineLayer = LayerMask.NameToLayer("Outlined");
-        gameObject.layer = normalLayer;
+        if (normalLayer != -1)
+        {
+            SetLayerRecursively(gameObject, normalLayer);
+        }
     }
 
     public void Interact()

@@ -127,9 +127,14 @@ public class PlayerInteraction : MonoBehaviour
                 var hitCol = hitBuffer[i].collider;
                 if (hitCol == null) continue;
 
-                // Kiểm tra khoảng cách thực tế từ Người chơi đến vật thể
-                float distFromPlayer = Vector3.Distance(transform.position, hitCol.transform.position);
-                if (distFromPlayer > interactDistance + 1.2f)
+                // Kiểm tra khoảng cách thực tế từ Người chơi đến điểm chạm/bề mặt của vật thể
+                Vector3 contactPoint = hitBuffer[i].point;
+                if (contactPoint == Vector3.zero)
+                {
+                    contactPoint = hitCol.ClosestPoint(transform.position);
+                }
+                float distFromPlayer = Vector3.Distance(transform.position, contactPoint);
+                if (distFromPlayer > interactDistance + 1.5f)
                 {
                     continue;
                 }

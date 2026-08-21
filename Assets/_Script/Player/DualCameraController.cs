@@ -14,12 +14,12 @@ public enum PerspectiveMode
 
 /// <summary>
 /// DualCameraController:
+/// - Chuyển đổi FPP <-> TPP siêu nhanh, mượt mà và liền mạch như PUBG (0.16s blend).
 /// - FPP: FPPEyeTarget là con trực tiếp của playerTransform.
-///        - Khi ĐI BỘ: Chiều cao fppStandOffset = (0, 1.58, 0.22) (tầm mắt đứng).
-///        - Khi NGỒI TRONG XE: Chiều cao fppCarOffset = (0, 0.62, 0.20) (tầm mắt ngồi lái xe).
-///        - Mouse X xoay thân nhân vật ngoài xe / xoay nhìn trong cabin xe.
-///        - Mouse Y xoay ngẩng/cúi tâm mắt.
-/// - TPP: Sử dụng CameraTargetPlayer (khi đi bộ) và CameraTargetCar (khi trên xe) chuẩn góc nhìn gốc.
+///   - Khi ĐI BỘ: Chiều cao fppStandOffset = (0, 1.58, 0.22).
+///   - Khi NGỒI TRONG XE: Chiều cao fppCarOffset = (0, 0.62, 0.20).
+///   - Mouse X xoay thân nhân vật, Mouse Y xoay ngẩng/cúi tâm mắt.
+/// - TPP: Sử dụng CameraTargetPlayer (khi đi bộ) và CameraTargetCar (khi trên xe).
 /// </summary>
 public class DualCameraController : MonoBehaviour
 {
@@ -34,6 +34,11 @@ public class DualCameraController : MonoBehaviour
     [SerializeField] private CinemachineCamera tppPlayerCamera;   // CameraTargetPlayer (Cinemachine)
     [SerializeField] private CinemachineCamera tppCarCamera;      // CameraTargetCar (Cinemachine)
     [SerializeField] private CinemachineCamera fppCamera;         // CameraFPP (Cinemachine)
+
+    [Header("--- Fast PUBG-Style Transition ---")]
+    [Tooltip("Thời gian chuyển đổi góc nhìn FPP <-> TPP (giây). 0.15 - 0.2s cho cảm giác nhanh và mượt như PUBG")]
+    [SerializeField] private float transitionDuration = 0.16f;
+    [SerializeField] private CinemachineBlendDefinition.Styles transitionStyle = CinemachineBlendDefinition.Styles.EaseInOut;
 
     [Header("--- FPP Eye Target Offsets ---")]
     [Tooltip("Tọa độ tâm mắt FPP khi ĐI BỘ (X giữa, Y tầm mắt đứng, Z nhô ra trước)")]
@@ -70,7 +75,7 @@ public class DualCameraController : MonoBehaviour
 
     private bool isInVehicle = false;
     private float lastToggleTime = -1f;
-    private const float TOGGLE_COOLDOWN = 0.35f;
+    private const float TOGGLE_COOLDOWN = 0.15f; // Phản hồi phím tức thì
 
     // FPP on-foot pitch
     private float fppPitch = 0f;
@@ -79,8 +84,10 @@ public class DualCameraController : MonoBehaviour
     private float fppCarYaw = 0f;
     private float fppCarPitch = 0f;
 
+    private CinemachineBrain mainBrain;
     private CinemachineHardLockToTarget fppHardLock;
     private CinemachineInputAxisController tppPlayerInputCtrl;
+    private CinemachineOrbitalFollow tppOrbitalFollow;
 
     private void Awake()
     {
@@ -89,12 +96,14 @@ public class DualCameraController : MonoBehaviour
 
         AutoFindReferences();
         EnsureFPPEyeAndCamera();
+        ConfigureBrainBlend();
     }
 
     private void Start()
     {
         AutoFindReferences();
         EnsureFPPEyeAndCamera();
+        ConfigureBrainBlend();
         ApplyPerspectiveMode(currentMode);
     }
 
@@ -112,7 +121,21 @@ public class DualCameraController : MonoBehaviour
     {
         AutoFindReferences();
         EnsureFPPEyeAndCamera();
+        ConfigureBrainBlend();
         ApplyPerspectiveMode(currentMode);
+    }
+
+    private void ConfigureBrainBlend()
+    {
+        if (mainBrain == null && Camera.main != null)
+        {
+            mainBrain = Camera.main.GetComponent<CinemachineBrain>();
+        }
+
+        if (mainBrain != null)
+        {
+            mainBrain.DefaultBlend = new CinemachineBlendDefinition(transitionStyle, transitionDuration);
+        }
     }
 
     private void Update()
@@ -121,7 +144,7 @@ public class DualCameraController : MonoBehaviour
         bool isDialogueActive = DialogueManager.Instance != null && DialogueManager.Instance.IsDialogueActive;
         if (isDialogueActive) return;
 
-        // Phím nóng Y chuyển đổi góc nhìn
+        // Phím nóng Y chuyển đổi góc nhìn nhanh
         bool yPressed = false;
 #if ENABLE_INPUT_SYSTEM
         if (Keyboard.current != null)
@@ -214,6 +237,7 @@ public class DualCameraController : MonoBehaviour
         isInVehicle = inVehicle;
         AutoFindReferences();
         EnsureFPPEyeAndCamera();
+        ConfigureBrainBlend();
         ApplyPerspectiveMode(currentMode);
     }
 
@@ -221,21 +245,28 @@ public class DualCameraController : MonoBehaviour
     {
         bool isFpp = (mode == PerspectiveMode.FirstPerson);
 
+        // Đảm bảo thời gian chuyển cảnh siêu nhanh chuẩn PUBG
+        ConfigureBrainBlend();
+
         if (isFpp)
         {
-            // Reset góc nhìn khi chuyển sang FPP
+            // Chuyển sang FPP: Đồng bộ góc nhìn chính xác từ TPP sang FPP để không bị giật khung hình
             if (!isInVehicle)
             {
                 if (Camera.main != null && playerTransform != null)
                 {
                     float currentCamYaw = Camera.main.transform.eulerAngles.y;
+                    float currentCamPitch = Camera.main.transform.eulerAngles.x;
+                    if (currentCamPitch > 180f) currentCamPitch -= 360f;
+
                     playerTransform.rotation = Quaternion.Euler(0f, currentCamYaw, 0f);
-                }
-                fppPitch = 0f;
-                if (fppEyeTarget != null)
-                {
-                    fppEyeTarget.localPosition = CurrentFppOffset;
-                    fppEyeTarget.localRotation = Quaternion.identity;
+                    fppPitch = Mathf.Clamp(currentCamPitch, fppTiltMin, fppTiltMax);
+
+                    if (fppEyeTarget != null)
+                    {
+                        fppEyeTarget.localPosition = CurrentFppOffset;
+                        fppEyeTarget.localRotation = Quaternion.Euler(fppPitch, 0f, 0f);
+                    }
                 }
             }
             else
@@ -259,6 +290,14 @@ public class DualCameraController : MonoBehaviour
         }
         else // TPP
         {
+            // Chuyển sang TPP: Đồng bộ vị trí camera TPP nằm thẳng sau lưng nhân vật
+            if (!isInVehicle && tppOrbitalFollow != null)
+            {
+                var horizontal = tppOrbitalFollow.HorizontalAxis;
+                horizontal.Value = 0f;
+                tppOrbitalFollow.HorizontalAxis = horizontal;
+            }
+
             // TPP: CameraFPP ưu tiên thấp
             SetCamPriority(fppCamera, priorityLow);
 
@@ -392,6 +431,9 @@ public class DualCameraController : MonoBehaviour
         if (playerMovement == null && playerTransform != null)
             playerMovement = playerTransform.GetComponent<PlayerMovement>();
 
+        if (mainBrain == null && Camera.main != null)
+            mainBrain = Camera.main.GetComponent<CinemachineBrain>();
+
         CinemachineCamera[] allCMs = Object.FindObjectsByType<CinemachineCamera>(FindObjectsInactive.Include, FindObjectsSortMode.None);
         foreach (var cm in allCMs)
         {
@@ -402,6 +444,7 @@ public class DualCameraController : MonoBehaviour
             {
                 tppPlayerCamera = cm;
                 tppPlayerInputCtrl = cm.GetComponent<CinemachineInputAxisController>();
+                tppOrbitalFollow = cm.GetComponent<CinemachineOrbitalFollow>();
             }
             else if (n.Equals("CameraTargetCar", System.StringComparison.OrdinalIgnoreCase))
             {
