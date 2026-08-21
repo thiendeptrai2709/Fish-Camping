@@ -61509,7 +61509,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2f7adab5e52b6d449620d9a93ff198a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MoneyManager
-  soTienKhoiTaoChoUserMoi: 500
+  soTienKhoiTaoChoUserMoi: 600
   tongTien: 300
   cacTextHienThiTien:
   - {fileID: 1734858131}
