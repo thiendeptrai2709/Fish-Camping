@@ -247,7 +247,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f24bd847d964f9a45a47531f9c6db5c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NPCBase
-  npcName: "Ng\u01B0\u1EDDi B\xE1n H\xE0ng"
+  npcName: "Anh C\u1EA7n th\u1EE7"
   promptMessage: "N\xE2ng c\u1EA5p xe"
   introDialogues:
   - text: 

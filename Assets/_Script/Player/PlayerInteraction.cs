@@ -147,7 +147,9 @@ public class PlayerInteraction : MonoBehaviour
                     continue;
                 }
 
-                IInteractable interactable = hitCol.GetComponent<IInteractable>() ?? hitCol.GetComponentInParent<IInteractable>();
+                IInteractable interactable = hitCol.GetComponent<IInteractable>() ?? 
+                                             hitCol.GetComponentInParent<IInteractable>() ?? 
+                                             hitCol.GetComponentInChildren<IInteractable>();
 
                 if (interactable != null)
                 {
@@ -172,7 +174,14 @@ public class PlayerInteraction : MonoBehaviour
                         }
                     }
 
-                    // Nếu gặp chức năng cụ thể (Cửa xe, Cốp, Capo, Động cơ, Lốp, NPC...), ưu tiên chọn ngay lập tức!
+                    // Nếu gặp Cửa xe (CarDoor), ưu tiên số 1 tuyệt đối để vào xe ngay
+                    if (interactable is CarDoor)
+                    {
+                        candidate = interactable;
+                        break;
+                    }
+
+                    // Nếu gặp chức năng cụ thể (Cốp, Capo, Động cơ, Lốp, NPC...), ưu tiên chọn ngay!
                     bool isGenericVehicleStats = (interactable is InteractableVehicleStats || interactable is VehicleBody);
                     if (!isGenericVehicleStats)
                     {

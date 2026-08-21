@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Bait2
   m_EditorClassIdentifier: Assembly-CSharp::BaitSO
   itemID: bait2
-  itemName: Bait2
+  itemName: "M\u1ED3i C\xF4n Tr\xF9ng"
   itemIcon: {fileID: 68006382, guid: 9de36ad075a905f438556eccec00c372, type: 3}
   itemDescription: 
   equippedModelPrefab: {fileID: 0}
@@ -21,6 +21,6 @@ MonoBehaviour:
   height: 1
   shapeCells: 
   attractivenessBonus: 20
-  waitTimeReduction: 1.5
+  waitTimeReduction: 2
   targetRarityBonus: 1
-  maxUses: 1
+  maxUses: 8

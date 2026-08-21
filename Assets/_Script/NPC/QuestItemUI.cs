@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.Localization.Settings; // Thêm thư viện Localization
@@ -66,9 +66,8 @@ public class QuestItemUI : MonoBehaviour
 
             case QuestState.CanClaim:
                 if (buttonText != null)
-                    buttonText.text = isVietnamese ? "Nhận thưởng" : "Claim";
-                actionButton.interactable = true;
-                actionButton.onClick.AddListener(OnClaimClick);
+                    buttonText.text = isVietnamese ? "Gặp NPC" : "Return to NPC";
+                actionButton.interactable = false; // Bắt buộc phải quay lại gặp NPC giao việc để nhận thưởng
                 break;
 
             case QuestState.Claimed:

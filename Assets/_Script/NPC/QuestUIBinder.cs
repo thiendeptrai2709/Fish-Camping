@@ -1,10 +1,15 @@
-﻿using UnityEngine;
+using UnityEngine;
+using TMPro;
 
 public class QuestUIBinder : MonoBehaviour
 {
     [Header("Kéo UI của Scene này vào đây")]
     public GameObject questPanel;
     public Transform questContentParent;
+
+    [Header("Mission Day HUD (Tùy chọn)")]
+    public GameObject missionDayPanel;
+    public TextMeshProUGUI missionDayText;
 
     private void Start()
     {
@@ -14,9 +19,16 @@ public class QuestUIBinder : MonoBehaviour
 
     public void RegisterToManager()
     {
-        if (QuestManager.Instance != null && questPanel != null && questContentParent != null)
+        if (QuestManager.Instance != null)
         {
-            QuestManager.Instance.RegisterUI(questPanel, questContentParent);
+            if (questPanel != null && questContentParent != null)
+            {
+                QuestManager.Instance.RegisterUI(questPanel, questContentParent);
+            }
+            if (missionDayPanel != null || missionDayText != null)
+            {
+                QuestManager.Instance.RegisterMissionDayHUD(missionDayPanel, missionDayText);
+            }
         }
     }
 }

@@ -14,7 +14,16 @@ public class CookingSlotUI : MonoBehaviour, IDropHandler, IPointerClickHandler, 
     {
         if (itemIcon != null)
         {
+            itemIcon.raycastTarget = false; // QUAN TRỌNG: Không chặn sự kiện chuột của slot
             itemIcon.gameObject.SetActive(false); // Ẩn icon khi ô trống
+        }
+    }
+
+    private void Start()
+    {
+        if (itemIcon != null)
+        {
+            itemIcon.raycastTarget = false;
         }
     }
 
@@ -24,8 +33,14 @@ public class CookingSlotUI : MonoBehaviour, IDropHandler, IPointerClickHandler, 
         if (eventData.pointerDrag != null)
         {
             InventoryItemUI draggedItem = eventData.pointerDrag.GetComponent<InventoryItemUI>();
-            if (draggedItem != null)
+            if (draggedItem != null && draggedItem.GetItemShape() != null)
             {
+                // Nếu ô đã có cá cũ, tự động trả con cá cũ về lại Balo
+                if (CurrentItem != null && BackpackMinigameUI.Instance != null)
+                {
+                    BackpackMinigameUI.Instance.TryAutoAddItem(CurrentItem);
+                }
+
                 // Nhận dữ liệu nguyên liệu
                 ReceiveItem(draggedItem.GetItemShape());
 
@@ -36,17 +51,37 @@ public class CookingSlotUI : MonoBehaviour, IDropHandler, IPointerClickHandler, 
 
                 // Thông báo nhiệm vụ kéo cá vào UI nấu ăn
                 ForcedTutorialManager.Instance?.NotifyCookFish();
+
+                // Cập nhật lại nút nấu ăn
+                if (CookingUIManager.Instance != null)
+                {
+                    CookingUIManager.Instance.UpdateCookButtonState();
+                }
             }
         }
     }
 
-    private void ReceiveItem(ItemShapeSO itemShape)
+    public void ReceiveItem(ItemShapeSO itemShape)
     {
         CurrentItem = itemShape;
-        if (itemIcon != null && itemShape != null)
+        if (itemIcon != null)
         {
-            itemIcon.sprite = itemShape.itemIcon;
-            itemIcon.gameObject.SetActive(true);
+            itemIcon.raycastTarget = false; // Luôn đảm bảo không chặn chuột
+            if (itemShape != null)
+            {
+                itemIcon.sprite = itemShape.itemIcon;
+                itemIcon.gameObject.SetActive(true);
+            }
+            else
+            {
+                itemIcon.sprite = null;
+                itemIcon.gameObject.SetActive(false);
+            }
+        }
+
+        if (CookingUIManager.Instance != null)
+        {
+            CookingUIManager.Instance.UpdateCookButtonState();
         }
     }
 
@@ -58,7 +93,13 @@ public class CookingSlotUI : MonoBehaviour, IDropHandler, IPointerClickHandler, 
             itemIcon.sprite = null;
             itemIcon.gameObject.SetActive(false);
         }
+
+        if (CookingUIManager.Instance != null)
+        {
+            CookingUIManager.Instance.UpdateCookButtonState();
+        }
     }
+
     public void OnPointerClick(PointerEventData eventData)
     {
         if (eventData.button == PointerEventData.InputButton.Left && CurrentItem != null)
@@ -73,28 +114,42 @@ public class CookingSlotUI : MonoBehaviour, IDropHandler, IPointerClickHandler, 
                 }
                 else
                 {
-                    Debug.Log("<color=red>[LỖI] Balo đã đầy, không thể lấy lại nguyên liệu!</color>");
+                    Debug.Log("<color=red>[Cooking Slot] Balo đã đầy, không thể lấy lại nguyên liệu!</color>");
                 }
             }
         }
     }
+
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (eventData.button != PointerEventData.InputButton.Left || CurrentItem == null) return;
 
         itemBackup = CurrentItem;
-        ClearSlot(); // Tạm xóa ảnh ở nồi đi
 
         // Sinh ra một item bám theo chuột
-        GameObject prefab = CookingUIManager.Instance.GetItemPrefab();
+        GameObject prefab = CookingUIManager.Instance != null ? CookingUIManager.Instance.GetItemPrefab() : null;
+        if (prefab == null && BackpackMinigameUI.Instance != null)
+        {
+            prefab = BackpackMinigameUI.Instance.GetItemUIPrefab();
+        }
+
         if (prefab != null)
         {
+            ClearSlot(); // Tạm xóa ảnh ở nồi đi
+
             GameObject itemObj = Instantiate(prefab, transform.root);
             draggedProxyItem = itemObj.GetComponent<InventoryItemUI>();
-            draggedProxyItem.Setup(itemBackup, BackpackMinigameUI.Instance, 0, 0, false);
-            draggedProxyItem.SetOriginIngredientSlot(this); // Khai báo xuất xứ để biết đường về
-
-            draggedProxyItem.OnBeginDrag(eventData);
+            if (draggedProxyItem != null)
+            {
+                draggedProxyItem.Setup(itemBackup, BackpackMinigameUI.Instance, 0, 0, false);
+                draggedProxyItem.SetOriginIngredientSlot(this); // Khai báo xuất xứ để biết đường về
+                draggedProxyItem.OnBeginDrag(eventData);
+            }
+            else
+            {
+                Destroy(itemObj);
+                ReceiveItem(itemBackup);
+            }
         }
     }
 
@@ -114,8 +169,15 @@ public class CookingSlotUI : MonoBehaviour, IDropHandler, IPointerClickHandler, 
 
     public void ReturnIngredient(InventoryItemUI proxyItem)
     {
-        // Bị thả rơi ra ngoài vũ trụ -> Hủy item trên chuột và hồi sinh vào nồi
-        ReceiveItem(proxyItem.GetItemShape());
-        Destroy(proxyItem.gameObject);
+        if (proxyItem != null && proxyItem.GetItemShape() != null)
+        {
+            ReceiveItem(proxyItem.GetItemShape());
+            Destroy(proxyItem.gameObject);
+        }
+        else if (itemBackup != null)
+        {
+            ReceiveItem(itemBackup);
+            if (proxyItem != null) Destroy(proxyItem.gameObject);
+        }
     }
 }

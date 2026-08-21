@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class BalanceMinigameUI : MonoBehaviour
@@ -35,6 +35,10 @@ public class BalanceMinigameUI : MonoBehaviour
     private float currentProgress;
     private float barHeight;
 
+    private float defaultCatchZoneHeight = -1f;
+    private float effectiveProgressGainSpeed;
+    private float effectiveProgressLossSpeed;
+
     private void Awake()
     {
         if (panelRoot != null) panelRoot.SetActive(false);
@@ -58,6 +62,34 @@ public class BalanceMinigameUI : MonoBehaviour
         Canvas.ForceUpdateCanvases();
         barHeight = barBackground.rect.height;
         if (barHeight <= 0f) barHeight = 300f;
+
+        if (defaultCatchZoneHeight <= 0f)
+        {
+            defaultCatchZoneHeight = catchZone.rect.height > 0f ? catchZone.rect.height : 70f;
+        }
+
+        // ========================================================
+        // KẾT NỐI CHỈ SỐ CẦN CÂU & PHAO CÂU VÀO MINIGAME
+        // ========================================================
+        FishingRodSO rod = controller != null ? controller.CurrentRod : null;
+        BobberSO bobber = controller != null ? controller.CurrentBobber : null;
+
+        // 1. Cần câu xịn -> Tăng chiều cao thanh bắt cá (Catch Zone) & Tăng tốc độ kéo điểm
+        float bonusZoneHeight = 0f;
+        effectiveProgressGainSpeed = progressGainSpeed;
+        if (rod != null)
+        {
+            bonusZoneHeight = rod.fishingPower * 0.7f; // Power 15 -> +10.5px; Power 85 -> +60px
+            effectiveProgressGainSpeed = progressGainSpeed * (1f + rod.fishingPower * 0.006f);
+        }
+        catchZone.sizeDelta = new Vector2(catchZone.sizeDelta.x, defaultCatchZoneHeight + bonusZoneHeight);
+
+        // 2. Phao câu xịn -> Tăng độ ổn định, giảm tốc độ tụt điểm khi cá trượt
+        effectiveProgressLossSpeed = progressLossSpeed;
+        if (bobber != null && bobber.buoyancy > 0f)
+        {
+            effectiveProgressLossSpeed = progressLossSpeed / Mathf.Max(1f, bobber.buoyancy * 0.8f);
+        }
 
         fishIcon.pivot = new Vector2(0.5f, 0f);
         fishIcon.anchorMin = new Vector2(0.5f, 0f);
@@ -145,11 +177,11 @@ public class BalanceMinigameUI : MonoBehaviour
 
         if (isOverlapping)
         {
-            currentProgress += progressGainSpeed * Time.deltaTime;
+            currentProgress += effectiveProgressGainSpeed * Time.deltaTime;
         }
         else
         {
-            currentProgress -= progressLossSpeed * Time.deltaTime;
+            currentProgress -= effectiveProgressLossSpeed * Time.deltaTime;
         }
 
         currentProgress = Mathf.Clamp01(currentProgress);

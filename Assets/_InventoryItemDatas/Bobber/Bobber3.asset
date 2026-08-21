@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: Bobber3
   m_EditorClassIdentifier: Assembly-CSharp::BobberSO
   itemID: bobber3
-  itemName: Bobber3
+  itemName: "Phao B\u1EA7u D\u1EE5c D\u1EA1 Quang"
   itemIcon: {fileID: -1287435466, guid: d0acb7c593863fc4c8ed9165d7b0081a, type: 3}
   itemDescription: 
   equippedModelPrefab: {fileID: 0}
   width: 1
   height: 1
   shapeCells: 
-  attractivenessBonus: 5
-  buoyancy: 1
+  attractivenessBonus: 15
+  buoyancy: 1.6
   bobberPrefab: {fileID: 5797956953796742270, guid: 6235d093ae5cff3468c6ecfc44451ccc, type: 3}
-  weight: 0.5
+  weight: 0.7

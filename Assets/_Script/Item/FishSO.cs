@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 // Định nghĩa độ hiếm của cá
 public enum FishRarity
@@ -56,12 +56,16 @@ public class FishSO : ItemShapeSO
         weight = Random.Range(minWeight, maxWeight);
     }
 
-    public FishGrade GenerateRandomGrade()
+    public FishGrade GenerateRandomGrade(float bonusGradeChance = 0f)
     {
+        float effGold = goldChance + bonusGradeChance;
+        float effSilver = silverChance + bonusGradeChance * 1.5f;
+        float effBronze = bronzeChance + bonusGradeChance * 0.5f;
+
         float randomVal = Random.Range(0f, 100f);
-        if (randomVal <= goldChance) return FishGrade.Gold;
-        if (randomVal <= goldChance + silverChance) return FishGrade.Silver;
-        if (randomVal <= goldChance + silverChance + bronzeChance) return FishGrade.Bronze;
+        if (randomVal <= effGold) return FishGrade.Gold;
+        if (randomVal <= effGold + effSilver) return FishGrade.Silver;
+        if (randomVal <= effGold + effSilver + effBronze) return FishGrade.Bronze;
         return FishGrade.Normal;
     }
 }

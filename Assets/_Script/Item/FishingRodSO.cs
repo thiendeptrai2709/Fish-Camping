@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewFishingRod", menuName = "Inventory/Fishing Rod SO")]
 public class FishingRodSO : ItemShapeSO
@@ -37,7 +37,12 @@ public class FishingRodSO : ItemShapeSO
     }
     public override string GetFormattedStats()
     {
+        string mapInfo = rodTier <= 4 
+            ? "<color=#81C784>Map 2 & Map 3 (Nước ngọt)</color>" 
+            : "<color=#4FC3F7>Map 4 (Chuyên dụng câu biển)</color>";
+
         return $"• Cấp độ: Tier {rodTier}\n" +
+               $"• Khu vực: {mapInfo}\n" +
                $"• Lực kéo cá: {fishingPower}\n" +
                $"• Tầm ném tối đa: {castDistance}m\n" +
                $"• Giảm thời gian chờ: {waitTimeReductionPercentage}%\n" +

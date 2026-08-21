@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewBobber", menuName = "Inventory/Bobber SO")]
 public class BobberSO : ItemShapeSO
@@ -16,8 +16,20 @@ public class BobberSO : ItemShapeSO
     public float weight = 0.5f;
     public override string GetFormattedStats()
     {
-        return $"• Độ nổi: {buoyancy}\n" +
-               $"• Tăng thu hút: +{attractivenessBonus}%\n" +
+        int tier = 1;
+        string n = (string.IsNullOrEmpty(itemID) ? name : itemID).ToLower();
+        for (int i = 8; i >= 1; i--)
+        {
+            if (n.Contains(i.ToString())) { tier = i; break; }
+        }
+
+        string mapInfo = tier <= 6 
+            ? "<color=#81C784>Map 2 & Map 3 (Nước ngọt)</color>" 
+            : "<color=#4FC3F7>Map 4 (Phao biển chịu sóng)</color>";
+
+        return $"• Khu vực: {mapInfo}\n" +
+               $"• Độ ổn định Minigame: +{buoyancy:F1}x\n" +
+               $"• Tăng kích thước cá: +{attractivenessBonus}%\n" +
                $"• Trọng lượng ném: {weight}kg";
     }
 }

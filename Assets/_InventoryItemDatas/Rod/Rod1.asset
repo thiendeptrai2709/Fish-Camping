@@ -23,7 +23,7 @@ MonoBehaviour:
   rodTier: 1
   maxDurability: 100
   fishingPower: 15
-  castDistance: 20
+  castDistance: 16
   zoneDistanceMultipliers:
   - 0
   - 0.35

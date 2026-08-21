@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class NPCOffroadUpgrade : MonoBehaviour
 {
@@ -26,6 +26,11 @@ public class NPCOffroadUpgrade : MonoBehaviour
 
     private bool _hasMetPlayer = false; // Cờ ghi nhớ đã gặp lần đầu chưa
 
+    private void Awake()
+    {
+        _hasMetPlayer = PlayerPrefs.GetInt("NPC_Met_OffroadUpgrade", 0) == 1;
+    }
+
     public void HandleUpgradeInteraction(string npcName, System.Action onComplete)
     {
         // Chọn danh sách thoại: Lần đầu nói hết, lần sau bốc ngẫu nhiên 1 câu
@@ -34,6 +39,8 @@ public class NPCOffroadUpgrade : MonoBehaviour
         if (!_hasMetPlayer)
         {
             _hasMetPlayer = true;
+            PlayerPrefs.SetInt("NPC_Met_OffroadUpgrade", 1);
+            PlayerPrefs.Save();
             linesToPlay = upgradeFirstTimeDialogues;
         }
         else

@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: Bait5
   m_EditorClassIdentifier: Assembly-CSharp::BaitSO
   itemID: bait5
-  itemName: Bait5
+  itemName: "M\u1ED3i Tinh D\u1EA7u Th\u1EA3o M\u1ED9c"
   itemIcon: {fileID: -910334299, guid: 7868ee14bf99e4d4c8d239c2e0bd473f, type: 3}
   itemDescription: 
   equippedModelPrefab: {fileID: 0}
   width: 1
   height: 1
   shapeCells: 
-  attractivenessBonus: 20
-  waitTimeReduction: 1.5
-  targetRarityBonus: 1
-  maxUses: 1
+  attractivenessBonus: 70
+  waitTimeReduction: 5
+  targetRarityBonus: 4
+  maxUses: 15

@@ -1291,18 +1291,13 @@ public class ForcedTutorialManager : MonoBehaviour
     {
         if (currentStage == TutorialStage.Completed) return true;
 
-        // Map 1: Sau khi hoàn thành mở nắp Capo (từ Quest2_5_RepairEngine trở đi) -> Cho phép lên xe thoải mái!
+        // Chỉ khóa lên xe ở phần đầu game trước khi hoàn thành mở nắp Capo (Quest 1.2 -> 2.4)
         if (currentStage < TutorialStage.Quest2_5_RepairEngine)
         {
             return false;
         }
 
-        // Map 2: Sau khi xuống xe tại trại cắm trại (Map2_Quest1_3), khóa lên xe cho đến khi hoàn thành xong cắm trại (Map2_Quest6_BackToTown)
-        if (currentStage >= TutorialStage.Map2_Quest1_3_ExitVehicle && currentStage < TutorialStage.Map2_Quest6_BackToTown)
-        {
-            return false;
-        }
-
+        // Toàn bộ các giai đoạn khác (Map 1 & Map 2) -> ĐẢM BẢO 100% CỬA XE LUÔN MỞ ĐỂ VÀO XE!
         return true;
     }
 
@@ -1316,19 +1311,45 @@ public class ForcedTutorialManager : MonoBehaviour
             return true;
         }
 
+        // Cho phép đóng/mở khi đang tương tác Nấu ăn
+        if (CookingUIManager.Instance != null && CookingUIManager.Instance.IsOpen())
+        {
+            return true;
+        }
+
+        string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
         // Map 1: Khóa mở Balo tự do, chỉ mở khi tương tác Cốp xe
-        if (currentStage < TutorialStage.Map2_Quest1_1_OpenMapToCamp)
+        if (sceneName.Contains("Map_1_Town") || sceneName.Contains("Town") || sceneName.Contains("Map1"))
         {
             return false;
         }
 
-        // Map 2: Mở từ Quest2_1 trở đi
+        // Map 3, Map 4 & các map cắm trại khác: Luôn mở Balo 100%
+        if (sceneName.Contains("Map3") || sceneName.Contains("Swamp") || sceneName.Contains("Map4") || sceneName.Contains("Ocean"))
+        {
+            return true;
+        }
+
+        // Map 2 & các map khác: Mở từ Quest2_1 trở đi
         return currentStage >= TutorialStage.Map2_Quest2_1_OpenBackpack;
     }
 
     public bool CanOpenBuildMenu()
     {
+        string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        // Khóa Menu xây dựng ở Map 1 (Town)
+        if (sceneName.Contains("Map_1_Town") || sceneName.Contains("Town") || sceneName.Contains("Map1"))
+        {
+            return false;
+        }
+
         if (currentStage == TutorialStage.Completed) return true;
+
+        // Map 3, Map 4: Luôn mở Menu xây dựng 100%
+        if (sceneName.Contains("Map3") || sceneName.Contains("Swamp") || sceneName.Contains("Map4") || sceneName.Contains("Ocean"))
+        {
+            return true;
+        }
 
         // Chỉ cho phép mở khi tới nhiệm vụ xây dựng trại cắm ở Map 2 (Quest5_1 trở đi)
         return currentStage >= TutorialStage.Map2_Quest5_1_OpenBuildMenu;
@@ -1446,11 +1467,29 @@ public class ForcedTutorialManager : MonoBehaviour
             return currentStage >= TutorialStage.Quest7_1_TalkToQuestNPC;
         }
 
-        // Lều Ngủ (Bed)
+        string currentActiveScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        bool isTownMap1 = currentActiveScene.Contains("Map_1_Town") || currentActiveScene.Contains("Town") || currentActiveScene.Contains("Map1");
+        bool isOtherCampingMap = currentActiveScene.Contains("Map3") || currentActiveScene.Contains("Swamp") || 
+                                 currentActiveScene.Contains("Map4") || currentActiveScene.Contains("Ocean");
+
+        // Map 3, Map 4: Luôn cho phép mọi tương tác tự do 100%
+        if (isOtherCampingMap) return true;
+
+        // 1. Giá Treo Nấu Ăn (CookingRack)
+        if (interactable is CookingRack)
+        {
+            // Khóa tuyệt đối ở Map 1 (Town)
+            if (isTownMap1) return false;
+
+            // Ở Map 2: Mở từ Quest5_4 trở đi và VĨNH VIỄN MỞ kể cả khi đổi scene qua lại!
+            return currentStage >= TutorialStage.Map2_Quest5_4_CookFish || currentStage == TutorialStage.Completed;
+        }
+
+        // 2. Lều Ngủ (Bed)
         if (interactable is InteractableBed)
         {
-            return currentStage == TutorialStage.Map2_Quest5_6_SleepInTent ||
-                   currentStage == TutorialStage.Completed;
+            if (isTownMap1) return false;
+            return currentStage >= TutorialStage.Map2_Quest5_6_SleepInTent || currentStage == TutorialStage.Completed;
         }
 
         // Các vật thể tự do khác ở Map 2
@@ -1638,28 +1677,28 @@ public class ForcedTutorialManager : MonoBehaviour
                 currentInstructionText = GetLocalizedText("TUT_Quest4_1_EnterVehicle", "Đi đến cửa xe và nhấp <color=#B388FF><b>Chuột trái</b></color> để lên xe bán tải.");
                 break;
             case TutorialStage.Quest4_2_DriveToShop:
-                currentInstructionText = GetLocalizedText("TUT_Quest4_2_DriveToShop", "Lái xe đến Shop Đồ Câu theo chỉ dẫn.\n(Radio: <color=#B388FF><b>L</b></color> Bật/Tắt | <color=#B388FF><b>K</b></color> Đổi bài | <color=#B388FF><b>[ ]</b></color> Âm lượng | <color=#B388FF><b>G</b></color> Đèn pha).");
+                currentInstructionText = GetLocalizedText("TUT_Quest4_2_DriveToShop", "Lái xe đến chỗ <color=#B388FF><b>Anh Cần thủ</b></color> (Shop Đồ Câu) theo chỉ dẫn.\n(Radio: <color=#B388FF><b>L</b></color> Bật/Tắt | <color=#B388FF><b>K</b></color> Đổi bài | <color=#B388FF><b>[ ]</b></color> Âm lượng | <color=#B388FF><b>G</b></color> Đèn pha).");
                 break;
             case TutorialStage.Quest4_3_ExitVehicle:
                 currentInstructionText = GetLocalizedText("TUT_Quest4_3_ExitVehicle", "Nhấn phím <color=#B388FF><b>E</b></color> để xuống xe.");
                 break;
             case TutorialStage.Quest5_1_OpenShopMenu:
-                currentInstructionText = GetLocalizedText("TUT_Quest5_1_OpenShopMenu", "Đến gần <color=#B388FF><b>NPC Bán Đồ</b></color> và nhấp <color=#B388FF><b>Chuột trái</b></color> để mở cửa hàng.");
+                currentInstructionText = GetLocalizedText("TUT_Quest5_1_OpenShopMenu", "Đến gần <color=#B388FF><b>Anh Cần thủ</b></color> và nhấp <color=#B388FF><b>Chuột trái</b></color> để mở cửa hàng.");
                 break;
             case TutorialStage.Quest5_2_CloseShopMenu:
                 currentInstructionText = GetLocalizedText("TUT_Quest5_2_CloseShopMenu", "Nhấn phím <color=#B388FF><b>E</b></color> hoặc nút Đóng để thoát cửa hàng.");
                 break;
             case TutorialStage.Quest6_1_OpenMapUpgrade:
-                currentInstructionText = GetLocalizedText("TUT_Quest6_1_OpenMapUpgrade", "Nhấn phím <color=#B388FF><b>N</b></color> mở bản đồ để xem vị trí <color=#B388FF><b>NPC Nâng Cấp Xe</b></color>.");
+                currentInstructionText = GetLocalizedText("TUT_Quest6_1_OpenMapUpgrade", "Nhấn phím <color=#B388FF><b>N</b></color> mở bản đồ để xem vị trí <color=#B388FF><b>Bác thợ máy</b></color>.");
                 break;
             case TutorialStage.Quest6_2_OpenUpgradeMenu:
-                currentInstructionText = GetLocalizedText("TUT_Quest6_2_OpenUpgradeMenu", "Tương tác với <color=#B388FF><b>NPC Nâng Cấp</b></color> để mở menu nâng cấp xe.");
+                currentInstructionText = GetLocalizedText("TUT_Quest6_2_OpenUpgradeMenu", "Tương tác với <color=#B388FF><b>Bác thợ máy</b></color> để mở menu nâng cấp xe.");
                 break;
             case TutorialStage.Quest6_3_CloseUpgradeMenu:
                 currentInstructionText = GetLocalizedText("TUT_Quest6_3_CloseUpgradeMenu", "Nhấn phím <color=#B388FF><b>Z</b></color> hoặc nút Đóng để thoát giao diện nâng cấp.");
                 break;
             case TutorialStage.Quest7_1_TalkToQuestNPC:
-                currentInstructionText = GetLocalizedText("TUT_Quest7_1_TalkToQuestNPC", "Tìm và nói chuyện với <color=#B388FF><b>NPC Giao Nhiệm Vụ</b></color> trong khu vực.");
+                currentInstructionText = GetLocalizedText("TUT_Quest7_1_TalkToQuestNPC", "Tìm và nói chuyện với <color=#B388FF><b>Cậu chủ làng</b></color> trong khu vực.");
                 break;
             case TutorialStage.Quest8_1_DriveToGasStation:
                 currentInstructionText = GetLocalizedText("TUT_Quest8_1_DriveToGasStation", "Lái xe tìm đến <color=#B388FF><b>Cây Xăng</b></color> của thị trấn.");

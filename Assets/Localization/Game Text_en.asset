@@ -23,7 +23,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 20645879879753728
-    m_Localized: Quest NPC
+    m_Localized: Village Master
     m_Metadata:
       m_Items: []
   - m_Id: 20646556181913600
@@ -96,7 +96,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 20660019486711808
-    m_Localized: Salesman
+    m_Localized: The Angler
     m_Metadata:
       m_Items: []
   - m_Id: 20660121836118016

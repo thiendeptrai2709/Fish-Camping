@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Bobber1
   m_EditorClassIdentifier: Assembly-CSharp::BobberSO
   itemID: bobber1
-  itemName: Bobber1
+  itemName: "Phao X\u1ED1p C\u01A1 B\u1EA3n"
   itemIcon: {fileID: -360435253, guid: 2a0a4879a199eb54895679bef2cb1dfe, type: 3}
   itemDescription: 
   equippedModelPrefab: {fileID: 0}

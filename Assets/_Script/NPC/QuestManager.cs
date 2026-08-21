@@ -1,29 +1,96 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using TMPro;
 using UnityEngine.Localization.Settings; // Thư viện Localization
+
+[System.Serializable]
+public class QuestSaveContainer
+{
+    public List<Quest> quests = new List<Quest>();
+}
 
 public class QuestManager : MonoBehaviour
 {
     public static QuestManager Instance;
 
+    private const string QUEST_SAVE_KEY = "Saved_NPC_Quest_Data";
+
     [Header("Quest Data")]
     public List<Quest> questList = new List<Quest>();
 
-    [Header("UI References")]
+    [Header("UI References (Full Panel)")]
     public Transform questContentParent; // Kéo ô Content trong ScrollView vào đây
     public GameObject questItemPrefab;   // Kéo Prefab ô Nhiệm vụ vào đây
     public GameObject questPanel;        // Kéo QuestPanel từ Hierarchy vào đây
+
+    [Header("Mission Day HUD (Outside Widget)")]
+    public GameObject missionDayPanel;      // Panel mission_day bên ngoài màn hình
+    public TextMeshProUGUI missionDayText;  // Text con 'nv' trong mission_day
 
     private void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
+            transform.SetParent(null);
             DontDestroyOnLoad(gameObject); // Giữ QuestManager không bị xóa khi đổi Scene
+            LoadQuestData();
         }
-        else
+        else if (Instance != this)
         {
             Destroy(gameObject);
+        }
+    }
+
+    private void OnApplicationQuit()
+    {
+        SaveQuestData();
+    }
+
+    private void OnApplicationPause(bool pause)
+    {
+        if (pause) SaveQuestData();
+    }
+
+    public void SaveQuestData()
+    {
+        try
+        {
+            QuestSaveContainer container = new QuestSaveContainer();
+            container.quests = new List<Quest>(questList);
+            string json = JsonUtility.ToJson(container);
+            PlayerPrefs.SetString(QUEST_SAVE_KEY, json);
+            PlayerPrefs.Save();
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"[QuestManager] Lỗi lưu dữ liệu nhiệm vụ: {e.Message}");
+        }
+    }
+
+    public void LoadQuestData()
+    {
+        try
+        {
+            if (PlayerPrefs.HasKey(QUEST_SAVE_KEY))
+            {
+                string json = PlayerPrefs.GetString(QUEST_SAVE_KEY);
+                if (!string.IsNullOrEmpty(json))
+                {
+                    QuestSaveContainer container = JsonUtility.FromJson<QuestSaveContainer>(json);
+                    if (container != null && container.quests != null && container.quests.Count > 0)
+                    {
+                        questList = container.quests;
+                    }
+                }
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"[QuestManager] Lỗi nạp dữ liệu nhiệm vụ: {e.Message}");
         }
     }
 
@@ -31,11 +98,30 @@ public class QuestManager : MonoBehaviour
     {
         // Tự động lắng nghe sự kiện khi người chơi đổi ngôn ngữ ở menu Cài đặt
         LocalizationSettings.SelectedLocaleChanged += OnLanguageChanged;
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     private void OnDisable()
     {
         LocalizationSettings.SelectedLocaleChanged -= OnLanguageChanged;
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void Start()
+    {
+        EnsureUIAttached();
+        UpdateMissionDayHUD();
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        questPanel = null;
+        questContentParent = null;
+        missionDayPanel = null;
+        missionDayText = null;
+
+        EnsureUIAttached();
+        UpdateMissionDayHUD();
     }
 
     // Tự động vẽ lại toàn bộ danh sách nhiệm vụ khi đổi ngôn ngữ
@@ -45,12 +131,14 @@ public class QuestManager : MonoBehaviour
         {
             RenderQuestList();
         }
+        UpdateMissionDayHUD();
     }
 
     private void Update()
     {
-        // Nhấn phím V để Bật / Tắt Panel Nhiệm vụ
-        if (Input.GetKeyDown(KeyCode.V))
+        // Nhấn phím V để Bật / Tắt Panel Nhiệm vụ (Hỗ trợ cả New Input System và Legacy Input)
+        bool vPressed = (Keyboard.current != null && Keyboard.current.vKey.wasPressedThisFrame) || Input.GetKeyDown(KeyCode.V);
+        if (vPressed)
         {
             ToggleQuestPanel();
         }
@@ -72,7 +160,11 @@ public class QuestManager : MonoBehaviour
     {
         EnsureUIAttached();
 
-        if (questPanel == null) return;
+        if (questPanel == null)
+        {
+            Debug.LogWarning("<color=yellow>[QuestManager] questPanel chưa được gắn kết trong Scene này!</color>");
+            return;
+        }
 
         bool willOpen = !questPanel.activeSelf;
 
@@ -88,18 +180,32 @@ public class QuestManager : MonoBehaviour
             questPanel.SetActive(true);
             RenderQuestList();
 
-            // --- BẬT CON TRỎ CHUỘT ĐỂ CLICK NHẬN THƯỞNG ---
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
+            // Bật con trỏ chuột
+            if (PlayerCursor.Instance != null)
+            {
+                PlayerCursor.Instance.SetCursorState(false);
+            }
+            else
+            {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+            }
         }
         else
         {
             // TẮT BẢNG NHIỆM VỤ
             questPanel.SetActive(false);
 
-            // --- KHÓA LẠI CON TRỎ CHUỘT ĐỂ ĐIỀU KHIỂN NHÂN VẬT ---
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
+            // Khóa lại con trỏ chuột
+            if (PlayerCursor.Instance != null)
+            {
+                PlayerCursor.Instance.SetCursorState(true);
+            }
+            else
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+            }
         }
     }
 
@@ -108,22 +214,62 @@ public class QuestManager : MonoBehaviour
     {
         if (DialogueManager.Instance != null && DialogueManager.Instance.dialogueCanvas != null)
         {
-            // Chỉ chặn phím V khi cái Khung Thoại (dialogueCanvas) thực sự đang BẬT
             return DialogueManager.Instance.dialogueCanvas.activeInHierarchy;
         }
         return false;
     }
 
     // Tự động nối lại UI khi chuyển Scene
-    private void EnsureUIAttached()
+    public void EnsureUIAttached()
     {
-        if (questPanel == null)
+        if (questPanel == null || questContentParent == null || missionDayPanel == null || missionDayText == null)
         {
-            QuestUIBinder binder = FindFirstObjectByType<QuestUIBinder>();
+            QuestUIBinder binder = Object.FindFirstObjectByType<QuestUIBinder>(FindObjectsInactive.Include);
             if (binder != null)
             {
                 binder.RegisterToManager();
             }
+        }
+
+        // Tự động tìm kiếm GameObject 'mission_day' trong Canvas nếu chưa được gán
+        if (missionDayPanel == null)
+        {
+            GameObject found = GameObject.Find("mission_day") ?? GameObject.Find("Mission_Day");
+            if (found == null)
+            {
+                GameObject[] allGos = Resources.FindObjectsOfTypeAll<GameObject>();
+                foreach (var go in allGos)
+                {
+                    if (go != null && (go.name == "mission_day" || go.name == "Mission_Day") && go.scene.isLoaded)
+                    {
+                        found = go;
+                        break;
+                    }
+                }
+            }
+
+            if (found != null)
+            {
+                missionDayPanel = found;
+                missionDayText = missionDayPanel.GetComponentInChildren<TextMeshProUGUI>(true);
+            }
+        }
+
+        if (missionDayPanel != null && missionDayText == null)
+        {
+            missionDayText = missionDayPanel.GetComponentInChildren<TextMeshProUGUI>(true);
+        }
+
+        // Gắn nút bấm vào mission_day để khi click vào cũng mở panel nhiệm vụ
+        if (missionDayPanel != null)
+        {
+            Button btn = missionDayPanel.GetComponent<Button>();
+            if (btn == null)
+            {
+                btn = missionDayPanel.AddComponent<Button>();
+            }
+            btn.onClick.RemoveListener(ToggleQuestPanel);
+            btn.onClick.AddListener(ToggleQuestPanel);
         }
     }
 
@@ -133,6 +279,13 @@ public class QuestManager : MonoBehaviour
         questPanel = panel;
         questContentParent = contentParent;
         RenderQuestList();
+    }
+
+    public void RegisterMissionDayHUD(GameObject panel, TextMeshProUGUI text)
+    {
+        missionDayPanel = panel;
+        missionDayText = text;
+        UpdateMissionDayHUD();
     }
 
     // Lấy trạng thái của nhiệm vụ theo ID
@@ -153,8 +306,12 @@ public class QuestManager : MonoBehaviour
         else
         {
             q.state = newQuest.state;
+            q.currentAmount = newQuest.currentAmount;
+            q.targetAmount = newQuest.targetAmount;
         }
         RenderQuestList();
+        UpdateMissionDayHUD();
+        SaveQuestData();
     }
 
     // Cập nhật lại UI Panel
@@ -171,6 +328,65 @@ public class QuestManager : MonoBehaviour
         {
             GameObject item = Instantiate(questItemPrefab, questContentParent);
             item.GetComponent<QuestItemUI>().Setup(q);
+        }
+    }
+
+    // Cập nhật bảng mission_day hiển thị ngay bên ngoài màn hình
+    public void UpdateMissionDayHUD()
+    {
+        EnsureUIAttached();
+
+        if (missionDayPanel == null) return;
+
+        // Lấy danh sách nhiệm vụ đang làm (InProgress hoặc CanClaim)
+        List<Quest> activeQuests = questList.FindAll(q => q.state == QuestState.InProgress || q.state == QuestState.CanClaim);
+
+        if (activeQuests == null || activeQuests.Count == 0)
+        {
+            missionDayPanel.SetActive(false);
+            return;
+        }
+
+        missionDayPanel.SetActive(true);
+
+        if (missionDayText == null)
+        {
+            missionDayText = missionDayPanel.GetComponentInChildren<TextMeshProUGUI>(true);
+        }
+
+        if (missionDayText != null)
+        {
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            for (int i = 0; i < activeQuests.Count; i++)
+            {
+                var q = activeQuests[i];
+                if (i > 0) sb.Append("\n------------------\n");
+
+                string title = GetLocalizedText(q.title);
+                string desc = GetLocalizedText(q.description);
+                string target = GetLocalizedText(q.targetItem);
+
+                sb.Append($"<b><color=#FFE082>{title}</color></b>\n");
+
+                if (!string.IsNullOrEmpty(desc))
+                {
+                    sb.Append($"<size=85%><color=#E0E0E0>{desc}</color></size>\n");
+                }
+
+                if (q.state == QuestState.CanClaim)
+                {
+                    sb.Append("<color=#69F0AE><b>[Đã xong]</b> Hãy quay về gặp NPC để nhận thưởng!</color>");
+                }
+                else
+                {
+                    sb.Append($"<color=#B0BEC5>Tiến độ:</color> <color=#FFEB3B><b>{q.currentAmount}/{q.targetAmount}</b></color>");
+                    if (!string.IsNullOrEmpty(target))
+                    {
+                        sb.Append($" <color=#90CAF9>({target})</color>");
+                    }
+                }
+            }
+            missionDayText.text = sb.ToString();
         }
     }
 
@@ -196,6 +412,8 @@ public class QuestManager : MonoBehaviour
             }
         }
         RenderQuestList();
+        UpdateMissionDayHUD();
+        SaveQuestData();
     }
 
     // Bấm nút Nhận thưởng
@@ -212,6 +430,8 @@ public class QuestManager : MonoBehaviour
             }
 
             RenderQuestList();
+            UpdateMissionDayHUD();
+            SaveQuestData();
         }
     }
 

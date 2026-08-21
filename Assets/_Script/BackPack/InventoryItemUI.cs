@@ -356,6 +356,11 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             else if (isOverBalo || BackpackMinigameUI.Instance != null)
             {
                 placedInGrid = BackpackMinigameUI.Instance.TryPlaceItemFromExternal(this, eventData.position);
+                if (!placedInGrid && BackpackMinigameUI.Instance != null)
+                {
+                    placedInGrid = BackpackMinigameUI.Instance.TryAutoFitItemToGrid(this);
+                }
+
                 if (placedInGrid)
                 {
                     currentOwner = GridOwner.Backpack;

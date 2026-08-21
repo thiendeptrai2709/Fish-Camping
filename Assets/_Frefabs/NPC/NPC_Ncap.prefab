@@ -262,7 +262,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f24bd847d964f9a45a47531f9c6db5c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NPCBase
-  npcName: "B\xE1c Th\u1EE3 M\xE1y"
+  npcName: "B\xE1c th\u1EE3 m\xE1y"
   promptMessage: "N\xE2ng c\u1EA5p xe"
   introDialogues:
   - "Ch\xE0o c\u1EADu, mu\u1ED1n n\xE2ng c\u1EA5p g\xEC cho chi\u1EBFc xe t\u1EA3i

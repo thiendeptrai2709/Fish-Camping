@@ -20,16 +20,16 @@ MonoBehaviour:
   width: 1
   height: 3
   shapeCells: 
-  rodTier: 1
-  maxDurability: 100
-  fishingPower: 15
-  castDistance: 5
+  rodTier: 4
+  maxDurability: 280
+  fishingPower: 50
+  castDistance: 28
   zoneDistanceMultipliers:
   - 0
   - 0.35
   - 0.7
   - 1
-  waitTimeReductionPercentage: 0
-  maxCatchableRarity: 1
-  lineBreakResistance: 20
-  reelSpeed: 2
+  waitTimeReductionPercentage: 30
+  maxCatchableRarity: 4
+  lineBreakResistance: 55
+  reelSpeed: 3

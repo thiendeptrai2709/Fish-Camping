@@ -66,8 +66,20 @@ public class CookingUIManager : MonoBehaviour
             cookingPanel.SetActive(true);
         }
 
+        // Tự động tìm lại PlayerCursor nếu bị mất do đổi scene
+        if (playerCursor == null)
+        {
+            playerCursor = PlayerCursor.Instance ?? Object.FindFirstObjectByType<PlayerCursor>();
+        }
+
         // Hiện chuột, Ẩn tâm ngắm
         if (playerCursor != null) playerCursor.SetCursorState(false);
+
+        if (crosshairUI == null)
+        {
+            var pInteraction = Object.FindFirstObjectByType<PlayerInteraction>();
+            if (pInteraction != null) crosshairUI = pInteraction.gameObject;
+        }
         if (crosshairUI != null) crosshairUI.SetActive(false);
 
         if (freeLookCamera != null)
@@ -93,33 +105,61 @@ public class CookingUIManager : MonoBehaviour
 
             ItemShapeSO finalFood = currentRack.GetCookedFood();
 
-            if (finalFood != null && itemUIPrefab != null && cookingSlots != null && cookingSlots.Length > 0 && BackpackMinigameUI.Instance != null)
+            if (finalFood != null && cookingSlots != null && cookingSlots.Length > 0 && BackpackMinigameUI.Instance != null)
             {
                 // DỌN SẠCH CÁI ẢNH NGUYÊN LIỆU CŨ TRONG SLOT ĐỂ TRÁNH CHẶN CHUỘT
                 cookingSlots[0].ClearSlot();
 
-                GameObject itemObj = Instantiate(itemUIPrefab, cookingSlots[0].transform);
-                spawnedResultItem = itemObj.GetComponent<InventoryItemUI>();
+                GameObject prefabToUse = itemUIPrefab;
+                if (prefabToUse == null)
+                {
+                    // Fallback prefab nếu bị rỗng do đổi scene
+                    var anyItemUI = Object.FindFirstObjectByType<InventoryItemUI>(FindObjectsInactive.Include);
+                    if (anyItemUI != null) prefabToUse = anyItemUI.gameObject;
+                }
 
-                // THÊM 2 DÒNG NÀY ĐỂ KẾT NỐI VỚI HỆ THỐNG KÉO THẢ
-                spawnedResultItem.Setup(finalFood, BackpackMinigameUI.Instance, 0, 0, false);
-                // Ép nó nhận diện Controller của Balo, nếu không sẽ bị Null khiến nó đéo cho kéo
+                if (prefabToUse != null)
+                {
+                    GameObject itemObj = Instantiate(prefabToUse, cookingSlots[0].transform);
+                    spawnedResultItem = itemObj.GetComponent<InventoryItemUI>();
 
-                spawnedResultItem.SetFromCooking(true);
-                spawnedResultItem.UpdateVisualSize();
+                    // KẾT NỐI VỚI HỆ THỐNG KÉO THẢ CỦA BALO
+                    spawnedResultItem.Setup(finalFood, BackpackMinigameUI.Instance, 0, 0, false);
+                    spawnedResultItem.SetFromCooking(true);
+                    spawnedResultItem.UpdateVisualSize();
 
-                // HỌC TẬP HOTBAR: Ép tâm về 0.5 để khớp với Slot_1 của Inspector
-                RectTransform rect = itemObj.GetComponent<RectTransform>();
-                rect.anchorMin = new Vector2(0.5f, 0.5f);
-                rect.anchorMax = new Vector2(0.5f, 0.5f);
-                rect.pivot = new Vector2(0.5f, 0.5f);
-                rect.anchoredPosition = Vector2.zero;
+                    RectTransform rect = itemObj.GetComponent<RectTransform>();
+                    rect.anchorMin = new Vector2(0.5f, 0.5f);
+                    rect.anchorMax = new Vector2(0.5f, 0.5f);
+                    rect.pivot = new Vector2(0.5f, 0.5f);
+                    rect.anchoredPosition = Vector2.zero;
+                }
             }
         }
         else
         {
-            if (startCookButton != null) startCookButton.gameObject.SetActive(true);
+            UpdateCookButtonState();
         }
+    }
+
+    public void UpdateCookButtonState()
+    {
+        if (currentRack == null)
+        {
+            currentRack = Object.FindFirstObjectByType<CookingRack>();
+        }
+
+        if (startCookButton == null) return;
+
+        if (currentRack != null && (currentRack.State == CookingRack.CookingState.Finished || currentRack.State == CookingRack.CookingState.Cooking))
+        {
+            startCookButton.gameObject.SetActive(false);
+            return;
+        }
+
+        // Luôn hiển thị và kích hoạt nút nấu ăn khi ở trạng thái Idle
+        startCookButton.gameObject.SetActive(true);
+        startCookButton.interactable = true;
     }
 
     public void CloseCookingUI()
@@ -128,6 +168,11 @@ public class CookingUIManager : MonoBehaviour
         if (cookingPanel != null)
         {
             cookingPanel.SetActive(false);
+        }
+
+        if (playerCursor == null)
+        {
+            playerCursor = PlayerCursor.Instance ?? Object.FindFirstObjectByType<PlayerCursor>();
         }
 
         if (playerCursor != null) playerCursor.SetCursorState(true);
@@ -150,36 +195,51 @@ public class CookingUIManager : MonoBehaviour
 
     private void OnStartCookClicked()
     {
-        // Khi người chơi click chuột vào nút nấu ăn -> Lập tức chuyển qua nhiệm vụ khác
-        ForcedTutorialManager.Instance?.NotifyCookFish();
-
-        if (currentRack != null)
+        if (currentRack == null)
         {
-            System.Collections.Generic.List<ItemShapeSO> ingredients = new System.Collections.Generic.List<ItemShapeSO>();
+            currentRack = Object.FindFirstObjectByType<CookingRack>();
+        }
+
+        if (currentRack == null)
+        {
+            Debug.LogWarning("<color=yellow>[Cooking UI] Không tìm thấy giá treo nấu ăn!</color>");
+            return;
+        }
+
+        System.Collections.Generic.List<ItemShapeSO> ingredients = new System.Collections.Generic.List<ItemShapeSO>();
+        if (cookingSlots != null)
+        {
+            foreach (var slot in cookingSlots)
+            {
+                if (slot != null && slot.CurrentItem != null)
+                {
+                    ingredients.Add(slot.CurrentItem);
+                }
+            }
+        }
+
+        if (ingredients.Count == 0)
+        {
+            Debug.Log("<color=yellow>[Cooking UI] Hãy kéo cá từ Balo vào ô nấu trước khi bấm!</color>");
+            return;
+        }
+
+        bool started = currentRack.TryStartCooking(ingredients);
+        if (started)
+        {
+            ForcedTutorialManager.Instance?.NotifyCookFish();
             if (cookingSlots != null)
             {
                 foreach (var slot in cookingSlots)
                 {
-                    if (slot.CurrentItem != null)
-                    {
-                        ingredients.Add(slot.CurrentItem);
-                    }
-                }
-            }
-
-            bool started = currentRack.TryStartCooking(ingredients);
-            if (started)
-            {
-                foreach (var slot in cookingSlots)
-                {
-                    slot.ClearSlot();
+                    if (slot != null) slot.ClearSlot();
                 }
             }
             CloseCookingUI();
         }
         else
         {
-            CloseCookingUI();
+            Debug.LogWarning("<color=red>[Cooking UI] Không thể nấu món này, hãy kiểm tra lửa trại và nguyên liệu!</color>");
         }
     }
 

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
@@ -39,6 +39,33 @@ public class ItemInfoPanelUI : MonoBehaviour
         {
             itemIconImage.sprite = itemShape.itemIcon;
             itemIconImage.enabled = (itemShape.itemIcon != null);
+            itemIconImage.preserveAspect = true;
+
+            RectTransform iconRect = itemIconImage.rectTransform;
+            if (iconRect != null)
+            {
+                if (itemShape is FishingRodSO)
+                {
+                    // Cần câu dáng dài -> Tăng kích thước phóng to 1.7x để nhìn rõ chi tiết cần câu
+                    iconRect.localScale = new Vector3(1.7f, 1.7f, 1f);
+                }
+                else
+                {
+                    // Mồi câu, Phao câu, Cá -> Phóng to 1.35x
+                    iconRect.localScale = new Vector3(1.35f, 1.35f, 1f);
+                }
+            }
+
+            if (itemShape.itemIcon != null && itemShape.itemIcon.rect.height > 0f)
+            {
+                float ratio = (float)itemShape.itemIcon.rect.width / itemShape.itemIcon.rect.height;
+                AspectRatioFitter fitter = itemIconImage.GetComponent<AspectRatioFitter>();
+                if (fitter != null)
+                {
+                    fitter.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
+                    fitter.aspectRatio = ratio;
+                }
+            }
         }
 
         if (itemNameText != null) itemNameText.text = itemShape.itemName;
@@ -87,7 +114,11 @@ public class ItemInfoPanelUI : MonoBehaviour
     public void ClearInfo()
     {
         if (contentGroup != null) contentGroup.SetActive(false);
-        if (itemIconImage != null) itemIconImage.enabled = false;
+        if (itemIconImage != null)
+        {
+            itemIconImage.enabled = false;
+            itemIconImage.rectTransform.localScale = Vector3.one;
+        }
         if (itemNameText != null) itemNameText.text = string.Empty;
         if (itemStatsText != null) itemStatsText.text = string.Empty;
         if (itemDescriptionText != null) itemDescriptionText.text = string.Empty;

@@ -81,6 +81,14 @@ public class NPCBase : MonoBehaviour, IInteractable, INpcInteractable
             col.height = 2f;
             col.isTrigger = false;
         }
+
+        // 3. Nạp trạng thái đã gặp NPC từ PlayerPrefs
+        _hasMetPlayer = PlayerPrefs.GetInt(GetNpcSaveKey(), 0) == 1;
+    }
+
+    private string GetNpcSaveKey()
+    {
+        return $"NPC_Met_{gameObject.scene.name}_{npcName}_{Mathf.RoundToInt(transform.position.x)}_{Mathf.RoundToInt(transform.position.z)}";
     }
 
     public string InteractionPrompt
@@ -140,6 +148,8 @@ public class NPCBase : MonoBehaviour, IInteractable, INpcInteractable
             {
                 // Lần đầu gặp: Nói toàn bộ danh sách intro
                 _hasMetPlayer = true;
+                PlayerPrefs.SetInt(GetNpcSaveKey(), 1);
+                PlayerPrefs.Save();
                 linesToPlay = introDialogues;
             }
             else

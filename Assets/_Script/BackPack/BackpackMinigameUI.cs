@@ -37,6 +37,8 @@ public class BackpackMinigameUI : MonoBehaviour
         return cachedRootCanvas;
     }
 
+    public GameObject GetItemUIPrefab() => itemUIPrefab;
+
     private void Awake()
     {
         if (Instance == null) Instance = this;

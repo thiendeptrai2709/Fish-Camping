@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: Bobber8
   m_EditorClassIdentifier: Assembly-CSharp::BobberSO
   itemID: bobber8
-  itemName: Bobber8
+  itemName: "Phao C\u1ED5 Long Ho\xE0ng Kim"
   itemIcon: {fileID: 102645568, guid: cc6702522190f5f4ea93968790a68321, type: 3}
   itemDescription: 
   equippedModelPrefab: {fileID: 0}
   width: 1
   height: 1
   shapeCells: 
-  attractivenessBonus: 5
-  buoyancy: 1
+  attractivenessBonus: 45
+  buoyancy: 4
   bobberPrefab: {fileID: 3693312397776357791, guid: b532aad7799171544a982731f6fa4743, type: 3}
-  weight: 0.5
+  weight: 1.2

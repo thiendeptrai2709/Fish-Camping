@@ -23,6 +23,11 @@ public class NPCFishingShop : MonoBehaviour
 
     private bool _hasMetPlayer = false; // Cờ ghi nhớ đã gặp lần đầu chưa
 
+    private void Awake()
+    {
+        _hasMetPlayer = PlayerPrefs.GetInt("NPC_Met_FishingShop", 0) == 1;
+    }
+
     public void HandleShopInteraction(string npcName, System.Action onComplete)
     {
         // Chọn danh sách thoại: Lần đầu nói hết, lần sau bốc 1 câu
@@ -31,6 +36,8 @@ public class NPCFishingShop : MonoBehaviour
         if (!_hasMetPlayer)
         {
             _hasMetPlayer = true;
+            PlayerPrefs.SetInt("NPC_Met_FishingShop", 1);
+            PlayerPrefs.Save();
             linesToPlay = shopFirstTimeDialogues;
         }
         else

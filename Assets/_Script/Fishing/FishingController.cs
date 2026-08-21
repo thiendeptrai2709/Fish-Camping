@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class FishingController : MonoBehaviour
 {
@@ -39,6 +41,10 @@ public class FishingController : MonoBehaviour
     private BobberEntity activeBobberEntity;
     private FishingLineVisual activeLineVisual;
 
+    public FishingRodSO CurrentRod => currentRod;
+    public BaitSO CurrentBait => currentBait;
+    public BobberSO CurrentBobber => currentBobber;
+
     private float currentThrowDistance;
     private int currentCastZone;
     private float biteTimer;
@@ -63,6 +69,12 @@ public class FishingController : MonoBehaviour
     private float zoneCheckTimer = 0f;
     private FishingZone[] cachedFishingZones;
     private float lastZoneCacheTime = -10f;
+
+    [Header("--- FISHING FEEDBACK UI ---")]
+    private GameObject feedbackBannerObj;
+    private TextMeshProUGUI feedbackText;
+    private CanvasGroup feedbackCanvasGroup;
+    private float feedbackTimer = 0f;
 
     private void Awake()
     {
@@ -89,6 +101,205 @@ public class FishingController : MonoBehaviour
         return currentState != FishingState.Idle;
     }
 
+    public bool IsOceanMap()
+    {
+        string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        return sceneName.Contains("Map4") || sceneName.Contains("Ocean");
+    }
+
+    public int GetItemTier(ItemShapeSO item)
+    {
+        if (item == null) return 0;
+        if (item is FishingRodSO rod && rod.rodTier > 0) return rod.rodTier;
+
+        string n = (string.IsNullOrEmpty(item.itemID) ? item.name : item.itemID).ToLower();
+        for (int i = 8; i >= 1; i--)
+        {
+            if (n.Contains(i.ToString())) return i;
+        }
+        return 1;
+    }
+
+    public bool ValidateFishingEquipment(out string errorReason)
+    {
+        errorReason = "";
+        bool isOcean = IsOceanMap();
+
+        // 1. Kiểm tra Cần câu
+        if (currentRod == null)
+        {
+            errorReason = "Bạn chưa trang bị Cần câu!";
+            return false;
+        }
+        int rodTier = currentRod.rodTier > 0 ? currentRod.rodTier : GetItemTier(currentRod);
+        if (isOcean)
+        {
+            if (rodTier < 5)
+            {
+                errorReason = $"Cần câu cấp {rodTier} quá yếu trước sóng biển Map 4!\nHãy dùng Cần câu 5 hoặc 6.";
+                return false;
+            }
+        }
+        else
+        {
+            if (rodTier >= 5)
+            {
+                errorReason = $"Cần câu biển (Cấp {rodTier}) quá nặng cho vùng hồ nước ngọt!\nHãy dùng Cần câu 1, 2, 3 hoặc 4.";
+                return false;
+            }
+        }
+
+        // 2. Kiểm tra Mồi câu
+        if (currentBait == null)
+        {
+            errorReason = "Bạn chưa trang bị Mồi câu!";
+            return false;
+        }
+        int baitTier = GetItemTier(currentBait);
+        if (isOcean)
+        {
+            if (baitTier < 5)
+            {
+                errorReason = "Cá biển Map 4 không ăn mồi nước ngọt!\nHãy dùng Mồi câu 5 hoặc 6 (Mồi biển).";
+                return false;
+            }
+        }
+        else
+        {
+            if (baitTier >= 5)
+            {
+                errorReason = "Mồi biển không phù hợp với cá vùng nước ngọt!\nHãy dùng Mồi câu 1, 2, 3 hoặc 4.";
+                return false;
+            }
+        }
+
+        // 3. Kiểm tra Phao câu
+        if (currentBobber == null)
+        {
+            errorReason = "Bạn chưa trang bị Phao câu!";
+            return false;
+        }
+        int bobberTier = GetItemTier(currentBobber);
+        if (isOcean)
+        {
+            if (bobberTier < 7)
+            {
+                errorReason = "Phao câu thường bị sóng biển Map 4 đánh chìm!\nHãy dùng Phao câu 7 hoặc 8 (Phao biển).";
+                return false;
+            }
+        }
+        else
+        {
+            if (bobberTier >= 7)
+            {
+                errorReason = "Phao biển quá nặng cho vùng hồ phẳng lặng!\nHãy dùng Phao câu 1 đến 6.";
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public void ShowFishingFeedback(string message, Color textColor)
+    {
+        EnsureFeedbackUI();
+        if (feedbackText != null)
+        {
+            feedbackText.text = message;
+            feedbackText.color = textColor;
+        }
+        if (feedbackBannerObj != null)
+        {
+            feedbackBannerObj.SetActive(true);
+        }
+        if (feedbackCanvasGroup != null)
+        {
+            feedbackCanvasGroup.alpha = 1f;
+        }
+        feedbackTimer = 3.0f;
+
+        // Đồng thời kích hoạt InteractionPromptUI làm kênh hiển thị phụ trợ
+        InteractionPromptUI promptUI = Object.FindFirstObjectByType<InteractionPromptUI>();
+        if (promptUI != null)
+        {
+            promptUI.DisplayPrompt(true, message);
+        }
+    }
+
+    private void EnsureFeedbackUI()
+    {
+        if (feedbackBannerObj != null && feedbackText != null && feedbackText.font != null) return;
+
+        Canvas[] canvases = Object.FindObjectsByType<Canvas>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+        Canvas rootCanvas = null;
+        foreach (var c in canvases)
+        {
+            if (c.isRootCanvas && c.renderMode == RenderMode.ScreenSpaceOverlay)
+            {
+                rootCanvas = c;
+                break;
+            }
+        }
+        if (rootCanvas == null && canvases.Length > 0) rootCanvas = canvases[0];
+        if (rootCanvas == null) return;
+
+        Transform existing = rootCanvas.transform.Find("FishingFeedbackBanner");
+        if (existing != null)
+        {
+            feedbackBannerObj = existing.gameObject;
+            feedbackText = feedbackBannerObj.GetComponentInChildren<TextMeshProUGUI>(true);
+            feedbackCanvasGroup = feedbackBannerObj.GetComponent<CanvasGroup>();
+            return;
+        }
+
+        // Tạo UI Feedback Banner động trên Canvas
+        feedbackBannerObj = new GameObject("FishingFeedbackBanner", typeof(RectTransform), typeof(CanvasGroup), typeof(Image));
+        feedbackBannerObj.transform.SetParent(rootCanvas.transform, false);
+
+        feedbackCanvasGroup = feedbackBannerObj.GetComponent<CanvasGroup>();
+        feedbackCanvasGroup.blocksRaycasts = false;
+        feedbackCanvasGroup.interactable = false;
+
+        Image bgImage = feedbackBannerObj.GetComponent<Image>();
+        bgImage.color = new Color(0.04f, 0.06f, 0.1f, 0.9f);
+        bgImage.raycastTarget = false;
+
+        RectTransform rect = feedbackBannerObj.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.62f, 0.76f); // Dịch sang phải
+        rect.anchorMax = new Vector2(0.62f, 0.76f);
+        rect.pivot = new Vector2(0.5f, 0.5f);
+        rect.sizeDelta = new Vector2(450f, 50f); // Thu nhỏ khung banner
+
+        GameObject textObj = new GameObject("FeedbackText", typeof(RectTransform), typeof(TextMeshProUGUI));
+        textObj.transform.SetParent(feedbackBannerObj.transform, false);
+        RectTransform textRect = textObj.GetComponent<RectTransform>();
+        textRect.anchorMin = Vector2.zero;
+        textRect.anchorMax = Vector2.one;
+        textRect.offsetMin = new Vector2(10f, 3f);
+        textRect.offsetMax = new Vector2(-10f, -3f);
+
+        feedbackText = textObj.GetComponent<TextMeshProUGUI>();
+        feedbackText.fontSize = 15f; // Chữ bé lại vừa vặn, tinh tế
+        feedbackText.fontStyle = FontStyles.Bold;
+        feedbackText.alignment = TextAlignmentOptions.Center;
+        feedbackText.raycastTarget = false;
+        feedbackText.enableWordWrapping = true;
+
+        // Gán Font hợp lệ từ các TMP trong Scene để tránh lỗi vô hình
+        TextMeshProUGUI[] tmps = Object.FindObjectsByType<TextMeshProUGUI>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        foreach (var t in tmps)
+        {
+            if (t != null && t.font != null)
+            {
+                feedbackText.font = t.font;
+                feedbackText.fontMaterial = t.fontMaterial;
+                break;
+            }
+        }
+
+        feedbackBannerObj.SetActive(false);
+    }
+
     private void Update()
     {
         if (inputHandler != null && inputHandler.IsUIOpen) return;
@@ -96,6 +307,22 @@ public class FishingController : MonoBehaviour
         // Giảm thời gian đếm ngược chống spam
         if (inputCooldown > 0f) inputCooldown -= Time.deltaTime;
         if (catchingLockTimer > 0f) catchingLockTimer -= Time.deltaTime;
+
+        // Cập nhật mờ dần thông báo Feedback
+        if (feedbackTimer > 0f)
+        {
+            feedbackTimer -= Time.deltaTime;
+            if (feedbackTimer <= 0.8f && feedbackCanvasGroup != null)
+            {
+                feedbackCanvasGroup.alpha = Mathf.Clamp01(feedbackTimer / 0.8f);
+            }
+            if (feedbackTimer <= 0f)
+            {
+                if (feedbackBannerObj != null) feedbackBannerObj.SetActive(false);
+                InteractionPromptUI promptUI = Object.FindFirstObjectByType<InteractionPromptUI>();
+                if (promptUI != null) promptUI.DisplayPrompt(false);
+            }
+        }
 
         // Tự động kiểm tra và cất cần câu vào Balo khi rời khỏi khu vực câu cá
         zoneCheckTimer -= Time.deltaTime;
@@ -130,6 +357,7 @@ public class FishingController : MonoBehaviour
             if (catchingLockTimer <= 0f)
             {
                 Debug.Log("<color=yellow>[Fishing Controller] Bấm Space -> Thả cá đi!</color>");
+                ShowFishingFeedback("Đã thả cá về lại vùng nước!", Color.yellow);
                 ForcedTutorialManager.Instance?.NotifyKeepOrReleaseFish();
                 ResetToIdle();
             }
@@ -158,6 +386,14 @@ public class FishingController : MonoBehaviour
             currentBobber = (bobberSlot != null && bobberSlot.GetEquippedItem() != null)
                 ? bobberSlot.GetEquippedItem().GetItemShape() as BobberSO : null;
 
+            // KIỂM TRA ĐIỀU KIỆN TRANG BỊ THEO MAP
+            if (!ValidateFishingEquipment(out string errorReason))
+            {
+                ShowFishingFeedback(errorReason, new Color(1f, 0.45f, 0.45f));
+                Debug.LogWarning($"<color=yellow>[Fishing Controller] {errorReason}</color>");
+                return;
+            }
+
             if (currentBait != null && currentBobber != null)
             {
                 if (energyController != null)
@@ -165,6 +401,7 @@ public class FishingController : MonoBehaviour
                     CharacterStatsManager statsManager = energyController.statsManager;
                     if (statsManager != null && statsManager.GetStatValue(StatType.Energy) <= 0)
                     {
+                        ShowFishingFeedback("Bạn đã cạn kiệt thể lực! Hãy ăn uống hoặc nghỉ ngơi.", new Color(1f, 0.6f, 0.2f));
                         Debug.Log("<color=red>[Fishing Controller] Bạn đã cạn kiệt thể lực, không thể tiếp tục câu!</color>");
                         return;
                     }
@@ -183,6 +420,7 @@ public class FishingController : MonoBehaviour
             }
             else
             {
+                ShowFishingFeedback("Bạn cần trang bị đầy đủ Mồi câu và Phao câu!", new Color(1f, 0.6f, 0.2f));
                 Debug.Log($"<color=yellow>[Fishing Controller] Đã cầm cần nhưng chưa thể quăng! Thiếu Mồi hoặc Phao.</color>");
             }
         }
@@ -204,34 +442,42 @@ public class FishingController : MonoBehaviour
         }
         else if (currentState == FishingState.Catching)
         {
-            // ==========================================
-            // FIX BUG: CHẶN CẤT CÁ KHI CHƯA HIỆN MODEL
-            // ==========================================
-            if (activeCaughtFish == null)
-            {
-                // Nếu model cá chưa được Instantiate ra tay -> Bỏ qua lệnh cất cá!
-                return;
-            }
-
-            // Vẫn giữ khóa 1.5 giây dự phòng nếu bồ muốn ngắm cá lâu hơn
             if (catchingLockTimer > 0f) return;
 
-            if (currentCaughtFishData != null && BackpackMinigameUI.Instance != null)
+            if (currentCaughtFishData != null)
             {
-                bool added = BackpackMinigameUI.Instance.TryAutoAddFish(currentCaughtFishData, caughtFishLength, caughtFishWeight, caughtFishGrade);
-                if (added)
+                BackpackMinigameUI backpack = BackpackMinigameUI.Instance;
+                if (backpack == null)
                 {
-                    Debug.Log($"<color=green>[Fishing Controller] Đã cất [{currentCaughtFishData.itemName}] vào Balo!</color>");
+                    backpack = Object.FindFirstObjectByType<BackpackMinigameUI>(FindObjectsInactive.Include);
+                }
+
+                if (backpack != null)
+                {
+                    bool added = backpack.TryAutoAddFish(currentCaughtFishData, caughtFishLength, caughtFishWeight, caughtFishGrade);
+                    if (added)
+                    {
+                        ShowFishingFeedback($"Đã cất [{currentCaughtFishData.itemName}] ({caughtFishLength:F1}cm) vào Balo!", Color.green);
+                        Debug.Log($"<color=green>[Fishing Controller] Đã cất [{currentCaughtFishData.itemName}] vào Balo!</color>");
+                    }
+                    else
+                    {
+                        ShowFishingFeedback("Balo đã đầy! Không còn chỗ trống để cất cá.", new Color(1f, 0.5f, 0.2f));
+                        Debug.Log("<color=red>[Fishing Controller] Balo đầy! Không thể cất cá, đã thả đi.</color>");
+                    }
                 }
                 else
                 {
-                    Debug.Log("<color=red>[Fishing Controller] Balo đầy! Không thể cất cá, đã thả đi.</color>");
+                    Debug.LogWarning("<color=yellow>[Fishing Controller] Không tìm thấy BackpackMinigameUI trong Scene!</color>");
                 }
             }
-            else
+
+            if (activeCaughtFish != null)
             {
-                Debug.Log("<color=yellow>[Fishing Controller] Thiếu data cá hoặc chưa có BackpackMinigameUI trong Scene -> Thả cá đi!</color>");
+                Destroy(activeCaughtFish);
+                activeCaughtFish = null;
             }
+
             ForcedTutorialManager.Instance?.NotifyKeepOrReleaseFish();
             ResetToIdle();
         }
@@ -240,12 +486,41 @@ public class FishingController : MonoBehaviour
     private void TriggerFishBitingEvent()
     {
         isWaitingForBite = false;
+
+        // ========================================================
+        // TÍNH TOÁN TỈ LỆ SẢY CÁ / CÂU HỤT KHI CÁ CẮN MỒI
+        // ========================================================
+        float escapeChance = 0.12f; // Tỉ lệ sảy cơ bản 12%
+        if (currentRod != null) escapeChance -= (currentRod.rodTier * 0.015f);
+        if (currentBobber != null) escapeChance -= (currentBobber.attractivenessBonus * 0.002f);
+        escapeChance = Mathf.Clamp(escapeChance, 0.03f, 0.25f);
+
+        if (Random.value < escapeChance)
+        {
+            Debug.Log("<color=yellow>[Fishing Controller] SẢY CÁ! Cá cắn mồi rồi giật tuột mất.</color>");
+            ShowFishingFeedback("Sảy cá rồi! Cá đã cắn mồi nhưng giật tuột mất.", new Color(1f, 0.35f, 0.35f));
+
+            if (playerAnimation != null)
+            {
+                playerAnimation.SetFishingState(false);
+                playerAnimation.TriggerCatchFail();
+            }
+
+            StopStruggleSound();
+            if (activeLineVisual != null) { Destroy(activeLineVisual.gameObject); activeLineVisual = null; }
+            if (activeBobberEntity != null) { Destroy(activeBobberEntity.gameObject); activeBobberEntity = null; }
+
+            Invoke(nameof(ResetToIdle), 1.5f);
+            return;
+        }
+
         isFishBiting = true;
         ForcedTutorialManager.Instance?.NotifyReelFish();
 
         if (currentFishingZone != null)
         {
-            currentCaughtFishData = currentFishingZone.GetRandomFish();
+            int rarityBonus = currentBait != null ? currentBait.targetRarityBonus : 0;
+            currentCaughtFishData = currentFishingZone.GetRandomFish(rarityBonus);
         }
         else
         {
@@ -270,7 +545,7 @@ public class FishingController : MonoBehaviour
             activeBobberEntity.StartBiting();
         }
 
-        // --- FIX: ÉP BUỘC PHÁT TIẾNG GIẰNG CO LIÊN TỤC ---
+        // --- PHÁT TIẾNG GIẰNG CO LIÊN TỤC ---
         if (fishingAudioSource != null && reelingStruggleSound != null)
         {
             fishingAudioSource.clip = reelingStruggleSound;
@@ -308,32 +583,52 @@ public class FishingController : MonoBehaviour
         if (isSuccess)
         {
             Debug.Log("<color=green>[Fishing Controller] CÂN BẰNG THÀNH CÔNG! Chuyển sang animation dâng cá.</color>");
+            ShowFishingFeedback("Cắn câu thành công! Đang kéo cá lên...", new Color(0.4f, 1f, 0.5f));
 
-            if (currentCaughtFishData != null && FishJournalManager.Instance != null)
+            if (currentCaughtFishData != null)
             {
                 currentCaughtFishData.GenerateRandomSize(out caughtFishLength, out caughtFishWeight);
-                caughtFishGrade = currentCaughtFishData.GenerateRandomGrade();
 
-                bool isNewRecord = FishJournalManager.Instance.RecordCatch(currentCaughtFishData.itemID, caughtFishLength, caughtFishWeight, caughtFishGrade);
-
-                if (isNewRecord)
+                // 1. Phao câu xịn (Bobber) -> Tăng chiều dài & cân nặng cá (+% attractivenessBonus)
+                if (currentBobber != null && currentBobber.attractivenessBonus > 0f)
                 {
-                    Debug.Log($"<color=yellow>[Sổ Tay] KỶ LỰC MỚI!</color>");
+                    float sizeMultiplier = 1f + (currentBobber.attractivenessBonus / 100f);
+                    caughtFishLength = Mathf.Round(caughtFishLength * sizeMultiplier * 10f) / 10f;
+                    caughtFishWeight = Mathf.Round(caughtFishWeight * (sizeMultiplier * sizeMultiplier) * 100f) / 100f;
+                }
+
+                // 2. Mồi câu xịn (Bait) -> Tăng tỷ lệ phẩm chất cá Bạc / Vàng Kim (+% targetRarityBonus)
+                float gradeBonus = currentBait != null ? currentBait.targetRarityBonus * 4f : 0f;
+                caughtFishGrade = currentCaughtFishData.GenerateRandomGrade(gradeBonus);
+
+                if (FishJournalManager.Instance != null)
+                {
+                    bool isNewRecord = FishJournalManager.Instance.RecordCatch(currentCaughtFishData.itemID, caughtFishLength, caughtFishWeight, caughtFishGrade);
+                    if (isNewRecord)
+                    {
+                        Debug.Log($"<color=yellow>[Sổ Tay] KỶ LỰC MỚI!</color>");
+                    }
                 }
             }
 
             currentState = FishingState.Catching;
-            catchingLockTimer = 1.5f; // Khóa thao tác 1.5s để người chơi ngắm cá
+            catchingLockTimer = 1.4f; // Khóa 1.4s để nhân vật thực hiện xong động tác giật cần kéo cá lên
             ForcedTutorialManager.Instance?.NotifyFishCaught();
             if (playerAnimation != null)
             {
                 playerAnimation.TriggerCatchSuccess();
             }
+
+            // Lên lịch sinh model cá đúng lúc động tác giật cần hoàn tất (1.33s)
+            CancelInvoke(nameof(SpawnCaughtFishModel));
+            Invoke(nameof(SpawnCaughtFishModel), 1.33f);
         }
         else
         {
             Debug.Log("<color=red>[Fishing Controller] CÂN BẰNG THẤT BẠI!</color>");
             currentState = FishingState.Failed;
+            ShowFishingFeedback("Sảy cá rồi! Dây cước chùng khiến cá trốn thoát.", new Color(1f, 0.35f, 0.35f));
+
             if (ForcedTutorialManager.Instance != null && ForcedTutorialManager.Instance.GetCurrentStage() == TutorialStage.Map2_Quest4_3_ReelFish)
             {
                 ForcedTutorialManager.Instance.AdvanceToStage(TutorialStage.Map2_Quest4_1_WindUpRod);
@@ -350,24 +645,59 @@ public class FishingController : MonoBehaviour
     {
         if (currentState == FishingState.Catching)
         {
-            if (activeCaughtFish != null) return;
+            CancelInvoke(nameof(SpawnCaughtFishModel));
+            SpawnCaughtFishModel();
+        }
+    }
 
-            Transform targetSocket = leftHandFishSocket;
-            if (targetSocket == null && handVisual != null)
+    public void SpawnCaughtFishModel()
+    {
+        if (activeCaughtFish != null)
+        {
+            Destroy(activeCaughtFish);
+            activeCaughtFish = null;
+        }
+
+        if (currentCaughtFishData == null) return;
+
+        GameObject prefabToSpawn = currentCaughtFishData.caughtFishPrefab != null 
+            ? currentCaughtFishData.caughtFishPrefab 
+            : currentCaughtFishData.equippedModelPrefab;
+
+        if (prefabToSpawn == null) return;
+
+        Transform targetSocket = leftHandFishSocket;
+        if (targetSocket == null)
+        {
+            Transform[] allChildren = GetComponentsInChildren<Transform>(true);
+            foreach (var t in allChildren)
             {
-                targetSocket = handVisual.GetTipSocketTransform();
-            }
-
-            GameObject prefabToSpawn = (currentCaughtFishData != null && currentCaughtFishData.caughtFishPrefab != null)
-                  ? currentCaughtFishData.caughtFishPrefab : null;
-
-            if (targetSocket != null && prefabToSpawn != null)
-            {
-                activeCaughtFish = Instantiate(prefabToSpawn, targetSocket.position, Quaternion.identity, targetSocket);
-                activeCaughtFish.transform.localPosition = Vector3.zero;
-                activeCaughtFish.transform.localRotation = Quaternion.identity;
+                string lower = t.name.ToLower();
+                if (lower == "lefthand" || lower.Contains("hand_l") || lower.Contains("hand.l") || lower.Contains("left_hand"))
+                {
+                    targetSocket = t;
+                    break;
+                }
             }
         }
+        if (targetSocket == null && handVisual != null)
+        {
+            targetSocket = handVisual.GetTipSocketTransform();
+        }
+        if (targetSocket == null)
+        {
+            targetSocket = transform;
+        }
+
+        activeCaughtFish = Instantiate(prefabToSpawn, targetSocket.position, targetSocket.rotation, targetSocket);
+        activeCaughtFish.transform.localPosition = Vector3.zero;
+        activeCaughtFish.transform.localRotation = Quaternion.identity;
+        activeCaughtFish.transform.localScale = Vector3.one;
+
+        foreach (var col in activeCaughtFish.GetComponentsInChildren<Collider>()) col.enabled = false;
+        foreach (var rb in activeCaughtFish.GetComponentsInChildren<Rigidbody>()) rb.isKinematic = true;
+
+        Debug.Log($"<color=green>[Fishing Controller] Đã hiển thị mô hình cá [{currentCaughtFishData.itemName}] trên tay!</color>");
     }
 
     public void OnCatchFailComplete()
@@ -413,6 +743,7 @@ public class FishingController : MonoBehaviour
         if (zone == 0)
         {
             currentState = FishingState.Idle;
+            ShowFishingFeedback("Quăng cần hụt! Hãy căn lực vào vùng màu xanh.", Color.yellow);
             if (playerAnimation != null) playerAnimation.ResetAnimationSpeed();
             if (ForcedTutorialManager.Instance != null && ForcedTutorialManager.Instance.GetCurrentStage() == TutorialStage.Map2_Quest4_2_TimingPower)
             {
@@ -526,12 +857,28 @@ public class FishingController : MonoBehaviour
                 isFishBiting = false;
                 isWaitingForBite = true;
                 reelInCooldown = 1.0f;
-                biteTimer = Random.Range(minBiteWaitTime, maxBiteWaitTime);
+                float baseWait = Random.Range(minBiteWaitTime, maxBiteWaitTime);
 
+                // 1. Giảm thời gian do Cần Câu (% Giảm thời gian chờ)
                 if (currentRod != null && currentRod.waitTimeReductionPercentage > 0f)
                 {
-                    biteTimer *= (1f - Mathf.Clamp01(currentRod.waitTimeReductionPercentage / 100f));
+                    baseWait *= (1f - Mathf.Clamp01(currentRod.waitTimeReductionPercentage / 100f));
                 }
+
+                // 2. Giảm thời gian do Mồi Câu (trừ trực tiếp số giây + % thu hút)
+                if (currentBait != null)
+                {
+                    baseWait -= currentBait.waitTimeReduction;
+                    baseWait -= (currentBait.attractivenessBonus * 0.03f);
+                }
+
+                // 3. Giảm thời gian do Phao Câu (% thu hút)
+                if (currentBobber != null && currentBobber.attractivenessBonus > 0f)
+                {
+                    baseWait -= (currentBobber.attractivenessBonus * 0.02f);
+                }
+
+                biteTimer = Mathf.Max(1.0f, baseWait);
             }
             else
             {
