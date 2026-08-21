@@ -208,7 +208,17 @@ public class PlayerLocationSaveManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (!IsGameplayScene(scene.name)) return;
+        if (!IsGameplayScene(scene.name))
+        {
+            if (ScreenFader.Instance != null)
+            {
+                ScreenFader.Instance.SetImmediateAlpha(0f);
+            }
+            return;
+        }
+
+        // 1. Che màn đen lập tức để người chơi không thấy khoảnh khắc dịch chuyển/spawn
+        ScreenFader.Instance.SetImmediateAlpha(1f);
 
         // Nếu vừa khởi động game và mở vào Map mặc định (Map_1_Town) nhưng trước đó đang ở Map khác (ví dụ: Map_2_PineLake)
         if (isInitialBoot)
@@ -233,9 +243,8 @@ public class PlayerLocationSaveManager : MonoBehaviour
     {
         isRestoring = true;
 
-        // Chờ 2 frame để đảm bảo tất cả GameObject, Terrain, NavMesh đã load hoàn tất
-        yield return null;
-        yield return new WaitForSeconds(0.15f);
+        // Giữ màn đen che khuất hoàn toàn
+        ScreenFader.Instance.SetImmediateAlpha(1f);
 
         PlayerLocationData data = LoadSavedData();
 
@@ -262,9 +271,7 @@ public class PlayerLocationSaveManager : MonoBehaviour
 
                 vehicleTransform.position = new Vector3(data.vehiclePosX, data.vehiclePosY, data.vehiclePosZ);
                 vehicleTransform.rotation = Quaternion.Euler(0, data.vehicleRotY, 0);
-                Physics.SyncTransforms();
 
-                yield return new WaitForSeconds(0.2f);
                 if (carRb != null) carRb.isKinematic = false;
             }
 
@@ -289,19 +296,37 @@ public class PlayerLocationSaveManager : MonoBehaviour
 
                     player.transform.position = new Vector3(data.playerPosX, data.playerPosY, data.playerPosZ);
                     player.transform.rotation = Quaternion.Euler(0, data.playerRotY, 0);
-                    Physics.SyncTransforms();
 
                     if (cc != null) cc.enabled = true;
                 }
             }
 
+            Physics.SyncTransforms();
+
+            // 3. Khóa & Dịch chuyển camera tức thì (Warp Camera)
+            if (DualCameraController.Instance != null)
+            {
+                DualCameraController.Instance.WarpCameraToTarget();
+            }
+
             Debug.Log($"<color=green>[PlayerLocationSaveManager] Đã phục hồi vị trí map [{sceneName}] - InVehicle: {data.isInVehicle}</color>");
+        }
+
+        // Chờ frame vật lý và camera ổn định vị trí hoàn toàn
+        yield return new WaitForSecondsRealtime(0.12f);
+
+        if (DualCameraController.Instance != null)
+        {
+            DualCameraController.Instance.WarpCameraToTarget();
         }
 
         isRestoring = false;
 
         // Lưu lại vị trí hiện tại sau khi đã restore xong
         SaveCurrentLocation();
+
+        // 4. Mở màn đen mượt mà (Fade In) để người chơi thấy nhân vật đã ở ngay vị trí đó
+        yield return ScreenFader.Instance.FadeIn(0.45f);
     }
 
     [ContextMenu("Xóa dữ liệu Vị trí người chơi (Reset Location)")]

@@ -89,9 +89,19 @@ public class GameDataResetManager : MonoBehaviour
             Debug.LogWarning($"[GameDataResetManager] Lỗi khi xóa file save: {ex.Message}");
         }
 
+        // 3. Reset các singleton in-memory nếu đang sống trong RAM
+        if (MoneyManager.Instance != null)
+        {
+            MoneyManager.Instance.RefreshMoneyFromSave();
+        }
+        if (FishJournalManager.Instance != null)
+        {
+            FishJournalManager.Instance.ResetJournalData();
+        }
+
         Debug.Log("<color=green><b>[GameDataResetManager] ĐÃ RESET TOÀN BỘ DỮ LIỆU GAME THÀNH CÔNG! Trạng thái: User mới 100%.</b></color>");
 
-        // 3. Tải lại scene nếu đang trong Play Mode
+        // 4. Tải lại scene nếu đang trong Play Mode
         if (reloadScene && Application.isPlaying)
         {
             string currentScene = SceneManager.GetActiveScene().name;

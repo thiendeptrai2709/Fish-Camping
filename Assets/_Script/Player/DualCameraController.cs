@@ -35,10 +35,10 @@ public class DualCameraController : MonoBehaviour
     [SerializeField] private CinemachineCamera tppCarCamera;      // CameraTargetCar (Cinemachine)
     [SerializeField] private CinemachineCamera fppCamera;         // CameraFPP (Cinemachine)
 
-    [Header("--- Fast PUBG-Style Transition ---")]
-    [Tooltip("Thời gian chuyển đổi góc nhìn FPP <-> TPP (giây). 0.15 - 0.2s cho cảm giác nhanh và mượt như PUBG")]
-    [SerializeField] private float transitionDuration = 0.16f;
-    [SerializeField] private CinemachineBlendDefinition.Styles transitionStyle = CinemachineBlendDefinition.Styles.EaseInOut;
+    [Header("--- PUBG-Style Instant Transition ---")]
+    [Tooltip("Chuyển đổi góc nhìn FPP <-> TPP tức thì không có độ trễ (0 giây chuẩn PUBG)")]
+    [SerializeField] private float transitionDuration = 0f;
+    [SerializeField] private CinemachineBlendDefinition.Styles transitionStyle = CinemachineBlendDefinition.Styles.Cut;
 
     [Header("--- FPP Eye Target Offsets ---")]
     [Tooltip("Tọa độ tâm mắt FPP khi ĐI BỘ (X giữa, Y tầm mắt đứng, Z nhô ra trước)")]
@@ -75,7 +75,7 @@ public class DualCameraController : MonoBehaviour
 
     private bool isInVehicle = false;
     private float lastToggleTime = -1f;
-    private const float TOGGLE_COOLDOWN = 0.15f; // Phản hồi phím tức thì
+    private const float TOGGLE_COOLDOWN = 0.1f;
 
     // FPP on-foot pitch
     private float fppPitch = 0f;
@@ -88,6 +88,7 @@ public class DualCameraController : MonoBehaviour
     private CinemachineHardLockToTarget fppHardLock;
     private CinemachineInputAxisController tppPlayerInputCtrl;
     private CinemachineOrbitalFollow tppOrbitalFollow;
+    private Coroutine meshVisibilityCoroutine;
 
     private void Awake()
     {
@@ -134,7 +135,7 @@ public class DualCameraController : MonoBehaviour
 
         if (mainBrain != null)
         {
-            mainBrain.DefaultBlend = new CinemachineBlendDefinition(transitionStyle, transitionDuration);
+            mainBrain.DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Styles.Cut, 0f);
         }
     }
 
@@ -246,12 +247,11 @@ public class DualCameraController : MonoBehaviour
     {
         bool isFpp = (mode == PerspectiveMode.FirstPerson);
 
-        // Đảm bảo thời gian chuyển cảnh siêu nhanh chuẩn PUBG
         ConfigureBrainBlend();
 
         if (isFpp)
         {
-            // Chuyển sang FPP: Đồng bộ góc nhìn chính xác từ TPP sang FPP để không bị giật khung hình
+            // Chuyển sang FPP: Đồng bộ góc nhìn chính xác từ TPP sang FPP (cắt tức thì 0s chuẩn PUBG)
             if (!isInVehicle)
             {
                 if (Camera.main != null && playerTransform != null)
@@ -267,6 +267,11 @@ public class DualCameraController : MonoBehaviour
                     {
                         fppEyeTarget.localPosition = CurrentFppOffset;
                         fppEyeTarget.localRotation = Quaternion.Euler(fppPitch, 0f, 0f);
+                    }
+
+                    if (fppCamera != null)
+                    {
+                        fppCamera.ForceCameraPosition(fppEyeTarget.position, fppEyeTarget.rotation);
                     }
                 }
             }
@@ -291,12 +296,22 @@ public class DualCameraController : MonoBehaviour
         }
         else // TPP
         {
-            // Chuyển sang TPP: Đồng bộ vị trí camera TPP nằm thẳng sau lưng nhân vật
-            if (!isInVehicle && tppOrbitalFollow != null)
+            // Chuyển sang TPP: Đồng bộ camera TPP nằm CHÍNH XÁC ngay sau lưng nhân vật theo hướng FPP vừa nhìn
+            if (!isInVehicle)
             {
-                var horizontal = tppOrbitalFollow.HorizontalAxis;
-                horizontal.Value = 0f;
-                tppOrbitalFollow.HorizontalAxis = horizontal;
+                float currentYaw = playerTransform != null ? playerTransform.eulerAngles.y : 0f;
+                if (currentYaw > 180f) currentYaw -= 360f;
+
+                if (tppOrbitalFollow != null)
+                {
+                    var horizontal = tppOrbitalFollow.HorizontalAxis;
+                    horizontal.Value = currentYaw; // Đồng bộ World Yaw chuẩn xác
+                    tppOrbitalFollow.HorizontalAxis = horizontal;
+
+                    var vertical = tppOrbitalFollow.VerticalAxis;
+                    vertical.Value = Mathf.Clamp(fppPitch, vertical.Range.x, vertical.Range.y);
+                    tppOrbitalFollow.VerticalAxis = vertical;
+                }
             }
 
             // TPP: CameraFPP ưu tiên thấp
@@ -482,15 +497,57 @@ public class DualCameraController : MonoBehaviour
 
         if (mode == PerspectiveMode.FirstPerson)
         {
+            // FPP: Ẩn phần đầu ngay lập tức
             if (headRenderers != null)
+            {
                 foreach (var r in headRenderers)
+                {
                     if (r != null) r.shadowCastingMode = fppShadowMode;
+                }
+            }
         }
         else
         {
+            // TPP: Hiện lại toàn bộ cơ thể và đầu tức thì
             if (allPlayerRenderers != null)
+            {
                 foreach (var r in allPlayerRenderers)
+                {
                     if (r != null) r.shadowCastingMode = tppShadowMode;
+                }
+            }
         }
+    }
+
+    /// <summary>
+    /// Dịch chuyển camera tức thì theo vị trí mới của nhân vật/xe, tránh hiệu ứng camera bay vút qua map
+    /// </summary>
+    public void WarpCameraToTarget()
+    {
+        AutoFindReferences();
+        if (mainBrain == null && Camera.main != null)
+        {
+            mainBrain = Camera.main.GetComponent<CinemachineBrain>();
+        }
+
+        if (playerTransform != null)
+        {
+            if (tppPlayerCamera != null)
+            {
+                tppPlayerCamera.OnTargetObjectWarped(playerTransform, Vector3.zero);
+            }
+            if (fppCamera != null && fppEyeTarget != null)
+            {
+                fppCamera.OnTargetObjectWarped(fppEyeTarget, Vector3.zero);
+            }
+        }
+
+        VehicleController vc = UnityEngine.Object.FindFirstObjectByType<VehicleController>(FindObjectsInactive.Include);
+        if (vc != null && tppCarCamera != null)
+        {
+            tppCarCamera.OnTargetObjectWarped(vc.transform, Vector3.zero);
+        }
+
+        ApplyPerspectiveMode(currentMode);
     }
 }

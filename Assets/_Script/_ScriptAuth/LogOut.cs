@@ -19,6 +19,7 @@ public class LogOut : MonoBehaviour
 
         // 2. Xóa session UID lưu trong máy để yêu cầu đăng nhập lại
         PlayerPrefs.DeleteKey("Firebase_User_UID");
+        PlayerPrefs.DeleteKey("Last_Active_User_UID");
         PlayerPrefs.Save();
 
         Debug.Log("<color=yellow>[LogOut] Đã đăng xuất và xóa phiên làm việc thành công!</color>");

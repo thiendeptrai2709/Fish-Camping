@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using TMPro;
 using System.Collections;
 using System.Collections.Generic;
@@ -93,6 +93,13 @@ public class MoneyManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        KhoiTaoTienNguoiChoi();
+        CapNhatLaiDanhSachTextTien();
+    }
+
+    public void RefreshMoneyFromSave()
+    {
+        KhoiTaoTienNguoiChoi();
         CapNhatLaiDanhSachTextTien();
     }
 

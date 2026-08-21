@@ -67,6 +67,7 @@ public class Login : MonoBehaviour
     {
         if (user == null) return;
 
+        PlayerPrefs.SetString("Last_Active_User_UID", user.UserId);
         PlayerPrefs.SetString("Firebase_User_UID", user.UserId);
         PlayerPrefs.SetString("Firebase_User_Email", user.Email ?? "");
         PlayerPrefs.SetString("Saved_Login_Email", user.Email ?? "");
@@ -112,11 +113,13 @@ public class Login : MonoBehaviour
             if (task.IsCompletedSuccessfully)
             {
                 var newUser = task.Result.User;
-                Debug.Log($"Đăng ký tài khoản thành công cho: {newUser.Email}");
+                Debug.Log($"<color=cyan>[Firebase] Đăng ký tài khoản mới thành công: {newUser.Email} (UID: {newUser.UserId})</color>");
 
-                // Lưu email đăng ký và tự động điền sang form đăng nhập
-                PlayerPrefs.SetString("Saved_Login_Email", email);
-                PlayerPrefs.Save();
+                // 1. XÓA SẠCH TOÀN BỘ DỮ LIỆU CŨ TRÊN MÁY CHO TÀI KHOẢN MỚI
+                GameDataResetManager.ResetAllGameData(reloadScene: false);
+
+                // 2. Lưu session người dùng mới
+                SaveUserSession(newUser);
 
                 if (ipLoginEmail != null) ipLoginEmail.text = email;
                 if (ipLoginPassword != null) ipLoginPassword.text = password;
@@ -163,15 +166,32 @@ public class Login : MonoBehaviour
                 var user = task.Result.User;
                 Debug.Log($"Đăng nhập thành công cho: {user.Email} (UID: {user.UserId})");
 
+                // Nếu phát hiện đăng nhập bằng một tài khoản khác với tài khoản trước trên máy
+                string lastActiveUID = PlayerPrefs.GetString("Last_Active_User_UID", "");
+                if (string.IsNullOrEmpty(lastActiveUID) || lastActiveUID != user.UserId)
+                {
+                    Debug.Log($"<color=yellow>[Firebase] Phát hiện đăng nhập tài khoản khác (UID cũ: '{lastActiveUID}' != UID mới: '{user.UserId}'). Khởi tạo dữ liệu sạch cho tài khoản mới...</color>");
+                    GameDataResetManager.ResetAllGameData(reloadScene: false);
+                }
+
                 // Lưu toàn bộ session thông tin user vào PlayerPrefs
                 SaveUserSession(user);
 
                 ShowStatus(GetLocalizedText("auth_login_success", "Đăng nhập thành công! Đang vào game..."), Color.green);
 
                 string targetScene = PlayerLocationSaveManager.GetSavedSceneName("Map_1_Town");
-                SceneManager.LoadScene(targetScene);
+                StartCoroutine(LoginAndTransition(targetScene));
             }
         });
+    }
+
+    private IEnumerator LoginAndTransition(string targetScene)
+    {
+        if (ScreenFader.Instance != null)
+        {
+            yield return ScreenFader.Instance.FadeOut(0.35f);
+        }
+        SceneManager.LoadScene(targetScene);
     }
 
     public void SwitchForm()
