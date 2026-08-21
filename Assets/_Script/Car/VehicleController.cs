@@ -65,6 +65,14 @@ public class VehicleController : MonoBehaviour
     private CarFuel carFuel;
     private CarLightController carLightController; // Thêm tham chiếu đến Đèn xe
 
+    // Lưu trữ thông số ma sát gốc của 4 bánh xe để điều chỉnh theo độ bám của lốp
+    private WheelFrictionCurve baseFwdFL, baseSideFL;
+    private WheelFrictionCurve baseFwdFR, baseSideFR;
+    private WheelFrictionCurve baseFwdRL, baseSideRL;
+    private WheelFrictionCurve baseFwdRR, baseSideRR;
+    private bool hasCachedBaseFriction = false;
+    private float currentSteerBias = 0f;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -81,8 +89,20 @@ public class VehicleController : MonoBehaviour
             rb.centerOfMass = centerOfMass.localPosition;
         }
 
+        CacheBaseFriction();
+
         // Tự động tìm vô lăng và tạo tâm xoay hình học chuẩn xác
         SetupSteeringWheelPivot();
+    }
+
+    private void CacheBaseFriction()
+    {
+        if (hasCachedBaseFriction) return;
+        if (frontLeftWheel != null) { baseFwdFL = frontLeftWheel.forwardFriction; baseSideFL = frontLeftWheel.sidewaysFriction; }
+        if (frontRightWheel != null) { baseFwdFR = frontRightWheel.forwardFriction; baseSideFR = frontRightWheel.sidewaysFriction; }
+        if (rearLeftWheel != null) { baseFwdRL = rearLeftWheel.forwardFriction; baseSideRL = rearLeftWheel.sidewaysFriction; }
+        if (rearRightWheel != null) { baseFwdRR = rearRightWheel.forwardFriction; baseSideRR = rearRightWheel.sidewaysFriction; }
+        hasCachedBaseFriction = true;
     }
 
     private void SetupSteeringWheelPivot()
@@ -241,7 +261,8 @@ public class VehicleController : MonoBehaviour
 
     private void HandleSteering()
     {
-        float steerAngle = vehicleInput.MoveInput.x * maxSteerAngle;
+        // Khi xe di chuyển, nếu có lốp bị xẹp sẽ có lực kéo lệch lái nhẹ (currentSteerBias)
+        float steerAngle = vehicleInput.MoveInput.x * maxSteerAngle + currentSteerBias;
         frontLeftWheel.steerAngle = steerAngle;
         frontRightWheel.steerAngle = steerAngle;
     }
@@ -256,6 +277,7 @@ public class VehicleController : MonoBehaviour
 
     private void UpdateSingleWheel(WheelCollider wheelCollider, Transform wheelTransform)
     {
+        if (wheelCollider == null || wheelTransform == null) return;
         Vector3 pos;
         Quaternion rot;
         wheelCollider.GetWorldPose(out pos, out rot);
@@ -289,5 +311,31 @@ public class VehicleController : MonoBehaviour
     {
         maxSpeedKmh = newMaxSpeed;
         motorTorque = newTorque;
+    }
+
+    // --- HÀM MỚI: Áp dụng độ bám đường và lệch lái của từng bánh xe ---
+    public void ApplyTirePhysics(float flGrip, float frGrip, float rlGrip, float rrGrip, float steerBias)
+    {
+        CacheBaseFriction();
+
+        currentSteerBias = steerBias;
+
+        UpdateSingleWheelFriction(frontLeftWheel, baseFwdFL, baseSideFL, flGrip);
+        UpdateSingleWheelFriction(frontRightWheel, baseFwdFR, baseSideFR, frGrip);
+        UpdateSingleWheelFriction(rearLeftWheel, baseFwdRL, baseSideRL, rlGrip);
+        UpdateSingleWheelFriction(rearRightWheel, baseFwdRR, baseSideRR, rrGrip);
+    }
+
+    private void UpdateSingleWheelFriction(WheelCollider wc, WheelFrictionCurve baseFwd, WheelFrictionCurve baseSide, float gripMultiplier)
+    {
+        if (wc == null) return;
+
+        WheelFrictionCurve fwd = baseFwd;
+        fwd.stiffness = Mathf.Clamp(baseFwd.stiffness * gripMultiplier, 0.2f, 2.5f);
+        wc.forwardFriction = fwd;
+
+        WheelFrictionCurve side = baseSide;
+        side.stiffness = Mathf.Clamp(baseSide.stiffness * gripMultiplier, 0.2f, 2.5f);
+        wc.sidewaysFriction = side;
     }
 }

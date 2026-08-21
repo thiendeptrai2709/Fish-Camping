@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 using Unity.Cinemachine;
@@ -117,11 +117,14 @@ public class TireRepairMinigame : MonoBehaviour
 
     public string GetCurrentPrompt()
     {
+        bool isVietnamese = UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale != null &&
+                            UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale.Identifier.Code.StartsWith("vi");
+
         switch (currentState)
         {
-            case TireState.Normal: return "[Chuột Trái] Kiểm tra lốp";
-            case TireState.Viewing: return "[Chuột Trái] Tháo & Thay lốp mới";
-            case TireState.Swapped: return "[Chuột Trái] Lắp lốp vào xe";
+            case TireState.Normal: return isVietnamese ? "[Chuột Trái] Kiểm tra lốp" : "[Left Click] Inspect Tire";
+            case TireState.Viewing: return isVietnamese ? "[Chuột Trái] Tháo & Thay lốp mới" : "[Left Click] Remove & Swap Tire";
+            case TireState.Swapped: return isVietnamese ? "[Chuột Trái] Lắp lốp vào xe" : "[Left Click] Install Tire";
             default: return "";
         }
     }

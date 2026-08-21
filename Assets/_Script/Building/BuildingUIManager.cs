@@ -58,6 +58,12 @@ public class BuildingUIManager : MonoBehaviour
 
             if (ShopManager.Instance != null && ShopManager.Instance.shopPanel != null && ShopManager.Instance.shopPanel.activeInHierarchy)
                 ShopManager.Instance.DongShop();
+
+            FishingController fc = Object.FindFirstObjectByType<FishingController>();
+            if (fc != null && fc.IsBusyFishing())
+            {
+                fc.AutoStowRodToBackpack();
+            }
         }
 
         buildingUIPanel.SetActive(isOpening);
@@ -109,6 +115,14 @@ public class BuildingUIManager : MonoBehaviour
         if (buildingUIPanel != null && buildingUIPanel.activeSelf)
         {
             ToggleBuildingUI();
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (buildingUIPanel != null && buildingUIPanel.activeSelf)
+        {
+            CloseBuildingUI();
         }
     }
 }

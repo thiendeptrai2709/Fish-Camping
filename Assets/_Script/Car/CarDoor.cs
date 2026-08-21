@@ -76,10 +76,13 @@ public class CarDoor : MonoBehaviour, IInteractable
 
     public string GetInteractPrompt()
     {
+        bool isVietnamese = UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale != null &&
+                            UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale.Identifier.Code.StartsWith("vi");
+
         if (ForcedTutorialManager.Instance != null && !ForcedTutorialManager.Instance.CanEnterVehicle())
         {
-            return "Cần hoàn thành nhiệm vụ trước khi lên xe";
+            return isVietnamese ? "Cần hoàn thành nhiệm vụ trước khi lên xe" : "Complete mission before entering vehicle";
         }
-        return "[Chuột Trái] Lên xe";
+        return isVietnamese ? "[Chuột Trái] Lên xe" : "[Left Click] Enter Vehicle";
     }
 }

@@ -144,7 +144,9 @@ public class BackpackMinigameUI : MonoBehaviour
                 isFish = (shape is FishSO),
                 fishLength = item.GetLength(),
                 fishWeight = item.GetWeight(),
-                fishGrade = (int)item.GetGrade()
+                fishGrade = (int)item.GetGrade(),
+                durability = item.GetDurability(),
+                remainingUses = item.GetRemainingUses()
             };
 
             container.items.Add(data);
@@ -169,7 +171,9 @@ public class BackpackMinigameUI : MonoBehaviour
                     isFish = (shape is FishSO),
                     fishLength = eqItem.GetLength(),
                     fishWeight = eqItem.GetWeight(),
-                    fishGrade = (int)eqItem.GetGrade()
+                    fishGrade = (int)eqItem.GetGrade(),
+                    durability = eqItem.GetDurability(),
+                    remainingUses = eqItem.GetRemainingUses()
                 };
                 container.equippedSlots.Add(slotData);
             }
@@ -219,9 +223,20 @@ public class BackpackMinigameUI : MonoBehaviour
                 if (foundShape != null)
                 {
                     InventoryItemUI spawned = SpawnItem(foundShape, saved.gridX, saved.gridY, saved.isRotated);
-                    if (spawned != null && saved.isFish)
+                    if (spawned != null)
                     {
-                        spawned.SetFishInstanceData(saved.fishLength, saved.fishWeight, (FishGrade)saved.fishGrade);
+                        if (saved.isFish)
+                        {
+                            spawned.SetFishInstanceData(saved.fishLength, saved.fishWeight, (FishGrade)saved.fishGrade);
+                        }
+                        if (saved.durability >= 0f)
+                        {
+                            spawned.SetDurability(saved.durability);
+                        }
+                        if (saved.remainingUses >= 0)
+                        {
+                            spawned.SetRemainingUses(saved.remainingUses);
+                        }
                     }
                 }
             }
@@ -258,6 +273,14 @@ public class BackpackMinigameUI : MonoBehaviour
                         if (eqData.isFish)
                         {
                             spawnedItem.SetFishInstanceData(eqData.fishLength, eqData.fishWeight, (FishGrade)eqData.fishGrade);
+                        }
+                        if (eqData.durability >= 0f)
+                        {
+                            spawnedItem.SetDurability(eqData.durability);
+                        }
+                        if (eqData.remainingUses >= 0)
+                        {
+                            spawnedItem.SetRemainingUses(eqData.remainingUses);
                         }
                         targetSlot.EquipItemDirectly(spawnedItem);
                     }

@@ -164,6 +164,22 @@ public class CookingUIManager : MonoBehaviour
 
     public void CloseCookingUI()
     {
+        // Hoàn trả các nguyên liệu chưa nấu trong slot về lại Balo của người chơi
+        if (cookingSlots != null)
+        {
+            foreach (var slot in cookingSlots)
+            {
+                if (slot != null && slot.CurrentItem != null)
+                {
+                    if (BackpackMinigameUI.Instance != null)
+                    {
+                        BackpackMinigameUI.Instance.TryAutoAddItem(slot.CurrentItem);
+                    }
+                    slot.ClearSlot();
+                }
+            }
+        }
+
         currentRack = null;
         if (cookingPanel != null)
         {

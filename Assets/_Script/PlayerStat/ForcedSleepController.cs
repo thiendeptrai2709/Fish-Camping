@@ -18,6 +18,14 @@ public class ForcedSleepController : MonoBehaviour
 
     private bool isSleeping = false;
 
+    private void Awake()
+    {
+        if (statsManager == null)
+        {
+            statsManager = GetComponent<CharacterStatsManager>() ?? CharacterStatsManager.Instance ?? UnityEngine.Object.FindFirstObjectByType<CharacterStatsManager>();
+        }
+    }
+
     public bool IsSleeping()
     {
         return isSleeping;
@@ -26,6 +34,14 @@ public class ForcedSleepController : MonoBehaviour
     public void TriggerForcedSleep()
     {
         if (isSleeping) return;
+
+        // Dọn dẹp trạng thái câu cá hoặc UI nếu đang mở
+        FishingController fc = GetComponent<FishingController>() ?? UnityEngine.Object.FindFirstObjectByType<FishingController>();
+        if (fc != null && fc.IsBusyFishing())
+        {
+            fc.AutoStowRodToBackpack();
+        }
+
         StartCoroutine(ForcedSleepRoutine());
     }
 

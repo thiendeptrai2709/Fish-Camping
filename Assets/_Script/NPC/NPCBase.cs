@@ -95,16 +95,29 @@ public class NPCBase : MonoBehaviour, IInteractable, INpcInteractable
     {
         get
         {
-            string actionText = promptMessage;
-            if (_fishingShop != null) actionText = "Mở Cửa Hàng Đồ Câu";
-            else if (_tireUpgrader != null) actionText = "Nâng cấp xe";
-            else if (_questGiver != null) actionText = "Nhận nhiệm vụ";
+            bool isVietnamese = LocalizationSettings.SelectedLocale != null &&
+                                LocalizationSettings.SelectedLocale.Identifier.Code.StartsWith("vi");
+
+            string actionText = "";
+            if (_fishingShop != null)
+            {
+                actionText = isVietnamese ? "Mở Cửa Hàng Đồ Câu" : "Open Fishing Shop";
+            }
+            else if (_tireUpgrader != null)
+            {
+                actionText = isVietnamese ? "Nâng cấp xe" : "Upgrade Vehicle";
+            }
+            else if (_questGiver != null)
+            {
+                actionText = isVietnamese ? "Nhận nhiệm vụ" : "Accept Quest";
+            }
+            else
+            {
+                actionText = isVietnamese ? (string.IsNullOrEmpty(promptMessage) ? "Trò chuyện" : promptMessage) : "Talk";
+            }
 
             string localizedName = LocalizationSettings.StringDatabase.GetLocalizedString("Game Text", npcName);
             if (string.IsNullOrEmpty(localizedName)) localizedName = npcName;
-
-            bool isVietnamese = LocalizationSettings.SelectedLocale != null &&
-                                LocalizationSettings.SelectedLocale.Identifier.Code.StartsWith("vi");
 
             if (isVietnamese)
             {

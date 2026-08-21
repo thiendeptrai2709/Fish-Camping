@@ -1,6 +1,8 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using UnityEngine.Localization.Settings;
+using TMPro;
 
 public class TutorialUIManager : MonoBehaviour
 {
@@ -32,6 +34,7 @@ public class TutorialUIManager : MonoBehaviour
     void Start()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
+        LocalizationSettings.SelectedLocaleChanged += OnLanguageChanged;
 
         // Mới vào game là ép tắt bảng luôn
         TatBangMacDinh();
@@ -40,6 +43,15 @@ public class TutorialUIManager : MonoBehaviour
     private void OnDestroy()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
+        LocalizationSettings.SelectedLocaleChanged -= OnLanguageChanged;
+    }
+
+    private void OnLanguageChanged(UnityEngine.Localization.Locale locale)
+    {
+        if (tutorialPanel != null && tutorialPanel.activeSelf)
+        {
+            TranslatePanelTexts();
+        }
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -82,9 +94,38 @@ public class TutorialUIManager : MonoBehaviour
         }
     }
 
+    private void TranslatePanelTexts()
+    {
+        if (tutorialPanel == null) return;
+
+        bool isVietnamese = LocalizationSettings.SelectedLocale != null &&
+                            LocalizationSettings.SelectedLocale.Identifier.Code.StartsWith("vi");
+
+        var texts = tutorialPanel.GetComponentsInChildren<TextMeshProUGUI>(true);
+        foreach (var t in texts)
+        {
+            if (t == null) continue;
+            string key = t.gameObject.name;
+            try
+            {
+                var table = LocalizationSettings.StringDatabase.GetTable("Game Text");
+                if (table != null)
+                {
+                    var entry = table.GetEntry(key) ?? table.GetEntry(t.text);
+                    if (entry != null)
+                    {
+                        t.text = entry.GetLocalizedString();
+                    }
+                }
+            }
+            catch { }
+        }
+    }
+
     private IEnumerator HieuUngMoBang()
     {
         dangChayHieuUng = true;
+        TranslatePanelTexts();
         tutorialPanel.SetActive(true);
         tutorialPanel.transform.localScale = Vector3.zero;
 

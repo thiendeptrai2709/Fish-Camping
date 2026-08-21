@@ -1540,18 +1540,21 @@ public class ForcedTutorialManager : MonoBehaviour
         }
 
         // 3. Hiển thị chữ và Icon Hoàn Thành nổi bật (dấu v)
-        string completedTitle = GetLocalizedText("tut_quest_completed_title", "v HOÀN THÀNH!");
-        string completedSub = GetLocalizedText("tut_quest_completed_sub", "Đang chuyển tiếp nhiệm vụ mới...");
+        bool isVietnamese = LocalizationSettings.SelectedLocale != null &&
+                            LocalizationSettings.SelectedLocale.Identifier.Code.StartsWith("vi");
+
+        string completedTitle = GetLocalizedText("tut_quest_completed_title", isVietnamese ? "HOÀN THÀNH!" : "COMPLETED!");
+        string completedSub = GetLocalizedText("tut_quest_completed_sub", isVietnamese ? "Đang chuyển tiếp nhiệm vụ mới..." : "Transitioning to next stage...");
 
         if (instructionTMP != null)
         {
             instructionTMP.maxVisibleCharacters = 99999;
-            instructionTMP.text = $"<color=#00FF7F><b><size=135%><color=#39FF14>v</color> HOÀN THÀNH!</b></size></color>\n<size=80%><color=#A8E6CF><i>{completedSub}</i></color></size>";
+            instructionTMP.text = $"<color=#00FF7F><b><size=135%><color=#39FF14>v</color> {completedTitle}</b></size></color>\n<size=80%><color=#A8E6CF><i>{completedSub}</i></color></size>";
         }
 
         if (progressTMP != null)
         {
-            progressTMP.text = $"<color=#00FF7F><b><color=#39FF14>v</color> HOÀN THÀNH</b></color>";
+            progressTMP.text = $"<color=#00FF7F><b><color=#39FF14>v</color> {completedTitle}</b></color>";
         }
 
         if (completionIcon != null) completionIcon.gameObject.SetActive(true);
@@ -1808,9 +1811,10 @@ public class ForcedTutorialManager : MonoBehaviour
         PlayTypewriterEffect(currentInstructionText);
     }
 
-    private string GetLocalizedText(string key, string fallbackText)
+    private string GetLocalizedText(string key, string fallbackVietnameseText)
     {
-        if (string.IsNullOrEmpty(key)) return fallbackText;
+        if (string.IsNullOrEmpty(key)) return fallbackVietnameseText;
+
         try
         {
             var table = LocalizationSettings.StringDatabase.GetTable(tableName);
@@ -1819,11 +1823,126 @@ public class ForcedTutorialManager : MonoBehaviour
                 var entry = table.GetEntry(key);
                 if (entry != null) return entry.GetLocalizedString();
             }
-            return fallbackText;
         }
-        catch
+        catch { }
+
+        bool isVietnamese = LocalizationSettings.SelectedLocale != null &&
+                            LocalizationSettings.SelectedLocale.Identifier.Code.StartsWith("vi");
+
+        if (isVietnamese) return fallbackVietnameseText;
+
+        // English smart fallback for all tutorial stages
+        switch (key)
         {
-            return fallbackText;
+            case "tut_quest_completed_title": return "COMPLETED!";
+            case "tut_quest_completed_sub": return "Transitioning to next stage...";
+            case "tut_guide_header": return "TUTORIAL";
+
+            case "TUT_Quest0_WelcomeGame":
+                return "Welcome to <color=#B388FF><b>Fish-Camping</b></color>! Press any key to begin.";
+            case "TUT_Quest1_Movement":
+                return "Use <color=#B388FF><b>W, A, S, D</b></color> to move and hold <color=#B388FF><b>Shift</b></color> to sprint.";
+            case "TUT_Quest1_1_TogglePerspective":
+                return "Press <color=#B388FF><b>Y</b></color> to toggle between First Person (FPP) and Third Person (TPP).";
+            case "TUT_Quest1_2_FindOldTruck":
+                return "Look around and walk towards your <color=#B388FF><b>Old Truck</b></color>.";
+            case "TUT_Quest2_1_OpenTrunk":
+                return "Click <color=#B388FF><b>Left Mouse</b></color> on the Trunk to open it.";
+            case "TUT_Quest2_2_CloseTrunk":
+                return "Press <color=#B388FF><b>Tab</b></color> to close the Trunk.";
+            case "TUT_Quest2_3_InspectCar":
+                return "Click <color=#B388FF><b>Left Mouse</b></color> on the truck body to inspect it. Step away to exit.";
+            case "TUT_Quest2_4_OpenHood":
+                return "Click <color=#B388FF><b>Left Mouse</b></color> on the Hood to open it.";
+            case "TUT_Quest2_5_RepairEngine":
+                return "Inspect the engine, repair parts, and refill coolant.";
+            case "TUT_Quest2_6_CloseHood":
+                return "Click <color=#B388FF><b>Left Mouse</b></color> to close the Hood.";
+            case "TUT_Quest3_1_OpenMap":
+                return "Press <color=#B388FF><b>N</b></color> to open the Map.";
+            case "TUT_Quest3_2_ClickShopIcon":
+                return "Click the <color=#B388FF><b>Fishing Shop Icon</b></color> on the map to set a navigation marker.";
+            case "TUT_Quest4_1_EnterVehicle":
+                return "Walk to the driver door and click <color=#B388FF><b>Left Mouse</b></color> to enter the truck.";
+            case "TUT_Quest4_2_DriveToShop":
+                return "Drive to the <color=#B388FF><b>Angler's Shop</b></color> following the marker.\n(Radio: <color=#B388FF><b>L</b></color> On/Off | <color=#B388FF><b>K</b></color> Next Song | <color=#B388FF><b>[ ]</b></color> Volume | <color=#B388FF><b>G</b></color> Headlights).";
+            case "TUT_Quest4_3_ExitVehicle":
+                return "Press <color=#B388FF><b>E</b></color> to exit the vehicle.";
+            case "TUT_Quest5_1_OpenShopMenu":
+                return "Approach the <color=#B388FF><b>Angler</b></color> and click <color=#B388FF><b>Left Mouse</b></color> to open the shop.";
+            case "TUT_Quest5_2_CloseShopMenu":
+                return "Press <color=#B388FF><b>E</b></color> or click Close to exit the shop.";
+            case "TUT_Quest6_1_OpenMapUpgrade":
+                return "Press <color=#B388FF><b>N</b></color> to open the map and locate the <color=#B388FF><b>Mechanic</b></color>.";
+            case "TUT_Quest6_2_OpenUpgradeMenu":
+                return "Interact with the <color=#B388FF><b>Mechanic</b></color> to open the vehicle upgrade menu.";
+            case "TUT_Quest6_3_CloseUpgradeMenu":
+                return "Press <color=#B388FF><b>Z</b></color> or click Close to exit upgrade menu.";
+            case "TUT_Quest8_1_DriveToGasStation":
+                return "Drive your truck to the town's <color=#B388FF><b>Gas Station</b></color>.";
+            case "TUT_Quest8_3_RefuelVehicle":
+                return "Stand near the fuel pump and press <color=#B388FF><b>F</b></color> to refuel your vehicle.";
+            case "TUT_Quest8_2_TalkToGasNPC":
+                return "Exit vehicle and approach the <color=#B388FF><b>Gas Station NPC</b></color> to interact.";
+            case "TUT_Quest8_4_BuyGasCanister":
+                return "Stand near the fuel pump and press <color=#B388FF><b>F</b></color> to buy a spare fuel canister.";
+            case "TUT_Quest8_5_CheckFuelInTrunk":
+                return "Open the <color=#B388FF><b>Trunk</b></color> (Tab or click trunk) to check your spare fuel canister.";
+            case "TUT_Quest9_OpenTravelMap":
+                return "Press <color=#B388FF><b>M</b></color> to open the world map and travel to <color=#B388FF><b>Pine Lake</b></color>.";
+
+            case "TUT_Map2_Quest1_1_OpenMapToCamp":
+                return "Press <color=#B388FF><b>N</b></color> to open the Map and find the camping area.";
+            case "TUT_Map2_Quest1_2_GoToCampSite":
+                return "Drive to the <color=#B388FF><b>Camping Area</b></color> by the lake.";
+            case "TUT_Map2_Quest1_3_ExitVehicle":
+                return "Press <color=#B388FF><b>E</b></color> to exit the vehicle.";
+            case "TUT_Map2_Quest2_1_OpenBackpack":
+                return "Press <color=#B388FF><b>Tab</b></color> to open your Backpack.";
+            case "TUT_Map2_Quest2_2_EquipRod":
+                return "Drag a <color=#B388FF><b>Fishing Rod</b></color> into the Fishing Rod slot.";
+            case "TUT_Map2_Quest2_3_EquipBaitAndBobber":
+                return "Drag <color=#B388FF><b>Bait and Bobber</b></color> into their respective equipment slots.";
+            case "TUT_Map2_Quest2_4_CloseBackpack":
+                return "Press <color=#B388FF><b>Tab</b></color> to close your Backpack.";
+            case "TUT_Map2_Quest3_WalkToLakeSide":
+                return "Walk to the <color=#B388FF><b>Lakeside</b></color> to prepare for fishing.";
+            case "TUT_Map2_Quest4_1_WindUpRod":
+                return "Click <color=#B388FF><b>Left Mouse</b></color> to wind up your rod.";
+            case "TUT_Map2_Quest4_2_TimingPower":
+                return "<color=#FF5252>Red</color>: Far, <color=#FFD700>Yellow</color>: Medium, <color=#69F0AE>Green</color>: Close, <color=#FFFFFF>White</color>: Miss. Click to time your cast power!";
+            case "TUT_Map2_Quest4_3_ReelFish":
+                return "Hold / release <color=#B388FF><b>Left Mouse</b></color> to keep tension in the green balance zone.";
+            case "TUT_Map2_Quest4_4_KeepOrReleaseFish":
+                return "Press <color=#B388FF><b>Left Mouse</b></color> to keep fish in backpack, or press <color=#B388FF><b>Space</b></color> to release.";
+            case "TUT_Map2_Quest4_5_OpenBackpackAfterFish":
+                return "Press <color=#B388FF><b>Tab</b></color> to check your Backpack and inspect your caught fish.";
+            case "TUT_Map2_Quest5_0_GoToTentCampArea":
+                return "Walk to the <color=#B388FF><b>Tent campsite</b></color>.";
+            case "TUT_Map2_Quest5_1_OpenBuildMenu":
+                return "Press <color=#B388FF><b>B</b></color> to open the Construction / Camping menu.";
+            case "TUT_Map2_Quest5_2_PlaceFirewood":
+                return "Select <color=#B388FF><b>Firewood</b></color> from the menu and place it on the ground.";
+            case "TUT_Map2_Quest5_3_PlaceCookingRack":
+                return "Select the <color=#B388FF><b>Cooking Tripod</b></color> (B) and place it over the campfire.";
+            case "TUT_Map2_Quest5_4_CookFish":
+                return "Interact with the cooking tripod and place fish onto the grill to cook.";
+            case "TUT_Map2_Quest5_5_EatFish":
+                return "Take the cooked fish from your backpack and eat it to restore energy.";
+            case "TUT_Map2_Quest5_6_SleepInTent":
+                return "Go inside the tent and click left mouse to sleep and recover energy.";
+            case "TUT_Map2_Quest5_7_PlaceLamp":
+                return "Press <color=#B388FF><b>B</b></color> to place the <color=#B388FF><b>Lantern</b></color> (can toggle on/off).";
+            case "TUT_Map2_Quest6_BackToTown":
+                return "After camping, enter your truck and drive back to <color=#B388FF><b>Town</b></color>.";
+            case "TUT_Map2_Quest7_FishLog":
+                return "Press <color=#B388FF><b>J</b></color> to open and inspect your <color=#B388FF><b>Fish Journal</b></color>.";
+            case "TUT_Map2_Quest8_HelpGuide":
+                return "Press <color=#B388FF><b>P</b></color> anytime to review the <color=#B388FF><b>Help Guide & Controls</b></color>.";
+            case "TUT_Final_TalkToQuestNPC":
+                return "Talk to the <color=#B388FF><b>Village Master (Quest Giver)</b></color> to accept your first quest and finish the tutorial.";
+
+            default: return fallbackVietnameseText;
         }
     }
 

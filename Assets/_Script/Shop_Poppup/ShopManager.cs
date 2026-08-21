@@ -27,6 +27,14 @@ public class ShopManager : MonoBehaviour
         shopPanel.SetActive(false); // Đảm bảo lúc vào game là Shop ẩn
     }
 
+    private void OnDisable()
+    {
+        if (shopPanel != null && shopPanel.activeInHierarchy)
+        {
+            DongShop();
+        }
+    }
+
     void Update()
     {
         // Bấm phím E để tắt Shop khi bảng shop đang mở

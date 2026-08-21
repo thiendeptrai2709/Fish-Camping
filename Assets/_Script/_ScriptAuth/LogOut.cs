@@ -1,4 +1,4 @@
-﻿using Firebase.Auth;
+using Firebase.Auth;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -8,12 +8,22 @@ public class LogOut : MonoBehaviour
     public void LogOutButtonPressed()
     {
         // 1. Gọi lệnh đăng xuất của Firebase
-        FirebaseAuth.DefaultInstance.SignOut();
+        try
+        {
+            FirebaseAuth.DefaultInstance.SignOut();
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogWarning($"[LogOut] Lỗi khi SignOut Firebase: {e.Message}");
+        }
 
-        Debug.Log("Đã đăng xuất thành công!");
+        // 2. Xóa session UID lưu trong máy để yêu cầu đăng nhập lại
+        PlayerPrefs.DeleteKey("Firebase_User_UID");
+        PlayerPrefs.Save();
 
-        // 2. Chuyển hướng người dùng quay trở lại LoginScene
-        // Thay "LoginScene" bằng tên chính xác Scene đăng nhập của bạn
-        SceneManager.LoadScene(1);
+        Debug.Log("<color=yellow>[LogOut] Đã đăng xuất và xóa phiên làm việc thành công!</color>");
+
+        // 3. Chuyển hướng người dùng quay trở lại LoginScene
+        SceneManager.LoadScene("LoginScene");
     }
 }

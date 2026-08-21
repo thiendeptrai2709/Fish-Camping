@@ -206,15 +206,43 @@ public class GarageZone : MonoBehaviour
         _danhSachUIDangBatTruocDo.Clear();
     }
 
-    public Vector3 wheelRotationOffset = new Vector3(0, 0, 90);
-    public float wheelScaleMultiplier = 2f;
+    [Header("=== HIỆU CHỈNH GÓC & TỈ LỆ LỐP (TÙY CHỈNH THEO Ý BẠN) ===")]
+    [Tooltip("Góc xoay bù trừ cho bánh xe (FL/RL). FR/RR sẽ tự động lật 180 độ Y để mặt mâm quay ra ngoài")]
+    public Vector3 wheelRotationOffset = new Vector3(180, 90, 180);
+
+    [Tooltip("Tùy chỉnh tỉ lệ phóng to / thu nhỏ chi tiết theo từng trục (X, Y, Z)")]
+    public Vector3 customWheelScale = Vector3.one;
+
+    [Tooltip("Hệ số nhân scale tổng thể (Mặc định 1.0)")]
+    public float wheelScaleMultiplier = 1.0f;
+
+    private void OnValidate()
+    {
+        if (Application.isPlaying)
+        {
+            RefreshCurrentTireVisual();
+        }
+    }
+
+    [ContextMenu("Refresh Wheel Visuals")]
+    public void RefreshCurrentTireVisual()
+    {
+        int equippedTireIndex = PlayerPrefs.GetInt("EquippedTireIndex", -1);
+        if (equippedTireIndex >= 0 && wheelPrefabs != null && equippedTireIndex < wheelPrefabs.Length)
+        {
+            ApplyTireVisual(equippedTireIndex);
+        }
+    }
 
     public void ChangeWheel(int wheelIndex, int tirePrice)
     {
+        bool isVietnamese = UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale != null &&
+                            UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale.Identifier.Code.StartsWith("vi");
+
         if (wheelIndex < 0 || wheelIndex >= wheelPrefabs.Length) return;
         if (MoneyManager.Instance == null || !MoneyManager.Instance.CoDuTien(tirePrice))
         {
-            ShowNotify("Không đủ tiền mua lốp!");
+            ShowNotify(isVietnamese ? "Không đủ tiền mua lốp!" : "Not enough money to buy tires!");
             return;
         }
 
@@ -231,7 +259,7 @@ public class GarageZone : MonoBehaviour
             stats.UpdateTireStats();
         }
 
-        ShowNotify("Đã trang bị lốp mới!");
+        ShowNotify(isVietnamese ? "Đã trang bị lốp mới!" : "Equipped new tires!");
 
         // Tự động cập nhật tiến độ nhiệm vụ
         if (QuestManager.Instance != null)
@@ -244,28 +272,59 @@ public class GarageZone : MonoBehaviour
     {
         if (wheelPrefabs == null || wheelIndex < 0 || wheelIndex >= wheelPrefabs.Length) return;
         Transform[] roots = new Transform[] { wheelFL, wheelFR, wheelRL, wheelRR };
+
+        // Áp dụng đúng 100% tỉ lệ do bạn tùy chỉnh trong Inspector
+        Vector3 finalScale = new Vector3(
+            customWheelScale.x * wheelScaleMultiplier,
+            customWheelScale.y * wheelScaleMultiplier,
+            customWheelScale.z * wheelScaleMultiplier
+        );
+
         for (int i = 0; i < roots.Length; i++)
         {
             Transform root = roots[i];
             if (root == null) continue;
-            foreach (Transform child in root) Destroy(child.gameObject);
 
-            GameObject newWheel = Instantiate(wheelPrefabs[wheelIndex], root);
-            newWheel.transform.localPosition = Vector3.zero;
+            // Xóa model lốp cũ nếu có
+            foreach (Transform child in root)
+            {
+                Destroy(child.gameObject);
+            }
 
-            Vector3 finalRotation = wheelRotationOffset;
-            if (i == 1 || i == 3) finalRotation.y += 180f;
+            // Sinh model lốp mới
+            GameObject newTire = Instantiate(wheelPrefabs[wheelIndex], root);
+            newTire.transform.localPosition = Vector3.zero;
 
-            newWheel.transform.localEulerAngles = finalRotation;
-            newWheel.transform.localScale = wheelPrefabs[wheelIndex].transform.localScale * wheelScaleMultiplier;
+            // Xử lý hướng mặt lốp:
+            // Bánh bên trái (FL=0, RL=2) quay ra ngoài theo wheelRotationOffset
+            // Bánh bên phải (FR=1, RR=3) xoay thêm 180 độ trục Y để mặt mâm quay ra ngoài chuẩn xác
+            bool isRightSide = (i == 1 || i == 3);
+            if (isRightSide)
+            {
+                newTire.transform.localRotation = Quaternion.Euler(wheelRotationOffset) * Quaternion.Euler(0f, 180f, 0f);
+            }
+            else
+            {
+                newTire.transform.localRotation = Quaternion.Euler(wheelRotationOffset);
+            }
+
+            newTire.transform.localScale = finalScale;
         }
     }
 
     public void BuyTrunkLevel(int targetLevel)
     {
+        UpgradeTrunk(targetLevel);
+    }
+
+    public void UpgradeTrunk(int targetLevel)
+    {
+        bool isVietnamese = UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale != null &&
+                            UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale.Identifier.Code.StartsWith("vi");
+
         if (targetLevel > currentTrunkLevel + 1)
         {
-            ShowNotify("Hãy nâng cấp Level trước đó!");
+            ShowNotify(isVietnamese ? "Hãy nâng cấp Level trước đó!" : "Please upgrade the previous level first!");
             return;
         }
         int cost = trunkUpgradeCosts[targetLevel - 1];
@@ -276,7 +335,7 @@ public class GarageZone : MonoBehaviour
             PlayerPrefs.Save();
             if (TrunkMinigameUI.Instance != null) TrunkMinigameUI.Instance.RefreshGridVisuals();
             UpdateAllUI();
-            ShowNotify($"Nâng cấp Cốp Level {targetLevel} thành công!");
+            ShowNotify(isVietnamese ? $"Nâng cấp Cốp Level {targetLevel} thành công!" : $"Trunk Level {targetLevel} upgraded successfully!");
 
             // Tự động cập nhật tiến độ nhiệm vụ
             if (QuestManager.Instance != null)
@@ -284,7 +343,7 @@ public class GarageZone : MonoBehaviour
                 QuestManager.Instance.NotifyVehicleUpgraded();
             }
         }
-        else ShowNotify("Không đủ tiền nâng cấp!");
+        else ShowNotify(isVietnamese ? "Không đủ tiền nâng cấp!" : "Not enough money to upgrade!");
     }
 
     public void UpdateAllUI()

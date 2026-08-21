@@ -210,9 +210,26 @@ public class ItemActionMenu : MonoBehaviour
     {
         if (item == null || item.GetItemShape() == null) return;
 
+        // Kích hoạt Menu ngay từ đầu để đảm bảo có thể chạy Coroutine / Notification an toàn
+        gameObject.SetActive(true);
         EnsureUIComponents();
         SetupListeners();
         currentItem = item;
+
+        if (menuPanel != null)
+        {
+            menuPanel.SetActive(true);
+            RectTransform rect = menuPanel.GetComponent<RectTransform>();
+            if (rect != null)
+            {
+                rect.anchorMin = new Vector2(0.5f, 0.5f);
+                rect.anchorMax = new Vector2(0.5f, 0.5f);
+                rect.pivot = new Vector2(0.5f, 0.5f);
+                rect.anchoredPosition = Vector2.zero;
+            }
+        }
+        transform.SetAsLastSibling();
+
         bool hasAction = false;
 
         ItemShapeSO shape = item.GetItemShape();
@@ -248,6 +265,31 @@ public class ItemActionMenu : MonoBehaviour
             if (btnUse != null) btnUse.gameObject.SetActive(true);
             hasAction = true;
         }
+        else if (shape is FishingRodSO rod)
+        {
+            bool isVi = UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale != null &&
+                        UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale.Identifier.Code.StartsWith("vi");
+
+            float curDur = item.GetDurability();
+            float maxDur = item.GetMaxDurability();
+
+            if (curDur < maxDur)
+            {
+                int missingDur = Mathf.RoundToInt(maxDur - curDur);
+                int repairCost = Mathf.Max(15, missingDur * (rod.rodTier > 0 ? rod.rodTier * 2 : 2));
+
+                string label = isVi ? $"🔧 Sửa Cần ({repairCost} Vàng)" : $"🔧 Repair Rod ({repairCost} Gold)";
+                SetButtonLabel(btnUse, label);
+                if (btnUse != null) btnUse.gameObject.SetActive(true);
+                ShowNotif(isVi ? $"Độ bền: {Mathf.RoundToInt(curDur)}/{Mathf.RoundToInt(maxDur)} ({Mathf.RoundToInt(curDur / maxDur * 100f)}%)" : $"Durability: {Mathf.RoundToInt(curDur)}/{Mathf.RoundToInt(maxDur)} ({Mathf.RoundToInt(curDur / maxDur * 100f)}%)");
+            }
+            else
+            {
+                if (btnUse != null) btnUse.gameObject.SetActive(false);
+                ShowNotif(isVi ? "Cần câu đang ở trạng thái tốt (100% Độ bền)!" : "Rod is in perfect condition (100% Durability)!");
+            }
+            hasAction = true;
+        }
         else if (isRawFish)
         {
             // Cá sống: Không có nút ăn trực tiếp
@@ -266,28 +308,7 @@ public class ItemActionMenu : MonoBehaviour
             btnClose.gameObject.SetActive(true);
         }
 
-        // Hiện bảng nếu item có chức năng
-        if (hasAction)
-        {
-            gameObject.SetActive(true);
-            if (menuPanel != null)
-            {
-                menuPanel.SetActive(true);
-
-                RectTransform rect = menuPanel.GetComponent<RectTransform>();
-                if (rect != null)
-                {
-                    rect.anchorMin = new Vector2(0.5f, 0.5f);
-                    rect.anchorMax = new Vector2(0.5f, 0.5f);
-                    rect.pivot = new Vector2(0.5f, 0.5f);
-                    rect.anchoredPosition = Vector2.zero;
-                }
-            }
-
-            // Đưa lên lớp trên cùng để không bị che khuất
-            transform.SetAsLastSibling();
-        }
-        else
+        if (!hasAction)
         {
             CloseMenu();
         }
@@ -354,6 +375,41 @@ public class ItemActionMenu : MonoBehaviour
                 ShowNotif("Không tìm thấy xe để đổ xăng!");
             }
         }
+        // Xử lý chức năng Sửa Cần Câu
+        else if (shape is FishingRodSO rod)
+        {
+            float curDur = currentItem.GetDurability();
+            float maxDur = currentItem.GetMaxDurability();
+            if (curDur < maxDur)
+            {
+                int missingDur = Mathf.RoundToInt(maxDur - curDur);
+                int repairCost = Mathf.Max(15, missingDur * (rod.rodTier > 0 ? rod.rodTier * 2 : 2));
+
+                if (MoneyManager.Instance != null && MoneyManager.Instance.CoDuTien(repairCost))
+                {
+                    MoneyManager.Instance.TruTien(repairCost);
+                    currentItem.RepairDurability();
+                    BackpackMinigameUI.Instance?.SaveBackpack();
+                    TrunkMinigameUI.Instance?.SaveTrunk();
+
+                    bool isVi = UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale != null &&
+                                UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale.Identifier.Code.StartsWith("vi");
+
+                    ShowNotif(isVi ? $"Đã sửa cần câu thành công! (-{repairCost} Vàng)" : $"Rod repaired successfully! (-{repairCost} Gold)");
+                    CloseMenu();
+                }
+                else
+                {
+                    bool isVi = UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale != null &&
+                                UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale.Identifier.Code.StartsWith("vi");
+                    ShowNotif(isVi ? "Bạn không đủ tiền để sửa cần câu này!" : "Not enough gold to repair this rod!");
+                }
+            }
+            else
+            {
+                CloseMenu();
+            }
+        }
         // Xử lý chức năng Ăn uống
         else
         {
@@ -368,8 +424,23 @@ public class ItemActionMenu : MonoBehaviour
     {
         if (notificationText != null)
         {
-            StopAllCoroutines();
-            StartCoroutine(NotifRoutine(msg));
+            if (!gameObject.activeInHierarchy)
+            {
+                gameObject.SetActive(true);
+            }
+            if (menuPanel != null && !menuPanel.activeSelf)
+            {
+                menuPanel.SetActive(true);
+            }
+
+            notificationText.text = msg;
+            notificationText.gameObject.SetActive(true);
+
+            if (gameObject.activeInHierarchy)
+            {
+                StopAllCoroutines();
+                StartCoroutine(NotifRoutine(msg));
+            }
         }
         else
         {
@@ -379,9 +450,15 @@ public class ItemActionMenu : MonoBehaviour
 
     private System.Collections.IEnumerator NotifRoutine(string msg)
     {
-        notificationText.text = msg;
-        notificationText.gameObject.SetActive(true);
-        yield return new WaitForSeconds(2f);
-        notificationText.gameObject.SetActive(false);
+        if (notificationText != null)
+        {
+            notificationText.text = msg;
+            notificationText.gameObject.SetActive(true);
+        }
+        yield return new WaitForSeconds(2.5f);
+        if (notificationText != null)
+        {
+            notificationText.gameObject.SetActive(false);
+        }
     }
 }

@@ -68,7 +68,11 @@ public class InteractableEngine : MonoBehaviour, IInteractable
         {
             return "";
         }
-        return "[Chuột Trái] Kiểm tra động cơ";
+
+        bool isVietnamese = UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale != null &&
+                            UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale.Identifier.Code.StartsWith("vi");
+
+        return isVietnamese ? "[Chuột Trái] Kiểm tra động cơ" : "[Left Click] Inspect Engine";
     }
 
     private void SetLayerRecursively(GameObject obj, int newLayer)

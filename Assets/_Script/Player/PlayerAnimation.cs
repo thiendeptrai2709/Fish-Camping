@@ -49,7 +49,11 @@ public class PlayerAnimation : MonoBehaviour
         if (animator != null)
         {
             animator.speed = 1f;
+            if (animator.layerCount > 1) animator.SetLayerWeight(1, 0f);
+            animator.SetBool(isFishingHash, false);
+            animator.ResetTrigger(castTriggerHash);
             animator.SetTrigger(castTriggerHash);
+            animator.CrossFadeInFixedTime("FishingThrow", 0.1f, 0);
         }
     }
 
@@ -71,7 +75,7 @@ public class PlayerAnimation : MonoBehaviour
 
     public void OnCastWindUpComplete()
     {
-        if (animator != null)
+        if (animator != null && fishingController != null && fishingController.IsWaitingForPower())
         {
             animator.speed = 0f;
         }
@@ -80,12 +84,30 @@ public class PlayerAnimation : MonoBehaviour
             fishingController.OnWindUpPaused();
         }
     }
+
+    public void PauseWindUpPose()
+    {
+        if (animator != null && fishingController != null && fishingController.IsWaitingForPower())
+        {
+            animator.speed = 0f;
+        }
+    }
+
     private void Update()
     {
         float targetSpeed = 0f;
 
         bool isDialogueActive = DialogueManager.Instance != null && DialogueManager.Instance.IsDialogueActive;
         bool isFishing = fishingController != null && fishingController.IsBusyFishing();
+
+        // 1. Đồng bộ trọng số RightHandLayer: Khi câu cá -> Layer 1 = 0 để animation câu cá toàn thân kiểm soát 100%
+        if (animator != null && animator.layerCount > 1)
+        {
+            bool isHolding = animator.GetBool(isHoldingItemHash);
+            float targetLayer1Weight = (isFishing || isDriving) ? 0f : (isHolding ? 1f : 0f);
+            float currentWeight = animator.GetLayerWeight(1);
+            animator.SetLayerWeight(1, Mathf.MoveTowards(currentWeight, targetLayer1Weight, Time.deltaTime * 20f));
+        }
 
         if (playerMovement != null && playerMovement.enabled && !playerMovement.IsMovementLocked && !inputHandler.IsUIOpen && !isDialogueActive && !isFishing)
         {
@@ -98,15 +120,40 @@ public class PlayerAnimation : MonoBehaviour
 
         currentAnimationSpeed = Mathf.Lerp(currentAnimationSpeed, targetSpeed, Time.deltaTime * 25f);
         if (Mathf.Abs(currentAnimationSpeed - targetSpeed) < 0.02f) currentAnimationSpeed = targetSpeed;
-        animator.SetFloat(speedHash, currentAnimationSpeed);
+        if (animator != null) animator.SetFloat(speedHash, currentAnimationSpeed);
     }
+
+    public void ResetAllFishingTriggers()
+    {
+        if (animator != null)
+        {
+            animator.ResetTrigger(castTriggerHash);
+            animator.ResetTrigger(fishBiteHash);
+            animator.ResetTrigger(catchSuccessHash);
+            animator.ResetTrigger(catchFailHash);
+        }
+    }
+
     public void SetFishingState(bool isFishing)
     {
         if (animator != null)
         {
+            animator.speed = 1f;
             animator.SetBool(isFishingHash, isFishing);
+
+            if (isFishing)
+            {
+                if (animator.layerCount > 1) animator.SetLayerWeight(1, 0f);
+                animator.CrossFadeInFixedTime("FIshingIdle", 0.15f, 0);
+            }
+            else
+            {
+                ResetAllFishingTriggers();
+                animator.CrossFadeInFixedTime("Locomotion", 0.2f, 0);
+            }
         }
     }
+
     public void OnCastRelease()
     {
         if (fishingController != null)
@@ -114,18 +161,30 @@ public class PlayerAnimation : MonoBehaviour
             fishingController.OnAnimationCastRelease();
         }
     }
+
     public void TriggerFishBite()
     {
         if (animator != null)
         {
+            animator.speed = 1f;
+            if (animator.layerCount > 1) animator.SetLayerWeight(1, 0f);
+            animator.SetBool(isFishingHash, true);
+            animator.ResetTrigger(fishBiteHash);
             animator.SetTrigger(fishBiteHash);
+            animator.CrossFadeInFixedTime("FishBiting", 0.12f, 0);
         }
     }
+
     public void TriggerCatchSuccess()
     {
         if (animator != null)
         {
+            animator.speed = 1f;
+            if (animator.layerCount > 1) animator.SetLayerWeight(1, 0f);
+            animator.SetBool(isFishingHash, true);
+            animator.ResetTrigger(catchSuccessHash);
             animator.SetTrigger(catchSuccessHash);
+            animator.CrossFadeInFixedTime("FishingSuccesBegin", 0.1f, 0);
         }
     }
 
@@ -133,9 +192,15 @@ public class PlayerAnimation : MonoBehaviour
     {
         if (animator != null)
         {
+            animator.speed = 1f;
+            if (animator.layerCount > 1) animator.SetLayerWeight(1, 0f);
+            animator.SetBool(isFishingHash, false);
+            animator.ResetTrigger(catchFailHash);
             animator.SetTrigger(catchFailHash);
+            animator.CrossFadeInFixedTime("FishingMiss", 0.12f, 0);
         }
     }
+
     public void OnCatchFailAnimationComplete()
     {
         if (fishingController != null)

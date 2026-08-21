@@ -199,7 +199,9 @@ public class TrunkMinigameUI : MonoBehaviour
                 isFish = (shape is FishSO),
                 fishLength = item.GetLength(),
                 fishWeight = item.GetWeight(),
-                fishGrade = (int)item.GetGrade()
+                fishGrade = (int)item.GetGrade(),
+                durability = item.GetDurability(),
+                remainingUses = item.GetRemainingUses()
             };
 
             container.items.Add(data);
@@ -259,6 +261,14 @@ public class TrunkMinigameUI : MonoBehaviour
                         if (saved.isFish)
                         {
                             spawned.SetFishInstanceData(saved.fishLength, saved.fishWeight, (FishGrade)saved.fishGrade);
+                        }
+                        if (saved.durability >= 0f)
+                        {
+                            spawned.SetDurability(saved.durability);
+                        }
+                        if (saved.remainingUses >= 0)
+                        {
+                            spawned.SetRemainingUses(saved.remainingUses);
                         }
                     }
                 }

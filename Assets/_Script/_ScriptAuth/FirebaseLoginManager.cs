@@ -7,6 +7,8 @@ using Firebase.Extensions;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
+using UnityEngine.Localization.Settings;
 
 public class Login : MonoBehaviour
 {
@@ -14,7 +16,6 @@ public class Login : MonoBehaviour
     [Header("Đăng Ký")]
     public InputField ipRegisterEmail;
     public InputField ipRegisterPassword;
-
     public Button buttonRegister;
 
     //Đăng Nhập
@@ -30,39 +31,97 @@ public class Login : MonoBehaviour
     public GameObject loginForm;
     public GameObject registerForm;
 
+    [Header("--- Thông Báo Trạng Thái UI (Tùy chọn) ---")]
+    [Tooltip("Kéo Text hoặc TextMeshProUGUI hiển thị thông báo lỗi/thành công vào đây")]
+    public Text statusTextLegacy;
+    public TextMeshProUGUI statusTMP;
+
     private FirebaseAuth auth;
 
     private void Start()
     {
         auth = FirebaseAuth.DefaultInstance;
-        buttonRegister.onClick.AddListener(RegisterAccountWithFirebase);
-        buttonLogin.onClick.AddListener(SignInAccountWithFirebase);
-        buttonMoveToRegister.onClick.AddListener(SwitchForm);
-        buttonMoveToSignIn.onClick.AddListener(SwitchForm);
+
+        if (buttonRegister != null) buttonRegister.onClick.AddListener(RegisterAccountWithFirebase);
+        if (buttonLogin != null) buttonLogin.onClick.AddListener(SignInAccountWithFirebase);
+        if (buttonMoveToRegister != null) buttonMoveToRegister.onClick.AddListener(SwitchForm);
+        if (buttonMoveToSignIn != null) buttonMoveToSignIn.onClick.AddListener(SwitchForm);
+
+        // 1. Tự động điền email đã lưu lần trước nếu có
+        string savedEmail = PlayerPrefs.GetString("Saved_Login_Email", "");
+        if (!string.IsNullOrEmpty(savedEmail))
+        {
+            if (ipLoginEmail != null) ipLoginEmail.text = savedEmail;
+            if (ipRegisterEmail != null) ipRegisterEmail.text = savedEmail;
+        }
+
+        // 2. Kiểm tra nếu đã có phiên đăng nhập Firebase hợp lệ
+        if (auth.CurrentUser != null)
+        {
+            SaveUserSession(auth.CurrentUser);
+            Debug.Log($"[Firebase] Tự động nhận diện phiên đăng nhập: {auth.CurrentUser.Email} (UID: {auth.CurrentUser.UserId})");
+        }
+    }
+
+    private void SaveUserSession(FirebaseUser user)
+    {
+        if (user == null) return;
+
+        PlayerPrefs.SetString("Firebase_User_UID", user.UserId);
+        PlayerPrefs.SetString("Firebase_User_Email", user.Email ?? "");
+        PlayerPrefs.SetString("Saved_Login_Email", user.Email ?? "");
+        PlayerPrefs.Save();
+        Debug.Log($"<color=green>[Firebase] Đã lưu thông tin xác thực thành công cho UID: {user.UserId}</color>");
     }
 
     public void RegisterAccountWithFirebase()
     {
-        string email = ipRegisterEmail.text;
-        string password = ipRegisterPassword.text;
+        string email = ipRegisterEmail != null ? ipRegisterEmail.text.Trim() : "";
+        string password = ipRegisterPassword != null ? ipRegisterPassword.text : "";
 
-        auth.CreateUserWithEmailAndPasswordAsync(email, password).ContinueWithOnMainThread(Task =>
+        if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
         {
-            if (Task.IsCanceled)
+            ShowStatus(GetLocalizedText("auth_enter_all_fields", "Vui lòng nhập đầy đủ Email và Mật khẩu!"), Color.red);
+            return;
+        }
+
+        if (password.Length < 6)
+        {
+            ShowStatus(GetLocalizedText("auth_password_too_short", "Mật khẩu phải có ít nhất 6 ký tự!"), Color.red);
+            return;
+        }
+
+        ShowStatus(GetLocalizedText("auth_registering", "Đang tạo tài khoản..."), Color.yellow);
+
+        auth.CreateUserWithEmailAndPasswordAsync(email, password).ContinueWithOnMainThread(task =>
+        {
+            if (task.IsCanceled)
             {
-                Debug.LogError("Đăng ký tài khoản bị hủy.");
+                ShowStatus(GetLocalizedText("auth_cancelled", "Đăng ký bị hủy."), Color.red);
                 return;
             }
-            if (Task.IsFaulted)
+            if (task.IsFaulted)
             {
-                Debug.LogError("Đăng ký thất bại: " + Task.Exception.Flatten().InnerExceptions[0].Message);
+                string errMsg = task.Exception != null && task.Exception.Flatten().InnerExceptions.Count > 0
+                    ? task.Exception.Flatten().InnerExceptions[0].Message
+                    : "Lỗi không xác định";
+                Debug.LogError("Đăng ký thất bại: " + errMsg);
+                ShowStatus(GetLocalizedAuthError(errMsg, false), Color.red);
                 return;
             }
-            if (Task.IsCompletedSuccessfully)
+            if (task.IsCompletedSuccessfully)
             {
-                // Lấy thông tin user vừa tạo thành công
-                var newUser = Task.Result.User;
+                var newUser = task.Result.User;
                 Debug.Log($"Đăng ký tài khoản thành công cho: {newUser.Email}");
+
+                // Lưu email đăng ký và tự động điền sang form đăng nhập
+                PlayerPrefs.SetString("Saved_Login_Email", email);
+                PlayerPrefs.Save();
+
+                if (ipLoginEmail != null) ipLoginEmail.text = email;
+                if (ipLoginPassword != null) ipLoginPassword.text = password;
+
+                ShowStatus(GetLocalizedText("auth_register_success", "Đăng ký thành công! Đang chuyển sang đăng nhập..."), Color.green);
 
                 // Tự động chuyển sang form Đăng nhập sau khi đăng ký thành công
                 SwitchForm();
@@ -72,25 +131,43 @@ public class Login : MonoBehaviour
 
     public void SignInAccountWithFirebase()
     {
-        string email = ipLoginEmail.text;
-        string password = ipLoginPassword.text;
+        string email = ipLoginEmail != null ? ipLoginEmail.text.Trim() : "";
+        string password = ipLoginPassword != null ? ipLoginPassword.text : "";
 
-        auth.SignInWithEmailAndPasswordAsync(email, password).ContinueWithOnMainThread(Task =>
+        if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
         {
-            if (Task.IsCanceled)
+            ShowStatus(GetLocalizedText("auth_enter_all_fields", "Vui lòng nhập đầy đủ Email và Mật khẩu!"), Color.red);
+            return;
+        }
+
+        ShowStatus(GetLocalizedText("auth_signing_in", "Đang đăng nhập..."), Color.yellow);
+
+        auth.SignInWithEmailAndPasswordAsync(email, password).ContinueWithOnMainThread(task =>
+        {
+            if (task.IsCanceled)
             {
-                Debug.LogError("Đăng nhập bị hủy.");
+                ShowStatus(GetLocalizedText("auth_cancelled", "Đăng nhập bị hủy."), Color.red);
                 return;
             }
-            if (Task.IsFaulted)
+            if (task.IsFaulted)
             {
-                Debug.LogError("Đăng nhập thất bại: " + Task.Exception.Flatten().InnerExceptions[0].Message);
+                string errMsg = task.Exception != null && task.Exception.Flatten().InnerExceptions.Count > 0
+                    ? task.Exception.Flatten().InnerExceptions[0].Message
+                    : "Lỗi không xác định";
+                Debug.LogError("Đăng nhập thất bại: " + errMsg);
+                ShowStatus(GetLocalizedAuthError(errMsg, true), Color.red);
                 return;
             }
-            if (Task.IsCompletedSuccessfully)
+            if (task.IsCompletedSuccessfully)
             {
-                var user = Task.Result.User;
-                Debug.Log($"Đăng nhập thành công cho: {user.Email}");
+                var user = task.Result.User;
+                Debug.Log($"Đăng nhập thành công cho: {user.Email} (UID: {user.UserId})");
+
+                // Lưu toàn bộ session thông tin user vào PlayerPrefs
+                SaveUserSession(user);
+
+                ShowStatus(GetLocalizedText("auth_login_success", "Đăng nhập thành công! Đang vào game..."), Color.green);
+
                 string targetScene = PlayerLocationSaveManager.GetSavedSceneName("Map_1_Town");
                 SceneManager.LoadScene(targetScene);
             }
@@ -99,15 +176,85 @@ public class Login : MonoBehaviour
 
     public void SwitchForm()
     {
-        if (loginForm.activeSelf)
+        if (loginForm == null || registerForm == null) return;
+
+        bool isLoginActive = loginForm.activeSelf;
+        loginForm.SetActive(!isLoginActive);
+        registerForm.SetActive(isLoginActive);
+
+        // Xóa thông báo cũ khi đổi form
+        ShowStatus("", Color.white);
+    }
+
+    private void ShowStatus(string message, Color color)
+    {
+        if (statusTMP != null)
         {
-            loginForm.SetActive(false);
-            registerForm.SetActive(true);
+            statusTMP.text = message;
+            statusTMP.color = color;
+            statusTMP.gameObject.SetActive(!string.IsNullOrEmpty(message));
         }
-        else
+
+        if (statusTextLegacy != null)
         {
-            loginForm.SetActive(true);
-            registerForm.SetActive(false);
+            statusTextLegacy.text = message;
+            statusTextLegacy.color = color;
+            statusTextLegacy.gameObject.SetActive(!string.IsNullOrEmpty(message));
+        }
+    }
+
+    private string GetLocalizedAuthError(string rawFirebaseError, bool isLogin)
+    {
+        bool isVietnamese = LocalizationSettings.SelectedLocale != null &&
+                            LocalizationSettings.SelectedLocale.Identifier.Code.StartsWith("vi");
+
+        string lower = rawFirebaseError.ToLowerInvariant();
+
+        if (lower.Contains("email-already-in-use") || lower.Contains("already in use") || lower.Contains("already exists"))
+        {
+            return isVietnamese ? "Email này đã được sử dụng!" : "This email is already in use!";
+        }
+        if (lower.Contains("invalid-email") || lower.Contains("badly formatted") || lower.Contains("invalid email"))
+        {
+            return isVietnamese ? "Định dạng Email không hợp lệ!" : "Invalid email address format!";
+        }
+        if (lower.Contains("wrong-password") || lower.Contains("invalid-credential") || lower.Contains("invalid password"))
+        {
+            return isVietnamese ? "Sai mật khẩu hoặc email không tồn tại!" : "Incorrect password or account not found!";
+        }
+        if (lower.Contains("user-not-found"))
+        {
+            return isVietnamese ? "Không tìm thấy tài khoản với email này!" : "No user found with this email!";
+        }
+        if (lower.Contains("weak-password"))
+        {
+            return isVietnamese ? "Mật khẩu quá yếu! Tối thiểu 6 ký tự." : "Password is too weak! Minimum 6 characters.";
+        }
+        if (lower.Contains("network") || lower.Contains("connection"))
+        {
+            return isVietnamese ? "Lỗi kết nối mạng, vui lòng thử lại!" : "Network error, please check connection!";
+        }
+
+        return isLogin 
+            ? (isVietnamese ? "Đăng nhập thất bại: " + rawFirebaseError : "Login failed: " + rawFirebaseError)
+            : (isVietnamese ? "Đăng ký thất bại: " + rawFirebaseError : "Registration failed: " + rawFirebaseError);
+    }
+
+    private string GetLocalizedText(string key, string fallbackText)
+    {
+        try
+        {
+            var table = LocalizationSettings.StringDatabase.GetTable("Game Text");
+            if (table != null)
+            {
+                var entry = table.GetEntry(key);
+                if (entry != null) return entry.GetLocalizedString();
+            }
+            return fallbackText;
+        }
+        catch
+        {
+            return fallbackText;
         }
     }
 }

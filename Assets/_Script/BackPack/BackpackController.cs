@@ -64,6 +64,12 @@ public class BackpackController : MonoBehaviour
 
             if (ShopManager.Instance != null && ShopManager.Instance.shopPanel != null && ShopManager.Instance.shopPanel.activeInHierarchy)
                 ShopManager.Instance.DongShop();
+
+            FishingController fc = Object.FindFirstObjectByType<FishingController>();
+            if (fc != null && fc.IsBusyFishing())
+            {
+                fc.AutoStowRodToBackpack();
+            }
         }
 
         isOpen = !isOpen;
@@ -135,6 +141,10 @@ public class BackpackController : MonoBehaviour
 
     private void OnDisable()
     {
-        //Time.timeScale = 1f;
+        if (isOpen)
+        {
+            isOpen = false;
+            SetUIState(false, true);
+        }
     }
 }

@@ -301,13 +301,16 @@ public class CookingRack : MonoBehaviour, IInteractable
 
     public string GetInteractPrompt()
     {
+        bool isVietnamese = UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale != null &&
+                            UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale.Identifier.Code.StartsWith("vi");
+
         if (ForcedTutorialManager.Instance != null && !ForcedTutorialManager.Instance.CanInteractWith(this))
         {
-            return "Chưa mở khóa nấu ăn";
+            return isVietnamese ? "Chưa mở khóa nấu ăn" : "Cooking not unlocked yet";
         }
-        if (State == CookingState.Finished) return "[Chuột Trái] Lấy thức ăn";
-        if (State == CookingState.Cooking) return "Đang nấu...";
-        if (DetectCampfire()) return "[Chuột Trái] Nấu ăn";
-        return "Cần lửa trại bên dưới";
+        if (State == CookingState.Finished) return isVietnamese ? "[Chuột Trái] Lấy thức ăn" : "[Left Click] Take Food";
+        if (State == CookingState.Cooking) return isVietnamese ? "Đang nấu..." : "Cooking...";
+        if (DetectCampfire()) return isVietnamese ? "[Chuột Trái] Nấu ăn" : "[Left Click] Cook";
+        return isVietnamese ? "Cần lửa trại bên dưới" : "Campfire needed underneath";
     }
 }

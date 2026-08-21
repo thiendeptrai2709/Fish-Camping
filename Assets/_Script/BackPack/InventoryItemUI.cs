@@ -33,11 +33,81 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     private CookingSlotUI originIngredientSlot = null;
 
+    // --- DỮ LIỆU ĐỘ BỀN VÀ SỐ LẦN SỬ DỤNG INSTANCE ---
+    private float currentDurability = -1f;
+    private int remainingUses = -1;
+    private GameObject durabilityBarRoot;
+    private Image durabilityFillImage;
+    private TMPro.TextMeshProUGUI usesBadgeText;
+
     public void SetFishInstanceData(float length, float weight, FishGrade grade)
     {
         currentLength = length;
         currentWeight = weight;
         currentGrade = grade;
+    }
+
+    public void SetDurability(float val)
+    {
+        currentDurability = Mathf.Max(0f, val);
+        UpdateVisualIndicators();
+    }
+
+    public float GetDurability()
+    {
+        if (currentDurability < 0f)
+        {
+            if (itemShape is FishingRodSO rod) currentDurability = rod.maxDurability;
+            else if (itemShape is BobberSO bobber) currentDurability = bobber.maxDurability;
+            else currentDurability = 100f;
+        }
+        return currentDurability;
+    }
+
+    public float GetMaxDurability()
+    {
+        if (itemShape is FishingRodSO rod) return rod.maxDurability > 0 ? rod.maxDurability : 100f;
+        if (itemShape is BobberSO bobber) return bobber.maxDurability > 0 ? bobber.maxDurability : 30f;
+        return 100f;
+    }
+
+    public void ConsumeDurability(float amount)
+    {
+        float cur = GetDurability();
+        SetDurability(cur - amount);
+    }
+
+    public void RepairDurability()
+    {
+        SetDurability(GetMaxDurability());
+    }
+
+    public void SetRemainingUses(int val)
+    {
+        remainingUses = Mathf.Max(0, val);
+        UpdateVisualIndicators();
+    }
+
+    public int GetRemainingUses()
+    {
+        if (remainingUses < 0)
+        {
+            if (itemShape is BaitSO bait) remainingUses = bait.maxUses > 0 ? bait.maxUses : 5;
+            else remainingUses = 1;
+        }
+        return remainingUses;
+    }
+
+    public int GetMaxUses()
+    {
+        if (itemShape is BaitSO bait) return bait.maxUses > 0 ? bait.maxUses : 5;
+        return 1;
+    }
+
+    public void ConsumeUse(int amount = 1)
+    {
+        int cur = GetRemainingUses();
+        SetRemainingUses(cur - amount);
     }
     public void SetOriginIngredientSlot(CookingSlotUI slot) => originIngredientSlot = slot;
     public float GetLength() => currentLength;
@@ -126,6 +196,7 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             canvasGroup.interactable = true;
         }
         UpdateVisualSize();
+        UpdateVisualIndicators();
     }
 
     public void UpdateVisualSize()
@@ -471,12 +542,15 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (ItemInfoPanelUI.Instance != null && itemShape != null)
+        if (itemShape == null) return;
+
+        // HIỂN THỊ BẢNG CHI TIẾT & MENU THAO TÁC (ITEM ACTION MENU ĐỂ SỬA CẦN, ĂN, ĐỔ XĂNG)
+        if (ItemInfoPanelUI.Instance != null)
         {
             ItemInfoPanelUI.Instance.ShowInfo(this);
         }
 
-        if (ItemActionMenu.Instance != null && itemShape != null)
+        if (ItemActionMenu.Instance != null)
         {
             ItemActionMenu.Instance.ShowMenu(this);
         }
@@ -492,10 +566,7 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (ItemInfoPanelUI.Instance != null)
-        {
-            ItemInfoPanelUI.Instance.ClearInfo();
-        }
+        // Giữ bảng thông tin hiển thị món đồ vừa chọn/rê chuột, không tắt vội để người chơi dễ đọc và thao tác
     }
 
     public ItemShapeSO GetItemShape() => itemShape;
@@ -540,7 +611,7 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         else if (itemShape != null)
         {
             string id = itemShape.itemID != null ? itemShape.itemID.ToLower() : "";
-            string assetName = itemShape.name != null ? itemShape.name.ToLower() : "";
+            string assetName = itemShape.name != null ? shapeNameClean(itemShape.name) : "";
             string itemName = itemShape.itemName != null ? itemShape.itemName.ToLower() : "";
 
             bool isCookedItem = id.Contains("cooked") || id.Contains("food") || assetName.Contains("food") || 
@@ -562,6 +633,117 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
                 }
                 ForcedTutorialManager.Instance?.NotifyEatFish();
             }
+        }
+    }
+
+    private string shapeNameClean(string s) => s != null ? s.ToLower() : "";
+
+    public void UpdateVisualIndicators()
+    {
+        if (itemShape == null) return;
+
+        // 1. THANH ĐỘ BỀN SIÊU MỎNG (CHO CẦN CÂU VÀ PHAO CÂU) - NẰM SÁT VIỀN ĐÁY, KHÔNG CHE ẢNH
+        bool hasDurability = (itemShape is FishingRodSO || itemShape is BobberSO);
+        if (hasDurability)
+        {
+            float curDur = GetDurability();
+            float maxDur = GetMaxDurability();
+            float ratio = maxDur > 0f ? Mathf.Clamp01(curDur / maxDur) : 1f;
+
+            if (durabilityBarRoot == null)
+            {
+                // Tạo thanh nền độ bền siêu mỏng gọn sát mép dưới cùng
+                durabilityBarRoot = new GameObject("DurabilityBarRoot", typeof(RectTransform), typeof(Image));
+                durabilityBarRoot.transform.SetParent(transform, false);
+
+                RectTransform bgRect = durabilityBarRoot.GetComponent<RectTransform>();
+                bgRect.anchorMin = new Vector2(0f, 0f);
+                bgRect.anchorMax = new Vector2(1f, 0f);
+                bgRect.pivot = new Vector2(0.5f, 0f);
+                bgRect.sizeDelta = new Vector2(-6f, 3.5f);
+                bgRect.anchoredPosition = new Vector2(0f, 2f);
+
+                Image bgImg = durabilityBarRoot.GetComponent<Image>();
+                bgImg.color = new Color(0f, 0f, 0f, 0.65f);
+                bgImg.raycastTarget = false;
+
+                // Tạo thanh Fill
+                GameObject fillObj = new GameObject("Fill", typeof(RectTransform), typeof(Image));
+                fillObj.transform.SetParent(durabilityBarRoot.transform, false);
+
+                RectTransform fillRect = fillObj.GetComponent<RectTransform>();
+                fillRect.anchorMin = Vector2.zero;
+                fillRect.anchorMax = Vector2.one;
+                fillRect.offsetMin = Vector2.zero;
+                fillRect.offsetMax = Vector2.zero;
+
+                durabilityFillImage = fillObj.GetComponent<Image>();
+                durabilityFillImage.type = Image.Type.Filled;
+                durabilityFillImage.fillMethod = Image.FillMethod.Horizontal;
+                durabilityFillImage.raycastTarget = false;
+            }
+
+            if (durabilityFillImage != null)
+            {
+                durabilityBarRoot.SetActive(true);
+                durabilityFillImage.fillAmount = ratio;
+                if (ratio > 0.5f)
+                {
+                    durabilityFillImage.color = new Color(0.2f, 0.95f, 0.35f, 0.95f); // Xanh neon
+                }
+                else if (ratio > 0.2f)
+                {
+                    durabilityFillImage.color = new Color(1f, 0.8f, 0.15f, 0.95f); // Vàng
+                }
+                else
+                {
+                    durabilityFillImage.color = new Color(1f, 0.25f, 0.25f, 0.95f); // Đỏ
+                }
+            }
+        }
+        else if (durabilityBarRoot != null)
+        {
+            durabilityBarRoot.SetActive(false);
+        }
+
+        // 2. BADGE SỐ LƯỢT DÙNG (CHO MỒI CÂU) - GÓC DƯỚI PHẢI NHỎ GỌN
+        if (itemShape is BaitSO)
+        {
+            int uses = GetRemainingUses();
+            if (usesBadgeText == null)
+            {
+                GameObject badgeObj = new GameObject("UsesBadge", typeof(RectTransform), typeof(TMPro.TextMeshProUGUI));
+                badgeObj.transform.SetParent(transform, false);
+
+                RectTransform badgeRect = badgeObj.GetComponent<RectTransform>();
+                badgeRect.anchorMin = new Vector2(1f, 0f);
+                badgeRect.anchorMax = new Vector2(1f, 0f);
+                badgeRect.pivot = new Vector2(1f, 0f);
+                badgeRect.sizeDelta = new Vector2(28f, 16f);
+                badgeRect.anchoredPosition = new Vector2(-2f, 1f);
+
+                usesBadgeText = badgeObj.GetComponent<TMPro.TextMeshProUGUI>();
+                usesBadgeText.alignment = TMPro.TextAlignmentOptions.BottomRight;
+                usesBadgeText.fontSize = 11f;
+                usesBadgeText.fontStyle = TMPro.FontStyles.Bold;
+                usesBadgeText.color = new Color(1f, 0.95f, 0.6f, 1f);
+                usesBadgeText.raycastTarget = false;
+
+                var outline = badgeObj.AddComponent<Outline>();
+                outline.effectColor = Color.black;
+                outline.effectDistance = new Vector2(1f, -1f);
+            }
+
+            if (usesBadgeText != null)
+            {
+                usesBadgeText.gameObject.SetActive(true);
+                usesBadgeText.text = $"x{uses}";
+                usesBadgeText.color = (uses <= 1) ? new Color(1f, 0.35f, 0.35f, 1f) : new Color(1f, 0.95f, 0.6f, 1f);
+            }
+        }
+        else if (usesBadgeText != null)
+        {
+            usesBadgeText.gameObject.SetActive(false);
         }
     }
 }

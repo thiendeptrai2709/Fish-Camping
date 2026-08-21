@@ -75,7 +75,11 @@ public class InteractableTrunk : MonoBehaviour, IInteractable
     }
     public string GetInteractPrompt()
     {
-        // Đổi câu lệnh tùy theo trạng thái đang đóng hay mở
-        return isTrunkOpen ? "[Chuột Trái] Đóng cốp " : "[Chuột Trái] Mở cốp xe ";
+        bool isVietnamese = UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale != null &&
+                            UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale.Identifier.Code.StartsWith("vi");
+
+        return isTrunkOpen 
+            ? (isVietnamese ? "[Chuột Trái] Đóng cốp" : "[Left Click] Close Trunk") 
+            : (isVietnamese ? "[Chuột Trái] Mở cốp xe" : "[Left Click] Open Trunk");
     }
 }

@@ -361,6 +361,11 @@ public class QuestGiver : MonoBehaviour
     {
         if (string.IsNullOrEmpty(keyOrText)) return "";
 
+        if (QuestManager.Instance != null)
+        {
+            return QuestManager.Instance.GetLocalizedText(keyOrText);
+        }
+
         try
         {
             // 1. Tìm trong bảng "Game Text" trước

@@ -157,9 +157,12 @@ public class FuelShop : MonoBehaviour
             return;
         }
 
+        bool isVietnamese = UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale != null &&
+                            UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale.Identifier.Code.StartsWith("vi");
+
         if (MoneyManager.Instance != null && !MoneyManager.Instance.CoDuTien(pricePerCan))
         {
-            ShowNotification("Không đủ tiền!", Color.red);
+            ShowNotification(isVietnamese ? "Không đủ tiền!" : "Not enough money!", Color.red);
             if (audioSource != null && buyFailSound != null) audioSource.PlayOneShot(buyFailSound);
             return;
         }
@@ -183,7 +186,7 @@ public class FuelShop : MonoBehaviour
         if (isPlaced)
         {
             if (MoneyManager.Instance != null) MoneyManager.Instance.TruTien(pricePerCan);
-            ShowNotification($"Đã mua 1 Can Xăng (-{pricePerCan}K)", Color.green);
+            ShowNotification(isVietnamese ? $"Đã mua 1 Can Xăng (-{pricePerCan}G)" : $"Bought 1 Fuel Canister (-{pricePerCan}G)", Color.green);
             if (audioSource != null && buySuccessSound != null) audioSource.PlayOneShot(buySuccessSound);
 
             // Báo hoàn thành bước mua can xăng trong Tutorial
@@ -197,7 +200,7 @@ public class FuelShop : MonoBehaviour
         }
         else
         {
-            ShowNotification("Cốp xe đã đầy!", Color.yellow);
+            ShowNotification(isVietnamese ? "Cốp xe đã đầy!" : "Trunk is full!", Color.yellow);
             if (audioSource != null && buyFailSound != null) audioSource.PlayOneShot(buyFailSound);
         }
     }

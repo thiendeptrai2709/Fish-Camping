@@ -82,7 +82,7 @@ public class PlayerMovement : MonoBehaviour
 
         bool isDialogueActive = DialogueManager.Instance != null && DialogueManager.Instance.IsDialogueActive;
 
-        if ((fishingController != null && fishingController.IsBusyFishing()) || IsMovementLocked || inputHandler.IsUIOpen || isDialogueActive)
+        if ((fishingController != null && fishingController.IsBusyFishing()) || IsMovementLocked || (inputHandler != null && inputHandler.IsUIOpen) || isDialogueActive)
         {
             StopAudio();
             HandleGravityOnly(); // Chỉ đứng im rớt xuống, không đi ngang

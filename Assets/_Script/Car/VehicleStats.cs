@@ -89,31 +89,36 @@ public class VehicleStats : MonoBehaviour
         UpdateUI();
     }
 
-    // --- HÀM THẦN THÁNH: TỰ ĐỘNG LẤY CHỈ SỐ TỪ SCRIPTABLE OBJECT CỦA BỒ ---
+    private TireData cachedTireData;
+
+    // --- HÀM TỰ ĐỘNG LẤY CHỈ SỐ TỪ SCRIPTABLE OBJECT CỦA LỐP ĐANG TRANG BỊ ---
     public void UpdateTireStats()
     {
         int equippedTire = PlayerPrefs.GetInt("EquippedTireIndex", -1);
 
-        // Kiểm tra xem Gara có tồn tại và lốp bồ đang lắp có nằm trong danh sách 8 lốp kia không
+        // Kiểm tra xem Gara có tồn tại và lốp đang lắp có nằm trong danh sách lốp không
         if (GarageZone.Instance != null && equippedTire >= 0 && equippedTire < GarageZone.Instance.allTires.Length)
         {
             // Trích xuất file Data Lốp tương ứng
-            TireData currentTireData = GarageZone.Instance.allTires[equippedTire];
+            cachedTireData = GarageZone.Instance.allTires[equippedTire];
 
-            if (currentTireData != null)
+            if (cachedTireData != null)
             {
-                // Áp dụng độ trâu bò từ file của bồ vào xe
-                kmPerTirePercent = currentTireData.kmPerTirePercent;
-                badRoadDamageChance = currentTireData.badRoadDamageChance;
-                Debug.Log($"Đã nạp thành công thông số lốp: {currentTireData.name}");
+                // Áp dụng độ bền từ file vào xe
+                kmPerTirePercent = cachedTireData.kmPerTirePercent > 0 ? cachedTireData.kmPerTirePercent : 3f;
+                badRoadDamageChance = cachedTireData.badRoadDamageChance;
+                Debug.Log($"<color=green>[VehicleStats] Đã nạp thành công thông số lốp: {cachedTireData.tireName}</color>");
             }
         }
         else
         {
-            // LẮP LỐP MẶC ĐỊNH (Khi chưa mua gì): Thông số cùi bắp
+            // LẮP LỐP MẶC ĐỊNH (Khi chưa mua gì): Thông số cơ bản
+            cachedTireData = null;
             kmPerTirePercent = 3f; // 3km mất 1%
             badRoadDamageChance = 0.1f; // 10% rách lốp
         }
+
+        ApplyDegradationToPhysics();
     }
 
     private void Update()
@@ -259,7 +264,11 @@ public class VehicleStats : MonoBehaviour
 
     public void RepairTire(int index)
     {
-        tireHealths[index] = 100f;
+        if (index >= 0 && index < 4)
+        {
+            tireHealths[index] = 100f;
+        }
+        ApplyDegradationToPhysics();
         OnStatsChanged?.Invoke();
         UpdateUI();
     }
@@ -267,9 +276,62 @@ public class VehicleStats : MonoBehaviour
     private void ApplyDegradationToPhysics()
     {
         if (vehicleController == null) return;
-        float healthRatio = engineHealth / 100f;
-        float speedPercent = Mathf.Lerp(0.25f, 1f, healthRatio);
-        float torquePercent = Mathf.Lerp(0.3f, 1f, healthRatio);
+
+        // 1. TÍNH TOÁN ĐỘ BÁM ĐƯỜNG THEO TỪNG MAP TỪ TIRE DATA
+        string activeScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        float rawMapFriction = 0.15f; // Mặc định nếu không có lốp xịn
+
+        if (cachedTireData != null)
+        {
+            if (activeScene.Contains("Map_1_Town") || activeScene.Contains("Town") || activeScene.Contains("City"))
+            {
+                rawMapFriction = cachedTireData.cityFriction;
+            }
+            else if (activeScene.Contains("Map_2_PineLake") || activeScene.Contains("PineLake") || activeScene.Contains("Forest"))
+            {
+                rawMapFriction = cachedTireData.forestFriction;
+            }
+            else if (activeScene.Contains("Map_3_Swamp") || activeScene.Contains("Swamp") || activeScene.Contains("DamLay"))
+            {
+                rawMapFriction = cachedTireData.swampFriction;
+            }
+            else if (activeScene.Contains("Map_4_Ocean") || activeScene.Contains("Ocean") || activeScene.Contains("Beach") || activeScene.Contains("Coast"))
+            {
+                rawMapFriction = cachedTireData.sandFriction;
+            }
+            else
+            {
+                rawMapFriction = cachedTireData.cityFriction;
+            }
+        }
+
+        // Quy đổi độ bám thô (0.07 -> 0.88) sang hệ số độ bám ma sát bánh xe (0.55 -> 1.35)
+        float terrainGripMultiplier = Mathf.Lerp(0.55f, 1.35f, Mathf.Clamp01(rawMapFriction / 0.85f));
+
+        // 2. TÍNH TOÁN ĐỘ BÁM CỦA TỪNG BÁNH XE THEO ĐỘ BỀN (MÁU LỐP)
+        // Khi lốp tụt về 0% (xẹp lốp), độ bám giảm mạnh xuống còn 35%
+        float flGrip = terrainGripMultiplier * Mathf.Lerp(0.35f, 1.0f, tireHealths[0] / 100f);
+        float frGrip = terrainGripMultiplier * Mathf.Lerp(0.35f, 1.0f, tireHealths[1] / 100f);
+        float rlGrip = terrainGripMultiplier * Mathf.Lerp(0.35f, 1.0f, tireHealths[2] / 100f);
+        float rrGrip = terrainGripMultiplier * Mathf.Lerp(0.35f, 1.0f, tireHealths[3] / 100f);
+
+        // 3. TÍNH ĐỘ LỆCH LÁI KHI XẸP LỐP MỘT BÊN
+        float leftSideHealth = (tireHealths[0] + tireHealths[2]) * 0.5f;
+        float rightSideHealth = (tireHealths[1] + tireHealths[3]) * 0.5f;
+        // Nếu lốp bên trái bị xẹp hơn bên phải, sinh ra góc kéo lệch lái nhẹ sang trái (-2.5 độ)
+        float steerBias = (rightSideHealth - leftSideHealth) * -0.025f;
+
+        // 4. TÍNH TỔNG QUAN HIỆU NĂNG XE (ĐỘNG CƠ + LỐP)
+        float engineRatio = engineHealth / 100f;
+        float avgTireHealth = (tireHealths[0] + tireHealths[1] + tireHealths[2] + tireHealths[3]) * 0.25f;
+        float tireHealthRatio = avgTireHealth / 100f;
+
+        // Lốp xẹp tăng lực cản lăn, giảm tốc độ tối đa tối đa 35%
+        float speedPercent = Mathf.Lerp(0.25f, 1f, engineRatio) * Mathf.Lerp(0.65f, 1f, tireHealthRatio);
+        // Địa hình xấu trơn trượt làm giảm lực truyền động hữu dụng
+        float torquePercent = Mathf.Lerp(0.3f, 1f, engineRatio) * Mathf.Lerp(0.7f, 1.15f, terrainGripMultiplier);
+
         vehicleController.ApplyUpgradedEngine(baseMaxSpeed * speedPercent, baseMotorTorque * torquePercent);
+        vehicleController.ApplyTirePhysics(flGrip, frGrip, rlGrip, rrGrip, steerBias);
     }
 }

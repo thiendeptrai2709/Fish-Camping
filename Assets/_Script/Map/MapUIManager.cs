@@ -29,6 +29,10 @@ public class MapUIManager : MonoBehaviour
     private void OnDisable()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
+        if (mapUIPanel != null && mapUIPanel.activeSelf)
+        {
+            ToggleMap();
+        }
     }
 
     /* Đóng map và trả lại điều khiển khi load xong scene mới */
@@ -100,6 +104,12 @@ public class MapUIManager : MonoBehaviour
 
                 if (ShopManager.Instance != null && ShopManager.Instance.shopPanel != null && ShopManager.Instance.shopPanel.activeInHierarchy)
                     ShopManager.Instance.DongShop();
+
+                FishingController fc = Object.FindFirstObjectByType<FishingController>();
+                if (fc != null && fc.IsBusyFishing())
+                {
+                    fc.AutoStowRodToBackpack();
+                }
             }
 
             mapUIPanel.SetActive(isActive);

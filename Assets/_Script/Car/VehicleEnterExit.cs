@@ -148,6 +148,21 @@ public class VehicleEnterExit : MonoBehaviour
         if (interactableTrunk != null) interactableTrunk.ForceClose();
         if (vehicleStats != null) vehicleStats.CloseOverviewPanel();
 
+        // Đóng sạch các UI/Minigame và dọn trạng thái câu cá khi lên xe
+        FishingController fc = playerObject != null ? playerObject.GetComponent<FishingController>() : Object.FindFirstObjectByType<FishingController>();
+        if (fc != null && fc.IsBusyFishing())
+        {
+            fc.AutoStowRodToBackpack();
+        }
+        if (BackpackController.Instance != null && BackpackController.Instance.IsOpen)
+            BackpackController.Instance.CloseBackpack();
+        if (FishJournalUI.Instance != null && FishJournalUI.Instance.IsOpen)
+            FishJournalUI.Instance.ToggleJournal();
+        if (BuildingUIManager.Instance != null && BuildingUIManager.Instance.IsOpen)
+            BuildingUIManager.Instance.CloseBuildingUI();
+        if (MapUIManager.Instance != null && MapUIManager.Instance.IsOpen)
+            MapUIManager.Instance.CloseMap();
+
         currentExitPoint = doorExitPoint;
         isInCar = true;
 

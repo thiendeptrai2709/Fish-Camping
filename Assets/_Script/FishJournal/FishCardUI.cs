@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
@@ -21,16 +21,20 @@ public class FishCardUI : MonoBehaviour
 
         bool isUnlocked = (record != null && record.isUnlocked);
 
+        bool isVietnamese = UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale != null &&
+                            UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale.Identifier.Code.StartsWith("vi");
+
         if (isUnlocked)
         {
             // === KHI ĐÃ CÂU ĐƯỢC ===
             if (lockedOverlay != null) lockedOverlay.SetActive(false);
             if (fishIcon != null) fishIcon.color = Color.white; // Hiện màu sắc sáng rõ
 
-            // Hiển thị tên thật của cá
+            // Hiển thị tên thật của cá (qua Localization nếu có)
             if (fishNameText != null)
             {
-                fishNameText.text = fishData.itemName;
+                string localizedName = UnityEngine.Localization.Settings.LocalizationSettings.StringDatabase.GetLocalizedString("Game Text", fishData.itemName);
+                fishNameText.text = !string.IsNullOrEmpty(localizedName) ? localizedName : fishData.itemName;
             }
 
             // Xử lý hiển thị thông số và hạng
@@ -39,10 +43,22 @@ public class FishCardUI : MonoBehaviour
 
             switch (record.highestGrade)
             {
-                case FishGrade.Normal: gradeString = "Hạng Thường"; hexColor = "#FFFFFF"; break;
-                case FishGrade.Bronze: gradeString = "Hạng Đồng"; hexColor = "#CD7F32"; break;
-                case FishGrade.Silver: gradeString = "Hạng Bạc"; hexColor = "#C0C0C0"; break;
-                case FishGrade.Gold: gradeString = "Hạng Vàng"; hexColor = "#FFD700"; break;
+                case FishGrade.Normal: 
+                    gradeString = isVietnamese ? "Hạng Thường" : "Normal Grade"; 
+                    hexColor = "#FFFFFF"; 
+                    break;
+                case FishGrade.Bronze: 
+                    gradeString = isVietnamese ? "Hạng Đồng" : "Bronze Grade"; 
+                    hexColor = "#CD7F32"; 
+                    break;
+                case FishGrade.Silver: 
+                    gradeString = isVietnamese ? "Hạng Bạc" : "Silver Grade"; 
+                    hexColor = "#C0C0C0"; 
+                    break;
+                case FishGrade.Gold: 
+                    gradeString = isVietnamese ? "Hạng Vàng" : "Gold Grade"; 
+                    hexColor = "#FFD700"; 
+                    break;
             }
 
             if (statsText != null)
@@ -61,11 +77,18 @@ public class FishCardUI : MonoBehaviour
                 fishIcon.color = new Color(0.3f, 0.3f, 0.3f, 1f);
             }
 
-            // THAY ĐỔI Ở ĐÂY: Thay vì hiện "???", hiển thị tên Map lấy từ FishSO
+            // Hiển thị tên Map gợi ý lấy từ FishSO
             if (fishNameText != null)
             {
-                // Nếu bạn muốn hiển thị kèm chữ gợi ý, có thể dùng: $"Khu vực: {fishData.mapName}"
-                fishNameText.text = !string.IsNullOrEmpty(fishData.mapName) ? fishData.mapName : "Chưa rõ";
+                string localizedMap = !string.IsNullOrEmpty(fishData.mapName)
+                    ? UnityEngine.Localization.Settings.LocalizationSettings.StringDatabase.GetLocalizedString("Game Text", fishData.mapName)
+                    : "";
+
+                if (string.IsNullOrEmpty(localizedMap)) localizedMap = fishData.mapName;
+
+                fishNameText.text = !string.IsNullOrEmpty(localizedMap) 
+                    ? localizedMap 
+                    : (isVietnamese ? "Chưa rõ" : "Unknown Area");
             }
 
             if (statsText != null)

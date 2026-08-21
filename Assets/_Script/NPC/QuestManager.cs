@@ -488,6 +488,9 @@ public class QuestManager : MonoBehaviour
 
         if (missionDayText != null)
         {
+            bool isVietnamese = LocalizationSettings.SelectedLocale != null &&
+                                LocalizationSettings.SelectedLocale.Identifier.Code.StartsWith("vi");
+
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
 
             List<Quest> storyQuests = activeQuests.FindAll(q => !q.isDaily);
@@ -510,11 +513,14 @@ public class QuestManager : MonoBehaviour
 
                 if (q.state == QuestState.CanClaim)
                 {
-                    sb.Append("<color=#69F0AE><b>[Đã xong]</b> Gặp Cậu chủ làng nhận thưởng!</color>");
+                    sb.Append(isVietnamese 
+                        ? "<color=#69F0AE><b>[Đã xong]</b> Gặp Cậu chủ làng nhận thưởng!</color>" 
+                        : "<color=#69F0AE><b>[Ready]</b> Talk to Village Master to claim!</color>");
                 }
                 else
                 {
-                    sb.Append($"<color=#B0BEC5>Tiến độ:</color> <color=#FFEB3B><b>{q.currentAmount}/{q.targetAmount}</b></color>");
+                    string progressLabel = isVietnamese ? "Tiến độ:" : "Progress:";
+                    sb.Append($"<color=#B0BEC5>{progressLabel}</color> <color=#FFEB3B><b>{q.currentAmount}/{q.targetAmount}</b></color>");
                 }
             }
 
@@ -522,7 +528,9 @@ public class QuestManager : MonoBehaviour
             if (dailyQuests.Count > 0)
             {
                 if (sb.Length > 0) sb.Append("\n<color=#546E7A>──────────────</color>\n");
-                sb.Append("<b><color=#4DD0E1>⭐ NHIỆM VỤ HÀNG NGÀY</color></b>\n");
+                sb.Append(isVietnamese 
+                    ? "<b><color=#4DD0E1>⭐ NHIỆM VỤ HÀNG NGÀY</color></b>\n" 
+                    : "<b><color=#4DD0E1>⭐ DAILY MISSIONS</color></b>\n");
 
                 for (int i = 0; i < dailyQuests.Count; i++)
                 {
@@ -531,7 +539,9 @@ public class QuestManager : MonoBehaviour
 
                     if (q.state == QuestState.CanClaim)
                     {
-                        sb.Append($"• <color=#E0E0E0>{title}</color>: <color=#69F0AE><b>[Xong - Nhấn V nhận {q.goldReward}G]</b></color>\n");
+                        sb.Append(isVietnamese 
+                            ? $"• <color=#E0E0E0>{title}</color>: <color=#69F0AE><b>[Xong - Nhấn V nhận {q.goldReward}G]</b></color>\n" 
+                            : $"• <color=#E0E0E0>{title}</color>: <color=#69F0AE><b>[Ready - Press V for {q.goldReward}G]</b></color>\n");
                     }
                     else
                     {
@@ -760,7 +770,7 @@ public class QuestManager : MonoBehaviour
         }
     }
 
-    // Hàm tiện ích tra cứu từ điển (hỗ trợ cả Game Text và NPC Text)
+    // Hàm tiện ích tra cứu từ điển (hỗ trợ cả Game Text và NPC Text với từ điển dự phòng)
     public string GetLocalizedText(string keyOrText)
     {
         if (string.IsNullOrEmpty(keyOrText)) return "";
@@ -780,12 +790,43 @@ public class QuestManager : MonoBehaviour
                 var entry = npcTable.GetEntry(keyOrText);
                 if (entry != null) return entry.GetLocalizedString();
             }
-
-            return keyOrText;
         }
-        catch
+        catch { }
+
+        bool isVietnamese = LocalizationSettings.SelectedLocale != null &&
+                            LocalizationSettings.SelectedLocale.Identifier.Code.StartsWith("vi");
+
+        if (isVietnamese) return keyOrText;
+
+        // Smart fallback dictionary for English translations
+        switch (keyOrText)
         {
-            return keyOrText;
+            // Daily Quests
+            case "Câu Cá Hàng Ngày": return "Daily Fishing";
+            case "Câu 3 con cá bất kỳ ở hồ nước gần nhất.": return "Catch 3 fish of any kind in the nearest lake.";
+            case "Bữa Ăn Dã Ngoại": return "Campfire Meal";
+            case "Nướng chín 1 đĩa cá tại bếp dã ngoại bên bờ hồ.": return "Grill 1 fish on the campfire cooking rack.";
+            case "Bảo Trì Xe Hàng Ngày": return "Daily Vehicle Maintenance";
+            case "Nạp đầy bình xăng tại Trạm xăng hoặc nâng cấp lốp xe.": return "Refuel at the Gas Station or upgrade tires at the Garage.";
+            case "Cá Bất Kỳ": return "Any Fish";
+            case "Cá Nướng": return "Grilled Fish";
+            case "Trạm Xăng / Gara": return "Gas Station / Garage";
+
+            // Story Quests
+            case "Bữa Tiệc Hồ Thông": return "Pine Lake Banquet";
+            case "Lái xe đến Hồ Thông (Map 2), câu 2 con cá tươi mang về cho làng.": return "Drive to Pine Lake (Map 2), catch 2 fresh fish for the village.";
+            case "Hương Vị Cá Nướng": return "Grilled Fish Delicacy";
+            case "Nướng chín 1 đĩa Cá Nướng dã ngoại bên bếp lửa trại mang về cho Cậu chủ làng.": return "Grill 1 fish at a campfire and bring it to the Village Master.";
+            case "Bảo Dưỡng Chuyến Đi Xa": return "Long Trip Vehicle Prep";
+            case "Đến gặp Bác thợ máy nâng cấp lốp xe Gai Off-road hoặc đổ đầy bình xăng tại Trạm xăng.": return "Visit the Mechanic to upgrade Off-Road tires or fully refuel at the Gas Station.";
+            case "Đặc Sản Đầm Lầy": return "Swamp Delicacies";
+            case "Lái xe vượt địa hình vào Đầm Lầy (Map 3) và câu 2 con cá đầm lầy.": return "Drive off-road into the Swamp (Map 3) and catch 2 swamp fish.";
+            case "Cá Vàng May Mắn": return "Lucky Golden Fish";
+            case "Dùng Mồi câu xịn bắt được ít nhất 1 con cá đạt phẩm chất Vàng Kim (Gold Grade).": return "Use premium bait to catch at least 1 Gold Grade fish.";
+            case "Chinh Phục Đại Dương": return "Conquer the Ocean";
+            case "Trang bị Cần câu 5 hoặc 6 cùng Mồi biển, câu 2 con cá biển lớn tại Bờ Biển (Map 4).": return "Equip Rod 5/6 with Ocean Bait, catch 2 ocean fish at Coast (Map 4).";
+
+            default: return keyOrText;
         }
     }
 }

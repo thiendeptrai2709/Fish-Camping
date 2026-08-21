@@ -33741,14 +33741,14 @@ MonoBehaviour:
   wheelRL: {fileID: 1224895031}
   wheelRR: {fileID: 1154205426}
   wheelPrefabs:
+  - {fileID: 4132143957973514598, guid: d0902eed0c71350468db11715bbf405d, type: 3}
+  - {fileID: 6425032315613321369, guid: f4e3e2e5733649b42aab42bd99c914f5, type: 3}
+  - {fileID: 5025580427080268077, guid: 15dba757a5ba3294597cee9b3cd41de6, type: 3}
   - {fileID: 5327963178059423916, guid: 2085c57d7576f874e83ffa2d211a27ea, type: 3}
+  - {fileID: 2507273213197266941, guid: c10c5d85dd7b0db458dd9d93a84e6b58, type: 3}
+  - {fileID: 2797183914310593762, guid: e97b63e4bac122d4da96abd93e196573, type: 3}
   - {fileID: 5503701249889811591, guid: 19715278cf387814cb6d41001aa0777b, type: 3}
   - {fileID: 3570472843685785719, guid: 1f2c3323e4d72084abac4a0e9f21427c, type: 3}
-  - {fileID: 2797183914310593762, guid: e97b63e4bac122d4da96abd93e196573, type: 3}
-  - {fileID: 4147175499008398625, guid: 7529c546b9b31d54db34c19762699051, type: 3}
-  - {fileID: 2507273213197266941, guid: c10c5d85dd7b0db458dd9d93a84e6b58, type: 3}
-  - {fileID: 5025580427080268077, guid: 15dba757a5ba3294597cee9b3cd41de6, type: 3}
-  - {fileID: 6425032315613321369, guid: f4e3e2e5733649b42aab42bd99c914f5, type: 3}
   allTires:
   - {fileID: 11400000, guid: 31917a8639bb5714883af161c693f58b, type: 2}
   - {fileID: 11400000, guid: 428070e18794c644eb4f5448c2521ba0, type: 2}
@@ -33769,6 +33769,7 @@ MonoBehaviour:
   - {fileID: 883674294}
   notificationText: {fileID: 883674293}
   wheelRotationOffset: {x: 180, y: 90, z: 180}
+  customWheelScale: {x: 1, y: 1, z: 1}
   wheelScaleMultiplier: 2
 --- !u!1 &943735916
 GameObject:
@@ -39147,7 +39148,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1226535850
 MonoBehaviour:
   m_ObjectHideFlags: 0

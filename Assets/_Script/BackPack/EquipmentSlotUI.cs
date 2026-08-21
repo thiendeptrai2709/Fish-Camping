@@ -137,6 +137,11 @@ public class EquipmentSlotUI : MonoBehaviour, IDropHandler
 
     public void EquipItemDirectly(InventoryItemUI itemUI)
     {
+        if (itemUI == null) return;
+        if (equippedItem != null && equippedItem != itemUI)
+        {
+            Destroy(equippedItem.gameObject);
+        }
         equippedItem = itemUI;
         itemUI.transform.SetParent(transform);
         itemUI.transform.SetAsLastSibling();

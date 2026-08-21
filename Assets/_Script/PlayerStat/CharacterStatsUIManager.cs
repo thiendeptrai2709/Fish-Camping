@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CharacterStatsUIManager : MonoBehaviour
@@ -10,14 +10,22 @@ public class CharacterStatsUIManager : MonoBehaviour
 
     private void Start()
     {
+        if (statsManager == null)
+        {
+            statsManager = CharacterStatsManager.Instance ?? FindFirstObjectByType<CharacterStatsManager>();
+        }
+
         // Setup từ điển UI và khởi tạo giá trị ban đầu cho các thanh
         foreach (var bar in statUIBars)
         {
             uiBarDictionary[bar.statType] = bar;
-            CharacterStat stat = statsManager.GetStat(bar.statType);
-            if (stat != null)
+            if (statsManager != null)
             {
-                bar.Initialize(stat.currentValue, stat.maxValue);
+                CharacterStat stat = statsManager.GetStat(bar.statType);
+                if (stat != null)
+                {
+                    bar.Initialize(stat.currentValue, stat.maxValue);
+                }
             }
         }
 

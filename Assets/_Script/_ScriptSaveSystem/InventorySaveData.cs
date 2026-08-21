@@ -14,6 +14,10 @@ public class SavedItemData
     public float fishLength;
     public float fishWeight;
     public int fishGrade;
+
+    // Dữ liệu độ bền và lượt dùng
+    public float durability = -1f;
+    public int remainingUses = -1;
 }
 
 [Serializable]
@@ -26,6 +30,10 @@ public class SavedEquippedSlotData
     public float fishLength;
     public float fishWeight;
     public int fishGrade;
+
+    // Dữ liệu độ bền và lượt dùng
+    public float durability = -1f;
+    public int remainingUses = -1;
 }
 
 [Serializable]

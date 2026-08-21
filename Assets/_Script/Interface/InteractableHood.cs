@@ -65,7 +65,12 @@ public class InteractableHood : MonoBehaviour, IInteractable
 
     public string GetInteractPrompt()
     {
-        return isHoodOpen ? "[Chuột Trái] Đóng nắp Capo" : "[Chuột Trái] Mở nắp Capo";
+        bool isVietnamese = UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale != null &&
+                            UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale.Identifier.Code.StartsWith("vi");
+
+        return isHoodOpen 
+            ? (isVietnamese ? "[Chuột Trái] Đóng nắp Capo" : "[Left Click] Close Hood") 
+            : (isVietnamese ? "[Chuột Trái] Mở nắp Capo" : "[Left Click] Open Hood");
     }
 
     /* 

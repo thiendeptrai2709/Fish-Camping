@@ -55,6 +55,12 @@ public class FishJournalUI : MonoBehaviour
 
             if (ShopManager.Instance != null && ShopManager.Instance.shopPanel != null && ShopManager.Instance.shopPanel.activeInHierarchy)
                 ShopManager.Instance.DongShop();
+
+            FishingController fc = Object.FindFirstObjectByType<FishingController>();
+            if (fc != null && fc.IsBusyFishing())
+            {
+                fc.AutoStowRodToBackpack();
+            }
         }
 
         isOpen = !isOpen;
@@ -92,6 +98,15 @@ public class FishJournalUI : MonoBehaviour
 
             MonoBehaviour cm2Input = freeLookCamera.GetComponent("CinemachineInputProvider") as MonoBehaviour;
             if (cm2Input != null) cm2Input.enabled = !openUI;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (isOpen)
+        {
+            isOpen = false;
+            SetUIState(false);
         }
     }
 }

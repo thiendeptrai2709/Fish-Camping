@@ -68,7 +68,17 @@ public class LanternController : MonoBehaviour, IInteractable
 
     public string GetInteractPrompt()
     {
-        return isOn ? promptTurnOff : promptTurnOn;
+        bool isVietnamese = UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale != null &&
+                            UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale.Identifier.Code.StartsWith("vi");
+
+        if (isOn)
+        {
+            return isVietnamese ? (string.IsNullOrEmpty(promptTurnOff) ? "[Chuột Trái] Tắt đèn" : promptTurnOff) : "[Left Click] Turn Off Lamp";
+        }
+        else
+        {
+            return isVietnamese ? (string.IsNullOrEmpty(promptTurnOn) ? "[Chuột Trái] Bật đèn" : promptTurnOn) : "[Left Click] Turn On Lamp";
+        }
     }
 
     public void OnFocus()

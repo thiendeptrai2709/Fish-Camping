@@ -6,6 +6,7 @@ public class BobberSO : ItemShapeSO
     [Header("Bobber General Stats")]
     public float attractivenessBonus = 5f; // Tăng một chút độ thu hút cá
     public float buoyancy = 1f; // Độ nổi của phao trên mặt nước
+    public float maxDurability = 30f; // Độ bền tối đa của phao (chịu được ~30 lần câu)
 
     [Header("3D Bobber Visuals")]
     [Tooltip("Prefab 3D của phao sẽ được sinh ra bay xuống nước khi quăng cần")]
@@ -30,6 +31,7 @@ public class BobberSO : ItemShapeSO
         return $"• Khu vực: {mapInfo}\n" +
                $"• Độ ổn định Minigame: +{buoyancy:F1}x\n" +
                $"• Tăng kích thước cá: +{attractivenessBonus}%\n" +
-               $"• Trọng lượng ném: {weight}kg";
+               $"• Trọng lượng ném: {weight}kg\n" +
+               $"• Độ bền tối đa: {maxDurability}";
     }
 }

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: LopDoThi_Data 1
   m_EditorClassIdentifier: Assembly-CSharp::TireData
   tireName: "L\u1ED1p \u0110\xF4 Th\u1ECB"
-  tireIcon: {fileID: 456935831, guid: 68af6c51d43574a44a682ac1da089f9c, type: 3}
+  tireIcon: {fileID: 1260822900, guid: 68af6c51d43574a44a682ac1da089f9c, type: 3}
   price: 300
   description: "ma s\xE1t th\u1EA5p gi\xFAp xe ch\u1EA1y c\u1EF1c l\u01B0\u1EDBt
     tr\xEAn \u0111\u01B0\u1EDDng nh\u1EF1a c\u1EE9ng."
@@ -21,3 +21,5 @@ MonoBehaviour:
   forestFriction: 0.124
   swampFriction: 0.077
   sandFriction: 0.089
+  kmPerTirePercent: 3
+  badRoadDamageChance: 0.1

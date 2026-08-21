@@ -104,7 +104,13 @@ public class InteractableBed : MonoBehaviour, IInteractable
         isSleeping = false;
     }
 
-    public string GetInteractPrompt() => interactPrompt;
+    public string GetInteractPrompt()
+    {
+        bool isVietnamese = UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale != null &&
+                            UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale.Identifier.Code.StartsWith("vi");
+
+        return isVietnamese ? (string.IsNullOrEmpty(interactPrompt) ? "[Chuột Trái] Ngủ" : interactPrompt) : "[Left Click] Sleep";
+    }
 
     public void OnFocus()
     {
