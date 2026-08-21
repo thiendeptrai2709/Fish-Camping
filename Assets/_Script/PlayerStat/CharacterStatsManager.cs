@@ -46,4 +46,16 @@ public class CharacterStatsManager : MonoBehaviour
         statDictionary.TryGetValue(type, out CharacterStat stat);
         return stat;
     }
+
+    public float GetStatRatio(StatType type, float defaultRatio = 1f)
+    {
+        if (statDictionary.TryGetValue(type, out CharacterStat stat))
+        {
+            if (stat.maxValue > stat.minValue)
+            {
+                return Mathf.Clamp01((stat.currentValue - stat.minValue) / (stat.maxValue - stat.minValue));
+            }
+        }
+        return defaultRatio;
+    }
 }

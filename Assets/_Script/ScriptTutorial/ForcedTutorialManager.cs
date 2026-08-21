@@ -110,6 +110,7 @@ public class ForcedTutorialManager : MonoBehaviour
     private RectTransform panelRect;
 
     private bool isTyping = false;
+    public bool IsTyping => isTyping;
     private string currentInstructionText = "";
 
     public TutorialStage currentStage = TutorialStage.Quest0_WelcomeGame;
@@ -121,8 +122,6 @@ public class ForcedTutorialManager : MonoBehaviour
     private VehicleController cachedVehicleController;
     private NPCFishingShop cachedFishingShop;
     private FishingZone[] cachedFishingZones;
-    private float distCheckTimer = 0f;
-    private const float DIST_CHECK_INTERVAL = 0.1f;
     private WaitForSeconds cachedTypingWait;
 
     private static readonly RaycastHit[] tutorialHitBuffer = new RaycastHit[16];

@@ -172,4 +172,10 @@ public class SettingManager : MonoBehaviour
         Debug.Log("Đang thoát game...");
         Application.Quit();
     }
+
+    // 3. Hàm Reset toàn bộ dữ liệu game như user mới
+    public void ResetAllGameData()
+    {
+        GameDataResetManager.ResetAllGameData(true);
+    }
 }

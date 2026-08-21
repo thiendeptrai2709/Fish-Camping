@@ -218,7 +218,7 @@ public class PlayerInteraction : MonoBehaviour
 
         if (nearestNpc != null)
         {
-            if (currentInteractable != nearestNpc)
+            if (currentInteractable != (IInteractable)nearestNpc)
             {
                 if (currentInteractable != null)
                 {

@@ -87,12 +87,12 @@ public class PlayerAnimation : MonoBehaviour
         bool isDialogueActive = DialogueManager.Instance != null && DialogueManager.Instance.IsDialogueActive;
         bool isFishing = fishingController != null && fishingController.IsBusyFishing();
 
-        // Khóa animation chạy/đi bộ khi đang câu cá, bị khóa thủ công, mở UI hoặc đang có hội thoại
         if (playerMovement != null && playerMovement.enabled && !playerMovement.IsMovementLocked && !inputHandler.IsUIOpen && !isDialogueActive && !isFishing)
         {
             if (inputHandler.MoveInput.magnitude > 0.1f)
             {
-                targetSpeed = inputHandler.IsSprinting ? 1f : 0.5f;
+                bool isActuallySprinting = inputHandler.IsSprinting && playerMovement.CanSprint;
+                targetSpeed = isActuallySprinting ? 1f : 0.5f;
             }
         }
 
