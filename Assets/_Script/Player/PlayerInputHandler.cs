@@ -18,6 +18,7 @@ public class PlayerInputHandler : MonoBehaviour
     public bool JournalTriggered { get; private set; }
     public bool MapTriggered { get; private set; }
     public bool ExpandMapTriggered { get; private set; }
+    public bool JumpTriggered { get; private set; }
     public bool TogglePerspectiveTriggered { get; private set; }
     public bool IsUIOpen { get; set; }
     private CarInputActions inputActions;
@@ -59,14 +60,24 @@ public class PlayerInputHandler : MonoBehaviour
         ExpandMapTriggered = inputActions.Player.ExpandMap.WasPressedThisFrame();
 
         bool yPressed = false;
+        bool spacePressed = false;
+#if ENABLE_INPUT_SYSTEM
         if (Keyboard.current != null)
         {
             yPressed = Keyboard.current.yKey.wasPressedThisFrame;
+            spacePressed = Keyboard.current.spaceKey.wasPressedThisFrame;
         }
-        else
+#endif
+        if (!yPressed)
         {
             yPressed = Input.GetKeyDown(KeyCode.Y);
         }
+        if (!spacePressed)
+        {
+            spacePressed = Input.GetKeyDown(KeyCode.Space);
+        }
+
         TogglePerspectiveTriggered = yPressed;
+        JumpTriggered = spacePressed;
     }
 }

@@ -9,6 +9,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float rotationSmoothTime = 0.1f;
     [SerializeField] private float gravity = -9.81f;
 
+    [Header("--- Jump Settings ---")]
+    [SerializeField] private float jumpHeight = 1.3f;
+
     [Header("--- Âm thanh di chuyển (File dài) ---")]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip walkSound;
@@ -16,6 +19,7 @@ public class PlayerMovement : MonoBehaviour
 
     private CharacterController controller;
     private PlayerInputHandler inputHandler;
+    private PlayerAnimation playerAnimation;
     private Transform cameraTransform;
     private FishingController fishingController;
     private DualCameraController dualCameraController;
@@ -28,6 +32,7 @@ public class PlayerMovement : MonoBehaviour
     {
         controller = GetComponent<CharacterController>();
         inputHandler = GetComponent<PlayerInputHandler>();
+        playerAnimation = GetComponent<PlayerAnimation>();
         if (Camera.main != null) cameraTransform = Camera.main.transform;
         fishingController = GetComponent<FishingController>();
         dualCameraController = GetComponent<DualCameraController>() ?? GetComponentInParent<DualCameraController>();
@@ -106,12 +111,32 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
-        // 2. TÍNH LỰC HÚT TRÁI ĐẤT (Chưa Move)
-        if (controller.isGrounded && verticalVelocity < 0)
+        // 2. TÍNH LỰC NHẢY VÀ TRỌNG LỰC
+        if (controller.isGrounded)
         {
-            verticalVelocity = -2f;
+            if (verticalVelocity < 0)
+            {
+                verticalVelocity = -2f;
+            }
+
+            if (inputHandler.JumpTriggered && !inputHandler.IsUIOpen)
+            {
+                verticalVelocity = Mathf.Sqrt(jumpHeight * -2f * gravity);
+                if (playerAnimation != null)
+                {
+                    playerAnimation.TriggerJump();
+                }
+            }
         }
-        verticalVelocity += gravity * Time.deltaTime;
+        else
+        {
+            verticalVelocity += gravity * Time.deltaTime;
+        }
+
+        if (playerAnimation != null)
+        {
+            playerAnimation.SetGrounded(controller.isGrounded);
+        }
 
         // 3. GOM CHUNG THÀNH 1 LỆNH MOVE DUY NHẤT (Tuyệt chiêu trị lỗi isGrounded)
         Vector3 finalMove = horizontalMove + (Vector3.up * verticalVelocity);

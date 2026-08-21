@@ -20,6 +20,8 @@ public class PlayerAnimation : MonoBehaviour
     private FishingController fishingController;
 
     private readonly int isDrivingBoolHash = Animator.StringToHash("IsDriving");
+    private readonly int jumpTriggerHash = Animator.StringToHash("Jump");
+    private readonly int isGroundedBoolHash = Animator.StringToHash("IsGrounded");
 
     public System.Action onEnterCarComplete;
     public System.Action onExitCarComplete;
@@ -94,7 +96,8 @@ public class PlayerAnimation : MonoBehaviour
             }
         }
 
-        currentAnimationSpeed = Mathf.Lerp(currentAnimationSpeed, targetSpeed, Time.deltaTime * 10f);
+        currentAnimationSpeed = Mathf.Lerp(currentAnimationSpeed, targetSpeed, Time.deltaTime * 25f);
+        if (Mathf.Abs(currentAnimationSpeed - targetSpeed) < 0.02f) currentAnimationSpeed = targetSpeed;
         animator.SetFloat(speedHash, currentAnimationSpeed);
     }
     public void SetFishingState(bool isFishing)
@@ -165,6 +168,16 @@ public class PlayerAnimation : MonoBehaviour
             leftHandGripTarget = null;
             rightHandGripTarget = null;
         }
+    }
+
+    public void TriggerJump()
+    {
+        if (animator != null) animator.SetTrigger(jumpTriggerHash);
+    }
+
+    public void SetGrounded(bool isGrounded)
+    {
+        if (animator != null) animator.SetBool(isGroundedBoolHash, isGrounded);
     }
 
     public void SetSteeringGrips(Transform leftGrip, Transform rightGrip)
