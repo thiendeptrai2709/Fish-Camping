@@ -1,6 +1,13 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
-using UnityEngine.SceneManagement; // BẮT BUỘC THÊM THƯ VIỆN NÀY
+using UnityEngine.SceneManagement;
+
+public enum RainIntensityType
+{
+    Light,      // Mưa nhỏ / Mưa phùn
+    Moderate,   // Mưa vừa
+    Heavy       // Mưa to / Mưa rào
+}
 
 public class WeatherSystem : MonoBehaviour
 {
@@ -20,15 +27,40 @@ public class WeatherSystem : MonoBehaviour
     [Range(0f, 100f)]
     public float rainChance = 30f;
 
+    [Header("--- Dynamic Rain Intensity (Mưa to / Mưa nhỏ) ---")]
+    [Tooltip("Cho phép ngẫu nhiên cường độ mưa to / mưa nhỏ")]
+    public bool enableRandomIntensity = true;
+
+    [Tooltip("Tốc độ hạt khi mưa nhỏ (hạt/giây)")]
+    public float lightRainRate = 200f;
+
+    [Tooltip("Tốc độ hạt khi mưa vừa (hạt/giây)")]
+    public float moderateRainRate = 500f;
+
+    [Tooltip("Tốc độ hạt khi mưa to (hạt/giây)")]
+    public float heavyRainRate = 850f;
+
+    [Tooltip("Khoảng thời gian (giây) tự động chuyển đổi cường độ ngẫu nhiên trong cơn mưa")]
+    public float intensityChangeInterval = 45f;
+
+    [SerializeField] private RainIntensityType currentRainType = RainIntensityType.Moderate;
+
     [Header("--- Âm Thanh Mưa ---")]
     public AudioSource rainAudioSource;
     public float fadeDuration = 3f;
     [Range(0f, 1f)]
     public float maxRainVolume = 1f;
 
+    public RainIntensityType CurrentRainType => currentRainType;
+
     private bool isRaining = false;
     private float nextRainCheckTime;
     private float rainEndTime;
+    private float nextIntensityChangeTime;
+
+    private float targetRainRate = 500f;
+    private float currentRainRate = 500f;
+    private float targetRainVolume = 0.7f;
 
     private GameObject currentRainInstance;
     private ParticleSystem currentRainParticle;
@@ -40,13 +72,11 @@ public class WeatherSystem : MonoBehaviour
     // --- BẮT SỰ KIỆN CHUYỂN SCENE ---
     private void OnEnable()
     {
-        // Lắng nghe mỗi khi một Map mới được load xong
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     private void OnDisable()
     {
-        // Hủy lắng nghe và ép dừng khi script bị tắt
         SceneManager.sceneLoaded -= OnSceneLoaded;
         ForceStopWeather();
     }
@@ -54,13 +84,8 @@ public class WeatherSystem : MonoBehaviour
     // --- HÀM RESET CỨNG KHI ĐỔI MAP ---
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // 1. Ép tắt toàn bộ mưa, hạt mưa và âm thanh ngay lập tức
         ForceStopWeather();
-
-        // 2. Reset lại bộ đếm thời gian để không bị mưa luôn ở Map mới
         nextRainCheckTime = Time.time + rainCheckInterval;
-
-        // 3. Xóa transform của Player cũ đi để nó tự tìm Player ở Map mới
         playerTransform = null;
     }
 
@@ -74,13 +99,29 @@ public class WeatherSystem : MonoBehaviour
         {
             rainAudioSource.volume = 0f;
         }
+
+        EnsureRainInstance();
     }
 
     void Update()
     {
         UpdateFog();
         UpdateRainLogic();
+        UpdateRainIntensity();
         FollowPlayer();
+    }
+
+    private void EnsureRainInstance()
+    {
+        if (rainPrefab != null && currentRainInstance == null)
+        {
+            currentRainInstance = Instantiate(rainPrefab);
+            currentRainParticle = currentRainInstance.GetComponent<ParticleSystem>();
+            if (currentRainParticle != null)
+            {
+                currentRainParticle.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            }
+        }
     }
 
     // --- HÀM DỌN DẸP SẠCH SẼ MỌI THỨ ---
@@ -100,11 +141,9 @@ public class WeatherSystem : MonoBehaviour
             rainAudioSource.volume = 0f;
         }
 
-        if (currentRainInstance != null)
+        if (currentRainParticle != null)
         {
-            Destroy(currentRainInstance);
-            currentRainInstance = null;
-            currentRainParticle = null;
+            currentRainParticle.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         }
     }
 
@@ -126,7 +165,10 @@ public class WeatherSystem : MonoBehaviour
 
         if (isRaining)
         {
-            fogFactor = Mathf.Max(fogFactor, 0.6f);
+            // Sương mù dày hơn tương ứng với cấp độ mưa (Mưa to -> Sương mù dày hơn)
+            float rainFogMultiplier = (currentRainType == RainIntensityType.Light) ? 0.45f :
+                                      (currentRainType == RainIntensityType.Moderate) ? 0.65f : 0.88f;
+            fogFactor = Mathf.Max(fogFactor, rainFogMultiplier);
         }
 
         RenderSettings.fogDensity = Mathf.Lerp(minFogDensity, maxFogDensity, fogFactor);
@@ -150,16 +192,79 @@ public class WeatherSystem : MonoBehaviour
         }
     }
 
+    private void UpdateRainIntensity()
+    {
+        if (!isRaining || currentRainParticle == null) return;
+
+        // Đổi ngẫu nhiên cường độ mưa theo chu kỳ trong lúc đang mưa
+        if (enableRandomIntensity && Time.time >= nextIntensityChangeTime)
+        {
+            nextIntensityChangeTime = Time.time + intensityChangeInterval;
+            RollRandomRainIntensity();
+        }
+
+        // Chuyển đổi mượt mà số lượng hạt mưa
+        currentRainRate = Mathf.MoveTowards(currentRainRate, targetRainRate, Time.deltaTime * 150f);
+        var emission = currentRainParticle.emission;
+        emission.rateOverTime = new ParticleSystem.MinMaxCurve(currentRainRate);
+
+        // Chuyển đổi mượt mà âm lượng tiếng mưa theo cường độ
+        if (rainAudioSource != null && audioFadeCoroutine == null)
+        {
+            rainAudioSource.volume = Mathf.MoveTowards(rainAudioSource.volume, targetRainVolume, Time.deltaTime * 0.4f);
+        }
+    }
+
+    private void RollRandomRainIntensity()
+    {
+        float roll = Random.Range(0f, 100f);
+        if (roll < 40f)
+        {
+            SetRainIntensity(RainIntensityType.Light);
+        }
+        else if (roll < 75f)
+        {
+            SetRainIntensity(RainIntensityType.Moderate);
+        }
+        else
+        {
+            SetRainIntensity(RainIntensityType.Heavy);
+        }
+    }
+
+    public void SetRainIntensity(RainIntensityType type)
+    {
+        currentRainType = type;
+        switch (type)
+        {
+            case RainIntensityType.Light:
+                targetRainRate = lightRainRate;
+                targetRainVolume = maxRainVolume * 0.35f;
+                break;
+            case RainIntensityType.Moderate:
+                targetRainRate = moderateRainRate;
+                targetRainVolume = maxRainVolume * 0.70f;
+                break;
+            case RainIntensityType.Heavy:
+                targetRainRate = heavyRainRate;
+                targetRainVolume = maxRainVolume * 1.00f;
+                break;
+        }
+    }
+
     void StartRain()
     {
         isRaining = true;
         rainEndTime = Time.time + rainDuration;
+        nextIntensityChangeTime = Time.time + intensityChangeInterval;
 
-        if (rainPrefab != null && currentRainInstance == null)
+        RollRandomRainIntensity();
+        currentRainRate = targetRainRate;
+
+        EnsureRainInstance();
+
+        if (currentRainInstance != null)
         {
-            currentRainInstance = Instantiate(rainPrefab);
-            currentRainParticle = currentRainInstance.GetComponent<ParticleSystem>();
-
             TryFindPlayer();
 
             if (playerTransform != null)
@@ -167,10 +272,17 @@ public class WeatherSystem : MonoBehaviour
                 currentRainInstance.transform.position = GetRainPosition();
             }
 
+            if (currentRainParticle != null)
+            {
+                var emission = currentRainParticle.emission;
+                emission.rateOverTime = new ParticleSystem.MinMaxCurve(currentRainRate);
+                currentRainParticle.Play(true);
+            }
+
             if (rainAudioSource != null)
             {
                 if (audioFadeCoroutine != null) StopCoroutine(audioFadeCoroutine);
-                audioFadeCoroutine = StartCoroutine(FadeAudio(rainAudioSource, maxRainVolume, fadeDuration));
+                audioFadeCoroutine = StartCoroutine(FadeAudio(rainAudioSource, targetRainVolume, fadeDuration));
             }
         }
     }
@@ -180,36 +292,23 @@ public class WeatherSystem : MonoBehaviour
         isRaining = false;
         nextRainCheckTime = Time.time + rainCheckInterval;
 
-        if (currentRainInstance != null)
+        if (currentRainParticle != null)
         {
-            GameObject rainToDestroy = currentRainInstance;
-            currentRainInstance = null;
+            currentRainParticle.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+        }
 
-            if (currentRainParticle != null)
-            {
-                currentRainParticle.Stop(true, ParticleSystemStopBehavior.StopEmitting);
-                Destroy(rainToDestroy, 3f);
-            }
-            else
-            {
-                Destroy(rainToDestroy);
-            }
-
-            currentRainParticle = null;
-
-            if (rainAudioSource != null)
-            {
-                if (audioFadeCoroutine != null) StopCoroutine(audioFadeCoroutine);
-                audioFadeCoroutine = StartCoroutine(FadeAudio(rainAudioSource, 0f, fadeDuration));
-            }
+        if (rainAudioSource != null)
+        {
+            if (audioFadeCoroutine != null) StopCoroutine(audioFadeCoroutine);
+            audioFadeCoroutine = StartCoroutine(FadeAudio(rainAudioSource, 0f, fadeDuration));
         }
     }
 
-    private IEnumerator FadeAudio(AudioSource audioSrc, float targetVolume, float duration)
+    private IEnumerator FadeAudio(AudioSource audioSrc, float targetVol, float duration)
     {
         if (audioSrc == null) yield break;
 
-        if (!audioSrc.isPlaying && targetVolume > 0f)
+        if (!audioSrc.isPlaying && targetVol > 0f)
         {
             audioSrc.volume = 0f;
             audioSrc.Play();
@@ -222,19 +321,21 @@ public class WeatherSystem : MonoBehaviour
         {
             if (audioSrc == null) yield break;
 
-            audioSrc.volume = Mathf.Lerp(startVolume, targetVolume, timeElapsed / duration);
+            audioSrc.volume = Mathf.Lerp(startVolume, targetVol, timeElapsed / duration);
             timeElapsed += Time.deltaTime;
             yield return null;
         }
 
         if (audioSrc != null)
         {
-            audioSrc.volume = targetVolume;
-            if (targetVolume <= 0f)
+            audioSrc.volume = targetVol;
+            if (targetVol <= 0f)
             {
                 audioSrc.Stop();
             }
         }
+
+        audioFadeCoroutine = null;
     }
 
     void FollowPlayer()

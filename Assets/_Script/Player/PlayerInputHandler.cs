@@ -42,7 +42,19 @@ public class PlayerInputHandler : MonoBehaviour
     {
         MoveInput = inputActions.Player.Move.ReadValue<Vector2>();
         LookInput = IsUIOpen ? Vector2.zero : inputActions.Player.Look.ReadValue<Vector2>();
-        IsSprinting = inputActions.Player.Sprint.IsPressed();
+
+        bool sprintHeld = false;
+#if ENABLE_INPUT_SYSTEM
+        if (Keyboard.current != null)
+        {
+            sprintHeld = Keyboard.current.leftShiftKey.isPressed || Keyboard.current.rightShiftKey.isPressed;
+        }
+#endif
+        if (!sprintHeld)
+        {
+            sprintHeld = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+        }
+        IsSprinting = inputActions.Player.Sprint.IsPressed() || sprintHeld;
         InteractTriggered = inputActions.Player.Interact.WasPressedThisFrame();
         IsInteractHeld = inputActions.Player.Interact.IsPressed();
 
