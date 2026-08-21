@@ -91,10 +91,17 @@ public class PlayerInteraction : MonoBehaviour
             return;
         }
 
+        if (cameraTransform == null && Camera.main != null)
+        {
+            cameraTransform = Camera.main.transform;
+        }
+
+        bool isFPP = (DualCameraController.Instance != null && DualCameraController.Instance.CurrentMode == PerspectiveMode.FirstPerson);
+        float maxRayDistance = isFPP ? interactDistance : (interactDistance + 6f);
         Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
 
         // 1. Kiểm tra Raycast ngắm trực tiếp (Cửa xe, Cốp xe, Nắp Capo, Động cơ, Lốp xe, Đồ cắm trại,...)
-        int hitCount = Physics.RaycastNonAlloc(ray, hitBuffer, interactDistance, interactableLayer, QueryTriggerInteraction.Collide);
+        int hitCount = Physics.RaycastNonAlloc(ray, hitBuffer, maxRayDistance, interactableLayer, QueryTriggerInteraction.Collide);
         if (hitCount > 0)
         {
             // Sắp xếp theo khoảng cách gần nhất (Non-Alloc In-Place Sort)
@@ -119,6 +126,13 @@ public class PlayerInteraction : MonoBehaviour
             {
                 var hitCol = hitBuffer[i].collider;
                 if (hitCol == null) continue;
+
+                // Kiểm tra khoảng cách thực tế từ Người chơi đến vật thể
+                float distFromPlayer = Vector3.Distance(transform.position, hitCol.transform.position);
+                if (distFromPlayer > interactDistance + 1.2f)
+                {
+                    continue;
+                }
 
                 // Bỏ qua các trigger zone nhiệm vụ / bản đồ
                 if (hitCol.GetComponent<TutorialTruckTriggerZone>() != null ||

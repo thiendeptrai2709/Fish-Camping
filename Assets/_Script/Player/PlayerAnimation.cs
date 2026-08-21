@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(PlayerInputHandler))]
@@ -140,6 +140,14 @@ public class PlayerAnimation : MonoBehaviour
             fishingController.OnCatchFailComplete();
         }
     }
+    [Header("Steering Wheel IK")]
+    [SerializeField] private Transform leftHandGripTarget;
+    [SerializeField] private Transform rightHandGripTarget;
+    [SerializeField] private float ikBlendSpeed = 6f;
+
+    private float drivingIKWeight = 0f;
+    private bool isDriving = false;
+
     public void OnCatchSuccessIntroComplete()
     {
         if (fishingController != null)
@@ -147,8 +155,58 @@ public class PlayerAnimation : MonoBehaviour
             fishingController.OnCatchSuccessIntroComplete();
         }
     }
-    public void SetDrivingState(bool isDriving)
+
+    public void SetDrivingState(bool driving)
     {
-        if (animator != null) animator.SetBool(isDrivingBoolHash, isDriving);
+        isDriving = driving;
+        if (animator != null) animator.SetBool(isDrivingBoolHash, driving);
+        if (!driving)
+        {
+            leftHandGripTarget = null;
+            rightHandGripTarget = null;
+        }
+    }
+
+    public void SetSteeringGrips(Transform leftGrip, Transform rightGrip)
+    {
+        leftHandGripTarget = leftGrip;
+        rightHandGripTarget = rightGrip;
+    }
+
+    private void OnAnimatorIK(int layerIndex)
+    {
+        if (animator == null) return;
+
+        // Cập nhật trọng số IK mượt mà
+        float targetWeight = (isDriving && (leftHandGripTarget != null || rightHandGripTarget != null)) ? 1f : 0f;
+        drivingIKWeight = Mathf.MoveTowards(drivingIKWeight, targetWeight, Time.deltaTime * ikBlendSpeed);
+
+        if (drivingIKWeight > 0.001f)
+        {
+            // Tay trái bám vào cạnh trái vô lăng
+            if (leftHandGripTarget != null)
+            {
+                animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, drivingIKWeight);
+                animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, drivingIKWeight);
+                animator.SetIKPosition(AvatarIKGoal.LeftHand, leftHandGripTarget.position);
+                animator.SetIKRotation(AvatarIKGoal.LeftHand, leftHandGripTarget.rotation);
+            }
+
+            // Tay phải bám vào cạnh phải vô lăng
+            if (rightHandGripTarget != null)
+            {
+                animator.SetIKPositionWeight(AvatarIKGoal.RightHand, drivingIKWeight);
+                animator.SetIKRotationWeight(AvatarIKGoal.RightHand, drivingIKWeight);
+                animator.SetIKPosition(AvatarIKGoal.RightHand, rightHandGripTarget.position);
+                animator.SetIKRotation(AvatarIKGoal.RightHand, rightHandGripTarget.rotation);
+            }
+        }
+        else
+        {
+            animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 0f);
+            animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, 0f);
+            animator.SetIKPositionWeight(AvatarIKGoal.RightHand, 0f);
+            animator.SetIKRotationWeight(AvatarIKGoal.RightHand, 0f);
+        }
     }
 }

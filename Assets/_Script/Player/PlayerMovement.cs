@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(PlayerInputHandler))]
@@ -18,6 +18,7 @@ public class PlayerMovement : MonoBehaviour
     private PlayerInputHandler inputHandler;
     private Transform cameraTransform;
     private FishingController fishingController;
+    private DualCameraController dualCameraController;
 
     private float currentVelocity;
     private float verticalVelocity;
@@ -27,8 +28,13 @@ public class PlayerMovement : MonoBehaviour
     {
         controller = GetComponent<CharacterController>();
         inputHandler = GetComponent<PlayerInputHandler>();
-        cameraTransform = Camera.main.transform;
+        if (Camera.main != null) cameraTransform = Camera.main.transform;
         fishingController = GetComponent<FishingController>();
+        dualCameraController = GetComponent<DualCameraController>() ?? GetComponentInParent<DualCameraController>();
+        if (dualCameraController == null)
+        {
+            dualCameraController = gameObject.AddComponent<DualCameraController>();
+        }
 
         // Giữ nguyên thiết lập lặp lại file
         if (audioSource != null)
@@ -65,17 +71,39 @@ public class PlayerMovement : MonoBehaviour
         Vector3 direction = new Vector3(input.x, 0f, input.y).normalized;
         Vector3 horizontalMove = Vector3.zero;
 
-        // 1. TÍNH LỰC ĐI NGANG (Chưa Move)
-        if (direction.magnitude >= 0.1f)
+        if (cameraTransform == null && Camera.main != null)
         {
-            float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + cameraTransform.eulerAngles.y;
-            float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref currentVelocity, rotationSmoothTime);
-            transform.rotation = Quaternion.Euler(0f, angle, 0f);
+            cameraTransform = Camera.main.transform;
+        }
 
-            Vector3 moveDirection = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
-            float currentSpeed = inputHandler.IsSprinting ? sprintSpeed : walkSpeed;
+        bool isFPP = (dualCameraController != null && dualCameraController.CurrentMode == PerspectiveMode.FirstPerson) ||
+                     (DualCameraController.Instance != null && DualCameraController.Instance.CurrentMode == PerspectiveMode.FirstPerson);
 
-            horizontalMove = moveDirection.normalized * currentSpeed;
+        if (isFPP)
+        {
+            if (direction.magnitude >= 0.1f)
+            {
+                // FPP: Di chuyển strafe / tiến / lùi theo hướng mặt nhân vật
+                Vector3 moveDirection = (transform.forward * input.y + transform.right * input.x).normalized;
+                float currentSpeed = inputHandler.IsSprinting ? sprintSpeed : walkSpeed;
+                horizontalMove = moveDirection * currentSpeed;
+            }
+        }
+        else
+        {
+            // TPP: Xoay tự do theo hướng di chuyển phím WASD
+            if (direction.magnitude >= 0.1f)
+            {
+                float camYaw = cameraTransform != null ? cameraTransform.eulerAngles.y : 0f;
+                float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + camYaw;
+                float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref currentVelocity, rotationSmoothTime);
+                transform.rotation = Quaternion.Euler(0f, angle, 0f);
+
+                Vector3 moveDirection = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
+                float currentSpeed = inputHandler.IsSprinting ? sprintSpeed : walkSpeed;
+
+                horizontalMove = moveDirection.normalized * currentSpeed;
+            }
         }
 
         // 2. TÍNH LỰC HÚT TRÁI ĐẤT (Chưa Move)

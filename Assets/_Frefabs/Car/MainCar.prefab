@@ -1242,12 +1242,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4014765517805785171}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1.0644662, y: 2.9178767, z: 1.1055524}
+  m_LocalRotation: {x: -0.15435547, y: -0, z: -0, w: 0.9880154}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 9199933778229469735}
+  m_Father: {fileID: 1350594528904791774}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &3244015899442892094
 MeshFilter:
@@ -2192,6 +2192,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableEngine
   engineRepairMinigame: {fileID: 5224876922350798403}
+  interactableHood: {fileID: 0}
 --- !u!1 &6037033108583849165
 GameObject:
   m_ObjectHideFlags: 0
@@ -2734,6 +2735,38 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableHood
   hoodHinge: {fileID: 4263717819214804220}
+--- !u!1 &6713047024641146005
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1350594528904791774}
+  m_Layer: 3
+  m_Name: point
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1350594528904791774
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6713047024641146005}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.15429597, y: -0.0042860666, z: 0.027434725, w: 0.9876345}
+  m_LocalPosition: {x: -1.0644531, y: 2.9201999, z: 1.1055502}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1906215413318952013}
+  m_Father: {fileID: 9199933778229469735}
+  m_LocalEulerAnglesHint: {x: 17.759, y: 0, z: 3.182}
 --- !u!1 &6715426423681580902
 GameObject:
   m_ObjectHideFlags: 0
@@ -2775,7 +2808,7 @@ Transform:
   - {fileID: 1322274183290694238}
   - {fileID: 374782007085921243}
   - {fileID: 1065322887868291382}
-  - {fileID: 1906215413318952013}
+  - {fileID: 1350594528904791774}
   - {fileID: 1086924796832470905}
   m_Father: {fileID: 8537560577896252487}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3418,6 +3451,17 @@ MonoBehaviour:
   rearLeftTransform: {fileID: 3983209140801931892}
   rearRightTransform: {fileID: 3172462804269313130}
   centerOfMass: {fileID: 7551500720709943837}
+  steeringWheel: {fileID: 1350594528904791774}
+  steeringAxis: {x: 0, y: 0, z: 1}
+  maxSteeringWheelAngle: 450
+  steeringSmoothTime: 0.14
+  customPivotOffset: {x: 0, y: 0, z: 0}
+  handGripWidth: 0.45
+  handGripHeight: 0.14
+  handGripForward: -0.13
+  handGripAngle: 25
+  leftHandGrip: {fileID: 0}
+  rightHandGrip: {fileID: 0}
 --- !u!114 &9152428824379481637
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3430,6 +3474,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21f566c0ef502f645a9d402523482aec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::VehicleBody
+  vehicleStats: {fileID: 0}
 --- !u!114 &6911055058645893938
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3532,6 +3577,7 @@ MonoBehaviour:
   playerCollider: {fileID: 0}
   playerRigidbody: {fileID: 0}
   driverSeatPoint: {fileID: 1086924796832470905}
+  sittingOffset: {x: -0.1, y: -0.15, z: 0}
   vehicleInput: {fileID: 8457522825824892041}
   vehicleController: {fileID: 1260891777461015879}
   carCamera: {fileID: 0}

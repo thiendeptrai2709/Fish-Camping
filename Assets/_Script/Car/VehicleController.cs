@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody), typeof(VehicleInput))]
@@ -26,6 +26,38 @@ public class VehicleController : MonoBehaviour
 
     [SerializeField] private Transform centerOfMass;
 
+    [Header("Steering Wheel")]
+    [SerializeField] private Transform steeringWheel;
+    [Tooltip("Trục xoay của vô lăng")]
+    [SerializeField] private Vector3 steeringAxis = Vector3.forward;
+    [Tooltip("Góc đánh lái tối đa của vô lăng (độ). 90 - 120 độ tạo cảm giác chân thực")]
+    [SerializeField] private float maxSteeringWheelAngle = 100f;
+    [Tooltip("Thời gian làm mượt đánh lái và trả lái (giây). Càng nhỏ càng nhanh, 0.14s êm ái chuẩn xe thật")]
+    [SerializeField] private float steeringSmoothTime = 0.14f;
+    [Tooltip("Độ dời tâm xoay thủ công nếu cần tinh chỉnh thêm")]
+    [SerializeField] private Vector3 customPivotOffset = Vector3.zero;
+
+    [Header("Hand Grips (IK)")]
+    [Tooltip("Khoảng cách mở rộng của 2 tay (độ rộng bám vô lăng)")]
+    [SerializeField] private float handGripWidth = 0.16f;
+    [Tooltip("Độ cao của 2 tay trên vô lăng (Y)")]
+    [SerializeField] private float handGripHeight = 0.04f;
+    [Tooltip("Độ nông/sâu tiến lùi của tay trên vô lăng (Z)")]
+    [SerializeField] private float handGripForward = -0.02f;
+    [Tooltip("Góc nghiêng xoay bàn tay khi cầm vô lăng")]
+    [SerializeField] private float handGripAngle = 25f;
+
+    [SerializeField] private Transform leftHandGrip;
+    [SerializeField] private Transform rightHandGrip;
+
+    public Transform LeftHandGrip => leftHandGrip;
+    public Transform RightHandGrip => rightHandGrip;
+
+    private Transform steeringPivot;
+    private Quaternion initialSteeringWheelRotation;
+    private float currentSteeringWheelAngle = 0f;
+    private float steeringWheelVelocity = 0f;
+
     private Rigidbody rb;
     private VehicleInput vehicleInput;
     private float currentSpeedKmh;
@@ -47,6 +79,99 @@ public class VehicleController : MonoBehaviour
         if (centerOfMass != null)
         {
             rb.centerOfMass = centerOfMass.localPosition;
+        }
+
+        // Tự động tìm vô lăng và tạo tâm xoay hình học chuẩn xác
+        SetupSteeringWheelPivot();
+    }
+
+    private void SetupSteeringWheelPivot()
+    {
+        if (steeringWheel == null)
+        {
+            Transform[] allChildren = GetComponentsInChildren<Transform>(true);
+            foreach (var t in allChildren)
+            {
+                if (t.name.Equals("SteeringWheel", System.StringComparison.OrdinalIgnoreCase) ||
+                    t.name.Equals("Steering_Wheel", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    steeringWheel = t;
+                    break;
+                }
+            }
+        }
+
+        if (steeringWheel != null)
+        {
+            MeshFilter mf = steeringWheel.GetComponent<MeshFilter>();
+            Vector3 meshCenterOffset = (mf != null && mf.sharedMesh != null) ? mf.sharedMesh.bounds.center : Vector3.zero;
+            Vector3 totalCenterOffset = meshCenterOffset + customPivotOffset;
+
+            // Nếu tâm của Mesh bị lệch so với Transform gốc, tạo Pivot đặt đúng tâm hình học
+            if (totalCenterOffset.sqrMagnitude > 0.00001f)
+            {
+                GameObject pivotObj = new GameObject("SteeringWheel_Pivot");
+                pivotObj.transform.SetParent(steeringWheel.parent, false);
+                pivotObj.transform.position = steeringWheel.TransformPoint(totalCenterOffset);
+                pivotObj.transform.rotation = steeringWheel.rotation;
+
+                steeringWheel.SetParent(pivotObj.transform, true);
+
+                steeringPivot = pivotObj.transform;
+            }
+            else
+            {
+                steeringPivot = steeringWheel;
+            }
+
+            initialSteeringWheelRotation = steeringPivot.localRotation;
+
+            // Tự động tạo 2 điểm bám tay (Grips) trên vô lăng cho IK
+            if (leftHandGrip == null)
+            {
+                Transform existingLeft = steeringPivot.Find("LeftHandGrip");
+                if (existingLeft != null) leftHandGrip = existingLeft;
+                else
+                {
+                    GameObject leftObj = new GameObject("LeftHandGrip");
+                    leftObj.transform.SetParent(steeringPivot, false);
+                    leftHandGrip = leftObj.transform;
+                }
+            }
+
+            if (rightHandGrip == null)
+            {
+                Transform existingRight = steeringPivot.Find("RightHandGrip");
+                if (existingRight != null) rightHandGrip = existingRight;
+                else
+                {
+                    GameObject rightObj = new GameObject("RightHandGrip");
+                    rightObj.transform.SetParent(steeringPivot, false);
+                    rightHandGrip = rightObj.transform;
+                }
+            }
+
+            UpdateHandGripPositions();
+        }
+    }
+
+    private void OnValidate()
+    {
+        UpdateHandGripPositions();
+    }
+
+    public void UpdateHandGripPositions()
+    {
+        if (leftHandGrip != null)
+        {
+            leftHandGrip.localPosition = new Vector3(-handGripWidth, handGripHeight, handGripForward);
+            leftHandGrip.localRotation = Quaternion.Euler(0f, 0f, handGripAngle);
+        }
+
+        if (rightHandGrip != null)
+        {
+            rightHandGrip.localPosition = new Vector3(handGripWidth, handGripHeight, handGripForward);
+            rightHandGrip.localRotation = Quaternion.Euler(0f, 0f, -handGripAngle);
         }
     }
 
@@ -136,6 +261,23 @@ public class VehicleController : MonoBehaviour
         wheelCollider.GetWorldPose(out pos, out rot);
         wheelTransform.position = pos;
         wheelTransform.rotation = rot;
+    }
+
+    private void Update()
+    {
+        UpdateSteeringWheelVisual();
+    }
+
+    private void UpdateSteeringWheelVisual()
+    {
+        if (steeringPivot == null) return;
+
+        float targetSteerAngle = (vehicleInput != null && vehicleInput.enabled) ? vehicleInput.MoveInput.x * maxSteeringWheelAngle : 0f;
+        
+        // Sử dụng SmoothDamp tạo quán tính bẻ lái và trả lái tự nhiên như vô lăng trợ lực thật
+        currentSteeringWheelAngle = Mathf.SmoothDamp(currentSteeringWheelAngle, targetSteerAngle, ref steeringWheelVelocity, steeringSmoothTime);
+
+        steeringPivot.localRotation = initialSteeringWheelRotation * Quaternion.AngleAxis(-currentSteeringWheelAngle, steeringAxis);
     }
 
     public float GetCurrentSpeedKmh()

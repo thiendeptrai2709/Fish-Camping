@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerInputHandler : MonoBehaviour
@@ -18,6 +18,7 @@ public class PlayerInputHandler : MonoBehaviour
     public bool JournalTriggered { get; private set; }
     public bool MapTriggered { get; private set; }
     public bool ExpandMapTriggered { get; private set; }
+    public bool TogglePerspectiveTriggered { get; private set; }
     public bool IsUIOpen { get; set; }
     private CarInputActions inputActions;
 
@@ -56,5 +57,16 @@ public class PlayerInputHandler : MonoBehaviour
         JournalTriggered = inputActions.Player.Journal.WasPressedThisFrame();
         MapTriggered = inputActions.Player.Map.WasPressedThisFrame();
         ExpandMapTriggered = inputActions.Player.ExpandMap.WasPressedThisFrame();
+
+        bool yPressed = false;
+        if (Keyboard.current != null)
+        {
+            yPressed = Keyboard.current.yKey.wasPressedThisFrame;
+        }
+        else
+        {
+            yPressed = Input.GetKeyDown(KeyCode.Y);
+        }
+        TogglePerspectiveTriggered = yPressed;
     }
 }

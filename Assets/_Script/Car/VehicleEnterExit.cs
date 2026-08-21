@@ -17,6 +17,8 @@ public class VehicleEnterExit : MonoBehaviour
 
     [Header("Dữ liệu Xe")]
     [SerializeField] private Transform driverSeatPoint; // Vị trí ghế lái trong xe
+    [Tooltip("Độ dời vị trí model nhân vật khi ngồi trên ghế lái (X âm: sang trái, Y âm: hạ thấp, Z: tiến/lùi)")]
+    [SerializeField] private Vector3 sittingOffset = new Vector3(-0.1f, -0.15f, 0f);
     [SerializeField] private VehicleInput vehicleInput; // Script đọc Input của xe bạn đã viết
     [SerializeField] private VehicleController vehicleController; // Thêm tham chiếu đến Controller để lấy tốc độ
     [SerializeField] private GameObject carCamera; // Cinemachine Camera riêng của xe
@@ -153,21 +155,38 @@ public class VehicleEnterExit : MonoBehaviour
 
         TogglePlayerPhysics(false);
 
-        // Snap ngay lập tức vào ghế lái
+        // Snap ngay lập tức vào ghế lái theo offset tùy chỉnh
         if (playerObject != null)
         {
             playerObject.transform.SetParent(driverSeatPoint);
-            playerObject.transform.localPosition = Vector3.zero;
+            playerObject.transform.localPosition = sittingOffset;
             playerObject.transform.localRotation = Quaternion.identity;
         }
 
         if (playerAnimation != null)
         {
             playerAnimation.SetDrivingState(true);
+            if (vehicleController != null)
+            {
+                playerAnimation.SetSteeringGrips(vehicleController.LeftHandGrip, vehicleController.RightHandGrip);
+            }
         }
 
-        playerCamera.SetActive(false);
-        carCamera.SetActive(true);
+        // DualCameraController quản lý hoàn toàn camera khi vào xe qua Priority
+        DualCameraController dcc = DualCameraController.Instance
+            ?? (playerObject != null ? (playerObject.GetComponent<DualCameraController>()
+                ?? playerObject.GetComponentInChildren<DualCameraController>()) : null);
+        if (dcc != null)
+        {
+            dcc.SetInVehicle(true);
+        }
+        else
+        {
+            // Fallback nếu không có DCC
+            if (playerCamera != null) playerCamera.SetActive(false);
+            if (carCamera != null) carCamera.SetActive(true);
+        }
+
         vehicleInput.enabled = true;
         vehicleInput.IsUIOpen = false;
 
@@ -192,6 +211,7 @@ public class VehicleEnterExit : MonoBehaviour
         if (playerAnimation != null)
         {
             playerAnimation.SetDrivingState(false);
+            playerAnimation.SetSteeringGrips(null, null);
         }
 
         if (playerObject == null)
@@ -216,8 +236,21 @@ public class VehicleEnterExit : MonoBehaviour
 
         TogglePlayerPhysics(true);
 
-        carCamera.SetActive(false);
-        playerCamera.SetActive(true);
+        // DualCameraController khôi phục camera đúng góc nhìn khi xuống xe qua Priority
+        DualCameraController dcc = DualCameraController.Instance
+            ?? (playerObject != null ? (playerObject.GetComponent<DualCameraController>()
+                ?? playerObject.GetComponentInChildren<DualCameraController>()) : null);
+        if (dcc != null)
+        {
+            dcc.SetInVehicle(false);
+        }
+        else
+        {
+            // Fallback
+            if (carCamera != null) carCamera.SetActive(false);
+            if (playerCamera != null) playerCamera.SetActive(true);
+        }
+
         if (playerUI != null) playerUI.SetActive(true);
 
         OnExitedVehicle?.Invoke();
@@ -236,6 +269,7 @@ public class VehicleEnterExit : MonoBehaviour
         if (playerAnimation != null)
         {
             playerAnimation.SetDrivingState(false);
+            playerAnimation.SetSteeringGrips(null, null);
         }
 
         if (playerObject == null)
@@ -257,8 +291,13 @@ public class VehicleEnterExit : MonoBehaviour
 
         TogglePlayerPhysics(true);
 
-        if (carCamera != null) carCamera.SetActive(false);
-        if (playerCamera != null) playerCamera.SetActive(true);
+        DualCameraController dcc = DualCameraController.Instance;
+        if (dcc != null) dcc.SetInVehicle(false);
+        else
+        {
+            if (carCamera != null) carCamera.SetActive(false);
+            if (playerCamera != null) playerCamera.SetActive(true);
+        }
         if (playerUI != null) playerUI.SetActive(true);
 
         OnExitedVehicle?.Invoke();
