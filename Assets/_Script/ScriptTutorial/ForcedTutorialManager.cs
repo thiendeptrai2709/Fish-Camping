@@ -1489,19 +1489,19 @@ public class ForcedTutorialManager : MonoBehaviour
             // Khóa tuyệt đối ở Map 1 (Town)
             if (isTownMap1) return false;
 
-            // Ở Map 2: Mở từ Quest5_4 trở đi và VĨNH VIỄN MỞ kể cả khi đổi scene qua lại!
-            return currentStage >= TutorialStage.Map2_Quest5_4_CookFish || currentStage == TutorialStage.Completed;
+            // Ở Map 2, 3, 4: Luôn cho phép nấu ăn tự do
+            return true;
         }
 
         // 2. Lều Ngủ (Bed)
         if (interactable is InteractableBed)
         {
             if (isTownMap1) return false;
-            return currentStage >= TutorialStage.Map2_Quest5_6_SleepInTent || currentStage == TutorialStage.Completed;
+            return true;
         }
 
-        // Các vật thể tự do khác ở Map 2
-        return currentStage >= TutorialStage.Map2_Quest1_1_OpenMapToCamp;
+        // Các vật thể tự do khác
+        return true;
     }
 
     public void AdvanceToStage(TutorialStage nextStage)
@@ -1588,10 +1588,17 @@ public class ForcedTutorialManager : MonoBehaviour
         completionCoroutine = null;
     }
 
+    public void SyncFromSavedStage(int stage)
+    {
+        currentStage = (TutorialStage)stage;
+        UpdateQuestUI();
+    }
+
     private void SaveTutorialProgress()
     {
         PlayerPrefs.SetInt(TUTORIAL_SAVE_KEY, (int)currentStage);
         PlayerPrefs.Save();
+        GameDatabaseManager.Instance?.SaveAndSyncToCloud();
     }
 
     private void LoadTutorialProgress()

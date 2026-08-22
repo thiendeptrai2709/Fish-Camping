@@ -182,6 +182,7 @@ public class BackpackMinigameUI : MonoBehaviour
         string json = JsonUtility.ToJson(container);
         PlayerPrefs.SetString(SAVE_KEY, json);
         PlayerPrefs.Save();
+        GameDatabaseManager.Instance?.SaveAndSyncToCloud();
     }
 
     public void LoadBackpack()

@@ -133,6 +133,7 @@ public class ShopManager : MonoBehaviour
                 {
                     // KHI NHÉT BALO THÀNH CÔNG THÌ MỚI TRỪ TIỀN
                     MoneyManager.Instance.TruTien(giaTien);
+                    GameDatabaseManager.Instance?.SaveAndSyncToCloud();
 
                     Debug.Log($"Đã ném [{monDoDaMua.itemName}] vào balo! Trừ {giaTien} vàng.");
                 }
@@ -153,6 +154,7 @@ public class ShopManager : MonoBehaviour
 
         // CỘNG TIỀN VÀO TÚI
         MoneyManager.Instance.CongTien(giaTriVatPham);
+        GameDatabaseManager.Instance?.SaveAndSyncToCloud();
 
         Debug.Log("Đã bán thành công! Thu về " + giaTriVatPham + " vàng.");
     }

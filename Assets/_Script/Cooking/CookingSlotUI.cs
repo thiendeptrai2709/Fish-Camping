@@ -54,7 +54,13 @@ public class CookingSlotUI : MonoBehaviour, IDropHandler, IPointerClickHandler, 
                 // Báo cho item biết nó đã được xử lý để tránh logic trả về kho cũ
                 draggedItem.SetHandledBySlot(true);
                 draggedItem.gameObject.SetActive(false);
-                Destroy(draggedItem.gameObject, 0.1f);
+                Destroy(draggedItem.gameObject, 0.05f);
+
+                // QUAN TRỌNG: Lưu ngay lại trạng thái Balo để loại bỏ cá cũ đã đưa vào nồi
+                if (BackpackMinigameUI.Instance != null)
+                {
+                    BackpackMinigameUI.Instance.SaveBackpack();
+                }
 
                 // Thông báo nhiệm vụ kéo cá vào UI nấu ăn
                 ForcedTutorialManager.Instance?.NotifyCookFish();
@@ -114,14 +120,18 @@ public class CookingSlotUI : MonoBehaviour, IDropHandler, IPointerClickHandler, 
         {
             if (BackpackMinigameUI.Instance != null)
             {
-                bool returned = BackpackMinigameUI.Instance.TryAutoAddItem(CurrentItem);
+                ItemShapeSO toReturn = CurrentItem;
+                ClearSlot(); // Xóa slot ngay lập tức để tránh double click spam
 
+                bool returned = BackpackMinigameUI.Instance.TryAutoAddItem(toReturn);
                 if (returned)
                 {
-                    ClearSlot();
+                    BackpackMinigameUI.Instance.SaveBackpack();
                 }
                 else
                 {
+                    // Nếu balo đầy, đặt lại vào slot
+                    ReceiveItem(toReturn);
                     Debug.Log("<color=red>[Cooking Slot] Balo đã đầy, không thể lấy lại nguyên liệu!</color>");
                 }
             }

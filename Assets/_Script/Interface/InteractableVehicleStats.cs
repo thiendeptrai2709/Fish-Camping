@@ -62,7 +62,10 @@ public class InteractableVehicleStats : MonoBehaviour, IInteractable
 
     public string GetInteractPrompt()
     {
-        return "[Chuột Trái] Xem thông số xe";
+        bool isVietnamese = UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale != null &&
+                            UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale.Identifier.Code.StartsWith("vi");
+
+        return isVietnamese ? "[Chuột Trái] Xem thông số xe" : "[Left Click] View Vehicle Stats";
     }
 
     private void SetLayerRecursively(GameObject obj, int newLayer)

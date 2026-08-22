@@ -521,6 +521,8 @@ public class FishInspectionUI : MonoBehaviour, IDragHandler, IPointerDownHandler
                     AudioSource.PlayClipAtPoint(soundKeepFish, Camera.main != null ? Camera.main.transform.position : transform.position, 0.9f);
                 }
 
+                GameDatabaseManager.Instance?.SaveAndSyncToCloud();
+
                 onKeepCallback?.Invoke();
                 Hide();
             }

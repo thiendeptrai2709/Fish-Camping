@@ -1,8 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using TMPro;
 
-public class HUDHotbarSlotUI : MonoBehaviour
+public class HUDHotbarSlotUI : MonoBehaviour, IDropHandler
 {
     [SerializeField] private EquipmentSlotUI targetSyncSlot;
     [SerializeField] private Image itemIcon;
@@ -25,6 +26,17 @@ public class HUDHotbarSlotUI : MonoBehaviour
     {
         rectTransform = GetComponent<RectTransform>();
         originalSlotSize = rectTransform != null ? rectTransform.sizeDelta : new Vector2(64f, 64f);
+
+        Image img = GetComponent<Image>();
+        if (img != null) img.raycastTarget = true;
+    }
+
+    public void OnDrop(PointerEventData eventData)
+    {
+        if (targetSyncSlot != null)
+        {
+            targetSyncSlot.OnDrop(eventData);
+        }
     }
 
     private void OnEnable()

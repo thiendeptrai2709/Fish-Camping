@@ -5,7 +5,9 @@ using UnityEngine.UI;
 
 public class CookingRack : MonoBehaviour, IInteractable
 {
-    [SerializeField] private float cookingDuration = 5f;
+    [Header("Thời gian nấu chín món ăn (Cooking Duration)")]
+    [Tooltip("Thời gian cần thiết để nấu chín món ăn (tính bằng giây)")]
+    [SerializeField] private float cookingDuration = 10f;
     [SerializeField] private Slider cookingProgressSlider;
     [SerializeField] private LayerMask campfireLayer;
     [SerializeField] private Transform groundCheckPoint;
@@ -136,11 +138,30 @@ public class CookingRack : MonoBehaviour, IInteractable
         if (firstItem == null) return null;
 
         // Trích xuất số ID của cá (ví dụ "fish1", "Fish 1", "fish15")
-        string idStr = !string.IsNullOrEmpty(firstItem.itemID) ? firstItem.itemID : firstItem.name;
+        string idStr = (!string.IsNullOrEmpty(firstItem.itemID) ? firstItem.itemID : firstItem.name).ToLower();
         System.Text.RegularExpressions.Match match = System.Text.RegularExpressions.Regex.Match(idStr, @"\d+");
         string fishNum = match.Success ? match.Value : "1";
 
-        // Tìm kiếm FoodSO trong Project / Resources
+        // 1. Tìm trong availableRecipes của chính CookingRack
+        if (availableRecipes != null && availableRecipes.Count > 0)
+        {
+            foreach (var recipe in availableRecipes)
+            {
+                if (recipe != null && recipe.resultItem != null)
+                {
+                    string resName = recipe.resultItem.name.ToLower();
+                    string resID = (recipe.resultItem.itemID ?? "").ToLower();
+                    if (resName.Contains("foodfish" + fishNum) || resID.Contains("foodfish" + fishNum) ||
+                        resName.Contains("fishfood" + fishNum) || resID.Contains("fishfood" + fishNum) ||
+                        resName.Contains("fish" + fishNum) || resID.Contains("fish" + fishNum))
+                    {
+                        return recipe.resultItem;
+                    }
+                }
+            }
+        }
+
+        // 2. Tìm kiếm FoodSO trong Project / Resources
         FoodSO[] allFoods = Resources.FindObjectsOfTypeAll<FoodSO>();
         if (allFoods != null && allFoods.Length > 0)
         {
@@ -173,49 +194,80 @@ public class CookingRack : MonoBehaviour, IInteractable
 
         return null;
     }
-    private static readonly Collider[] campfireHitBuffer = new Collider[8];
 
-    private bool DetectCampfire()
+    private Campfire FindClosestCampfire()
     {
-        Vector3 checkPos = groundCheckPoint != null ? groundCheckPoint.position : (transform.position + Vector3.down * 0.35f);
-        int mask = campfireLayer.value != 0 ? campfireLayer.value : ~0;
+        // 1. Ưu tiên Campfire trong phân cấp con/cha của chính CookingRack này
+        Campfire selfCampfire = GetComponentInChildren<Campfire>(true) ?? GetComponentInParent<Campfire>();
+        if (selfCampfire != null) return selfCampfire;
 
-        int hitCount = Physics.OverlapSphereNonAlloc(checkPos, 1.5f, campfireHitBuffer, mask);
-        for (int i = 0; i < hitCount; i++)
-        {
-            var hit = campfireHitBuffer[i];
-            if (hit == null) continue;
-            currentCampfire = hit.GetComponent<Campfire>() ?? hit.GetComponentInParent<Campfire>() ?? hit.GetComponentInChildren<Campfire>();
-            if (currentCampfire != null) return true;
-        }
+        Vector3 basePos = groundCheckPoint != null ? groundCheckPoint.position : (transform.position + Vector3.down * 0.35f);
 
-        // Fallback: Tìm lửa trại xung quanh trong bán kính 2.5m
-        Collider[] nearby = Physics.OverlapSphere(transform.position, 2.5f);
-        if (nearby != null)
+        // 2. Tìm tất cả Campfire trong Scene và chọn cái có khoảng cách GẦN NHẤT với chân giá nấu này
+        Campfire[] allCampfires = Object.FindObjectsByType<Campfire>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+        Campfire closest = null;
+        float minDistance = float.MaxValue;
+
+        foreach (var cf in allCampfires)
         {
-            for (int i = 0; i < nearby.Length; i++)
+            if (cf == null) continue;
+            float dist = Vector3.Distance(basePos, cf.transform.position);
+            if (dist < minDistance)
             {
-                if (nearby[i] == null) continue;
-                currentCampfire = nearby[i].GetComponent<Campfire>() ?? nearby[i].GetComponentInParent<Campfire>() ?? nearby[i].GetComponentInChildren<Campfire>();
-                if (currentCampfire != null) return true;
+                minDistance = dist;
+                closest = cf;
             }
         }
 
-        // Fallback 2: Tìm Campfire trong scene nếu ở gần
-        Campfire anyCampfire = Object.FindFirstObjectByType<Campfire>();
-        if (anyCampfire != null && Vector3.Distance(transform.position, anyCampfire.transform.position) <= 4.5f)
+        // Chỉ chấp nhận lửa trại nằm ngay dưới hoặc sát giá nấu này (bán kính <= 3.0m)
+        if (closest != null && minDistance <= 3.0f)
         {
-            currentCampfire = anyCampfire;
+            return closest;
+        }
+
+        return closest;
+    }
+
+    private bool DetectCampfire()
+    {
+        currentCampfire = FindClosestCampfire();
+        if (currentCampfire != null)
+        {
+            Vector3 basePos = groundCheckPoint != null ? groundCheckPoint.position : (transform.position + Vector3.down * 0.35f);
+            if (Vector3.Distance(basePos, currentCampfire.transform.position) <= 3.0f)
+            {
+                return true;
+            }
+        }
+
+        // Ở Map 3 và Map 4 (Camping tự do): Luôn cho phép nấu ăn
+        string currentActiveScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        if (currentActiveScene.Contains("Map3") || currentActiveScene.Contains("Swamp") || 
+            currentActiveScene.Contains("Map4") || currentActiveScene.Contains("Ocean"))
+        {
             return true;
         }
 
-        return false;
+        return currentCampfire != null;
+    }
+
+    private void EnsureCampfireReference()
+    {
+        if (currentCampfire == null)
+        {
+            currentCampfire = FindClosestCampfire();
+        }
     }
 
     private IEnumerator CookingProcess()
     {
         State = CookingState.Cooking;
-        if (currentCampfire != null) currentCampfire.SetFireActive(true);
+        EnsureCampfireReference();
+        if (currentCampfire != null)
+        {
+            currentCampfire.SetFireActive(true);
+        }
+
         if (cookingProgressSlider != null)
         {
             cookingProgressSlider.gameObject.SetActive(true);
@@ -226,6 +278,12 @@ public class CookingRack : MonoBehaviour, IInteractable
         while (timer < cookingDuration)
         {
             timer += Time.deltaTime;
+            EnsureCampfireReference();
+            if (currentCampfire != null)
+            {
+                currentCampfire.SetFireActive(true);
+            }
+
             if (cookingProgressSlider != null)
             {
                 cookingProgressSlider.value = timer / cookingDuration;
@@ -233,8 +291,14 @@ public class CookingRack : MonoBehaviour, IInteractable
             yield return null;
         }
 
-        if (currentCampfire != null) currentCampfire.SetFireActive(false);
-        if (cookingProgressSlider != null) cookingProgressSlider.gameObject.SetActive(false);
+        if (currentCampfire != null)
+        {
+            currentCampfire.SetFireActive(false);
+        }
+        if (cookingProgressSlider != null)
+        {
+            cookingProgressSlider.gameObject.SetActive(false);
+        }
         State = CookingState.Finished;
 
         Debug.Log($"<color=green>[Cooking System] Đã nấu xong: {currentCookedResult?.itemName}</color>");
@@ -255,6 +319,11 @@ public class CookingRack : MonoBehaviour, IInteractable
     {
         currentCookedResult = null;
         State = CookingState.Idle;
+        EnsureCampfireReference();
+        if (currentCampfire != null)
+        {
+            currentCampfire.SetFireActive(false);
+        }
     }
 
     public void OnFocus()

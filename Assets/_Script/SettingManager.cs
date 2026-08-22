@@ -113,8 +113,15 @@ public class SettingManager : MonoBehaviour
         {
             bool isActive = !settingPanel.activeSelf;
             settingPanel.SetActive(isActive);
-            Cursor.visible = isActive;
-            Cursor.lockState = isActive ? CursorLockMode.None : CursorLockMode.Locked;
+            if (PlayerCursor.Instance != null)
+            {
+                PlayerCursor.Instance.SetCursorState(!isActive);
+            }
+            else
+            {
+                Cursor.visible = isActive;
+                Cursor.lockState = isActive ? CursorLockMode.None : CursorLockMode.Locked;
+            }
         }
     }
 
@@ -145,6 +152,8 @@ public class SettingManager : MonoBehaviour
         {
             LocalizationSettings.SelectedLocale = LocalizationSettings.AvailableLocales.Locales[localeID];
             PlayerPrefs.SetInt("LanguageID", localeID);
+            PlayerPrefs.Save();
+            GameDatabaseManager.Instance?.SaveAndSyncToCloud();
         }
     }
 

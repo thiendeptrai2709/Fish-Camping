@@ -135,7 +135,7 @@ public class DualCameraController : MonoBehaviour
 
         if (mainBrain != null)
         {
-            mainBrain.DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Styles.Cut, 0f);
+            mainBrain.DefaultBlend = new CinemachineBlendDefinition(transitionStyle, transitionDuration);
         }
     }
 

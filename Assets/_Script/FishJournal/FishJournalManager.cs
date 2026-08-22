@@ -15,7 +15,20 @@ public class FishJournalManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
+            transform.SetParent(null);
+            DontDestroyOnLoad(gameObject);
             savePath = Path.Combine(Application.persistentDataPath, "FishJournal.json");
+
+            if (fishDatabase == null)
+            {
+                fishDatabase = Resources.Load<FishDatabaseSO>("FishDatabase") ?? Resources.Load<FishDatabaseSO>("FishDatabaseSO");
+                if (fishDatabase == null)
+                {
+                    FishDatabaseSO[] all = Resources.FindObjectsOfTypeAll<FishDatabaseSO>();
+                    if (all != null && all.Length > 0) fishDatabase = all[0];
+                }
+            }
+
             InitJournal();
             LoadData();
         }
@@ -25,8 +38,28 @@ public class FishJournalManager : MonoBehaviour
         }
     }
 
+    public void ReloadFromDisk()
+    {
+        if (string.IsNullOrEmpty(savePath))
+        {
+            savePath = Path.Combine(Application.persistentDataPath, "FishJournal.json");
+        }
+        InitJournal();
+        LoadData();
+    }
+
     private void InitJournal()
     {
+        if (fishDatabase == null)
+        {
+            fishDatabase = Resources.Load<FishDatabaseSO>("FishDatabase") ?? Resources.Load<FishDatabaseSO>("FishDatabaseSO");
+            if (fishDatabase == null)
+            {
+                FishDatabaseSO[] all = Resources.FindObjectsOfTypeAll<FishDatabaseSO>();
+                if (all != null && all.Length > 0) fishDatabase = all[0];
+            }
+        }
+
         if (fishDatabase == null || fishDatabase.allFishes == null) return;
 
         foreach (FishSO fish in fishDatabase.allFishes)
@@ -107,12 +140,31 @@ public class FishJournalManager : MonoBehaviour
         if (string.IsNullOrEmpty(mapKeyword)) return GetTotalUnlockedFishCount();
 
         int count = 0;
+        string kw = mapKeyword.Trim().ToLowerInvariant();
+
         foreach (FishSO fish in fishDatabase.allFishes)
         {
             if (fish == null || string.IsNullOrEmpty(fish.itemID)) continue;
 
-            bool mapMatch = string.IsNullOrEmpty(mapKeyword) || 
-                            (!string.IsNullOrEmpty(fish.mapName) && fish.mapName.IndexOf(mapKeyword, System.StringComparison.OrdinalIgnoreCase) >= 0);
+            string fMap = (fish.mapName ?? "").ToLowerInvariant();
+            bool mapMatch = false;
+
+            if (kw.Contains("hồ") || kw.Contains("lake") || kw.Contains("pine"))
+            {
+                mapMatch = fMap.Contains("lake") || fMap.Contains("hồ") || fMap.Contains("pine");
+            }
+            else if (kw.Contains("đầm") || kw.Contains("swamp"))
+            {
+                mapMatch = fMap.Contains("swamp") || fMap.Contains("đầm");
+            }
+            else if (kw.Contains("biển") || kw.Contains("ocean") || kw.Contains("coast"))
+            {
+                mapMatch = fMap.Contains("ocean") || fMap.Contains("coast") || fMap.Contains("biển");
+            }
+            else
+            {
+                mapMatch = fMap.Contains(kw);
+            }
 
             if (mapMatch)
             {

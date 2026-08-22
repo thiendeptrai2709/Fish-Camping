@@ -64,6 +64,7 @@ public class QuestManager : MonoBehaviour
             string json = JsonUtility.ToJson(container);
             PlayerPrefs.SetString(QUEST_SAVE_KEY, json);
             PlayerPrefs.Save();
+            GameDatabaseManager.Instance?.SaveAndSyncToCloud();
         }
         catch (System.Exception e)
         {

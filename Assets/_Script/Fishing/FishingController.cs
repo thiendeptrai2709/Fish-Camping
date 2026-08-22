@@ -67,8 +67,10 @@ public class FishingController : MonoBehaviour
     private float catchingLockTimer = 0f;
 
     [Header("--- AUTO-STOW FISHING ROD ---")]
-    [SerializeField] private float autoStowDistance = 20f;
+    [SerializeField] private float autoStowDistance = 5f;
     private float zoneCheckTimer = 0f;
+    private float dryLandStowTimer = 0f;
+    private bool wasNearWaterWithRod = false;
     private FishingZone[] cachedFishingZones;
     private float lastZoneCacheTime = -10f;
 
@@ -100,6 +102,8 @@ public class FishingController : MonoBehaviour
 
     private void OnDisable()
     {
+        wasNearWaterWithRod = false;
+        dryLandStowTimer = 0f;
         ResetToIdle();
     }
 
@@ -111,6 +115,47 @@ public class FishingController : MonoBehaviour
     public bool IsWaitingForPower()
     {
         return currentState == FishingState.WaitingForPower;
+    }
+
+    private void Start()
+    {
+        EnsureEquipmentSlots();
+        Invoke(nameof(CheckEquippedRodOnMapEnter), 1.5f);
+    }
+
+    private void CheckEquippedRodOnMapEnter()
+    {
+        EnsureEquipmentSlots();
+        if (hotbarSlot != null && hotbarSlot.GetEquippedItem() != null)
+        {
+            currentRod = hotbarSlot.GetEquippedItem().GetItemShape() as FishingRodSO;
+            if (currentRod != null && !ValidateFishingEquipment(out string errorReason))
+            {
+                ShowFishingFeedback(errorReason, new Color(1f, 0.65f, 0.25f));
+            }
+        }
+    }
+
+    public void OnRodEquippedCallback(ItemShapeSO itemShape)
+    {
+        if (itemShape is FishingRodSO rod)
+        {
+            currentRod = rod;
+            int rodTier = rod.rodTier > 0 ? rod.rodTier : GetItemTier(rod);
+            string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            bool isOcean = sceneName.Contains("Map4") || sceneName.Contains("Ocean");
+
+            if (isOcean && rodTier < 5)
+            {
+                string rodName = GetLocalizedText(rod.itemName, rod.name);
+                ShowFishingFeedback($"[{rodName}] quá yếu cho Map 4 (Biển)!\nHãy trang bị Cần câu 5 hoặc 6 (Cần biển).", new Color(1f, 0.65f, 0.25f));
+            }
+            else if (!isOcean && rodTier >= 5)
+            {
+                string rodName = GetLocalizedText(rod.itemName, rod.name);
+                ShowFishingFeedback($"[{rodName}] là cần biển, quá nặng cho vùng nước ngọt!\nHãy dùng Cần câu 1, 2, 3 hoặc 4.", new Color(1f, 0.65f, 0.25f));
+            }
+        }
     }
 
     public bool IsOceanMap()
@@ -135,13 +180,21 @@ public class FishingController : MonoBehaviour
     public bool ValidateFishingEquipment(out string errorReason)
     {
         errorReason = "";
-        bool isOcean = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name.Contains("Map4")
-                    || UnityEngine.SceneManagement.SceneManager.GetActiveScene().name.Contains("Ocean");
+        string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        bool isOcean = sceneName.Contains("Map4") || sceneName.Contains("Ocean");
+        bool isSwamp = sceneName.Contains("Map3") || sceneName.Contains("Swamp");
+        bool isTown = sceneName.Contains("Map_1") || sceneName.Contains("Town");
+
+        if (isTown)
+        {
+            errorReason = GetLocalizedText("fish_err_town_nowater", "Khu vực Thị Trấn không có điểm câu cá!\nHãy đến Hồ Thông (Map 2), Đầm Lầy (Map 3) hoặc Bờ Biển (Map 4).");
+            return false;
+        }
 
         // 1. Kiểm tra Cần câu
         if (currentRod == null)
         {
-            errorReason = GetLocalizedText("fish_err_no_rod", "Bạn chưa trang bị Cần câu!");
+            errorReason = GetLocalizedText("fish_err_no_rod", "Bạn chưa trang bị Cần câu!\nHãy mở Balo (phím Tab) và kéo Cần câu vào ô Cần câu.");
             return false;
         }
 
@@ -153,19 +206,23 @@ public class FishingController : MonoBehaviour
         }
 
         int rodTier = currentRod.rodTier > 0 ? currentRod.rodTier : GetItemTier(currentRod);
+        string rodName = GetLocalizedText(currentRod.itemName, currentRod.name);
         if (isOcean)
         {
+            // Map 4 (Biển): Cần câu cấp 5, 6
             if (rodTier < 5)
             {
-                errorReason = GetLocalizedText("fish_err_ocean_rod_weak", $"Cần câu cấp {rodTier} quá yếu trước sóng biển Map 4!\nHãy dùng Cần câu 5 hoặc 6.");
+                errorReason = GetLocalizedText("fish_err_ocean_rod_weak", $"[{rodName}] (Cấp {rodTier}) quá yếu trước sóng biển Map 4!\nHãy mở Balo trang bị Cần câu Biển (Cần câu 5 hoặc 6).");
                 return false;
             }
         }
         else
         {
+            // Map 2 (Hồ Thông), Map 3 (Đầm Lầy): Cần câu cấp 1, 2, 3, 4
             if (rodTier >= 5)
             {
-                errorReason = GetLocalizedText("fish_err_lake_rod_heavy", $"Cần câu biển (Cấp {rodTier}) quá nặng cho vùng hồ nước ngọt!\nHãy dùng Cần câu 1, 2, 3 hoặc 4.");
+                string mapName = isSwamp ? "Đầm Lầy (Map 3)" : "Hồ Thông (Map 2)";
+                errorReason = GetLocalizedText("fish_err_lake_rod_heavy", $"[{rodName}] (Cấp {rodTier}) là cần câu biển, quá nặng cho {mapName}!\nHãy mở Balo đổi sang Cần câu 1, 2, 3 hoặc 4.");
                 return false;
             }
         }
@@ -173,23 +230,24 @@ public class FishingController : MonoBehaviour
         // 2. Kiểm tra Mồi câu
         if (currentBait == null)
         {
-            errorReason = GetLocalizedText("fish_err_no_bait", "Bạn chưa trang bị Mồi câu!");
+            errorReason = GetLocalizedText("fish_err_no_bait", "Bạn chưa trang bị Mồi câu!\nHãy mở Balo (phím Tab) và kéo Mồi câu vào ô Mồi.");
             return false;
         }
 
         InventoryItemUI baitItem = (baitSlot != null) ? baitSlot.GetEquippedItem() : null;
         if (baitItem != null && baitItem.GetRemainingUses() <= 0)
         {
-            errorReason = GetLocalizedText("fish_err_bait_depleted", "Mồi câu đã hết!\nHãy trang bị hộp mồi mới từ Balo.");
+            errorReason = GetLocalizedText("fish_err_bait_depleted", "Hộp mồi câu đã hết sạch!\nHãy mở Balo để trang bị hộp mồi mới.");
             return false;
         }
 
         int baitTier = GetItemTier(currentBait);
+        string baitName = GetLocalizedText(currentBait.itemName, currentBait.name);
         if (isOcean)
         {
             if (baitTier < 5)
             {
-                errorReason = GetLocalizedText("fish_err_ocean_bait", "Cá biển Map 4 không ăn mồi nước ngọt!\nHãy dùng Mồi câu 5 hoặc 6 (Mồi biển).");
+                errorReason = GetLocalizedText("fish_err_ocean_bait", $"[{baitName}] là mồi nước ngọt, cá biển Map 4 không cắn câu!\nHãy mở Balo trang bị Mồi câu Biển (Mồi 5 hoặc 6).");
                 return false;
             }
         }
@@ -197,7 +255,7 @@ public class FishingController : MonoBehaviour
         {
             if (baitTier >= 5)
             {
-                errorReason = GetLocalizedText("fish_err_lake_bait", "Mồi biển không phù hợp với cá vùng nước ngọt!\nHãy dùng Mồi câu 1, 2, 3 hoặc 4.");
+                errorReason = GetLocalizedText("fish_err_lake_bait", $"[{baitName}] là mồi biển, không thích hợp cho cá nước ngọt vùng này!\nHãy mở Balo đổi sang Mồi câu 1, 2, 3 hoặc 4.");
                 return false;
             }
         }
@@ -205,23 +263,24 @@ public class FishingController : MonoBehaviour
         // 3. Kiểm tra Phao câu
         if (currentBobber == null)
         {
-            errorReason = GetLocalizedText("fish_err_no_bobber", "Bạn chưa trang bị Phao câu!");
+            errorReason = GetLocalizedText("fish_err_no_bobber", "Bạn chưa trang bị Phao câu!\nHãy mở Balo (phím Tab) và kéo Phao câu vào ô Phao.");
             return false;
         }
 
         InventoryItemUI bobberItem = (bobberSlot != null) ? bobberSlot.GetEquippedItem() : null;
         if (bobberItem != null && bobberItem.GetDurability() <= 0f)
         {
-            errorReason = GetLocalizedText("fish_err_bobber_broken", "Phao câu đã bị vỡ/hỏng!\nHãy trang bị phao câu mới từ Balo.");
+            errorReason = GetLocalizedText("fish_err_bobber_broken", "Phao câu đã bị vỡ (0% Độ bền)!\nHãy mở Balo để thay phao câu mới.");
             return false;
         }
 
         int bobberTier = GetItemTier(currentBobber);
+        string bobberName = GetLocalizedText(currentBobber.itemName, currentBobber.name);
         if (isOcean)
         {
             if (bobberTier < 7)
             {
-                errorReason = GetLocalizedText("fish_err_ocean_bobber_sink", "Phao câu thường bị sóng biển Map 4 đánh chìm!\nHãy dùng Phao câu 7 hoặc 8 (Phao biển).");
+                errorReason = GetLocalizedText("fish_err_ocean_bobber_sink", $"[{bobberName}] quá nhẹ, bị sóng biển Map 4 đánh chìm!\nHãy mở Balo trang bị Phao Biển (Phao 7 hoặc 8).");
                 return false;
             }
         }
@@ -229,7 +288,7 @@ public class FishingController : MonoBehaviour
         {
             if (bobberTier >= 7)
             {
-                errorReason = GetLocalizedText("fish_err_lake_bobber_heavy", "Phao biển quá nặng cho vùng hồ phẳng lặng!\nHãy dùng Phao câu 1 đến 6.");
+                errorReason = GetLocalizedText("fish_err_lake_bobber_heavy", $"[{bobberName}] là phao biển hạng nặng, quá chìm cho vùng nước hồ/đầm!\nHãy mở Balo đổi sang Phao câu 1 đến 6.");
                 return false;
             }
         }
@@ -279,25 +338,50 @@ public class FishingController : MonoBehaviour
 
     private void EnsureFeedbackUI()
     {
-        if (feedbackBannerObj != null && feedbackText != null)
+        if (feedbackBannerObj != null && feedbackText != null && feedbackCanvasGroup != null)
         {
             feedbackBannerObj.transform.SetAsLastSibling();
             return;
         }
 
-        Canvas[] canvases = Object.FindObjectsByType<Canvas>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
         Canvas rootCanvas = null;
-        foreach (var c in canvases)
+
+        // 1. Ưu tiên tìm Canvas chính của Gameplay (Backpack hoặc HUD)
+        if (BackpackMinigameUI.Instance != null)
         {
-            if (c.isRootCanvas && c.renderMode == RenderMode.ScreenSpaceOverlay)
+            rootCanvas = BackpackMinigameUI.Instance.GetComponentInParent<Canvas>();
+        }
+
+        // 2. Nếu chưa có, quét tìm Canvas đang active trong Scene
+        if (rootCanvas == null)
+        {
+            Canvas[] canvases = Object.FindObjectsByType<Canvas>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+            foreach (var c in canvases)
             {
-                rootCanvas = c;
-                break;
+                if (c == null || !c.gameObject.activeInHierarchy) continue;
+                string cName = c.gameObject.name.ToLower();
+                if (cName.Contains("balan") || cName.Contains("qte") || cName.Contains("login") || cName.Contains("shop") || cName.Contains("loading")) continue;
+                if (rootCanvas == null || c.sortingOrder > rootCanvas.sortingOrder)
+                {
+                    rootCanvas = c;
+                }
             }
         }
-        if (rootCanvas == null && canvases.Length > 0) rootCanvas = canvases[0];
-        if (rootCanvas == null) return;
 
+        // 3. Fallback: Nếu vẫn chưa có Canvas nào, tạo mới Canvas chuyên dụng cho Feedback
+        if (rootCanvas == null)
+        {
+            GameObject canvasObj = new GameObject("FishingFeedback_Canvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+            rootCanvas = canvasObj.GetComponent<Canvas>();
+            rootCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            rootCanvas.sortingOrder = 999;
+            CanvasScaler cs = canvasObj.GetComponent<CanvasScaler>();
+            cs.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            cs.referenceResolution = new Vector2(1920, 1080);
+            DontDestroyOnLoad(canvasObj);
+        }
+
+        // Tái sử dụng nếu đã có
         Transform existing = rootCanvas.transform.Find("FishingFeedbackBanner");
         if (existing != null)
         {
@@ -313,20 +397,26 @@ public class FishingController : MonoBehaviour
         feedbackBannerObj.transform.SetParent(rootCanvas.transform, false);
         feedbackBannerObj.transform.SetAsLastSibling();
 
+        // Đảm bảo banner có Canvas con với sortingOrder = 999 để luôn hiển thị trên cùng mọi UI
+        Canvas bannerCanvas = feedbackBannerObj.AddComponent<Canvas>();
+        bannerCanvas.overrideSorting = true;
+        bannerCanvas.sortingOrder = 999;
+        feedbackBannerObj.AddComponent<GraphicRaycaster>();
+
         feedbackCanvasGroup = feedbackBannerObj.GetComponent<CanvasGroup>();
         feedbackCanvasGroup.blocksRaycasts = false;
         feedbackCanvasGroup.interactable = false;
 
         Image bgImage = feedbackBannerObj.GetComponent<Image>();
-        bgImage.color = new Color(0.06f, 0.09f, 0.14f, 0.95f);
+        bgImage.color = new Color(0.04f, 0.07f, 0.12f, 0.95f);
         bgImage.raycastTarget = false;
 
         RectTransform rect = feedbackBannerObj.GetComponent<RectTransform>();
-        rect.anchorMin = new Vector2(0.5f, 0.84f); // Căn giữa phía trên màn hình
-        rect.anchorMax = new Vector2(0.5f, 0.84f);
+        rect.anchorMin = new Vector2(0.5f, 0.85f); // Căn giữa phía trên màn hình
+        rect.anchorMax = new Vector2(0.5f, 0.85f);
         rect.pivot = new Vector2(0.5f, 0.5f);
         rect.anchoredPosition = Vector2.zero;
-        rect.sizeDelta = new Vector2(580f, 54f);
+        rect.sizeDelta = new Vector2(720f, 75f); // Kích thước rộng rãi cho 2 dòng thông báo
 
         GameObject textObj = new GameObject("FeedbackText", typeof(RectTransform), typeof(TextMeshProUGUI));
         textObj.transform.SetParent(feedbackBannerObj.transform, false);
@@ -341,18 +431,23 @@ public class FishingController : MonoBehaviour
         feedbackText.fontStyle = FontStyles.Bold;
         feedbackText.alignment = TextAlignmentOptions.Center;
         feedbackText.raycastTarget = false;
-        feedbackText.enableWordWrapping = true;
+        feedbackText.textWrappingMode = TextWrappingModes.Normal;
+        feedbackText.overflowMode = TextOverflowModes.Overflow;
 
-        // Gán Font từ các TMP có sẵn trong Scene
+        // Gán Font từ các TMP có sẵn trong Scene hoặc TMP_Settings mặc định
         TextMeshProUGUI[] tmps = Object.FindObjectsByType<TextMeshProUGUI>(FindObjectsInactive.Include, FindObjectsSortMode.None);
         foreach (var t in tmps)
         {
             if (t != null && t.font != null)
             {
                 feedbackText.font = t.font;
-                feedbackText.fontMaterial = t.fontMaterial;
+                feedbackText.fontSharedMaterial = t.fontSharedMaterial;
                 break;
             }
+        }
+        if (feedbackText.font == null && TMP_Settings.defaultFontAsset != null)
+        {
+            feedbackText.font = TMP_Settings.defaultFontAsset;
         }
 
         feedbackBannerObj.SetActive(false);
@@ -374,19 +469,19 @@ public class FishingController : MonoBehaviour
             }
         }
 
+        // Tự động kiểm tra và cất cần câu vào Balo khi rời khỏi khu vực câu cá (luôn chạy, kể cả khi UI mở)
+        zoneCheckTimer -= Time.deltaTime;
+        if (zoneCheckTimer <= 0f)
+        {
+            zoneCheckTimer = 0.2f;
+            CheckAutoStowRodWhenLeavingFishingArea();
+        }
+
         if (inputHandler != null && inputHandler.IsUIOpen) return;
 
         // Giảm thời gian đếm ngược chống spam
         if (inputCooldown > 0f) inputCooldown -= Time.deltaTime;
         if (catchingLockTimer > 0f) catchingLockTimer -= Time.deltaTime;
-
-        // Tự động kiểm tra và cất cần câu vào Balo khi rời khỏi khu vực câu cá
-        zoneCheckTimer -= Time.deltaTime;
-        if (zoneCheckTimer <= 0f)
-        {
-            zoneCheckTimer = 0.5f;
-            CheckAutoStowRodWhenLeavingFishingArea();
-        }
 
         if (reelInCooldown > 0f)
         {
@@ -431,10 +526,10 @@ public class FishingController : MonoBehaviour
             if (ForcedTutorialManager.Instance != null && !ForcedTutorialManager.Instance.CanStartFishing()) return;
             if (playerInteraction != null && playerInteraction.HasActiveInteractable()) return;
 
+            EnsureEquipmentSlots();
+
             currentRod = (hotbarSlot != null && hotbarSlot.GetEquippedItem() != null)
                 ? hotbarSlot.GetEquippedItem().GetItemShape() as FishingRodSO : null;
-
-            if (currentRod == null) return;
 
             currentBait = (baitSlot != null && baitSlot.GetEquippedItem() != null)
                 ? baitSlot.GetEquippedItem().GetItemShape() as BaitSO : null;
@@ -442,11 +537,19 @@ public class FishingController : MonoBehaviour
             currentBobber = (bobberSlot != null && bobberSlot.GetEquippedItem() != null)
                 ? bobberSlot.GetEquippedItem().GetItemShape() as BobberSO : null;
 
-            // KIỂM TRA ĐIỀU KIỆN TRANG BỊ THEO MAP
+            // 1. KIỂM TRA ĐIỀU KIỆN TRANG BỊ THEO MAP TRƯỚC (Cần câu, Mồi câu, Phao câu)
             if (!ValidateFishingEquipment(out string errorReason))
             {
                 ShowFishingFeedback(errorReason, new Color(1f, 0.45f, 0.45f));
                 Debug.LogWarning($"<color=yellow>[Fishing Controller] {errorReason}</color>");
+                return;
+            }
+
+            // 2. KIỂM TRA VỊ TRÍ: Người chơi phải đứng gần bờ hồ / hướng về phía mặt nước mới được vung cần câu
+            if (!IsPlayerNearValidFishingWater())
+            {
+                ShowFishingFeedback("Hãy tiến lại gần bờ hồ / bờ biển để câu cá!", new Color(1f, 0.75f, 0.25f));
+                Debug.LogWarning("<color=yellow>[Fishing Controller] Không thể vung cần khi đứng quá xa bờ hồ!</color>");
                 return;
             }
 
@@ -1097,6 +1200,39 @@ public class FishingController : MonoBehaviour
         }
     }
 
+    public void EnsureEquipmentSlots()
+    {
+        if (handVisual == null) handVisual = GetComponentInChildren<CharacterHandVisual>() ?? Object.FindFirstObjectByType<CharacterHandVisual>();
+        if (playerAnimation == null) playerAnimation = GetComponent<PlayerAnimation>() ?? Object.FindFirstObjectByType<PlayerAnimation>();
+
+        if (hotbarSlot == null || baitSlot == null || bobberSlot == null)
+        {
+            EquipmentSlotUI[] allSlots = Object.FindObjectsByType<EquipmentSlotUI>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            foreach (var slot in allSlots)
+            {
+                if (slot == null) continue;
+                if (hotbarSlot == null && slot.GetSlotRequirement() == EquipmentSlotUI.SlotRequirement.OnlyFishingRod)
+                {
+                    hotbarSlot = slot;
+                }
+                else if (baitSlot == null && slot.GetSlotRequirement() == EquipmentSlotUI.SlotRequirement.OnlyBait)
+                {
+                    baitSlot = slot;
+                }
+                else if (bobberSlot == null && slot.GetSlotRequirement() == EquipmentSlotUI.SlotRequirement.OnlyBobber)
+                {
+                    bobberSlot = slot;
+                }
+            }
+        }
+
+        if (hotbarSlot != null)
+        {
+            hotbarSlot.OnItemEquipped -= OnRodEquippedCallback;
+            hotbarSlot.OnItemEquipped += OnRodEquippedCallback;
+        }
+    }
+
     private FishingZone[] GetAllFishingZones()
     {
         if (cachedFishingZones == null || cachedFishingZones.Length == 0 || Time.time - lastZoneCacheTime > 5f)
@@ -1107,77 +1243,213 @@ public class FishingController : MonoBehaviour
         return cachedFishingZones;
     }
 
-    private void CheckAutoStowRodWhenLeavingFishingArea()
+    /// <summary>
+    /// Kiểm tra xem tại vị trí (x, z) có bề mặt NƯỚC LỘ THIÊN (không bị đất/địa hình che phủ) hay không.
+    /// Hoạt động chính xác 100% trên cả 4 Map (kể cả Map 3 có mặt phẳng nước ngầm bên dưới đất).
+    /// </summary>
+    private bool IsOpenWaterAtXZ(float x, float z)
     {
-        if (hotbarSlot == null) return;
-        InventoryItemUI equippedRod = hotbarSlot.GetEquippedItem();
-        if (equippedRod == null) return;
+        int waterLayerIndex = LayerMask.NameToLayer("Water");
+        if (waterLayerIndex == -1) waterLayerIndex = 4;
 
-        // Nếu đang câu cá (quăng dây, giằng co, kéo cá) thì không cất
-        if (currentState != FishingState.Idle) return;
+        // Bắn RaycastAll từ trên cao (player.y + 12m) xuống dưới 25m
+        Vector3 rayStart = new Vector3(x, transform.position.y + 12f, z);
+        RaycastHit[] hits = Physics.RaycastAll(rayStart, Vector3.down, 25f, Physics.AllLayers, QueryTriggerInteraction.Collide);
+        if (hits == null || hits.Length == 0) return false;
 
-        bool isNearLake = false;
+        float highestGroundY = float.MinValue;
+        float highestWaterY = float.MinValue;
 
-        // 1. Kiểm tra Raycast nước dưới chân hoặc trước mặt
-        int waterMask = waterLayer.value;
-        if (waterMask == 0) waterMask = LayerMask.GetMask("Water");
-        if (waterMask == 0) waterMask = 1 << 4;
-
-        if (Physics.Raycast(transform.position + Vector3.up * 2f, Vector3.down, out RaycastHit hit, 5f, waterMask))
+        foreach (var hit in hits)
         {
-            isNearLake = true;
-        }
-        else if (Physics.Raycast(transform.position + Vector3.up * 2f + transform.forward * 4f, Vector3.down, out RaycastHit hitFwd, 6f, waterMask))
-        {
-            isNearLake = true;
-        }
+            if (hit.collider == null) continue;
+            // Bỏ qua chính player và các object con
+            if (hit.collider.transform.root == transform.root) continue;
 
-        // 2. Kiểm tra khoảng cách tới các FishingZone trong Scene
-        if (!isNearLake)
-        {
-            var zones = GetAllFishingZones();
-            if (zones != null && zones.Length > 0)
+            bool isWater = (hit.collider.gameObject.layer == waterLayerIndex) ||
+                           (hit.collider.name.ToLower().Contains("water")) ||
+                           (hit.collider.GetComponent<FishingZone>() != null) ||
+                           (hit.collider.GetComponentInParent<FishingZone>() != null);
+
+            if (isWater)
             {
-                for (int i = 0; i < zones.Length; i++)
+                if (hit.point.y > highestWaterY)
                 {
-                    var zone = zones[i];
-                    if (zone == null) continue;
-                    Collider col = zone.GetComponent<Collider>();
-                    if (col != null)
-                    {
-                        Vector3 closest = col.ClosestPoint(transform.position);
-                        if (Vector3.Distance(transform.position, closest) <= autoStowDistance)
-                        {
-                            isNearLake = true;
-                            break;
-                        }
-                    }
-                    else if (Vector3.Distance(transform.position, zone.transform.position) <= autoStowDistance)
-                    {
-                        isNearLake = true;
-                        break;
-                    }
+                    highestWaterY = hit.point.y;
+                }
+            }
+            else
+            {
+                // Bỏ qua các trigger phụ trợ (như Interaction triggers, checkpoint)
+                if (hit.collider.isTrigger) continue;
+
+                if (hit.point.y > highestGroundY)
+                {
+                    highestGroundY = hit.point.y;
                 }
             }
         }
 
-        // Nếu người chơi đã đi xa khỏi bờ hồ -> Tự động cất cần câu vào Balo!
-        if (!isNearLake)
+        // Nếu không phát hiện nước tại vị trí này -> False
+        if (highestWaterY == float.MinValue) return false;
+
+        // Nếu mặt đất cao hơn mặt nước hơn 0.35m -> Mặt đất che phủ nước (nước ngầm dưới đất liền) -> False
+        if (highestGroundY > highestWaterY + 0.35f)
         {
-            AutoStowRodToBackpack(equippedRod);
+            return false;
+        }
+
+        // Mặt nước lộ thiên hợp lệ!
+        return true;
+    }
+
+    /// <summary>
+    /// Kiểm tra người chơi có đang đứng gần bờ hồ / mặt nước lộ thiên hợp lệ để câu cá hay không (cả 4 Map)
+    /// </summary>
+    public bool IsPlayerNearValidFishingWater()
+    {
+        // 1. Kiểm tra ngay vị trí người chơi đang đứng
+        if (IsOpenWaterAtXZ(transform.position.x, transform.position.z)) return true;
+
+        // 2. Kiểm tra hướng nhìn phía trước mặt người chơi (0.8m, 1.6m, 2.5m, 3.5m)
+        Vector3 forwardDir = transform.forward;
+        forwardDir.y = 0f;
+        if (forwardDir.sqrMagnitude > 0.01f) forwardDir.Normalize();
+
+        for (float dist = 0.8f; dist <= 3.5f; dist += 0.9f)
+        {
+            Vector3 testPos = transform.position + forwardDir * dist;
+            if (IsOpenWaterAtXZ(testPos.x, testPos.z)) return true;
+        }
+
+        // 3. Kiểm tra quét xung quanh 360 độ (bán kính 1.2m và 2.5m)
+        float[] radii = { 1.2f, 2.5f };
+        int angleSteps = 8;
+        for (int i = 0; i < angleSteps; i++)
+        {
+            float rad = i * (Mathf.PI * 2f / angleSteps);
+            Vector3 offset = new Vector3(Mathf.Cos(rad), 0f, Mathf.Sin(rad));
+            foreach (float r in radii)
+            {
+                Vector3 testPos = transform.position + offset * r;
+                if (IsOpenWaterAtXZ(testPos.x, testPos.z)) return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void CheckAutoStowRodWhenLeavingFishingArea()
+    {
+        EnsureEquipmentSlots();
+        if (hotbarSlot == null) return;
+        InventoryItemUI equippedRod = hotbarSlot.GetEquippedItem();
+
+        // Nếu người chơi không trang bị cần câu trong ô trang bị
+        if (equippedRod == null)
+        {
+            wasNearWaterWithRod = false;
+            dryLandStowTimer = 0f;
+            if (currentRod != null && handVisual != null)
+            {
+                handVisual.ClearCurrentVisual();
+                currentRod = null;
+                if (playerAnimation != null) playerAnimation.SetHoldingItemState(false);
+            }
+            return;
+        }
+
+        // Nếu người chơi đang mở giao diện Balo / Menu UI thì giữ nguyên để người chơi thoải mái thao tác
+        if (inputHandler != null && inputHandler.IsUIOpen)
+        {
+            dryLandStowTimer = 0f;
+            return;
+        }
+        bool isBackpackPanelOpen = BackpackController.Instance != null && BackpackController.Instance.IsOpen;
+        if (isBackpackPanelOpen)
+        {
+            dryLandStowTimer = 0f;
+            return;
+        }
+
+        // Nếu đang trong tiến trình câu cá (quăng dây, giằng co, kéo cá) thì không cất
+        if (currentState != FishingState.Idle)
+        {
+            dryLandStowTimer = 0f;
+            return;
+        }
+
+        bool isNearWater = IsPlayerNearValidFishingWater();
+
+        if (isNearWater)
+        {
+            // Người chơi đang ở gần bờ hồ / mặt nước -> Ghi nhận trạng thái đã tiếp cận vùng câu cá
+            wasNearWaterWithRod = true;
+            dryLandStowTimer = 0f;
+        }
+        else
+        {
+            // CHỈ tự động thu hồi cần câu nếu trước đó người chơi ĐÃ TỪNG ở gần mặt nước rồi sau đó RỜI KHỎI MẶT NƯỚC
+            // (Người chơi tự trang bị cần câu ở trên đất liền thì giữ nguyên để người chơi cầm đi ra bờ hồ)
+            if (wasNearWaterWithRod)
+            {
+                dryLandStowTimer += 0.2f;
+                if (dryLandStowTimer >= 1.0f)
+                {
+                    dryLandStowTimer = 0f;
+                    wasNearWaterWithRod = false;
+                    AutoStowRodToBackpack(equippedRod);
+                }
+            }
+            else
+            {
+                dryLandStowTimer = 0f;
+            }
         }
     }
 
     public void AutoStowRodToBackpack(InventoryItemUI rodItem = null)
     {
+        wasNearWaterWithRod = false;
+        dryLandStowTimer = 0f;
+
+        EnsureEquipmentSlots();
         if (hotbarSlot == null) return;
         if (rodItem == null) rodItem = hotbarSlot.GetEquippedItem();
         if (rodItem == null) return;
 
-        if (BackpackMinigameUI.Instance != null && BackpackMinigameUI.Instance.TryAutoFitItemToGrid(rodItem))
+        bool stowed = false;
+        if (BackpackMinigameUI.Instance != null)
+        {
+            stowed = BackpackMinigameUI.Instance.TryAutoFitItemToGrid(rodItem);
+        }
+
+        bool isVietnamese = UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale != null &&
+                            UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale.Identifier.Code.StartsWith("vi");
+
+        if (stowed)
         {
             hotbarSlot.RemoveEquippedItem();
-            Debug.Log("<color=green>[FishingController] Đã tự động cất cần câu vào Balo khi rời khỏi khu vực câu cá.</color>");
+
+            if (handVisual != null)
+            {
+                handVisual.ClearCurrentVisual();
+            }
+            currentRod = null;
+            if (playerAnimation != null) playerAnimation.SetHoldingItemState(false);
+
+            ShowFishingFeedback(
+                isVietnamese ? "Đã rời khỏi vùng nước. Cần câu đã tự động cất vào Balo!" : "Left the fishing area. Fishing rod automatically stowed into backpack!",
+                new Color(0.4f, 1f, 0.6f)
+            );
+            Debug.Log("<color=green>[FishingController] Đã tự động cất cần câu vào Balo khi rời khỏi vùng nước.</color>");
+        }
+        else
+        {
+            ShowFishingFeedback(
+                isVietnamese ? "Balo đã đầy, không thể tự cất cần câu!" : "Backpack full, cannot auto-stow fishing rod!",
+                new Color(1f, 0.45f, 0.45f)
+            );
         }
     }
 }

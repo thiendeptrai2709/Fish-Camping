@@ -179,11 +179,14 @@ public class CookingUIManager : MonoBehaviour
             {
                 if (slot != null && slot.CurrentItem != null)
                 {
+                    ItemShapeSO itemToReturn = slot.CurrentItem;
+                    slot.ClearSlot(); // Xóa slot ngay lập tức trước khi Add để tránh lặp lại
+
                     if (BackpackMinigameUI.Instance != null)
                     {
-                        BackpackMinigameUI.Instance.TryAutoAddItem(slot.CurrentItem);
+                        BackpackMinigameUI.Instance.TryAutoAddItem(itemToReturn);
+                        BackpackMinigameUI.Instance.SaveBackpack();
                     }
-                    slot.ClearSlot();
                 }
             }
         }
@@ -285,8 +288,14 @@ public class CookingUIManager : MonoBehaviour
         }
         else
         {
-            CookingRack rack = Object.FindFirstObjectByType<CookingRack>();
-            if (rack != null) rack.ClearCookedFood();
+            CookingRack[] allRacks = Object.FindObjectsByType<CookingRack>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            foreach (var r in allRacks)
+            {
+                if (r != null && r.State == CookingRack.CookingState.Finished)
+                {
+                    r.ClearCookedFood();
+                }
+            }
         }
 
         // Không Destroy spawnedResultItem vì item này đã được chuyển làm con của Balo
@@ -298,6 +307,11 @@ public class CookingUIManager : MonoBehaviour
             {
                 if (slot != null) slot.ClearSlot();
             }
+        }
+
+        if (BackpackMinigameUI.Instance != null)
+        {
+            BackpackMinigameUI.Instance.SaveBackpack();
         }
 
         CloseCookingUI();

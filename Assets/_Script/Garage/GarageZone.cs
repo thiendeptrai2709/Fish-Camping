@@ -249,6 +249,7 @@ public class GarageZone : MonoBehaviour
         MoneyManager.Instance.TruTien(tirePrice);
         PlayerPrefs.SetInt("EquippedTireIndex", wheelIndex);
         PlayerPrefs.Save();
+        GameDatabaseManager.Instance?.SaveAndSyncToCloud();
 
         UpdateAllUI();
         ApplyTireVisual(wheelIndex);
@@ -333,6 +334,7 @@ public class GarageZone : MonoBehaviour
             currentTrunkLevel = targetLevel;
             PlayerPrefs.SetInt("SavedTrunkLevel", currentTrunkLevel);
             PlayerPrefs.Save();
+            GameDatabaseManager.Instance?.SaveAndSyncToCloud();
             if (TrunkMinigameUI.Instance != null) TrunkMinigameUI.Instance.RefreshGridVisuals();
             UpdateAllUI();
             ShowNotify(isVietnamese ? $"Nâng cấp Cốp Level {targetLevel} thành công!" : $"Trunk Level {targetLevel} upgraded successfully!");

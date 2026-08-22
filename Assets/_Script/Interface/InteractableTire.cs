@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 [RequireComponent(typeof(BoxCollider))]
 public class InteractableTire : MonoBehaviour, IInteractable
@@ -45,7 +45,11 @@ public class InteractableTire : MonoBehaviour, IInteractable
         {
             return tireRepairMinigame.GetCurrentPrompt();
         }
-        return "[Chuột Trái] Tương tác lốp xe";
+
+        bool isVietnamese = UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale != null &&
+                            UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale.Identifier.Code.StartsWith("vi");
+
+        return isVietnamese ? "[Chuột Trái] Tương tác lốp xe" : "[Left Click] Interact with tire";
     }
 
     /* Kiểm tra xem hệ thống có đang bị khóa bởi chiếc lốp khác hay không */

@@ -109,7 +109,27 @@ public class LoadingScreenManager : MonoBehaviour
 
     private void MovePlayerToSpawnPoint(GameObject playerObj)
     {
-        GameObject targetSpawn = GameObject.Find(targetSpawnPointID);
+        GameObject targetSpawn = null;
+        if (!string.IsNullOrEmpty(targetSpawnPointID))
+        {
+            targetSpawn = GameObject.Find(targetSpawnPointID);
+        }
+
+        // Fallback tìm các điểm spawn chuẩn theo map
+        if (targetSpawn == null)
+        {
+            string[] spawnNames = new string[] { "SpawnPoint", "PlayerSpawn", "CarSpawn", "Spawn_Point", "SpawnPoint_Map", "Spawn", "StartPoint" };
+            foreach (var sName in spawnNames)
+            {
+                targetSpawn = GameObject.Find(sName);
+                if (targetSpawn != null) break;
+            }
+
+            if (targetSpawn == null)
+            {
+                targetSpawn = GameObject.FindWithTag("Respawn");
+            }
+        }
 
         if (targetSpawn != null)
         {

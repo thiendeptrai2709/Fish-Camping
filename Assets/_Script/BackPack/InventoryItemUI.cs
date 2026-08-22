@@ -521,6 +521,53 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
         if (!placed)
         {
+            // Kiểm tra xem vị trí thả chuột có nằm trên bất kỳ ô trang bị EquipmentSlotUI nào không (Fallback bắt dính cực nhạy)
+            EquipmentSlotUI[] allEquipSlots = Object.FindObjectsByType<EquipmentSlotUI>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+            foreach (var slot in allEquipSlots)
+            {
+                if (slot == null || !slot.gameObject.activeInHierarchy) continue;
+                RectTransform slotRect = slot.GetComponent<RectTransform>();
+                Canvas slotCanvas = slot.GetComponentInParent<Canvas>();
+                Camera slotCam = (slotCanvas != null) ? GetEventCamera(slotCanvas) : eventData.pressEventCamera;
+
+                if (slotRect != null && RectTransformUtility.RectangleContainsScreenPoint(slotRect, eventData.position, slotCam))
+                {
+                    if (slot.CanEquip(itemShape))
+                    {
+                        slot.OnDrop(eventData);
+                        if (isHandledBySlot)
+                        {
+                            isHandledBySlot = false;
+                            if (BackpackMinigameUI.Instance != null) BackpackMinigameUI.Instance.HideHighlight();
+                            if (TrunkMinigameUI.Instance != null) TrunkMinigameUI.Instance.HideHighlight();
+                            return;
+                        }
+                    }
+                }
+            }
+
+            // Kiểm tra xem vị trí thả chuột có nằm trên bất kỳ ô HUDHotbarSlotUI nào không
+            HUDHotbarSlotUI[] allHudSlots = Object.FindObjectsByType<HUDHotbarSlotUI>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+            foreach (var hudSlot in allHudSlots)
+            {
+                if (hudSlot == null || !hudSlot.gameObject.activeInHierarchy) continue;
+                RectTransform hudRect = hudSlot.GetComponent<RectTransform>();
+                Canvas hudCanvas = hudSlot.GetComponentInParent<Canvas>();
+                Camera hudCam = (hudCanvas != null) ? GetEventCamera(hudCanvas) : eventData.pressEventCamera;
+
+                if (hudRect != null && RectTransformUtility.RectangleContainsScreenPoint(hudRect, eventData.position, hudCam))
+                {
+                    hudSlot.OnDrop(eventData);
+                    if (isHandledBySlot)
+                    {
+                        isHandledBySlot = false;
+                        if (BackpackMinigameUI.Instance != null) BackpackMinigameUI.Instance.HideHighlight();
+                        if (TrunkMinigameUI.Instance != null) TrunkMinigameUI.Instance.HideHighlight();
+                        return;
+                    }
+                }
+            }
+
             if (currentOwner == GridOwner.Backpack && BackpackMinigameUI.Instance != null)
                 BackpackMinigameUI.Instance.OnItemEndDrag(this, eventData.position);
             else if (currentOwner == GridOwner.Trunk && TrunkMinigameUI.Instance != null)

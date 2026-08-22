@@ -24,24 +24,46 @@ public class EquipmentSlotUI : MonoBehaviour, IDropHandler
     private InventoryItemUI equippedItem;
     private Vector2 originalSlotSize;
 
+    public CharacterHandVisual GetHandVisual()
+    {
+        if (handVisual == null)
+        {
+            handVisual = FindFirstObjectByType<CharacterHandVisual>();
+        }
+        return handVisual;
+    }
+
     private void Awake()
     {
         originalSlotSize = GetComponent<RectTransform>().sizeDelta;
         if (minigameUI == null) minigameUI = BackpackMinigameUI.Instance != null ? BackpackMinigameUI.Instance : FindFirstObjectByType<BackpackMinigameUI>();
+        GetHandVisual();
+
+        Image img = GetComponent<Image>();
+        if (img != null)
+        {
+            img.raycastTarget = true;
+        }
     }
 
     public bool CanEquip(ItemShapeSO itemShape)
     {
         if (itemShape == null) return false;
         if (slotRequirement == SlotRequirement.OnlyFishingRod) return itemShape is FishingRodSO;
-        if (slotRequirement == SlotRequirement.OnlyBait) return itemShape is BaitSO;
-        if (slotRequirement == SlotRequirement.OnlyBobber) return itemShape is BobberSO;
+        if (slotRequirement == SlotRequirement.OnlyBait)
+        {
+            return itemShape is BaitSO || itemShape.name.ToLower().Contains("bait") || itemShape.name.ToLower().Contains("moi");
+        }
+        if (slotRequirement == SlotRequirement.OnlyBobber)
+        {
+            return itemShape is BobberSO || itemShape.name.ToLower().Contains("bobber") || itemShape.name.ToLower().Contains("phao");
+        }
         return true;
     }
 
     public void OnDrop(PointerEventData eventData)
     {
-        if (eventData.pointerDrag == null) return;
+        if (eventData == null || eventData.pointerDrag == null) return;
         InventoryItemUI incomingItem = eventData.pointerDrag.GetComponent<InventoryItemUI>();
         if (incomingItem == null) return;
 
@@ -81,6 +103,12 @@ public class EquipmentSlotUI : MonoBehaviour, IDropHandler
                     {
                         EquipItem(incomingItem);
                     }
+                    else
+                    {
+                        InventoryItemUI tempOld = equippedItem;
+                        EquipItem(incomingItem);
+                        if (minigameUI != null) minigameUI.TryAutoFitItemToGrid(tempOld);
+                    }
                 }
             }
         }
@@ -117,9 +145,10 @@ public class EquipmentSlotUI : MonoBehaviour, IDropHandler
 
         if (placeholderIcon != null) placeholderIcon.enabled = false;
 
-        if (handVisual != null && itemUI.GetItemShape() != null)
+        var hv = GetHandVisual();
+        if (hv != null && itemUI.GetItemShape() != null)
         {
-            handVisual.EquipItemVisual(itemUI.GetItemShape());
+            hv.EquipItemVisual(itemUI.GetItemShape());
         }
         OnItemEquipped?.Invoke(itemUI.GetItemShape());
 
@@ -170,9 +199,10 @@ public class EquipmentSlotUI : MonoBehaviour, IDropHandler
 
         if (placeholderIcon != null) placeholderIcon.enabled = false;
 
-        if (handVisual != null && itemUI.GetItemShape() != null)
+        var hvDirect = GetHandVisual();
+        if (hvDirect != null && itemUI.GetItemShape() != null)
         {
-            handVisual.EquipItemVisual(itemUI.GetItemShape());
+            hvDirect.EquipItemVisual(itemUI.GetItemShape());
         }
         OnItemEquipped?.Invoke(itemUI.GetItemShape());
 
@@ -188,9 +218,10 @@ public class EquipmentSlotUI : MonoBehaviour, IDropHandler
 
     public void RemoveEquippedItem()
     {
-        if (handVisual != null && equippedItem != null)
+        var hv = GetHandVisual();
+        if (hv != null && equippedItem != null)
         {
-            handVisual.RemoveItemVisual(equippedItem.GetItemShape());
+            hv.RemoveItemVisual(equippedItem.GetItemShape());
         }
 
         equippedItem = null;

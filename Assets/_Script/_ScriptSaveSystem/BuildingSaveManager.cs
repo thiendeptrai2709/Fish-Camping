@@ -64,13 +64,28 @@ public class BuildingSaveManager : MonoBehaviour
 
     private void InitializeLookup()
     {
+        itemLookup.Clear();
+
+        if (allBuildableItems == null || allBuildableItems.Count == 0)
+        {
+            BuildableItemSO[] found = Resources.FindObjectsOfTypeAll<BuildableItemSO>();
+            if (found != null && found.Length > 0)
+            {
+                allBuildableItems = new List<BuildableItemSO>(found);
+            }
+        }
+
         foreach (var item in allBuildableItems)
         {
-            if (item != null && !string.IsNullOrEmpty(item.itemName))
+            if (item != null)
             {
-                if (!itemLookup.ContainsKey(item.itemName))
+                if (!string.IsNullOrEmpty(item.itemName) && !itemLookup.ContainsKey(item.itemName))
                 {
                     itemLookup.Add(item.itemName, item);
+                }
+                if (!string.IsNullOrEmpty(item.name) && !itemLookup.ContainsKey(item.name))
+                {
+                    itemLookup.Add(item.name, item);
                 }
             }
         }
@@ -79,6 +94,7 @@ public class BuildingSaveManager : MonoBehaviour
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         currentScenePlacedItems.Clear();
+        InitializeLookup();
         LoadSceneBuildings();
     }
 
@@ -88,15 +104,16 @@ public class BuildingSaveManager : MonoBehaviour
         return Path.Combine(Application.persistentDataPath, $"{sceneName}_placed_buildings.json");
     }
 
-    // ĐÂY LÀ HÀM BỊ BÁO LỖI: Cần có từ khóa 'public'
     public void SavePlacedItem(BuildableItemSO item, Vector3 position, Quaternion rotation)
     {
         if (item == null) return;
 
-        PlacedItemSaveData newItem = new PlacedItemSaveData(item.itemName, position, rotation.eulerAngles);
+        string idToSave = !string.IsNullOrEmpty(item.itemName) ? item.itemName : item.name;
+        PlacedItemSaveData newItem = new PlacedItemSaveData(idToSave, position, rotation.eulerAngles);
         currentScenePlacedItems.Add(newItem);
 
         WriteSaveToFile();
+        GameDatabaseManager.Instance?.SaveAndSyncToCloud();
     }
 
     private void WriteSaveToFile()

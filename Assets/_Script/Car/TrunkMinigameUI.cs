@@ -210,6 +210,7 @@ public class TrunkMinigameUI : MonoBehaviour
         string json = JsonUtility.ToJson(container);
         PlayerPrefs.SetString(TRUNK_SAVE_KEY, json);
         PlayerPrefs.Save();
+        GameDatabaseManager.Instance?.SaveAndSyncToCloud();
         Debug.Log($"<color=green>[Trunk] Đã lưu {container.items.Count} món đồ vào Cốp xe!</color>");
     }
 

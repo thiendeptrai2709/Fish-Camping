@@ -130,6 +130,7 @@ MonoBehaviour:
   fireVFX: {fileID: 6401948232422932872}
   fireAudioSource: {fileID: 431019989264854007}
   fireLoopSound: {fileID: 8300000, guid: 8adf8026cccf88b4fa284fdf050ee232, type: 3}
+  fireBurnSpeed: 0.2
 --- !u!82 &431019989264854007
 AudioSource:
   m_ObjectHideFlags: 0
@@ -269,7 +270,7 @@ ParticleSystem:
   m_GameObject: {fileID: 6401948232422932872}
   serializedVersion: 8
   lengthInSec: 1
-  simulationSpeed: 1
+  simulationSpeed: 0.2
   stopAction: 0
   cullingMode: 3
   ringBufferMode: 0
@@ -1784,7 +1785,7 @@ ParticleSystem:
     y:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.6
+      scalar: 0.15
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -3734,8 +3735,8 @@ ParticleSystem:
     curve:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1.5707963
-      minScalar: 0.7853982
+      scalar: 0.2
+      minScalar: 0.1
       maxCurve:
         serializedVersion: 2
         m_Curve:

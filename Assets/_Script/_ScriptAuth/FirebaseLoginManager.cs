@@ -177,10 +177,21 @@ public class Login : MonoBehaviour
                 // Lưu toàn bộ session thông tin user vào PlayerPrefs
                 SaveUserSession(user);
 
-                ShowStatus(GetLocalizedText("auth_login_success", "Đăng nhập thành công! Đang vào game..."), Color.green);
+                ShowStatus(GetLocalizedText("auth_login_success", "Đăng nhập thành công! Đang đồng bộ dữ liệu..."), Color.green);
 
-                string targetScene = PlayerLocationSaveManager.GetSavedSceneName("Map_1_Town");
-                StartCoroutine(LoginAndTransition(targetScene));
+                if (GameDatabaseManager.Instance != null)
+                {
+                    GameDatabaseManager.Instance.LoadFromCloud(user.UserId, (success) =>
+                    {
+                        string targetScene = PlayerLocationSaveManager.GetSavedSceneName("Map_1_Town");
+                        StartCoroutine(LoginAndTransition(targetScene));
+                    });
+                }
+                else
+                {
+                    string targetScene = PlayerLocationSaveManager.GetSavedSceneName("Map_1_Town");
+                    StartCoroutine(LoginAndTransition(targetScene));
+                }
             }
         });
     }
