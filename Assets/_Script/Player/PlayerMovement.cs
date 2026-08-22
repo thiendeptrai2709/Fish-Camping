@@ -72,6 +72,11 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    private void OnDisable()
+    {
+        StopAudio();
+    }
+
     private void Update()
     {
         if (controller == null || !controller.enabled)
@@ -81,8 +86,9 @@ public class PlayerMovement : MonoBehaviour
         }
 
         bool isDialogueActive = DialogueManager.Instance != null && DialogueManager.Instance.IsDialogueActive;
+        bool isUIOpen = (inputHandler != null && inputHandler.IsUIOpen);
 
-        if ((fishingController != null && fishingController.IsBusyFishing()) || IsMovementLocked || (inputHandler != null && inputHandler.IsUIOpen) || isDialogueActive)
+        if ((fishingController != null && fishingController.IsBusyFishing()) || IsMovementLocked || isUIOpen || isDialogueActive)
         {
             StopAudio();
             HandleGravityOnly(); // Chỉ đứng im rớt xuống, không đi ngang
@@ -278,7 +284,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void StopAudio()
+    public void StopAudio()
     {
         if (audioSource != null && audioSource.isPlaying)
         {

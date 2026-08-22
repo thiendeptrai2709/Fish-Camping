@@ -110,6 +110,7 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         SetRemainingUses(cur - amount);
     }
     public void SetOriginIngredientSlot(CookingSlotUI slot) => originIngredientSlot = slot;
+    public CookingSlotUI GetOriginIngredientSlot() => originIngredientSlot;
     public float GetLength() => currentLength;
     public float GetWeight() => currentWeight;
     public FishGrade GetGrade() => currentGrade;
@@ -240,20 +241,7 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (eventData.button != PointerEventData.InputButton.Left) return;
-
-        if (isFromCooking)
-        {
-            if (minigameUI != null && minigameUI.TryAutoAddFromCooking(this))
-            {
-                if (CookingUIManager.Instance != null) CookingUIManager.Instance.OnFoodCollectedSuccessfully();
-                if (itemShape != null && QuestManager.Instance != null)
-                {
-                    string itemName = string.IsNullOrEmpty(itemShape.itemName) ? itemShape.name : itemShape.itemName;
-                    QuestManager.Instance.AddProgressByItem(itemName, 1);
-                }
-            }
-        }
+        // Giữ lại để thỏa mãn IPointerDownHandler của Unity EventSystem
     }
 
     private Canvas cachedDragCanvas;
@@ -543,6 +531,31 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     public void OnPointerClick(PointerEventData eventData)
     {
         if (itemShape == null) return;
+        if (isDragging) return;
+
+        // Nếu là thức ăn đã nấu chín trên giá nấu (isFromCooking), click chuột trái sẽ tự động nhặt vào Balo một lần duy nhất
+        if (isFromCooking && eventData.button == PointerEventData.InputButton.Left)
+        {
+            if (BackpackMinigameUI.Instance != null && BackpackMinigameUI.Instance.TryAutoAddFromCooking(this))
+            {
+                isFromCooking = false;
+                if (CookingUIManager.Instance != null)
+                {
+                    CookingUIManager.Instance.OnFoodCollectedSuccessfully();
+                }
+                if (itemShape != null && QuestManager.Instance != null)
+                {
+                    string itemName = string.IsNullOrEmpty(itemShape.itemName) ? itemShape.name : itemShape.itemName;
+                    QuestManager.Instance.AddProgressByItem(itemName, 1);
+                }
+                return;
+            }
+            else
+            {
+                Debug.Log("<color=red>[Cooking] Balo đã đầy, hãy dọn chỗ trống trước khi lấy thức ăn!</color>");
+                return;
+            }
+        }
 
         // HIỂN THỊ BẢNG CHI TIẾT & MENU THAO TÁC (ITEM ACTION MENU ĐỂ SỬA CẦN, ĂN, ĐỔ XĂNG)
         if (ItemInfoPanelUI.Instance != null)

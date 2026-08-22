@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections;
+using TMPro;
 
 public class MapUIManager : MonoBehaviour
 {
@@ -79,6 +81,51 @@ public class MapUIManager : MonoBehaviour
         }
     }
 
+    [SerializeField] private TMPro.TextMeshProUGUI txtMapFooterHint;
+
+    private void EnsureFooterHintBar()
+    {
+        if (mapUIPanel == null) return;
+
+        bool isVietnamese = UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale != null &&
+                            UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale.Identifier.Code.StartsWith("vi");
+
+        if (txtMapFooterHint == null)
+        {
+            Transform hintTrans = mapUIPanel.transform.Find("Txt_MapFooterHint");
+            if (hintTrans != null)
+            {
+                txtMapFooterHint = hintTrans.GetComponent<TMPro.TextMeshProUGUI>();
+            }
+            else
+            {
+                GameObject footerObj = new GameObject("Txt_MapFooterHint", typeof(TMPro.TextMeshProUGUI));
+                footerObj.transform.SetParent(mapUIPanel.transform, false);
+                RectTransform rt = footerObj.GetComponent<RectTransform>();
+                rt.anchorMin = new Vector2(0.5f, 0f);
+                rt.anchorMax = new Vector2(0.5f, 0f);
+                rt.pivot = new Vector2(0.5f, 0f);
+                rt.anchoredPosition = new Vector2(0, 24);
+                rt.sizeDelta = new Vector2(950, 38);
+
+                txtMapFooterHint = footerObj.GetComponent<TMPro.TextMeshProUGUI>();
+                txtMapFooterHint.fontSize = 16;
+                txtMapFooterHint.fontStyle = TMPro.FontStyles.Bold;
+                txtMapFooterHint.alignment = TMPro.TextAlignmentOptions.Center;
+                txtMapFooterHint.color = new Color(1f, 0.88f, 0.45f, 0.95f);
+            }
+        }
+
+        if (txtMapFooterHint != null)
+        {
+            txtMapFooterHint.text = isVietnamese 
+                ? "💡 <b>Mẹo:</b> Nhấp chuột vào khu vực có <b>Ổ Khóa 🔒</b> để xem danh sách nhiệm vụ mở Map mới!"
+                : "💡 <b>Tip:</b> Click on regions with a <b>Lock 🔒</b> to view requirements to unlock new Maps!";
+            txtMapFooterHint.gameObject.SetActive(true);
+            txtMapFooterHint.transform.SetAsLastSibling();
+        }
+    }
+
     private void ToggleMap()
     {
         if (mapUIPanel != null)
@@ -120,10 +167,28 @@ public class MapUIManager : MonoBehaviour
                 smallMapUI.SetActive(!isActive);
             }
 
-            /* Reset trạng thái phóng to bản đồ khi mở lên */
-            if (isActive && mapInteractionManager != null)
+            /* Reset trạng thái phóng to bản đồ khi mở lên và làm mới ổ khóa */
+            if (isActive)
             {
-                mapInteractionManager.RestoreMapInstantly();
+                if (mapInteractionManager != null)
+                {
+                    mapInteractionManager.RestoreMapInstantly();
+                }
+
+                EnsureFooterHintBar();
+
+                MapRegion[] regions = mapUIPanel.GetComponentsInChildren<MapRegion>(true);
+                foreach (MapRegion r in regions)
+                {
+                    if (r != null) r.UpdateLockState();
+                }
+            }
+            else
+            {
+                if (MapRequirementPopupUI.Instance != null)
+                {
+                    MapRequirementPopupUI.Instance.Hide();
+                }
             }
 
             if (playerMovement != null)

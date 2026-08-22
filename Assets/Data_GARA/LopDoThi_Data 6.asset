@@ -14,10 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TireData
   tireName: "L\u1ED1p B\xF9n Chuy\xEAn D\u1EE5ng"
   tireIcon: {fileID: -1096971649, guid: 68af6c51d43574a44a682ac1da089f9c, type: 3}
-  price: 900
-  description: "R\xE3nh gai c\u1EF1c s\xE2u v\xE0 th\u01B0a, gi\xFAp t\u1EF1 v\u0103ng
-    b\xF9n ra ngo\xE0i khi quay b\xE1nh."
-  cityFriction: 0.269
-  forestFriction: 0.524
-  swampFriction: 0.488
-  sandFriction: 0.42
+  price: 1400
+  description: "R\xE3nh gai ch\u1EEF V c\u1EF1c s\xE2u v\xE0 th\u01B0a, t\u1EF1
+    v\u0103ng b\xF9n ra ngo\xE0i khi b\xE1nh quay. Kh\u1EAFc tinh c\u1EE7a v\xF9ng
+    s\xECnh ng\u1EADp \u0110\u1EA7m L\u1EA7y (Map 3)."
+  cityFriction: 0.35
+  forestFriction: 0.5
+  swampFriction: 0.85
+  sandFriction: 0.4
+  kmPerTirePercent: 9
+  badRoadDamageChance: 0.03

@@ -14,13 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TireData
   tireName: "L\u1ED1p \u0110ua \u0110\u1ECBa H\xECnh"
   tireIcon: {fileID: -125339882, guid: 68af6c51d43574a44a682ac1da089f9c, type: 3}
-  price: 1200
-  description: "H\u1EE3p ch\u1EA5t cao su ch\u1ECBu nhi\u1EC7t, ch\u1ECBu l\u1EF1c
-    va \u0111\u1EADp m\u1EA1nh \u1EDF t\u1ED1c \u0111\u1ED9 cao tr\xEAn \u0111\u01B0\u1EDDng
-    \u0111\u1EA5t h\u1ED7n h\u1EE3p."
-  cityFriction: 0.805
-  forestFriction: 0.822
-  swampFriction: 0.879
-  sandFriction: 0.879
-  kmPerTirePercent: 3
-  badRoadDamageChance: 0.1
+  price: 2800
+  description: "H\u1EE3p ch\u1EA5t s\u1EE3i Kevlar si\xEAuy b\u1EC1n ch\u1ED1ng
+    \u0111inh v\xE0 va \u0111\u1EADp t\u1ED1c \u0111\u1ED9 cao. \u0110\u1ED9 b\xE1m
+    \u0111\u1EC9nh cao to\xE0n di\u1EC7n tr\xEAn c\u1EA3 4 B\u1EA3n \u0110\u1ED3!"
+  cityFriction: 0.75
+  forestFriction: 0.85
+  swampFriction: 0.85
+  sandFriction: 0.85
+  kmPerTirePercent: 15
+  badRoadDamageChance: 0.01

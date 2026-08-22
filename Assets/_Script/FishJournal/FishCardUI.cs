@@ -30,11 +30,10 @@ public class FishCardUI : MonoBehaviour
             if (lockedOverlay != null) lockedOverlay.SetActive(false);
             if (fishIcon != null) fishIcon.color = Color.white; // Hiện màu sắc sáng rõ
 
-            // Hiển thị tên thật của cá (qua Localization nếu có)
+            // Hiển thị tên thật của cá
             if (fishNameText != null)
             {
-                string localizedName = UnityEngine.Localization.Settings.LocalizationSettings.StringDatabase.GetLocalizedString("Game Text", fishData.itemName);
-                fishNameText.text = !string.IsNullOrEmpty(localizedName) ? localizedName : fishData.itemName;
+                fishNameText.text = fishData.itemName;
             }
 
             // Xử lý hiển thị thông số và hạng
@@ -77,23 +76,15 @@ public class FishCardUI : MonoBehaviour
                 fishIcon.color = new Color(0.3f, 0.3f, 0.3f, 1f);
             }
 
-            // Hiển thị tên Map gợi ý lấy từ FishSO
+            // Hiển thị tên Hồ/Khu vực câu lấy từ FishSO để người chơi biết nơi câu
             if (fishNameText != null)
             {
-                string localizedMap = !string.IsNullOrEmpty(fishData.mapName)
-                    ? UnityEngine.Localization.Settings.LocalizationSettings.StringDatabase.GetLocalizedString("Game Text", fishData.mapName)
-                    : "";
-
-                if (string.IsNullOrEmpty(localizedMap)) localizedMap = fishData.mapName;
-
-                fishNameText.text = !string.IsNullOrEmpty(localizedMap) 
-                    ? localizedMap 
-                    : (isVietnamese ? "Chưa rõ" : "Unknown Area");
+                fishNameText.text = !string.IsNullOrEmpty(fishData.mapName) ? fishData.mapName : "Chưa rõ";
             }
 
             if (statsText != null)
             {
-                statsText.text = ""; // Ẩn phần chỉ số đi
+                statsText.text = ""; // Ẩn phần chỉ số đi khi chưa câu
             }
         }
     }

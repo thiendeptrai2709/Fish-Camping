@@ -16,9 +16,11 @@ MonoBehaviour:
   tireIcon: {fileID: 707820073, guid: 68af6c51d43574a44a682ac1da089f9c, type: 3}
   price: 750
   description: "Th\xE0nh l\u1ED1p si\xEAu d\xE0y, cao su m\u1EC1m d\u1EBBo co gi\xE3n
-    t\u1ED1t \u0111\u1EC3 \"b\xE1m ch\u1EB7t\" v\xE0o c\xE1c b\u1EC1 m\u1EB7t g\u1ED3
-    gh\u1EC1."
-  cityFriction: 0.074
-  forestFriction: 0.246
-  swampFriction: 0.352
-  sandFriction: 0.269
+    t\u1ED1t \u0111\u1EC3 b\xE1m ch\u1EB7t v\xE0o s\u01B0\u1EDDn d\u1ED1c \u0111\xE1
+    v\xE0 r\u1EC5 c\xE2y g\u1ED3 gh\u1EC1 quanh R\u1EEBng Th\xF4ng Map 2."
+  cityFriction: 0.5
+  forestFriction: 0.8
+  swampFriction: 0.35
+  sandFriction: 0.38
+  kmPerTirePercent: 7.5
+  badRoadDamageChance: 0.04

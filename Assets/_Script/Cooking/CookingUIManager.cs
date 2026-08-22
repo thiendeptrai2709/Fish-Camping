@@ -98,8 +98,16 @@ public class CookingUIManager : MonoBehaviour
             spawnedResultItem = null;
         }
 
+        if (cookingSlots != null)
+        {
+            foreach (var slot in cookingSlots)
+            {
+                if (slot != null) slot.ClearSlot();
+            }
+        }
+
         // 3. SINH RA MÓN ĂN VÀ TRUYỀN DỮ LIỆU KÉO THẢ
-        if (currentRack.State == CookingRack.CookingState.Finished)
+        if (currentRack != null && currentRack.State == CookingRack.CookingState.Finished)
         {
             if (startCookButton != null) startCookButton.gameObject.SetActive(false);
 
@@ -164,8 +172,8 @@ public class CookingUIManager : MonoBehaviour
 
     public void CloseCookingUI()
     {
-        // Hoàn trả các nguyên liệu chưa nấu trong slot về lại Balo của người chơi
-        if (cookingSlots != null)
+        // Hoàn trả các nguyên liệu thô chưa nấu trong slot về lại Balo của người chơi khi ở trạng thái Idle
+        if (currentRack != null && currentRack.State == CookingRack.CookingState.Idle && cookingSlots != null)
         {
             foreach (var slot in cookingSlots)
             {
@@ -178,6 +186,16 @@ public class CookingUIManager : MonoBehaviour
                     slot.ClearSlot();
                 }
             }
+        }
+
+        if (spawnedResultItem != null)
+        {
+            // Chỉ Destroy nếu nó vẫn còn là con của ô nấu (chưa được đưa vào Balo)
+            if (cookingSlots != null && cookingSlots.Length > 0 && spawnedResultItem.transform.IsChildOf(cookingSlots[0].transform))
+            {
+                Destroy(spawnedResultItem.gameObject);
+            }
+            spawnedResultItem = null;
         }
 
         currentRack = null;
@@ -265,7 +283,23 @@ public class CookingUIManager : MonoBehaviour
         {
             currentRack.ClearCookedFood();
         }
+        else
+        {
+            CookingRack rack = Object.FindFirstObjectByType<CookingRack>();
+            if (rack != null) rack.ClearCookedFood();
+        }
+
+        // Không Destroy spawnedResultItem vì item này đã được chuyển làm con của Balo
         spawnedResultItem = null;
+
+        if (cookingSlots != null)
+        {
+            foreach (var slot in cookingSlots)
+            {
+                if (slot != null) slot.ClearSlot();
+            }
+        }
+
         CloseCookingUI();
     }
 

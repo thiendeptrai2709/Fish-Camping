@@ -82,6 +82,70 @@ public class FishJournalManager : MonoBehaviour
         return null;
     }
 
+    /// <summary>
+    /// Đếm tổng số lượng loài cá đã câu được trong toàn bộ Sổ Tay
+    /// </summary>
+    public int GetTotalUnlockedFishCount()
+    {
+        int count = 0;
+        foreach (var kvp in journalData)
+        {
+            if (kvp.Value != null && kvp.Value.isUnlocked)
+            {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    /// <summary>
+    /// Đếm số loài cá đã câu theo tên khu vực/map (ví dụ: "Hồ", "Đầm Lầy", "Biển")
+    /// </summary>
+    public int GetUnlockedFishCountByMap(string mapKeyword)
+    {
+        if (fishDatabase == null || fishDatabase.allFishes == null) return GetTotalUnlockedFishCount();
+        if (string.IsNullOrEmpty(mapKeyword)) return GetTotalUnlockedFishCount();
+
+        int count = 0;
+        foreach (FishSO fish in fishDatabase.allFishes)
+        {
+            if (fish == null || string.IsNullOrEmpty(fish.itemID)) continue;
+
+            bool mapMatch = string.IsNullOrEmpty(mapKeyword) || 
+                            (!string.IsNullOrEmpty(fish.mapName) && fish.mapName.IndexOf(mapKeyword, System.StringComparison.OrdinalIgnoreCase) >= 0);
+
+            if (mapMatch)
+            {
+                if (journalData.TryGetValue(fish.itemID, out FishRecord record) && record.isUnlocked)
+                {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    /// <summary>
+    /// Kiểm tra xem đã câu được con cá nào đạt phẩm chất tối thiểu (vd: Rare, Legendary) hay chưa
+    /// </summary>
+    public bool HasCaughtFishWithRarity(FishRarity minRarity)
+    {
+        if (fishDatabase == null || fishDatabase.allFishes == null) return false;
+
+        foreach (FishSO fish in fishDatabase.allFishes)
+        {
+            if (fish == null || string.IsNullOrEmpty(fish.itemID)) continue;
+            if (fish.rarity >= minRarity)
+            {
+                if (journalData.TryGetValue(fish.itemID, out FishRecord record) && record.isUnlocked)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     private void SaveData()
     {
         List<FishRecord> dataToSave = new List<FishRecord>(journalData.Values);

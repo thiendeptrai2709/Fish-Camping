@@ -35,6 +35,13 @@ public class CookingSlotUI : MonoBehaviour, IDropHandler, IPointerClickHandler, 
             InventoryItemUI draggedItem = eventData.pointerDrag.GetComponent<InventoryItemUI>();
             if (draggedItem != null && draggedItem.GetItemShape() != null)
             {
+                // Nếu item này chính là proxy item được kéo ra từ slot này nhưng thả lại vào chính slot này:
+                if (draggedItem.GetOriginIngredientSlot() == this)
+                {
+                    ReturnIngredient(draggedItem);
+                    return;
+                }
+
                 // Nếu ô đã có cá cũ, tự động trả con cá cũ về lại Balo
                 if (CurrentItem != null && BackpackMinigameUI.Instance != null)
                 {
@@ -88,6 +95,7 @@ public class CookingSlotUI : MonoBehaviour, IDropHandler, IPointerClickHandler, 
     public void ClearSlot()
     {
         CurrentItem = null;
+        itemBackup = null;
         if (itemIcon != null)
         {
             itemIcon.sprite = null;

@@ -40,7 +40,7 @@ public class PlayerInputHandler : MonoBehaviour
 
     private void Update()
     {
-        MoveInput = inputActions.Player.Move.ReadValue<Vector2>();
+        MoveInput = IsUIOpen ? Vector2.zero : inputActions.Player.Move.ReadValue<Vector2>();
         LookInput = IsUIOpen ? Vector2.zero : inputActions.Player.Look.ReadValue<Vector2>();
 
         bool sprintHeld = false;
@@ -54,9 +54,9 @@ public class PlayerInputHandler : MonoBehaviour
         {
             sprintHeld = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
         }
-        IsSprinting = inputActions.Player.Sprint.IsPressed() || sprintHeld;
-        InteractTriggered = inputActions.Player.Interact.WasPressedThisFrame();
-        IsInteractHeld = inputActions.Player.Interact.IsPressed();
+        IsSprinting = !IsUIOpen && (inputActions.Player.Sprint.IsPressed() || sprintHeld);
+        InteractTriggered = !IsUIOpen && inputActions.Player.Interact.WasPressedThisFrame();
+        IsInteractHeld = !IsUIOpen && inputActions.Player.Interact.IsPressed();
 
         BuildTriggered = inputActions.Player.Build.WasPressedThisFrame(); // Đọc input phím B
 
@@ -89,7 +89,7 @@ public class PlayerInputHandler : MonoBehaviour
             spacePressed = Input.GetKeyDown(KeyCode.Space);
         }
 
-        TogglePerspectiveTriggered = yPressed;
-        JumpTriggered = spacePressed;
+        TogglePerspectiveTriggered = !IsUIOpen && yPressed;
+        JumpTriggered = !IsUIOpen && spacePressed;
     }
 }
