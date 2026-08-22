@@ -65,6 +65,23 @@ public class NPCFishingShop : MonoBehaviour
             ShopManager.Instance = Object.FindFirstObjectByType<ShopManager>(FindObjectsInactive.Include);
         }
 
+        if (ShopManager.Instance == null)
+        {
+            // Tự động quét tìm Supper_canvas_________ hoặc Canvas có Scroll View_Cancau
+            Canvas[] allCanvases = Object.FindObjectsByType<Canvas>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            foreach (var c in allCanvases)
+            {
+                if (c == null) continue;
+                string cName = c.gameObject.name.ToLower();
+                if (cName.Contains("supper_canvas") || cName.Contains("shop") || c.transform.Find("Scroll View_Cancau") != null)
+                {
+                    ShopManager.Instance = c.gameObject.GetComponent<ShopManager>() ?? c.gameObject.AddComponent<ShopManager>();
+                    ShopManager.Instance.shopPanel = c.gameObject;
+                    break;
+                }
+            }
+        }
+
         if (ShopManager.Instance != null)
         {
             ShopManager.Instance.MoShop(() => {

@@ -74,6 +74,12 @@ public class FishingController : MonoBehaviour
     private FishingZone[] cachedFishingZones;
     private float lastZoneCacheTime = -10f;
 
+    [Header("--- PERFORMANCE SPATIAL CACHING ---")]
+    private Vector3 lastWaterCheckPos = new Vector3(-9999f, -9999f, -9999f);
+    private Vector3 lastWaterCheckForward = Vector3.zero;
+    private bool lastWaterCheckResult = false;
+    private float lastWaterCheckTime = -10f;
+
     [Header("--- FISHING FEEDBACK UI ---")]
     private GameObject feedbackBannerObj;
     private TextMeshProUGUI feedbackText;
@@ -993,7 +999,12 @@ public class FishingController : MonoBehaviour
 
         if (energyController != null)
         {
-            energyController.TryConsumeEnergy(energyCostPerCast);
+            float energyCost = energyCostPerCast;
+            if (PlayerBuffManager.Instance != null && PlayerBuffManager.Instance.HasBuff(BuffType.Endurance))
+            {
+                energyCost *= PlayerBuffManager.Instance.GetBuffMultiplier(BuffType.Endurance, 0.5f);
+            }
+            energyController.TryConsumeEnergy(energyCost);
         }
 
         if (zone == 0)
@@ -1135,6 +1146,12 @@ public class FishingController : MonoBehaviour
                 if (currentBobber != null && currentBobber.attractivenessBonus > 0f)
                 {
                     baseWait -= (currentBobber.attractivenessBonus * 0.02f);
+                }
+
+                // 4. Giảm thời gian do Khung Giờ Sinh Thái (Sáng sớm / Hoàng hôn)
+                if (FishEcologyManager.Instance != null)
+                {
+                    baseWait *= FishEcologyManager.Instance.GetBiteWaitMultiplier();
                 }
 
                 biteTimer = Mathf.Max(1.0f, baseWait);
@@ -1305,11 +1322,28 @@ public class FishingController : MonoBehaviour
 
     /// <summary>
     /// Kiểm tra người chơi có đang đứng gần bờ hồ / mặt nước lộ thiên hợp lệ để câu cá hay không (cả 4 Map)
+    /// Đã tối ưu hiệu năng: Sử dụng Spatial Movement Caching khi người chơi đứng yên
     /// </summary>
     public bool IsPlayerNearValidFishingWater()
     {
+        // Tối ưu hiệu năng: Nếu nhân vật đứng yên hoặc di chuyển cực nhỏ (< 0.35m) và không quay người nhiều, dùng kết quả cache
+        if ((transform.position - lastWaterCheckPos).sqrMagnitude < 0.12f &&
+            Vector3.Angle(transform.forward, lastWaterCheckForward) < 15f &&
+            Time.time - lastWaterCheckTime < 0.8f)
+        {
+            return lastWaterCheckResult;
+        }
+
+        lastWaterCheckPos = transform.position;
+        lastWaterCheckForward = transform.forward;
+        lastWaterCheckTime = Time.time;
+
         // 1. Kiểm tra ngay vị trí người chơi đang đứng
-        if (IsOpenWaterAtXZ(transform.position.x, transform.position.z)) return true;
+        if (IsOpenWaterAtXZ(transform.position.x, transform.position.z))
+        {
+            lastWaterCheckResult = true;
+            return true;
+        }
 
         // 2. Kiểm tra hướng nhìn phía trước mặt người chơi (0.8m, 1.6m, 2.5m, 3.5m)
         Vector3 forwardDir = transform.forward;
@@ -1319,7 +1353,11 @@ public class FishingController : MonoBehaviour
         for (float dist = 0.8f; dist <= 3.5f; dist += 0.9f)
         {
             Vector3 testPos = transform.position + forwardDir * dist;
-            if (IsOpenWaterAtXZ(testPos.x, testPos.z)) return true;
+            if (IsOpenWaterAtXZ(testPos.x, testPos.z))
+            {
+                lastWaterCheckResult = true;
+                return true;
+            }
         }
 
         // 3. Kiểm tra quét xung quanh 360 độ (bán kính 1.2m và 2.5m)
@@ -1332,10 +1370,15 @@ public class FishingController : MonoBehaviour
             foreach (float r in radii)
             {
                 Vector3 testPos = transform.position + offset * r;
-                if (IsOpenWaterAtXZ(testPos.x, testPos.z)) return true;
+                if (IsOpenWaterAtXZ(testPos.x, testPos.z))
+                {
+                    lastWaterCheckResult = true;
+                    return true;
+                }
             }
         }
 
+        lastWaterCheckResult = false;
         return false;
     }
 

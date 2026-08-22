@@ -7211,7 +7211,7 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 500
+          m_IntArgument: 800
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -12998,7 +12998,7 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 900
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -25963,6 +25963,7 @@ MonoBehaviour:
   scrollViewMoiCau: {fileID: 5224911930150125618}
   scrollViewPhuTung: {fileID: 1602160579895210353}
   scrollViewBanCa: {fileID: 6653991173526369205}
+  contentBanCa: {fileID: 0}
 --- !u!114 &5054026315420103885
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25975,10 +25976,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f8055fef7d184a4ca4a4229ff8a0b86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopManager
-  tongTien: 100000
-  txtHienThiTien: {fileID: 2499365576462203615}
   shopPanel: {fileID: 0}
-  thoiGianDemSo: 0.5
+  cacUIAnKhiMoShop: []
 --- !u!1 &3939689864211560219
 GameObject:
   m_ObjectHideFlags: 0
@@ -31344,7 +31343,7 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 300
+          m_IntArgument: 1000
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0

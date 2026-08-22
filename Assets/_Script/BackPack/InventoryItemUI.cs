@@ -661,6 +661,12 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
                 CharacterStatsManager.Instance.ModifyStat(StatType.Comfort, 15f);
             }
 
+            // Kích hoạt Buff tương ứng từ món ăn
+            if (PlayerBuffManager.Instance != null)
+            {
+                PlayerBuffManager.Instance.ApplyBuffFromFood(foodData, itemShape.itemName);
+            }
+
             if (currentOwner == GridOwner.Backpack && BackpackMinigameUI.Instance != null)
             {
                 BackpackMinigameUI.Instance.RemoveItem(this);
@@ -685,6 +691,11 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
                     CharacterStatsManager.Instance.ModifyStat(StatType.Thirst, 20f);
                     CharacterStatsManager.Instance.ModifyStat(StatType.Energy, 30f);
                     CharacterStatsManager.Instance.ModifyStat(StatType.Comfort, 15f);
+                }
+
+                if (PlayerBuffManager.Instance != null)
+                {
+                    PlayerBuffManager.Instance.ApplyBuff(BuffType.AnglerLuck, "Hương Vị Lửa Trại", 180f, 1.15f, new Color(1f, 0.8f, 0.3f));
                 }
 
                 if (currentOwner == GridOwner.Backpack && BackpackMinigameUI.Instance != null)

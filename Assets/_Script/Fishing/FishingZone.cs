@@ -8,12 +8,24 @@ public class FishingZone : MonoBehaviour
     [Tooltip("Danh sách các loại cá có thể câu được ở vùng nước này")]
     public FishSO[] zoneFishes;
 
-    // Hàm trả về ngẫu nhiên 1 con cá trong danh sách (hỗ trợ tăng tỷ lệ cá hiếm theo mồi câu)
+    // Hàm trả về ngẫu nhiên 1 con cá trong danh sách (hỗ trợ tăng tỷ lệ cá hiếm theo mồi câu, thời gian và buff)
     public FishSO GetRandomFish(int rarityBonus = 0)
     {
         if (zoneFishes == null || zoneFishes.Length == 0) return null;
 
-        // Nếu có mồi xịn (rarityBonus > 0), tính trọng số ưu tiên cá Rare và Legendary
+        // Bổ sung bonus từ Chu kỳ Ngày Đêm & Môi trường sinh thái
+        if (FishEcologyManager.Instance != null)
+        {
+            rarityBonus += FishEcologyManager.Instance.GetEcologyRarityBonus();
+        }
+
+        // Bổ sung bonus từ Buff May Mắn của người chơi
+        if (PlayerBuffManager.Instance != null && PlayerBuffManager.Instance.HasBuff(BuffType.AnglerLuck))
+        {
+            rarityBonus += Mathf.RoundToInt(PlayerBuffManager.Instance.GetBuffMultiplier(BuffType.AnglerLuck) * 2f);
+        }
+
+        // Nếu có bonus (rarityBonus > 0), tính trọng số ưu tiên cá Rare và Legendary
         if (rarityBonus > 0)
         {
             float totalWeight = 0f;
