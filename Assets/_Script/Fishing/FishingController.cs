@@ -60,6 +60,7 @@ public class FishingController : MonoBehaviour
     private float caughtFishLength;
     private float caughtFishWeight;
     private FishGrade caughtFishGrade;
+    private bool isLastCatchNewRecord = false;
 
     // Biến chống spam click gây lỗi game
     private float inputCooldown = 0f;
@@ -240,27 +241,21 @@ public class FishingController : MonoBehaviour
     {
         string localizedMessage = GetLocalizedText(message, message);
         EnsureFeedbackUI();
+        if (feedbackBannerObj != null)
+        {
+            feedbackBannerObj.transform.SetAsLastSibling();
+            feedbackBannerObj.SetActive(true);
+        }
         if (feedbackText != null)
         {
             feedbackText.text = localizedMessage;
             feedbackText.color = textColor;
         }
-        if (feedbackBannerObj != null)
-        {
-            feedbackBannerObj.SetActive(true);
-        }
         if (feedbackCanvasGroup != null)
         {
             feedbackCanvasGroup.alpha = 1f;
         }
-        feedbackTimer = 3.0f;
-
-        // Đồng thời kích hoạt InteractionPromptUI làm kênh hiển thị phụ trợ
-        InteractionPromptUI promptUI = Object.FindFirstObjectByType<InteractionPromptUI>();
-        if (promptUI != null)
-        {
-            promptUI.DisplayPrompt(true, localizedMessage);
-        }
+        feedbackTimer = 3.5f;
     }
 
     public string GetLocalizedText(string keyOrText, string fallbackText)
@@ -284,7 +279,11 @@ public class FishingController : MonoBehaviour
 
     private void EnsureFeedbackUI()
     {
-        if (feedbackBannerObj != null && feedbackText != null && feedbackText.font != null) return;
+        if (feedbackBannerObj != null && feedbackText != null)
+        {
+            feedbackBannerObj.transform.SetAsLastSibling();
+            return;
+        }
 
         Canvas[] canvases = Object.FindObjectsByType<Canvas>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
         Canvas rootCanvas = null;
@@ -305,43 +304,46 @@ public class FishingController : MonoBehaviour
             feedbackBannerObj = existing.gameObject;
             feedbackText = feedbackBannerObj.GetComponentInChildren<TextMeshProUGUI>(true);
             feedbackCanvasGroup = feedbackBannerObj.GetComponent<CanvasGroup>();
+            feedbackBannerObj.transform.SetAsLastSibling();
             return;
         }
 
-        // Tạo UI Feedback Banner động trên Canvas
+        // Tạo UI Feedback Banner động trên Canvas với bố cục nổi bật ở đỉnh màn hình
         feedbackBannerObj = new GameObject("FishingFeedbackBanner", typeof(RectTransform), typeof(CanvasGroup), typeof(Image));
         feedbackBannerObj.transform.SetParent(rootCanvas.transform, false);
+        feedbackBannerObj.transform.SetAsLastSibling();
 
         feedbackCanvasGroup = feedbackBannerObj.GetComponent<CanvasGroup>();
         feedbackCanvasGroup.blocksRaycasts = false;
         feedbackCanvasGroup.interactable = false;
 
         Image bgImage = feedbackBannerObj.GetComponent<Image>();
-        bgImage.color = new Color(0.04f, 0.06f, 0.1f, 0.9f);
+        bgImage.color = new Color(0.06f, 0.09f, 0.14f, 0.95f);
         bgImage.raycastTarget = false;
 
         RectTransform rect = feedbackBannerObj.GetComponent<RectTransform>();
-        rect.anchorMin = new Vector2(0.62f, 0.76f); // Dịch sang phải
-        rect.anchorMax = new Vector2(0.62f, 0.76f);
+        rect.anchorMin = new Vector2(0.5f, 0.84f); // Căn giữa phía trên màn hình
+        rect.anchorMax = new Vector2(0.5f, 0.84f);
         rect.pivot = new Vector2(0.5f, 0.5f);
-        rect.sizeDelta = new Vector2(450f, 50f); // Thu nhỏ khung banner
+        rect.anchoredPosition = Vector2.zero;
+        rect.sizeDelta = new Vector2(580f, 54f);
 
         GameObject textObj = new GameObject("FeedbackText", typeof(RectTransform), typeof(TextMeshProUGUI));
         textObj.transform.SetParent(feedbackBannerObj.transform, false);
         RectTransform textRect = textObj.GetComponent<RectTransform>();
         textRect.anchorMin = Vector2.zero;
         textRect.anchorMax = Vector2.one;
-        textRect.offsetMin = new Vector2(10f, 3f);
-        textRect.offsetMax = new Vector2(-10f, -3f);
+        textRect.offsetMin = new Vector2(16f, 4f);
+        textRect.offsetMax = new Vector2(-16f, -4f);
 
         feedbackText = textObj.GetComponent<TextMeshProUGUI>();
-        feedbackText.fontSize = 15f; // Chữ bé lại vừa vặn, tinh tế
+        feedbackText.fontSize = 18f;
         feedbackText.fontStyle = FontStyles.Bold;
         feedbackText.alignment = TextAlignmentOptions.Center;
         feedbackText.raycastTarget = false;
         feedbackText.enableWordWrapping = true;
 
-        // Gán Font hợp lệ từ các TMP trong Scene để tránh lỗi vô hình
+        // Gán Font từ các TMP có sẵn trong Scene
         TextMeshProUGUI[] tmps = Object.FindObjectsByType<TextMeshProUGUI>(FindObjectsInactive.Include, FindObjectsSortMode.None);
         foreach (var t in tmps)
         {
@@ -358,16 +360,10 @@ public class FishingController : MonoBehaviour
 
     private void Update()
     {
-        if (inputHandler != null && inputHandler.IsUIOpen) return;
-
-        // Giảm thời gian đếm ngược chống spam
-        if (inputCooldown > 0f) inputCooldown -= Time.deltaTime;
-        if (catchingLockTimer > 0f) catchingLockTimer -= Time.deltaTime;
-
-        // Cập nhật mờ dần thông báo Feedback
+        // Cập nhật đếm ngược mờ dần thông báo Feedback luôn luôn chạy (kể cả khi mở UI)
         if (feedbackTimer > 0f)
         {
-            feedbackTimer -= Time.deltaTime;
+            feedbackTimer -= Time.unscaledDeltaTime;
             if (feedbackTimer <= 0.8f && feedbackCanvasGroup != null)
             {
                 feedbackCanvasGroup.alpha = Mathf.Clamp01(feedbackTimer / 0.8f);
@@ -375,10 +371,14 @@ public class FishingController : MonoBehaviour
             if (feedbackTimer <= 0f)
             {
                 if (feedbackBannerObj != null) feedbackBannerObj.SetActive(false);
-                InteractionPromptUI promptUI = Object.FindFirstObjectByType<InteractionPromptUI>();
-                if (promptUI != null) promptUI.DisplayPrompt(false);
             }
         }
+
+        if (inputHandler != null && inputHandler.IsUIOpen) return;
+
+        // Giảm thời gian đếm ngược chống spam
+        if (inputCooldown > 0f) inputCooldown -= Time.deltaTime;
+        if (catchingLockTimer > 0f) catchingLockTimer -= Time.deltaTime;
 
         // Tự động kiểm tra và cất cần câu vào Balo khi rời khỏi khu vực câu cá
         zoneCheckTimer -= Time.deltaTime;
@@ -500,6 +500,12 @@ public class FishingController : MonoBehaviour
         }
         else if (currentState == FishingState.Catching)
         {
+            // Nếu đang mở Bảng xem cá 3D (FishInspectionUI), người chơi sẽ tương tác qua nút bấm [Nhận cá] / [Thả cá]
+            if (FishInspectionUI.Instance != null && FishInspectionUI.Instance.IsOpen)
+            {
+                return;
+            }
+
             if (catchingLockTimer > 0f) return;
 
             if (currentCaughtFishData != null)
@@ -667,10 +673,11 @@ public class FishingController : MonoBehaviour
                 float gradeBonus = currentBait != null ? currentBait.targetRarityBonus * 4f : 0f;
                 caughtFishGrade = currentCaughtFishData.GenerateRandomGrade(gradeBonus);
 
+                isLastCatchNewRecord = false;
                 if (FishJournalManager.Instance != null)
                 {
-                    bool isNewRecord = FishJournalManager.Instance.RecordCatch(currentCaughtFishData.itemID, caughtFishLength, caughtFishWeight, caughtFishGrade);
-                    if (isNewRecord)
+                    isLastCatchNewRecord = FishJournalManager.Instance.RecordCatch(currentCaughtFishData.itemID, caughtFishLength, caughtFishWeight, caughtFishGrade);
+                    if (isLastCatchNewRecord)
                     {
                         Debug.Log($"<color=yellow>[Sổ Tay] KỶ LỰC MỚI!</color>");
                     }
@@ -810,6 +817,40 @@ public class FishingController : MonoBehaviour
         foreach (var rb in activeCaughtFish.GetComponentsInChildren<Rigidbody>()) rb.isKinematic = true;
 
         Debug.Log($"<color=green>[Fishing Controller] Đã hiển thị mô hình cá [{currentCaughtFishData.itemName}] trên tay!</color>");
+
+        // Tự động tìm / kích hoạt FishInspectionUI từ GameObject FishViewingChart nếu có
+        if (FishInspectionUI.Instance == null)
+        {
+            GameObject chartObj = GameObject.Find("FishViewingChart");
+            if (chartObj != null)
+            {
+                chartObj.AddComponent<FishInspectionUI>();
+            }
+        }
+
+        // Bật Bảng Xem Cá 3D và Thông Số Chi Tiết
+        if (FishInspectionUI.Instance != null)
+        {
+            FishInspectionUI.Instance.ShowFish(
+                currentCaughtFishData,
+                caughtFishLength,
+                caughtFishWeight,
+                caughtFishGrade,
+                isLastCatchNewRecord,
+                onKeep: () => {
+                    if (activeCaughtFish != null) { Destroy(activeCaughtFish); activeCaughtFish = null; }
+                    inputCooldown = 0.35f;
+                    ForcedTutorialManager.Instance?.NotifyKeepOrReleaseFish();
+                    ResetToIdle();
+                },
+                onRelease: () => {
+                    if (activeCaughtFish != null) { Destroy(activeCaughtFish); activeCaughtFish = null; }
+                    inputCooldown = 0.35f;
+                    ForcedTutorialManager.Instance?.NotifyKeepOrReleaseFish();
+                    ResetToIdle();
+                }
+            );
+        }
     }
 
     public void OnCatchFailComplete()

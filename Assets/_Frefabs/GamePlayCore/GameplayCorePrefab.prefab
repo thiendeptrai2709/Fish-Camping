@@ -13419,6 +13419,8 @@ MonoBehaviour:
   freeLookCamera: {fileID: 3744697484490627262}
   dow: {fileID: 0}
   Text_dow: {fileID: 0}
+  diaryIcon: {fileID: 0}
+  diaryCanvasGroup: {fileID: 0}
 --- !u!1 &5198097708164978585
 GameObject:
   m_ObjectHideFlags: 0
