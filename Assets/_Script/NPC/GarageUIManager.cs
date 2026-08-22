@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 
@@ -100,7 +100,7 @@ public class GarageUIManager : MonoBehaviour
         }
         else
         {
-            if (currentInfoText != null) currentInfoText.text = $"Hiện tại: {currentData.upgradeName}\n🎉 Đã đạt cấp độ tối đa!";
+            if (currentInfoText != null) currentInfoText.text = $"Hiện tại: {currentData.upgradeName}\nĐã đạt cấp độ tối đa!";
             if (costText != null) costText.text = "MAX";
             if (upgradeButton != null) upgradeButton.interactable = false;
         }

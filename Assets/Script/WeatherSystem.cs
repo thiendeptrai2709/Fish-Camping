@@ -52,6 +52,7 @@ public class WeatherSystem : MonoBehaviour
     public float maxRainVolume = 1f;
 
     public RainIntensityType CurrentRainType => currentRainType;
+    public bool IsRaining => isRaining;
 
     private bool isRaining = false;
     private float nextRainCheckTime;

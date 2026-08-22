@@ -67,6 +67,9 @@ public class FishInspectionUI : MonoBehaviour, IDragHandler, IPointerDownHandler
     private float floatTime = 0f;
     private Coroutine animCoroutine;
     private Coroutine warningCoroutine;
+    private Coroutine modelPopCoroutine;
+    private Vector3 normalizedModelScale = Vector3.one;
+    private Light rarityAuraLight;
 
     private void Awake()
     {
@@ -132,6 +135,13 @@ public class FishInspectionUI : MonoBehaviour, IDragHandler, IPointerDownHandler
         {
             fishModelHolder.localRotation = Quaternion.Euler(currentRotationX, currentRotationY, 0f);
             fishModelHolder.localPosition = new Vector3(0, gentleBobbing, 0);
+        }
+
+        // Hiệu ứng ánh sáng hào quang thở nhẹ theo nhịp
+        if (rarityAuraLight != null)
+        {
+            float pulse = Mathf.Sin(floatTime * 2.5f) * 0.35f;
+            rarityAuraLight.intensity = Mathf.Max(1.2f, 3.0f + pulse);
         }
     }
 
@@ -348,12 +358,83 @@ public class FishInspectionUI : MonoBehaviour, IDragHandler, IPointerDownHandler
         // Chuẩn hóa kích thước & trọng tâm mô hình để vừa vặn khung hình 3D
         NormalizeModelBounds(spawnedModelInstance);
 
+        // Cập nhật đèn hào quang theo độ hiếm và phẩm cấp
+        UpdateStageLighting(currentFishData.rarity, currentGrade);
+
+        // Chạy hiệu ứng bung nở xuất hiện mượt mà (Elastic Pop-in)
+        if (modelPopCoroutine != null) StopCoroutine(modelPopCoroutine);
+        modelPopCoroutine = StartCoroutine(AnimateModelPopIn(spawnedModelInstance));
+
         // Reset góc xoay
         targetRotationY = -30f;
         currentRotationY = -30f;
         targetRotationX = 8f;
         currentRotationX = 8f;
         floatTime = 0f;
+    }
+
+    private void UpdateStageLighting(FishRarity rarity, FishGrade grade)
+    {
+        if (rarityAuraLight == null) return;
+
+        Color auraColor = new Color(0.85f, 0.95f, 1f); // Common: Diamond Ice
+        float intensity = 2.2f;
+
+        switch (rarity)
+        {
+            case FishRarity.Uncommon:
+                auraColor = new Color(0.3f, 1f, 0.6f); // Emerald
+                intensity = 2.8f;
+                break;
+            case FishRarity.Rare:
+                auraColor = new Color(0.2f, 0.75f, 1f); // Sapphire
+                intensity = 3.6f;
+                break;
+            case FishRarity.Legendary:
+                auraColor = new Color(1f, 0.85f, 0.2f); // Radiant Gold
+                intensity = 5.0f;
+                break;
+        }
+
+        if (grade == FishGrade.Gold)
+        {
+            auraColor = Color.Lerp(auraColor, new Color(1f, 0.9f, 0.3f), 0.5f);
+            intensity += 1.2f;
+        }
+
+        rarityAuraLight.color = auraColor;
+        rarityAuraLight.intensity = intensity;
+    }
+
+    private IEnumerator AnimateModelPopIn(GameObject model)
+    {
+        if (model == null) yield break;
+
+        float duration = 0.42f;
+        float elapsed = 0f;
+        Vector3 targetScale = normalizedModelScale;
+        model.transform.localScale = Vector3.zero;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+
+            // Elastic Overshoot Curve: Bung to hơn kích thước thật rồi co về chuẩn
+            float overshoot = Mathf.Sin(t * Mathf.PI * 0.5f) + Mathf.Sin(t * Mathf.PI) * 0.22f;
+            overshoot = Mathf.Clamp(overshoot, 0f, 1.2f);
+
+            if (model != null)
+            {
+                model.transform.localScale = targetScale * overshoot;
+            }
+            yield return null;
+        }
+
+        if (model != null)
+        {
+            model.transform.localScale = targetScale;
+        }
     }
 
     private void NormalizeModelBounds(GameObject model)
@@ -382,7 +463,8 @@ public class FishInspectionUI : MonoBehaviour, IDragHandler, IPointerDownHandler
         {
             float targetSize = 2.2f;
             float scaleFactor = targetSize / maxDim;
-            model.transform.localScale = Vector3.one * scaleFactor;
+            normalizedModelScale = Vector3.one * scaleFactor;
+            model.transform.localScale = normalizedModelScale;
 
             // Căn giữa pivot vào tâm hình học của mô hình
             Vector3 centerOffset = bounds.center - model.transform.position;
@@ -463,6 +545,16 @@ public class FishInspectionUI : MonoBehaviour, IDragHandler, IPointerDownHandler
             fillLight.range = 6f;
             fillLight.intensity = 1.5f;
             fillLight.color = Color.white;
+
+            // 4. Đèn hào quang Rarity Aura Light
+            GameObject auraLightObj = new GameObject("PreviewLight_Aura", typeof(Light));
+            auraLightObj.transform.SetParent(previewStageHolder, false);
+            auraLightObj.transform.localPosition = new Vector3(0f, 0f, -0.6f);
+            rarityAuraLight = auraLightObj.GetComponent<Light>();
+            rarityAuraLight.type = LightType.Point;
+            rarityAuraLight.range = 8f;
+            rarityAuraLight.intensity = 2.5f;
+            rarityAuraLight.color = Color.white;
         }
 
         if (fishRenderImage != null && fishRenderImage.texture == null)

@@ -2242,7 +2242,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -360, y: -37}
+  m_AnchoredPosition: {x: -378.4, y: -32.5}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2669260883553862968
@@ -9035,15 +9035,13 @@ MonoBehaviour:
   fishIcon: {fileID: 2985010174570828843}
   catchZone: {fileID: 8725564456596324980}
   progressBar: {fileID: 5478006874234234505}
-  fishMoveSpeed: 1.2
-  fishRandomTimeMin: 1
-  fishRandomTimeMax: 2.5
+  txtFishCombatStatus: {fileID: 0}
   gravity: 1200
   liftPower: 1500
   maxSpeed: 700
   zoneDrag: 5
-  progressGainSpeed: 0.35
-  progressLossSpeed: 0.1
+  baseProgressGainSpeed: 0.32
+  baseProgressLossSpeed: 0.15
 --- !u!1 &3395233795020255412
 GameObject:
   m_ObjectHideFlags: 0
@@ -14771,8 +14769,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5461703881801031457}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.01948748, y: -0.2223627, z: 0.0044454965, w: 0.9747591}
-  m_LocalPosition: {x: -38.07582, y: 2.1100006, z: -1.8817635}
+  m_LocalRotation: {x: 0.019987967, y: -0.0034978273, z: 0.00006992886, w: 0.9997941}
+  m_LocalPosition: {x: 0.16775513, y: 2.1100006, z: -2.1290283}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

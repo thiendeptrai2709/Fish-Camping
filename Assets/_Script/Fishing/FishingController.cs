@@ -67,7 +67,6 @@ public class FishingController : MonoBehaviour
     private float catchingLockTimer = 0f;
 
     [Header("--- AUTO-STOW FISHING ROD ---")]
-    [SerializeField] private float autoStowDistance = 5f;
     private float zoneCheckTimer = 0f;
     private float dryLandStowTimer = 0f;
     private bool wasNearWaterWithRod = false;
@@ -735,9 +734,22 @@ public class FishingController : MonoBehaviour
             Debug.Log("<color=green>[Audio] Đang phát tiếng kéo cá giằng co!</color>");
         }
 
+        // --- CẢNH BÁO CHIẾN ĐẤU KHI DÍNH CÁ LỚN / HIẾM ---
+        if (currentCaughtFishData != null)
+        {
+            if (currentCaughtFishData.rarity == FishRarity.Legendary)
+            {
+                ShowFishingFeedback("CÁ HUYỀN THOẠI CẮN CÂU! Hãy ghìm chặt cước!", new Color(1f, 0.3f, 0.3f));
+            }
+            else if (currentCaughtFishData.rarity == FishRarity.Rare)
+            {
+                ShowFishingFeedback("Cá lớn cắn câu! Giằng co quyết liệt!", new Color(1f, 0.8f, 0.2f));
+            }
+        }
+
         if (balanceMinigameUI != null)
         {
-            balanceMinigameUI.StartMinigame(inputHandler, this);
+            balanceMinigameUI.StartMinigame(inputHandler, this, currentCaughtFishData);
         }
         else
         {

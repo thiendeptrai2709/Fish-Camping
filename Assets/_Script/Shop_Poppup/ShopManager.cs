@@ -23,8 +23,6 @@ public class ShopManager : MonoBehaviour
     public List<BaitSO> danhSachMoiCau = new List<BaitSO>();
     public List<ItemShapeSO> danhSachPhuTung = new List<ItemShapeSO>();
 
-    private bool daCauHinhShop = false;
-
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -158,8 +156,6 @@ public class ShopManager : MonoBehaviour
                 CauHinhItemTemplate(itemTemplates[i], price, partData);
             }
         }
-
-        daCauHinhShop = true;
     }
 
     private void CauHinhItemTemplate(Transform template, int price, ItemShapeSO itemData)

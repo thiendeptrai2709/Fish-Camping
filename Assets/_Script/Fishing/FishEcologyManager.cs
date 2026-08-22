@@ -15,9 +15,9 @@ public class FishEcologyManager : MonoBehaviour
     public static FishEcologyManager Instance { get; private set; }
 
     [Header("--- THIẾT LẬP THỜI GIAN GAME ---")]
-    [Tooltip("Thời gian 1 ngày trong game (tính bằng giây thực tế)")]
-    [SerializeField] private float realSecondsPerGameDay = 720f; // 12 phút thực = 1 ngày game
-    [SerializeField] private float startHour = 8f; // Bắt đầu lúc 8h sáng
+    [Tooltip("Thời gian 1 ngày trong game (nếu không có DayNightSystem)")]
+    [SerializeField] private float realSecondsPerGameDay = 720f;
+    [SerializeField] private float startHour = 8f;
 
     private float currentGameHour;
     private TimePeriod currentPeriod = TimePeriod.Day;
@@ -61,9 +61,23 @@ public class FishEcologyManager : MonoBehaviour
 
     private void Update()
     {
-        // Cập nhật giờ trong game
-        float hoursPerSecond = 24f / Mathf.Max(60f, realSecondsPerGameDay);
-        currentGameHour = (currentGameHour + Time.deltaTime * hoursPerSecond) % 24f;
+        // 1. ĐỒNG BỘ TRỰC TIẾP VỚI HỆ THỐNG NGÀY ĐÊM (DayNightSystem)
+        DayNightSystem dns = DayNightSystem.Instance;
+        if (dns == null)
+        {
+            dns = FindFirstObjectByType<DayNightSystem>();
+        }
+
+        if (dns != null)
+        {
+            // DayNightSystem.currentTime nằm trong khoảng 0.0 -> 1.0 (tương ứng 0h -> 24h)
+            currentGameHour = dns.currentTime * 24f;
+        }
+        else
+        {
+            float hoursPerSecond = 24f / Mathf.Max(60f, realSecondsPerGameDay);
+            currentGameHour = (currentGameHour + Time.deltaTime * hoursPerSecond) % 24f;
+        }
 
         TimePeriod newPeriod = GetPeriodFromHour(currentGameHour);
         if (newPeriod != currentPeriod)
@@ -85,7 +99,6 @@ public class FishEcologyManager : MonoBehaviour
     {
         if (timeDayText != null) return;
 
-        // Quét tìm TextMeshProUGUI tên là "TImeDay" hoặc "TimeDay" trong Scene
         TextMeshProUGUI[] tmps = FindObjectsByType<TextMeshProUGUI>(FindObjectsInactive.Include, FindObjectsSortMode.None);
         foreach (var t in tmps)
         {
@@ -138,7 +151,15 @@ public class FishEcologyManager : MonoBehaviour
                 break;
         }
 
-        timeDayText.text = $"<b>{hour:D2}:{minute:D2}</b>  <size=75%>{periodName}</size>";
+        // 2. ĐỒNG BỘ VỚI HỆ THỐNG THỜI TIẾT (WeatherSystem)
+        WeatherSystem ws = FindFirstObjectByType<WeatherSystem>();
+        string weatherSuffix = "";
+        if (ws != null && ws.IsRaining)
+        {
+            weatherSuffix = ws.CurrentRainType == RainIntensityType.Heavy ? " (Mưa to)" : " (Mưa)";
+        }
+
+        timeDayText.text = $"<b>{hour:D2}:{minute:D2}</b>  <size=75%>{periodName}{weatherSuffix}</size>";
         timeDayText.color = periodColor;
     }
 
@@ -161,7 +182,7 @@ public class FishEcologyManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Điểm thưởng Rarity (tăng cơ hội bắt cá Rare/Legendary) dựa theo thời gian và môi trường
+    /// Điểm thưởng Rarity (tăng cơ hội bắt cá Rare/Legendary) dựa theo thời gian và thời tiết
     /// </summary>
     public int GetEcologyRarityBonus()
     {
@@ -169,14 +190,21 @@ public class FishEcologyManager : MonoBehaviour
         switch (currentPeriod)
         {
             case TimePeriod.Night:
-                bonus += 2; // Đêm khuya: Tăng mạnh tỷ lệ cá hiếm
+                bonus += 2;
                 break;
             case TimePeriod.Sunset:
-                bonus += 1; // Hoàng hôn: Tăng nhẹ cá hiếm
+                bonus += 1;
                 break;
             case TimePeriod.Morning:
-                bonus += 1; // Sáng sớm: Tăng cá giá trị
+                bonus += 1;
                 break;
+        }
+
+        // Tăng thêm tỷ lệ khi trời mưa
+        WeatherSystem ws = FindFirstObjectByType<WeatherSystem>();
+        if (ws != null && ws.IsRaining)
+        {
+            bonus += 1;
         }
 
         // Tích hợp thêm từ Buff thức ăn của người chơi
@@ -193,17 +221,31 @@ public class FishEcologyManager : MonoBehaviour
     /// </summary>
     public float GetBiteWaitMultiplier()
     {
+        float mult = 1.0f;
         switch (currentPeriod)
         {
             case TimePeriod.Morning:
-                return 0.7f; // Sáng sớm: Cắn câu nhanh hơn 30%
+                mult = 0.7f;
+                break;
             case TimePeriod.Sunset:
-                return 0.8f; // Hoàng hôn: Cắn câu nhanh hơn 20%
+                mult = 0.8f;
+                break;
             case TimePeriod.Night:
-                return 0.9f;
+                mult = 0.9f;
+                break;
             default:
-                return 1.0f;
+                mult = 1.0f;
+                break;
         }
+
+        // Khi trời mưa: Cá đi ăn mạnh hơn -> rút ngắn 35% thời gian chờ
+        WeatherSystem ws = FindFirstObjectByType<WeatherSystem>();
+        if (ws != null && ws.IsRaining)
+        {
+            mult *= 0.65f;
+        }
+
+        return mult;
     }
 
     private void AnnounceEcologyState()

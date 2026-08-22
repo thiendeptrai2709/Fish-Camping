@@ -165,20 +165,20 @@ public class FishJournalUI : MonoBehaviour
             {
                 int remain = 4 - lakeFishCount;
                 message = isVietnamese
-                    ? $"💡 <b>Mục tiêu mở Đầm Lầy (Map 3):</b> Đã câu <b>{lakeFishCount}/4</b> loài cá Hồ Pine Lake (Cần thêm <b>{remain}</b> loài nữa)."
-                    : $"💡 <b>Goal for Swamp (Map 3):</b> Recorded <b>{lakeFishCount}/4</b> Pine Lake fish (Need <b>{remain}</b> more species).";
+                    ? $"<b>Mục tiêu mở Đầm Lầy (Map 3):</b> Đã câu <b>{lakeFishCount}/4</b> loài cá Hồ Pine Lake (Cần thêm <b>{remain}</b> loài nữa)."
+                    : $"<b>Goal for Swamp (Map 3):</b> Recorded <b>{lakeFishCount}/4</b> Pine Lake fish (Need <b>{remain}</b> more species).";
             }
             else if (!hasSwampTire)
             {
                 message = isVietnamese
-                    ? "✨ <b>Đã câu đủ 4/4 loài cá Hồ!</b> Hãy lái xe về <b>Garage (Thị Trấn)</b> mua <b>Lốp Bùn ($850)</b> để mở đường sang <b>Map 3 (Đầm Lầy)</b>."
-                    : "✨ <b>Lake fish collection complete (4/4)!</b> Visit <b>Garage (Town)</b> to buy <b>Mud Tires ($850)</b> to unlock <b>Map 3 (Swamp)</b>.";
+                    ? "<b>Đã câu đủ 4/4 loài cá Hồ!</b> Hãy lái xe về <b>Garage (Thị Trấn)</b> mua <b>Lốp Bùn ($850)</b> để mở đường sang <b>Map 3 (Đầm Lầy)</b>."
+                    : "<b>Lake fish collection complete (4/4)!</b> Visit <b>Garage (Town)</b> to buy <b>Mud Tires ($850)</b> to unlock <b>Map 3 (Swamp)</b>.";
             }
             else
             {
                 message = isVietnamese
-                    ? "🎉 <b>Đã đủ điều kiện mở Map 3 (Đầm Lầy)!</b> Bấm phím <b>[M]</b> để mở Bản đồ và bắt đầu chuyến đi."
-                    : "🎉 <b>Map 3 (Swamp) is unlocked!</b> Press <b>[M]</b> to open Map and travel.";
+                    ? "<b>Đã đủ điều kiện mở Map 3 (Đầm Lầy)!</b> Bấm phím <b>[M]</b> để mở Bản đồ và bắt đầu chuyến đi."
+                    : "<b>Map 3 (Swamp) is unlocked!</b> Press <b>[M]</b> to open Map and travel.";
             }
         }
         // Giai đoạn 2: Ở Map 3 (Đầm Lầy) -> Đang cần mở Map 4 (Bờ Biển)
@@ -188,28 +188,28 @@ public class FishJournalUI : MonoBehaviour
             {
                 int remain = 3 - swampFishCount;
                 message = isVietnamese
-                    ? $"💡 <b>Mục tiêu mở Bờ Biển (Map 4):</b> Đã câu <b>{swampFishCount}/3</b> loài cá Đầm Lầy (Cần thêm <b>{remain}</b> loài nữa)."
-                    : $"💡 <b>Goal for Coast (Map 4):</b> Recorded <b>{swampFishCount}/3</b> Swamp fish (Need <b>{remain}</b> more species).";
+                    ? $"<b>Mục tiêu mở Bờ Biển (Map 4):</b> Đã câu <b>{swampFishCount}/3</b> loài cá Đầm Lầy (Cần thêm <b>{remain}</b> loài nữa)."
+                    : $"<b>Goal for Coast (Map 4):</b> Recorded <b>{swampFishCount}/3</b> Swamp fish (Need <b>{remain}</b> more species).";
             }
             else if (!hasSandTire)
             {
                 message = isVietnamese
-                    ? "✨ <b>Đã câu đủ cá Đầm Lầy!</b> Hãy đến <b>Garage</b> trang bị <b>Lốp Bám Cát ($700)</b> để mở đường sang <b>Map 4 (Bờ Biển)</b>."
-                    : "✨ <b>Swamp fish goal met!</b> Equip <b>Sand Tires ($700)</b> at Garage to unlock <b>Map 4 (Coast)</b>.";
+                    ? "<b>Đã câu đủ cá Đầm Lầy!</b> Hãy đến <b>Garage</b> trang bị <b>Lốp Bám Cát ($700)</b> để mở đường sang <b>Map 4 (Bờ Biển)</b>."
+                    : "<b>Swamp fish goal met!</b> Equip <b>Sand Tires ($700)</b> at Garage to unlock <b>Map 4 (Coast)</b>.";
             }
             else
             {
                 message = isVietnamese
-                    ? "🎉 <b>Đã đủ điều kiện mở Map 4 (Bờ Biển)!</b> Bấm phím <b>[M]</b> để dịch chuyển sang Bờ Biển."
-                    : "🎉 <b>Map 4 (Ocean Coast) is unlocked!</b> Press <b>[M]</b> to open Map and travel.";
+                    ? "<b>Đã đủ điều kiện mở Map 4 (Bờ Biển)!</b> Bấm phím <b>[M]</b> để dịch chuyển sang Bờ Biển."
+                    : "<b>Map 4 (Ocean Coast) is unlocked!</b> Press <b>[M]</b> to open Map and travel.";
             }
         }
         // Giai đoạn 3: Ở Map 4 (Bờ Biển)
         else
         {
             message = isVietnamese
-                ? $"👑 <b>Hải Trình Bờ Biển:</b> Tổng số loài cá đã ghi nhận trong Sổ tay: <b>{totalFishCount}</b> loài. Hãy tiếp tục săn lùng cá Huyền Thoại!"
-                : $"👑 <b>Ocean Coast:</b> Total recorded fish in journal: <b>{totalFishCount}</b> species. Continue hunting for Legendary fish!";
+                ? $"<b>Hải Trình Bờ Biển:</b> Tổng số loài cá đã ghi nhận trong Sổ tay: <b>{totalFishCount}</b> loài. Hãy tiếp tục săn lùng cá Huyền Thoại!"
+                : $"<b>Ocean Coast:</b> Total recorded fish in journal: <b>{totalFishCount}</b> species. Continue hunting for Legendary fish!";
         }
 
         Text_dow.text = message;
