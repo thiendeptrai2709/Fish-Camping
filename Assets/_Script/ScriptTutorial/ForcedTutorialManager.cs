@@ -1758,22 +1758,22 @@ public class ForcedTutorialManager : MonoBehaviour
                 currentInstructionText = GetLocalizedText("TUT_Map2_Quest2_4_CloseBackpack", "Nhấn phím <color=#B388FF><b>Tab</b></color> để đóng Balo lại.");
                 break;
             case TutorialStage.Map2_Quest3_WalkToLakeSide:
-                currentInstructionText = GetLocalizedText("TUT_Map2_Quest3_WalkToLakeSide", "Di chuyển ra ven <color=#B388FF><b>Bờ hồ</b></color> để chuẩn bị câu cá.");
+                currentInstructionText = GetLocalizedText("TUT_Map2_Quest3_WalkToLakeSide", "Di chuyển sát mép <color=#B388FF><b>Bờ hồ</b></color> và hướng mặt ra mặt nước.");
                 break;
             case TutorialStage.Map2_Quest4_1_WindUpRod:
-                currentInstructionText = GetLocalizedText("TUT_Map2_Quest4_1_WindUpRod", "Click <color=#B388FF><b>Chuột Trái</b></color> để vung cần.");
+                currentInstructionText = GetLocalizedText("TUT_Map2_Quest4_1_WindUpRod", "Click <color=#B388FF><b>Chuột Trái</b></color> để bắt đầu vào thế vung cần câu.");
                 break;
             case TutorialStage.Map2_Quest4_2_TimingPower:
-                currentInstructionText = GetLocalizedText("TUT_Map2_Quest4_2_TimingPower", "<color=#FF5252>Màu đỏ</color>: Vung xa, <color=#FFD700>Màu vàng</color>: Vung vừa, <color=#69F0AE>Màu xanh</color>: Vung gần, <color=#FFFFFF>Màu trắng</color>: Thất bại. Click chuột để căn lực!");
+                currentInstructionText = GetLocalizedText("TUT_Map2_Quest4_2_TimingPower", "Click <color=#B388FF><b>Chuột Trái</b></color> khi thanh lực chạy vào vùng <color=#69F0AE>Xanh</color> / <color=#FFD700>Vàng</color> / <color=#FF5252>Đỏ</color> để quăng phao xuống nước (Tránh ô trắng hụt).");
                 break;
             case TutorialStage.Map2_Quest4_3_ReelFish:
-                currentInstructionText = GetLocalizedText("TUT_Map2_Quest4_3_ReelFish", "Giữ / nhả <color=#B388FF><b>Chuột Trái</b></color> để căn lực kéo sao cho vạch xanh lọt vào vùng xanh lá.");
+                currentInstructionText = GetLocalizedText("TUT_Map2_Quest4_3_ReelFish", "Quan sát phao: Khi phao <b>chìm nghỉm</b> $\\rightarrow$ Click <color=#B388FF><b>Chuột Trái</b></color> ngay để <b>GIẬT CẦN</b>, sau đó nhấp nhả chuột giữ thanh an toàn đè lên con cá!");
                 break;
             case TutorialStage.Map2_Quest4_4_KeepOrReleaseFish:
-                currentInstructionText = GetLocalizedText("TUT_Map2_Quest4_4_KeepOrReleaseFish", "Nhấn <color=#B388FF><b>Chuột Trái</b></color> để nhận cá vào Balo hoặc nhấn phím <color=#B388FF><b>Space</b></color> để thả cá đi.");
+                currentInstructionText = GetLocalizedText("TUT_Map2_Quest4_4_KeepOrReleaseFish", "Kéo chuột xoay xem mô hình 3D cá, click nút <color=#B388FF><b>[Cất vào Balo]</b></color> hoặc phím <color=#B388FF><b>Space</b></color> để thả cá.");
                 break;
             case TutorialStage.Map2_Quest4_5_OpenBackpackAfterFish:
-                currentInstructionText = GetLocalizedText("TUT_Map2_Quest4_5_OpenBackpackAfterFish", "Hãy kiểm tra Balo của mình bằng phím <color=#B388FF><b>Tab</b></color> để xem cá.");
+                currentInstructionText = GetLocalizedText("TUT_Map2_Quest4_5_OpenBackpackAfterFish", "Nhấn phím <color=#B388FF><b>Tab</b></color> mở Balo kiểm tra thông số con cá vừa câu được.");
                 break;
             case TutorialStage.Map2_Quest5_0_GoToTentCampArea:
                 currentInstructionText = GetLocalizedText("TUT_Map2_Quest5_0_GoToTentCampArea", "Di chuyển về khu vực <color=#B388FF><b>Cắm trại gần lều</b></color>.");
@@ -1913,17 +1913,17 @@ public class ForcedTutorialManager : MonoBehaviour
             case "TUT_Map2_Quest2_4_CloseBackpack":
                 return "Press <color=#B388FF><b>Tab</b></color> to close your Backpack.";
             case "TUT_Map2_Quest3_WalkToLakeSide":
-                return "Walk to the <color=#B388FF><b>Lakeside</b></color> to prepare for fishing.";
+                return "Walk close to the <color=#B388FF><b>Lakeside</b></color> facing the water.";
             case "TUT_Map2_Quest4_1_WindUpRod":
-                return "Click <color=#B388FF><b>Left Mouse</b></color> to wind up your rod.";
+                return "Click <color=#B388FF><b>Left Mouse</b></color> to start winding up your fishing rod.";
             case "TUT_Map2_Quest4_2_TimingPower":
-                return "<color=#FF5252>Red</color>: Far, <color=#FFD700>Yellow</color>: Medium, <color=#69F0AE>Green</color>: Close, <color=#FFFFFF>White</color>: Miss. Click to time your cast power!";
+                return "Click <color=#B388FF><b>Left Mouse</b></color> when the power bar is in <color=#69F0AE>Green</color>, <color=#FFD700>Yellow</color>, or <color=#FF5252>Red</color> to cast into the water (Avoid white miss).";
             case "TUT_Map2_Quest4_3_ReelFish":
-                return "Hold / release <color=#B388FF><b>Left Mouse</b></color> to keep tension in the green balance zone.";
+                return "Watch bobber: When it plunges $\\rightarrow$ Click <color=#B388FF><b>Left Mouse</b></color> quickly to <b>HOOK</b>, then tap mouse to keep bar over fish!";
             case "TUT_Map2_Quest4_4_KeepOrReleaseFish":
-                return "Press <color=#B388FF><b>Left Mouse</b></color> to keep fish in backpack, or press <color=#B388FF><b>Space</b></color> to release.";
+                return "Drag to inspect 3D fish, click <color=#B388FF><b>[Keep in Backpack]</b></color> or press <color=#B388FF><b>Space</b></color> to release.";
             case "TUT_Map2_Quest4_5_OpenBackpackAfterFish":
-                return "Press <color=#B388FF><b>Tab</b></color> to check your Backpack and inspect your caught fish.";
+                return "Press <color=#B388FF><b>Tab</b></color> to open Backpack and check your caught fish.";
             case "TUT_Map2_Quest5_0_GoToTentCampArea":
                 return "Walk to the <color=#B388FF><b>Tent campsite</b></color>.";
             case "TUT_Map2_Quest5_1_OpenBuildMenu":
