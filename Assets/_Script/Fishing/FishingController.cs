@@ -51,6 +51,11 @@ public class FishingController : MonoBehaviour
     private float biteTimer;
     private bool isWaitingForBite;
     private bool isFishBiting;
+    private bool isStrikeWindowActive = false;
+    private float strikeWindowTimer = 0f;
+    private float strikeStartTime = 0f;
+    private int remainingNibbles = 0;
+    private float nextNibbleTimer = 0f;
     private float reelInCooldown;
     private GameObject activeCaughtFish;
     private FishSO currentCaughtFishData;
@@ -496,9 +501,35 @@ public class FishingController : MonoBehaviour
         if (isWaitingForBite && currentState == FishingState.Fishing)
         {
             biteTimer -= Time.deltaTime;
-            if (biteTimer <= 0f)
+
+            // Xử lý cá rỉa mồi thăm dò (Nibbles)
+            if (remainingNibbles > 0)
+            {
+                nextNibbleTimer -= Time.deltaTime;
+                if (nextNibbleTimer <= 0f)
+                {
+                    remainingNibbles--;
+                    nextNibbleTimer = Random.Range(1.0f, 2.2f);
+                    if (activeBobberEntity != null)
+                    {
+                        activeBobberEntity.TriggerNibble(0.35f);
+                    }
+                }
+            }
+
+            if (biteTimer <= 0f && !isStrikeWindowActive)
             {
                 TriggerFishBitingEvent();
+            }
+        }
+
+        // Cửa sổ thời gian phản xạ khi cá đang cắn ngập phao
+        if (isStrikeWindowActive && currentState == FishingState.Fishing)
+        {
+            strikeWindowTimer -= Time.deltaTime;
+            if (strikeWindowTimer <= 0f)
+            {
+                OnMissedStrikeWindow();
             }
         }
 
@@ -594,17 +625,35 @@ public class FishingController : MonoBehaviour
         }
         else if (currentState == FishingState.Fishing)
         {
-            if (isFishBiting || reelInCooldown > 0f)
+            if (reelInCooldown > 0f) return;
+
+            if (isStrikeWindowActive)
+            {
+                // NGƯỜI CHƠI PHẢN XẠ GIẬT CẦN ĐÚNG LÚC CÁ CẮN MỒI!
+                ExecuteHookStrike();
+                return;
+            }
+            else if (isWaitingForBite)
+            {
+                // Người chơi giật cần quá sớm khi cá chưa cắn ngập phao (chỉ mới rỉa hoặc đang chờ)
+                Debug.Log("<color=yellow>[Fishing Controller] Giật cần quá sớm khi cá chưa cắn!</color>");
+                ShowFishingFeedback("Giật cần quá sớm! Cá đã hoảng sợ bỏ chạy.", new Color(1f, 0.45f, 0.3f));
+
+                if (playerAnimation != null)
+                {
+                    playerAnimation.SetFishingState(false);
+                    playerAnimation.TriggerCatchFail();
+                }
+
+                inputCooldown = 0.35f;
+                reelInCooldown = 0.35f;
+                ResetToIdle();
+                return;
+            }
+            else if (isFishBiting)
             {
                 return;
             }
-            else
-            {
-                Debug.Log("<color=yellow>[Fishing Controller] Thu cần sớm khi cá chưa cắn!</color>");
-            }
-            inputCooldown = 0.35f; // Chặn click tiếp tục ngay lập tức để không bị ăn nhầm lệnh vung cần mới
-            reelInCooldown = 0.35f;
-            ResetToIdle();
         }
         else if (currentState == FishingState.Catching)
         {
@@ -666,19 +715,62 @@ public class FishingController : MonoBehaviour
     private void TriggerFishBitingEvent()
     {
         isWaitingForBite = false;
+        isStrikeWindowActive = true;
+        strikeStartTime = Time.time;
+
+        // Cửa sổ thời gian phản xạ (Reaction Window): 1.1s - 1.6s
+        float baseReactionWindow = 1.25f;
+        if (currentBobber != null) baseReactionWindow += (currentBobber.attractivenessBonus * 0.015f);
+        strikeWindowTimer = baseReactionWindow;
+
+        // Xác định loại cá cắn mồi
+        if (currentFishingZone != null)
+        {
+            int rarityBonus = currentBait != null ? currentBait.targetRarityBonus : 0;
+            if (FishEcologyManager.Instance != null) rarityBonus += FishEcologyManager.Instance.GetEcologyRarityBonus();
+            currentCaughtFishData = currentFishingZone.GetRandomFish(rarityBonus);
+        }
+        else
+        {
+            currentCaughtFishData = null;
+        }
+
+        if (activeBobberEntity != null)
+        {
+            activeBobberEntity.StartBiting();
+        }
+
+        if (activeLineVisual != null)
+        {
+            activeLineVisual.SetBitingState(true);
+        }
+
+        // Hiện cảnh báo giật cần phản xạ
+        ShowFishingFeedback("CÁ CẮN CÂU! Click chuột để GIẬT CẦN!", new Color(1f, 0.9f, 0.1f));
+    }
+
+    private void ExecuteHookStrike()
+    {
+        isStrikeWindowActive = false;
+        isFishBiting = true;
+        ForcedTutorialManager.Instance?.NotifyReelFish();
+
+        float reactDuration = Time.time - strikeStartTime;
+        bool isPerfectHook = reactDuration <= 0.38f;
 
         // ========================================================
         // TÍNH TOÁN TỈ LỆ SẢY CÁ / CÂU HỤT KHI CÁ CẮN MỒI
         // ========================================================
-        float escapeChance = 0.12f; // Tỉ lệ sảy cơ bản 12%
+        float escapeChance = 0.10f;
         if (currentRod != null) escapeChance -= (currentRod.rodTier * 0.015f);
         if (currentBobber != null) escapeChance -= (currentBobber.attractivenessBonus * 0.002f);
-        escapeChance = Mathf.Clamp(escapeChance, 0.03f, 0.25f);
+        if (isPerfectHook) escapeChance = 0f; // Giật Perfect thì 100% không bao giờ sảy cá!
+        escapeChance = Mathf.Clamp(escapeChance, 0f, 0.25f);
 
         if (Random.value < escapeChance)
         {
             Debug.Log("<color=yellow>[Fishing Controller] SẢY CÁ! Cá cắn mồi rồi giật tuột mất.</color>");
-            ShowFishingFeedback("Sảy cá rồi! Cá đã cắn mồi nhưng giật tuột mất.", new Color(1f, 0.35f, 0.35f));
+            ShowFishingFeedback("Sảy cá rồi! Cá đã giật tuột mất khỏi lưỡi câu.", new Color(1f, 0.35f, 0.35f));
 
             if (playerAnimation != null)
             {
@@ -690,42 +782,19 @@ public class FishingController : MonoBehaviour
             if (activeLineVisual != null) { Destroy(activeLineVisual.gameObject); activeLineVisual = null; }
             if (activeBobberEntity != null) { Destroy(activeBobberEntity.gameObject); activeBobberEntity = null; }
 
-            Invoke(nameof(ResetToIdle), 1.5f);
+            Invoke(nameof(ResetToIdle), 1.2f);
             return;
         }
 
-        isFishBiting = true;
-        ForcedTutorialManager.Instance?.NotifyReelFish();
-
-        if (currentFishingZone != null)
-        {
-            int rarityBonus = currentBait != null ? currentBait.targetRarityBonus : 0;
-            currentCaughtFishData = currentFishingZone.GetRandomFish(rarityBonus);
-        }
-        else
-        {
-            currentCaughtFishData = null;
-        }
-
         string fishName = currentCaughtFishData != null ? currentCaughtFishData.itemName : "Cá bí ẩn";
-        Debug.Log($"<color=red>[Fishing Controller] {fishName.ToUpper()} CẮN CÂU! Kích hoạt Balance Minigame.</color>");
+        Debug.Log($"<color=red>[Fishing Controller] {fishName.ToUpper()} ĐÃ MẮC CÂU!</color>");
 
         if (playerAnimation != null)
         {
             playerAnimation.TriggerFishBite();
         }
 
-        if (activeLineVisual != null)
-        {
-            activeLineVisual.SetBitingState(true);
-        }
-
-        if (activeBobberEntity != null)
-        {
-            activeBobberEntity.StartBiting();
-        }
-
-        // --- PHÁT TIẾNG GIẰNG CO LIÊN TỤC ---
+        // Phát tiếng giằng co
         if (fishingAudioSource != null && reelingStruggleSound != null)
         {
             fishingAudioSource.clip = reelingStruggleSound;
@@ -734,27 +803,64 @@ public class FishingController : MonoBehaviour
             Debug.Log("<color=green>[Audio] Đang phát tiếng kéo cá giằng co!</color>");
         }
 
-        // --- CẢNH BÁO CHIẾN ĐẤU KHI DÍNH CÁ LỚN / HIẾM ---
-        if (currentCaughtFishData != null)
+        float initialProgress = 0.32f;
+        bool isStunned = false;
+
+        if (isPerfectHook)
         {
-            if (currentCaughtFishData.rarity == FishRarity.Legendary)
+            initialProgress = 0.55f; // Thưởng +23% tiến độ ngay lập tức!
+            isStunned = true; // Cá bị choáng 1.5s
+            ShowFishingFeedback("GIẬT CẦN HOÀN HẢO! (+25% Tiến độ & Cá bị choáng!)", new Color(1f, 0.85f, 0.2f));
+        }
+        else
+        {
+            initialProgress = 0.35f;
+            isStunned = false;
+
+            if (currentCaughtFishData != null && currentCaughtFishData.rarity == FishRarity.Legendary)
             {
-                ShowFishingFeedback("CÁ HUYỀN THOẠI CẮN CÂU! Hãy ghìm chặt cước!", new Color(1f, 0.3f, 0.3f));
+                ShowFishingFeedback("ĐÃ ĐÓNG LƯỠI! CÁ HUYỀN THOẠI ĐANG GIẰNG CO!", new Color(1f, 0.3f, 0.3f));
             }
-            else if (currentCaughtFishData.rarity == FishRarity.Rare)
+            else if (currentCaughtFishData != null && currentCaughtFishData.rarity == FishRarity.Rare)
             {
-                ShowFishingFeedback("Cá lớn cắn câu! Giằng co quyết liệt!", new Color(1f, 0.8f, 0.2f));
+                ShowFishingFeedback("ĐÃ ĐÓNG LƯỠI! Cá lớn đang vùng vẫy!", new Color(1f, 0.8f, 0.2f));
+            }
+            else
+            {
+                ShowFishingFeedback("ĐÃ ĐÓNG LƯỠI THÀNH CÔNG!", Color.green);
             }
         }
 
         if (balanceMinigameUI != null)
         {
-            balanceMinigameUI.StartMinigame(inputHandler, this, currentCaughtFishData);
+            balanceMinigameUI.StartMinigame(inputHandler, this, currentCaughtFishData, initialProgress, isStunned);
         }
         else
         {
             Invoke(nameof(ResetToIdle), 3.5f);
         }
+    }
+
+    private void OnMissedStrikeWindow()
+    {
+        isStrikeWindowActive = false;
+        isWaitingForBite = false;
+        isFishBiting = false;
+
+        Debug.Log("<color=yellow>[Fishing Controller] Lỡ thời gian phản xạ! Cá nhả mồi bơi mất.</color>");
+        ShowFishingFeedback("Cá đã nhả mồi bơi mất! Bạn đã giật cần quá trễ.", new Color(1f, 0.35f, 0.35f));
+
+        if (playerAnimation != null)
+        {
+            playerAnimation.SetFishingState(false);
+            playerAnimation.TriggerCatchFail();
+        }
+
+        StopStruggleSound();
+        if (activeLineVisual != null) { Destroy(activeLineVisual.gameObject); activeLineVisual = null; }
+        if (activeBobberEntity != null) { Destroy(activeBobberEntity.gameObject); activeBobberEntity = null; }
+
+        Invoke(nameof(ResetToIdle), 1.2f);
     }
 
     public void OnMinigameEnd(bool isSuccess)
@@ -1132,50 +1238,100 @@ public class FishingController : MonoBehaviour
             float dynamicDuration = Mathf.Max(0.5f, Mathf.Sqrt(currentThrowDistance) * 0.35f);
             float dynamicHeight = Mathf.Max(1f, currentThrowDistance * 0.2f * (currentCastZone * 0.5f));
 
-            activeBobberEntity.Cast(startPos, targetPos, dynamicDuration, dynamicHeight, activeLineVisual);
+            isFishBiting = false;
+            isWaitingForBite = false;
+            isStrikeWindowActive = false;
+            remainingNibbles = 0;
+            reelInCooldown = dynamicDuration + 0.5f;
 
-            if (isWaterHit)
+            activeBobberEntity.Cast(startPos, targetPos, dynamicDuration, dynamicHeight, activeLineVisual, () =>
             {
-                isFishBiting = false;
-                isWaitingForBite = true;
-                reelInCooldown = 1.0f;
-                float baseWait = Random.Range(minBiteWaitTime, maxBiteWaitTime);
-
-                // 1. Giảm thời gian do Cần Câu (% Giảm thời gian chờ)
-                if (currentRod != null && currentRod.waitTimeReductionPercentage > 0f)
+                if (isWaterHit && currentState == FishingState.Fishing)
                 {
-                    baseWait *= (1f - Mathf.Clamp01(currentRod.waitTimeReductionPercentage / 100f));
+                    OnBobberLandedOnWater();
                 }
+            });
 
-                // 2. Giảm thời gian do Mồi Câu (trừ trực tiếp số giây + % thu hút)
-                if (currentBait != null)
-                {
-                    baseWait -= currentBait.waitTimeReduction;
-                    baseWait -= (currentBait.attractivenessBonus * 0.03f);
-                }
-
-                // 3. Giảm thời gian do Phao Câu (% thu hút)
-                if (currentBobber != null && currentBobber.attractivenessBonus > 0f)
-                {
-                    baseWait -= (currentBobber.attractivenessBonus * 0.02f);
-                }
-
-                // 4. Giảm thời gian do Khung Giờ Sinh Thái (Sáng sớm / Hoàng hôn)
-                if (FishEcologyManager.Instance != null)
-                {
-                    baseWait *= FishEcologyManager.Instance.GetBiteWaitMultiplier();
-                }
-
-                biteTimer = Mathf.Max(1.0f, baseWait);
-            }
-            else
+            if (!isWaterHit)
             {
-                isFishBiting = false;
                 isWaitingForBite = false;
-                reelInCooldown = dynamicDuration + 0.5f;
                 Invoke(nameof(ResetToIdle), dynamicDuration + 0.2f);
             }
         }
+    }
+
+    private void OnBobberLandedOnWater()
+    {
+        if (currentState != FishingState.Fishing) return;
+
+        isFishBiting = false;
+        isWaitingForBite = true;
+        isStrikeWindowActive = false;
+        reelInCooldown = 0.5f;
+
+        // 1. TÍNH TOÁN THỜI GIAN CHỜ CẮN CÂU THEO CẤP ĐỘ CẦN CÂU (TỪ THẤP ĐẾN CAO)
+        int rodTier = currentRod != null ? (currentRod.rodTier > 0 ? currentRod.rodTier : GetItemTier(currentRod)) : 1;
+        float minWait = 8.5f;
+        float maxWait = 12.0f;
+
+        switch (rodTier)
+        {
+            case 1: // Cần Trúc (Cấp 1)
+                minWait = 8.5f; maxWait = 12.0f;
+                break;
+            case 2: // Cần Sợi Thủy Tinh (Cấp 2)
+                minWait = 7.0f; maxWait = 10.0f;
+                break;
+            case 3: // Cần Carbon (Cấp 3)
+                minWait = 6.0f; maxWait = 8.5f;
+                break;
+            case 4: // Cần Chuyên Nghiệp (Cấp 4)
+                minWait = 5.0f; maxWait = 7.0f;
+                break;
+            case 5: // Cần Biển Sâu (Cấp 5)
+                minWait = 4.2f; maxWait = 6.0f;
+                break;
+            case 6: // Cần Hoàng Kim / Huyền Thoại (Cấp 6)
+                minWait = 3.2f; maxWait = 4.5f;
+                break;
+            default:
+                minWait = 6.0f; maxWait = 9.0f;
+                break;
+        }
+
+        float baseWait = Random.Range(minWait, maxWait);
+
+        // 2. Giảm thời gian do Cần Câu (% Giảm thời gian chờ)
+        if (currentRod != null && currentRod.waitTimeReductionPercentage > 0f)
+        {
+            baseWait *= (1f - Mathf.Clamp01(currentRod.waitTimeReductionPercentage / 100f));
+        }
+
+        // 3. Giảm thời gian do Mồi Câu
+        if (currentBait != null)
+        {
+            baseWait -= currentBait.waitTimeReduction;
+            baseWait -= (currentBait.attractivenessBonus * 0.03f);
+        }
+
+        // 4. Giảm thời gian do Phao Câu
+        if (currentBobber != null && currentBobber.attractivenessBonus > 0f)
+        {
+            baseWait -= (currentBobber.attractivenessBonus * 0.02f);
+        }
+
+        // 5. Giảm thời gian do Khung Giờ Sinh Thái / Thời Tiết Mưa
+        if (FishEcologyManager.Instance != null)
+        {
+            baseWait *= FishEcologyManager.Instance.GetBiteWaitMultiplier();
+        }
+
+        // ĐẢM BẢO TẤT CẢ CẦN CÂU PHẢI CHỜ ĐỦ ÍT NHẤT 3.0S SAU KHI CHẠM NƯỚC MỚI CẮN CÂU
+        biteTimer = Mathf.Max(3.0f, baseWait);
+
+        // ĐỘNG THÁI RỈA MỒI ĐẦU TIÊN CHỈ XUẤT HIỆN SAU ÍT NHẤT 3.0 GIÂY
+        remainingNibbles = Random.Range(1, 4);
+        nextNibbleTimer = Mathf.Max(3.0f, biteTimer * 0.45f);
     }
 
     private void ResetToIdle()
@@ -1186,6 +1342,8 @@ public class FishingController : MonoBehaviour
 
         isWaitingForBite = false;
         isFishBiting = false;
+        isStrikeWindowActive = false;
+        remainingNibbles = 0;
         currentCaughtFishData = null;
         currentFishingZone = null;
         currentState = FishingState.Idle;

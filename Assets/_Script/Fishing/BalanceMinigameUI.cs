@@ -33,6 +33,7 @@ public class BalanceMinigameUI : MonoBehaviour
     private float fishRandomTimeMax = 2.5f;
     private bool isDashing = false;
     private float dashTimer = 0f;
+    private float stunTimer = 0f;
 
     private float fishPosition;
     private float fishTargetPosition;
@@ -61,7 +62,12 @@ public class BalanceMinigameUI : MonoBehaviour
         }
     }
 
-    public void StartMinigame(PlayerInputHandler playerInput, FishingController fishingController, FishSO hookedFish = null)
+    public void StartMinigame(
+        PlayerInputHandler playerInput,
+        FishingController fishingController,
+        FishSO hookedFish = null,
+        float initialProgress = 0.32f,
+        bool isStunnedAtStart = false)
     {
         if (barBackground == null || fishIcon == null || catchZone == null)
         {
@@ -73,9 +79,10 @@ public class BalanceMinigameUI : MonoBehaviour
         controller = fishingController;
         currentHookedFish = hookedFish;
         isActive = true;
-        currentProgress = 0.32f;
+        currentProgress = Mathf.Clamp(initialProgress, 0.15f, 0.85f);
         isDashing = false;
         dashTimer = 0f;
+        stunTimer = isStunnedAtStart ? 1.5f : 0f;
         shakeIntensity = 0f;
 
         if (panelRoot != null) panelRoot.SetActive(true);
@@ -91,6 +98,11 @@ public class BalanceMinigameUI : MonoBehaviour
 
         // 1. TÍNH TOÁN ĐỘ KHÓ ĐỘNG DỰA THEO CÁ LỚN & ĐỘ HIẾM
         CalculateFishDifficulty(hookedFish);
+
+        if (isStunnedAtStart && txtFishCombatStatus != null)
+        {
+            txtFishCombatStatus.text = "Cá Bị Choáng! Kéo Mau!";
+        }
 
         // 2. KẾT NỐI CHỈ SỐ CẦN CÂU & PHAO CÂU ĐỂ CÂN BẰNG
         FishingRodSO rod = controller != null ? controller.CurrentRod : null;
@@ -219,6 +231,13 @@ public class BalanceMinigameUI : MonoBehaviour
 
     private void HandleFishMovement()
     {
+        // Khi cá đang bị choáng (do Perfect Hook) -> đứng yên
+        if (stunTimer > 0f)
+        {
+            stunTimer -= Time.deltaTime;
+            return;
+        }
+
         float maxFishPos = Mathf.Max(0f, barBackground.rect.height - fishIcon.rect.height);
 
         fishTimer -= Time.deltaTime;
