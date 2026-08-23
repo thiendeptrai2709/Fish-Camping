@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!29 &1
 OcclusionCullingSettings:
@@ -136,7 +136,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91c5fb1fa3888614fb8ea8dd2acf6dc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopItemButton
-  giaTien: 1200
+  giaTien: 9500
   duLieuMonDo: {fileID: 11400000, guid: 37ca9947b9a23b04899c0e599bd10257, type: 2}
 --- !u!1001 &3406447
 PrefabInstance:
@@ -864,7 +864,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91c5fb1fa3888614fb8ea8dd2acf6dc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopItemButton
-  giaTien: 650
+  giaTien: 200
   duLieuMonDo: {fileID: 11400000, guid: c73032ba2aa8f7e49a88a8e6f11d6e09, type: 2}
 --- !u!1 &41171502 stripped
 GameObject:
@@ -2087,7 +2087,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91c5fb1fa3888614fb8ea8dd2acf6dc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopItemButton
-  giaTien: 500
+  giaTien: 1500
   duLieuMonDo: {fileID: 11400000, guid: 7c9ce990e41b73a4aa5949e13336b7c9, type: 2}
 --- !u!4 &152222576 stripped
 Transform:
@@ -2289,7 +2289,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91c5fb1fa3888614fb8ea8dd2acf6dc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopItemButton
-  giaTien: 500
+  giaTien: 100
   duLieuMonDo: {fileID: 11400000, guid: 9e21d412993373540b7bdf3ee729b5cc, type: 2}
 --- !u!1001 &209141021
 PrefabInstance:
@@ -3757,7 +3757,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91c5fb1fa3888614fb8ea8dd2acf6dc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopItemButton
-  giaTien: 3000
+  giaTien: 1800
   duLieuMonDo: {fileID: 11400000, guid: 39533e0f457e66a49a073e4d70c51eb7, type: 2}
 --- !u!1 &303569454
 GameObject:
@@ -8612,7 +8612,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91c5fb1fa3888614fb8ea8dd2acf6dc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopItemButton
-  giaTien: 10
+  giaTien: 30
   duLieuMonDo: {fileID: 11400000, guid: e52162347c10ec140a96139808fcb6f0, type: 2}
 --- !u!114 &309806480 stripped
 MonoBehaviour:
@@ -15579,7 +15579,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91c5fb1fa3888614fb8ea8dd2acf6dc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopItemButton
-  giaTien: 120
+  giaTien: 150
   duLieuMonDo: {fileID: 11400000, guid: 16856da165f330348a35f7088b040199, type: 2}
 --- !u!1 &472183396
 GameObject:
@@ -23514,7 +23514,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91c5fb1fa3888614fb8ea8dd2acf6dc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopItemButton
-  giaTien: 75
+  giaTien: 800
   duLieuMonDo: {fileID: 11400000, guid: 8eacb8577854a174198b7a7feae21393, type: 2}
 --- !u!1 &634436831
 GameObject:
@@ -24286,7 +24286,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91c5fb1fa3888614fb8ea8dd2acf6dc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopItemButton
-  giaTien: 1200
+  giaTien: 350
   duLieuMonDo: {fileID: 11400000, guid: 403dcac3cc5533d4f86a8948b25d41f3, type: 2}
 --- !u!1001 &680744591
 PrefabInstance:
@@ -28507,7 +28507,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91c5fb1fa3888614fb8ea8dd2acf6dc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopItemButton
-  giaTien: 150
+  giaTien: 80
   duLieuMonDo: {fileID: 11400000, guid: 5b270b533aa3aae4698e9726afd482a8, type: 2}
 --- !u!1 &923015198 stripped
 GameObject:
@@ -30246,7 +30246,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91c5fb1fa3888614fb8ea8dd2acf6dc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopItemButton
-  giaTien: 800
+  giaTien: 500
   duLieuMonDo: {fileID: 11400000, guid: a9645ed4cd40944438ed058909ebc86f, type: 2}
 --- !u!1 &1060934941
 GameObject:
@@ -33132,7 +33132,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91c5fb1fa3888614fb8ea8dd2acf6dc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopItemButton
-  giaTien: 900
+  giaTien: 3500
   duLieuMonDo: {fileID: 11400000, guid: 0f8fe1bcda13c4445a61fe34c8900553, type: 2}
 --- !u!1001 &1237933994
 PrefabInstance:
@@ -38556,7 +38556,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91c5fb1fa3888614fb8ea8dd2acf6dc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopItemButton
-  giaTien: 2000
+  giaTien: 1200
   duLieuMonDo: {fileID: 11400000, guid: cfeb84477dfc08148be9840066127aba, type: 2}
 --- !u!1001 &1552661684
 PrefabInstance:
@@ -45648,7 +45648,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91c5fb1fa3888614fb8ea8dd2acf6dc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopItemButton
-  giaTien: 170
+  giaTien: 300
   duLieuMonDo: {fileID: 11400000, guid: b08d743cf7732a7479e09a158849c32c, type: 2}
 --- !u!1001 &1667205577
 PrefabInstance:
@@ -48435,7 +48435,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91c5fb1fa3888614fb8ea8dd2acf6dc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopItemButton
-  giaTien: 700
+  giaTien: 2500
   duLieuMonDo: {fileID: 11400000, guid: 4fc321e53f39fea4ebd5172e6d5d9eaa, type: 2}
 --- !u!1001 &1847815333
 PrefabInstance:
@@ -49106,7 +49106,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91c5fb1fa3888614fb8ea8dd2acf6dc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopItemButton
-  giaTien: 500
+  giaTien: 2000
   duLieuMonDo: {fileID: 11400000, guid: 6dfb6e97e72a1dd4086f3d613b1ee46d, type: 2}
 --- !u!1001 &1871154476
 PrefabInstance:
@@ -49523,7 +49523,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91c5fb1fa3888614fb8ea8dd2acf6dc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopItemButton
-  giaTien: 20
+  giaTien: 500
   duLieuMonDo: {fileID: 11400000, guid: 1266b359872cd774d86446fabef5dd03, type: 2}
 --- !u!1001 &1917358005
 PrefabInstance:
@@ -52318,7 +52318,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91c5fb1fa3888614fb8ea8dd2acf6dc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopItemButton
-  giaTien: 1000
+  giaTien: 5000
   duLieuMonDo: {fileID: 11400000, guid: 5c4394ac84458be40ae77f3745e11477, type: 2}
 --- !u!1 &2091933040
 GameObject:
@@ -52427,7 +52427,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91c5fb1fa3888614fb8ea8dd2acf6dc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopItemButton
-  giaTien: 1800
+  giaTien: 800
   duLieuMonDo: {fileID: 11400000, guid: 74a60fda519714f49865f6498ef4eb37, type: 2}
 --- !u!1001 &2093825031
 PrefabInstance:
