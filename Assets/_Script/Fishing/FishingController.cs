@@ -354,45 +354,25 @@ public class FishingController : MonoBehaviour
             return;
         }
 
-        Canvas rootCanvas = null;
-
-        // 1. Ưu tiên tìm Canvas chính của Gameplay (Backpack hoặc HUD)
-        if (BackpackMinigameUI.Instance != null)
+        // Tạo Canvas chuyên dụng luôn luôn active và hiển thị trên cùng (Overlay sortingOrder = 9999)
+        GameObject canvasObj = GameObject.Find("FishingFeedback_Canvas");
+        if (canvasObj == null)
         {
-            rootCanvas = BackpackMinigameUI.Instance.GetComponentInParent<Canvas>();
-        }
-
-        // 2. Nếu chưa có, quét tìm Canvas đang active trong Scene
-        if (rootCanvas == null)
-        {
-            Canvas[] canvases = Object.FindObjectsByType<Canvas>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
-            foreach (var c in canvases)
-            {
-                if (c == null || !c.gameObject.activeInHierarchy) continue;
-                string cName = c.gameObject.name.ToLower();
-                if (cName.Contains("balan") || cName.Contains("qte") || cName.Contains("login") || cName.Contains("shop") || cName.Contains("loading")) continue;
-                if (rootCanvas == null || c.sortingOrder > rootCanvas.sortingOrder)
-                {
-                    rootCanvas = c;
-                }
-            }
-        }
-
-        // 3. Fallback: Nếu vẫn chưa có Canvas nào, tạo mới Canvas chuyên dụng cho Feedback
-        if (rootCanvas == null)
-        {
-            GameObject canvasObj = new GameObject("FishingFeedback_Canvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
-            rootCanvas = canvasObj.GetComponent<Canvas>();
-            rootCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            rootCanvas.sortingOrder = 999;
-            CanvasScaler cs = canvasObj.GetComponent<CanvasScaler>();
-            cs.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            cs.referenceResolution = new Vector2(1920, 1080);
+            canvasObj = new GameObject("FishingFeedback_Canvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
             DontDestroyOnLoad(canvasObj);
         }
 
-        // Tái sử dụng nếu đã có
-        Transform existing = rootCanvas.transform.Find("FishingFeedbackBanner");
+        Canvas rootCanvas = canvasObj.GetComponent<Canvas>();
+        rootCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        rootCanvas.overrideSorting = true;
+        rootCanvas.sortingOrder = 9999;
+
+        CanvasScaler cs = canvasObj.GetComponent<CanvasScaler>();
+        cs.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        cs.referenceResolution = new Vector2(1920, 1080);
+        cs.matchWidthOrHeight = 0.5f;
+
+        Transform existing = canvasObj.transform.Find("FishingFeedbackBanner");
         if (existing != null)
         {
             feedbackBannerObj = existing.gameObject;
@@ -402,47 +382,46 @@ public class FishingController : MonoBehaviour
             return;
         }
 
-        // Tạo UI Feedback Banner động trên Canvas với bố cục nổi bật ở đỉnh màn hình
+        // Tạo Banner thông báo nằm ở Top-Center (X = 0.5, Y = 0.78)
         feedbackBannerObj = new GameObject("FishingFeedbackBanner", typeof(RectTransform), typeof(CanvasGroup), typeof(Image));
-        feedbackBannerObj.transform.SetParent(rootCanvas.transform, false);
+        feedbackBannerObj.transform.SetParent(canvasObj.transform, false);
         feedbackBannerObj.transform.SetAsLastSibling();
-
-        // Đảm bảo banner có Canvas con với sortingOrder = 999 để luôn hiển thị trên cùng mọi UI
-        Canvas bannerCanvas = feedbackBannerObj.AddComponent<Canvas>();
-        bannerCanvas.overrideSorting = true;
-        bannerCanvas.sortingOrder = 999;
-        feedbackBannerObj.AddComponent<GraphicRaycaster>();
 
         feedbackCanvasGroup = feedbackBannerObj.GetComponent<CanvasGroup>();
         feedbackCanvasGroup.blocksRaycasts = false;
         feedbackCanvasGroup.interactable = false;
 
         Image bgImage = feedbackBannerObj.GetComponent<Image>();
-        bgImage.color = new Color(0.04f, 0.07f, 0.12f, 0.95f);
+        bgImage.color = Color.clear; // Trong suốt hoàn toàn, không có nền đen
         bgImage.raycastTarget = false;
 
         RectTransform rect = feedbackBannerObj.GetComponent<RectTransform>();
-        rect.anchorMin = new Vector2(0.5f, 0.85f); // Căn giữa phía trên màn hình
-        rect.anchorMax = new Vector2(0.5f, 0.85f);
+        rect.anchorMin = new Vector2(0.5f, 0.78f);
+        rect.anchorMax = new Vector2(0.5f, 0.78f);
         rect.pivot = new Vector2(0.5f, 0.5f);
         rect.anchoredPosition = Vector2.zero;
-        rect.sizeDelta = new Vector2(720f, 75f); // Kích thước rộng rãi cho 2 dòng thông báo
+        rect.sizeDelta = new Vector2(1000f, 100f);
 
         GameObject textObj = new GameObject("FeedbackText", typeof(RectTransform), typeof(TextMeshProUGUI));
         textObj.transform.SetParent(feedbackBannerObj.transform, false);
         RectTransform textRect = textObj.GetComponent<RectTransform>();
         textRect.anchorMin = Vector2.zero;
         textRect.anchorMax = Vector2.one;
-        textRect.offsetMin = new Vector2(16f, 4f);
-        textRect.offsetMax = new Vector2(-16f, -4f);
+        textRect.offsetMin = Vector2.zero;
+        textRect.offsetMax = Vector2.zero;
 
         feedbackText = textObj.GetComponent<TextMeshProUGUI>();
-        feedbackText.fontSize = 18f;
+        feedbackText.fontSize = 24f;
         feedbackText.fontStyle = FontStyles.Bold;
         feedbackText.alignment = TextAlignmentOptions.Center;
         feedbackText.raycastTarget = false;
         feedbackText.textWrappingMode = TextWrappingModes.Normal;
         feedbackText.overflowMode = TextOverflowModes.Overflow;
+
+        // Thêm viền chữ đen đậm sắc nét để hiển thị nổi bật trên mọi nền game
+        Outline outline = textObj.AddComponent<Outline>();
+        outline.effectColor = new Color(0f, 0f, 0f, 0.95f);
+        outline.effectDistance = new Vector2(2f, -2f);
 
         // Gán Font từ các TMP có sẵn trong Scene hoặc TMP_Settings mặc định
         TextMeshProUGUI[] tmps = Object.FindObjectsByType<TextMeshProUGUI>(FindObjectsInactive.Include, FindObjectsSortMode.None);
@@ -451,7 +430,6 @@ public class FishingController : MonoBehaviour
             if (t != null && t.font != null)
             {
                 feedbackText.font = t.font;
-                feedbackText.fontSharedMaterial = t.fontSharedMaterial;
                 break;
             }
         }
@@ -1255,6 +1233,11 @@ public class FishingController : MonoBehaviour
             if (!isWaterHit)
             {
                 isWaitingForBite = false;
+                ShowFishingFeedback("Quăng cần trượt ra ngoài mặt nước! Hãy quăng lại.", new Color(1f, 0.6f, 0.2f));
+                if (ForcedTutorialManager.Instance != null && ForcedTutorialManager.Instance.GetCurrentStage() == TutorialStage.Map2_Quest4_2_TimingPower)
+                {
+                    ForcedTutorialManager.Instance.AdvanceToStage(TutorialStage.Map2_Quest4_1_WindUpRod);
+                }
                 Invoke(nameof(ResetToIdle), dynamicDuration + 0.2f);
             }
         }
@@ -1268,6 +1251,9 @@ public class FishingController : MonoBehaviour
         isWaitingForBite = true;
         isStrikeWindowActive = false;
         reelInCooldown = 0.5f;
+
+        // Báo cho hệ thống Tutorial biết dây câu và phao đã chạm nước thành công -> Chuyển sang NV Canh phao & Giật cần
+        ForcedTutorialManager.Instance?.NotifyBobberLandedOnWater();
 
         // 1. TÍNH TOÁN THỜI GIAN CHỜ CẮN CÂU THEO CẤP ĐỘ CẦN CÂU (TỪ THẤP ĐẾN CAO)
         int rodTier = currentRod != null ? (currentRod.rodTier > 0 ? currentRod.rodTier : GetItemTier(currentRod)) : 1;

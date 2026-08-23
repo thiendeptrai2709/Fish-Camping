@@ -3411,8 +3411,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -45.1}
+  m_SizeDelta: {x: 0, y: -70.2373}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1034453038926805941
 CanvasRenderer:
@@ -3442,7 +3442,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "NPC n\xE2ng c\u1EA5p "
+  m_text: "B\xE1c Th\u1EE3 M\xE1y\n(Gara Xe)"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c4df8d68a252a664885d49ca4983b741, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: c4df8d68a252a664885d49ca4983b741, type: 2}
@@ -3469,11 +3469,11 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 23.9
+  m_fontSize: 16.45
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
-  m_fontSizeMin: 4.81
+  m_fontSizeMin: 0
   m_fontSizeMax: 23.9
   m_fontStyle: 0
   m_HorizontalAlignment: 2
@@ -4691,8 +4691,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -37.32892}
+  m_SizeDelta: {x: 0, y: -74.6578}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4401743707140580901
 CanvasRenderer:
@@ -4722,7 +4722,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "NPC nhi\u1EC7m v\u1EE5 "
+  m_text: "C\u1EADu Ch\u1EE7 L\xE0ng\n(Nhi\u1EC7m V\u1EE5)"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c4df8d68a252a664885d49ca4983b741, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: c4df8d68a252a664885d49ca4983b741, type: 2}
@@ -4749,11 +4749,11 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 23.9
+  m_fontSize: 14.5
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
-  m_fontSizeMin: 4.81
+  m_fontSizeMin: 0
   m_fontSizeMax: 23.9
   m_fontStyle: 0
   m_HorizontalAlignment: 2
@@ -7626,8 +7626,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -42.925415}
+  m_SizeDelta: {x: 0, y: -85.8508}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &743772699285754982
 CanvasRenderer:
@@ -7684,11 +7684,11 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 23.9
+  m_fontSize: 19.2
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
-  m_fontSizeMin: 4.81
+  m_fontSizeMin: 0
   m_fontSizeMax: 23.9
   m_fontStyle: 0
   m_HorizontalAlignment: 2
@@ -21218,8 +21218,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -45.3}
+  m_SizeDelta: {x: 0, y: -70.0013}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7480516337635088705
 CanvasRenderer:
@@ -21249,7 +21249,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "NPC\nb\xE1n h\xE0ng"
+  m_text: "Anh C\u1EA7n Th\u1EE7\n(Shop \u0110\u1ED3 C\xE2u)"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c4df8d68a252a664885d49ca4983b741, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: c4df8d68a252a664885d49ca4983b741, type: 2}
@@ -21276,11 +21276,11 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 22.7
+  m_fontSize: 14.85
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
-  m_fontSizeMin: 4.81
+  m_fontSizeMin: 0
   m_fontSizeMax: 22.7
   m_fontStyle: 0
   m_HorizontalAlignment: 2
@@ -23444,7 +23444,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -67, y: 547}
+  m_AnchoredPosition: {x: -102, y: 560}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &7994126245229636468

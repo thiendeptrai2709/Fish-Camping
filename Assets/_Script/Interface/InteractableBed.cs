@@ -93,6 +93,7 @@ public class InteractableBed : MonoBehaviour, IInteractable
             if (statsManager != null) statsManager.ModifyStat(StatType.Energy, energyRestoreAmount);
 
             Debug.Log("Nhân vật đã ngủ và hồi phục sức khỏe!");
+            ForcedTutorialManager.Instance?.NotifySleepInTent();
         }
 
         // 3. Màn hình sáng dần trở lại (Lúc này trời, đèn và Skybox đã chuyển cảnh hoàn tất)

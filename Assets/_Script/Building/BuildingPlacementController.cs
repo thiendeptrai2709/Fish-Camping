@@ -162,6 +162,10 @@ public class BuildingPlacementController : MonoBehaviour
                 {
                     ForcedTutorialManager.Instance?.NotifyCookingRackPlaced();
                 }
+                else if (iName.Contains("lamp") || iName.Contains("đèn") || iName.Contains("den") || aName.Contains("lamp") || aName.Contains("den") || aName.Contains("lantern"))
+                {
+                    ForcedTutorialManager.Instance?.NotifyLampPlaced();
+                }
             }
 
             CancelPlacement(); //[cite: 10]

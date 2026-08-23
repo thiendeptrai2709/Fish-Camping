@@ -49,14 +49,17 @@ public class EquipmentSlotUI : MonoBehaviour, IDropHandler
     public bool CanEquip(ItemShapeSO itemShape)
     {
         if (itemShape == null) return false;
-        if (slotRequirement == SlotRequirement.OnlyFishingRod) return itemShape is FishingRodSO;
+        if (slotRequirement == SlotRequirement.OnlyFishingRod)
+        {
+            return itemShape is FishingRodSO || itemShape.name.ToLower().Contains("rod") || itemShape.name.ToLower().Contains("can") || (!string.IsNullOrEmpty(itemShape.itemName) && itemShape.itemName.ToLower().Contains("cần"));
+        }
         if (slotRequirement == SlotRequirement.OnlyBait)
         {
-            return itemShape is BaitSO || itemShape.name.ToLower().Contains("bait") || itemShape.name.ToLower().Contains("moi");
+            return itemShape is BaitSO || itemShape.name.ToLower().Contains("bait") || itemShape.name.ToLower().Contains("moi") || (!string.IsNullOrEmpty(itemShape.itemName) && itemShape.itemName.ToLower().Contains("mồi"));
         }
         if (slotRequirement == SlotRequirement.OnlyBobber)
         {
-            return itemShape is BobberSO || itemShape.name.ToLower().Contains("bobber") || itemShape.name.ToLower().Contains("phao");
+            return itemShape is BobberSO || itemShape.name.ToLower().Contains("bobber") || itemShape.name.ToLower().Contains("phao") || (!string.IsNullOrEmpty(itemShape.itemName) && itemShape.itemName.ToLower().Contains("phao"));
         }
         return true;
     }

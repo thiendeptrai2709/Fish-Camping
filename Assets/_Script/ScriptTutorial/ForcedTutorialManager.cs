@@ -25,6 +25,9 @@ public enum TutorialStage
     Quest3_1_OpenMap,               // 9. Bấm N mở bản đồ
     Quest3_2_ClickShopIcon,         // 10. Click icon Shop trên bản đồ
     Quest4_1_EnterVehicle,          // 11. Click cửa lên xe bán tải
+    Quest4_1_1_ToggleRadio,         // 11.1. Bấm L Bật/Tắt Radio
+    Quest4_1_2_RadioControl,        // 11.2. Bấm K đổi bài, [ ] chỉnh âm lượng
+    Quest4_1_3_Headlights,          // 11.3. Bấm G Bật/Tắt đèn pha
     Quest4_2_DriveToShop,           // 12. Lái xe đến Shop đồ câu
     Quest4_3_ExitVehicle,           // 13. Bấm E xuống xe
     Quest5_1_OpenShopMenu,          // 14. Mở menu Shop đồ câu
@@ -61,8 +64,8 @@ public enum TutorialStage
     Map2_Quest5_3_PlaceCookingRack, // 41. Đặt giá treo nấu ăn (B)
     Map2_Quest5_4_CookFish,         // 42. Nướng cá trên bếp
     Map2_Quest5_5_EatFish,          // 43. Ăn cá nướng
-    Map2_Quest5_6_SleepInTent,      // 44. Ngủ trong lều trại
-    Map2_Quest5_7_PlaceLamp,        // 45. Đặt đèn chiếu sáng (B)
+    Map2_Quest5_6_PlaceLamp,        // 44. Đặt đèn chiếu sáng (B)
+    Map2_Quest5_7_SleepInTent,      // 45. Ngủ trong lều trại
     Map2_Quest6_BackToTown,         // 46. Lái xe về lại Thị trấn
     Map2_Quest7_FishLog,            // 47. Bấm J mở Sổ tay nhật ký cá
     Map2_Quest8_HelpGuide,          // 48. Bấm P mở Hướng dẫn phím
@@ -207,6 +210,12 @@ public class ForcedTutorialManager : MonoBehaviour
         cachedTypingWait = new WaitForSeconds(typingSpeed);
         mainCamera = Camera.main;
 
+        if (GetComponent<TutorialInGameCheats>() == null)
+        {
+            gameObject.AddComponent<TutorialInGameCheats>();
+        }
+
+        EnsureTutorialOnTop();
         LoadTutorialProgress();
     }
 
@@ -275,10 +284,50 @@ public class ForcedTutorialManager : MonoBehaviour
             }
         }
 
+        EnsureTutorialOnTop();
         UpdateQuestUI();
     }
 
-    private void Start() => UpdateQuestUI();
+    private void Start()
+    {
+        EnsureTutorialOnTop();
+        UpdateQuestUI();
+    }
+
+    /// <summary>
+    /// Đảm bảo bảng Tutorial hiển thị đè lên trên tất cả mọi UI/Canvas khác (sortingOrder = 30000)
+    /// Giữ nguyên vẹn 100% vị trí, kích thước, nền và giao diện gốc của bảng Tutorial.
+    /// </summary>
+    public void EnsureTutorialOnTop()
+    {
+        // 1. Nếu có Canvas trên GameObject quản lý (Persistent_UI), đặt Sorting Order cực đại
+        Canvas mainCanvas = GetComponent<Canvas>();
+        if (mainCanvas != null)
+        {
+            mainCanvas.overrideSorting = true;
+            mainCanvas.sortingOrder = 30000;
+        }
+
+        // 2. Gán Canvas riêng cho questUIPanel với overrideSorting = true & sortingOrder = 30000
+        if (questUIPanel != null)
+        {
+            Canvas panelCanvas = questUIPanel.GetComponent<Canvas>();
+            if (panelCanvas == null)
+            {
+                panelCanvas = questUIPanel.AddComponent<Canvas>();
+            }
+            panelCanvas.overrideSorting = true;
+            panelCanvas.sortingOrder = 30000;
+
+            GraphicRaycaster gr = questUIPanel.GetComponent<GraphicRaycaster>();
+            if (gr == null)
+            {
+                gr = questUIPanel.AddComponent<GraphicRaycaster>();
+            }
+
+            questUIPanel.transform.SetAsLastSibling();
+        }
+    }
 
     private void Update()
     {
@@ -357,6 +406,23 @@ public class ForcedTutorialManager : MonoBehaviour
         {
             if (Keyboard.current.nKey.wasPressedThisFrame)
                 AdvanceToStage(TutorialStage.Quest3_2_ClickShopIcon);
+        }
+        else if (currentStage == TutorialStage.Quest4_1_1_ToggleRadio)
+        {
+            if (Keyboard.current.lKey.wasPressedThisFrame)
+                AdvanceToStage(TutorialStage.Quest4_1_2_RadioControl);
+        }
+        else if (currentStage == TutorialStage.Quest4_1_2_RadioControl)
+        {
+            if (Keyboard.current.kKey.wasPressedThisFrame || 
+                Keyboard.current.leftBracketKey.wasPressedThisFrame || 
+                Keyboard.current.rightBracketKey.wasPressedThisFrame)
+                AdvanceToStage(TutorialStage.Quest4_1_3_Headlights);
+        }
+        else if (currentStage == TutorialStage.Quest4_1_3_Headlights)
+        {
+            if (Keyboard.current.gKey.wasPressedThisFrame)
+                AdvanceToStage(TutorialStage.Quest4_2_DriveToShop);
         }
         else if (currentStage == TutorialStage.Quest4_2_DriveToShop)
         {
@@ -519,44 +585,30 @@ public class ForcedTutorialManager : MonoBehaviour
             var player = GetPlayerTransform();
             if (player != null)
             {
+                // Nếu người chơi vẫn còn trong khu vực cắm trại gần lều -> Chưa đi ra mép bờ hồ
+                if (CampBuildZone.Instance != null && CampBuildZone.Instance.IsInsideBuildZone(player.position))
+                {
+                    return;
+                }
+                if (campTransform != null && Vector3.Distance(player.position, campTransform.position) < 10f)
+                {
+                    return;
+                }
+
                 bool isNearWater = false;
                 int waterMask = LayerMask.GetMask("Water");
                 if (waterMask == 0) waterMask = 1 << 4;
 
-                // 1. Kiểm tra Raycast thẳng phía trước mặt người chơi (xuống dưới mép hồ)
-                if (Physics.Raycast(player.position + Vector3.up * 1.5f + player.forward * 2.5f, Vector3.down, out RaycastHit hitForward, 4f, waterMask))
+                // 1. Bắn tia Raycast từ tầm mắt (1.5m) chếch xuống phía trước mặt người chơi 4.5m
+                Vector3 eyePos = player.position + Vector3.up * 1.5f;
+                Vector3 forwardDown = (player.forward * 2.5f + Vector3.down * 2.0f).normalized;
+                if (Physics.Raycast(eyePos, forwardDown, out RaycastHit hitWater, 5.0f, waterMask))
                 {
                     isNearWater = true;
                 }
-                else if (Physics.Raycast(player.position + Vector3.up * 1.5f, Vector3.down, out RaycastHit hitDirect, 3f, waterMask))
+                else if (Physics.Raycast(player.position + player.forward * 2.0f + Vector3.up * 1.0f, Vector3.down, out RaycastHit hitDown, 3.0f, waterMask))
                 {
                     isNearWater = true;
-                }
-
-                // 2. Kiểm tra khoảng cách chính xác đến Collider của Hồ Câu Cá (FishingZone)
-                if (!isNearWater)
-                {
-                    FishingZone[] fishingZones = GetFishingZones();
-                    if (fishingZones != null)
-                    {
-                        for (int i = 0; i < fishingZones.Length; i++)
-                        {
-                            var fz = fishingZones[i];
-                            if (fz == null) continue;
-                            Collider col = fz.GetComponent<Collider>();
-                            if (col != null)
-                            {
-                                Vector3 closest = col.ClosestPoint(player.position);
-                                float dist = Vector3.Distance(player.position, closest);
-                                float heightDiff = Mathf.Abs(player.position.y - closest.y);
-                                if (dist <= 6.5f && heightDiff <= 3.5f)
-                                {
-                                    isNearWater = true;
-                                    break;
-                                }
-                            }
-                        }
-                    }
                 }
 
                 if (isNearWater)
@@ -564,11 +616,6 @@ public class ForcedTutorialManager : MonoBehaviour
                     AdvanceToStage(TutorialStage.Map2_Quest4_1_WindUpRod);
                 }
             }
-        }
-        else if (currentStage == TutorialStage.Map2_Quest4_1_WindUpRod)
-        {
-            if (isLeftClick)
-                AdvanceToStage(TutorialStage.Map2_Quest4_2_TimingPower);
         }
         else if (currentStage == TutorialStage.Map2_Quest4_4_KeepOrReleaseFish)
         {
@@ -614,10 +661,10 @@ public class ForcedTutorialManager : MonoBehaviour
             if (Keyboard.current.bKey.wasPressedThisFrame)
                 AdvanceToStage(TutorialStage.Map2_Quest5_4_CookFish);
         }
-        else if (currentStage == TutorialStage.Map2_Quest5_7_PlaceLamp)
+        else if (currentStage == TutorialStage.Map2_Quest5_6_PlaceLamp)
         {
             if (Keyboard.current.bKey.wasPressedThisFrame)
-                AdvanceToStage(TutorialStage.Map2_Quest6_BackToTown);
+                AdvanceToStage(TutorialStage.Map2_Quest5_7_SleepInTent);
         }
         else if (currentStage == TutorialStage.Map2_Quest6_BackToTown)
         {
@@ -816,7 +863,7 @@ public class ForcedTutorialManager : MonoBehaviour
             if (hit.collider.GetComponentInParent<InteractableBed>() != null ||
                 objName.Contains("bed") || objName.Contains("tent") || objName.Contains("leu"))
             {
-                if (currentStage == TutorialStage.Map2_Quest5_6_SleepInTent)
+                if (currentStage == TutorialStage.Map2_Quest5_7_SleepInTent)
                 {
                     NotifySleepInTent();
                     return;
@@ -941,18 +988,18 @@ public class ForcedTutorialManager : MonoBehaviour
     }
     public void NotifyClickShopIcon() => NotifyShopIconClicked();
 
-    // 11. Lên xe
+    // 11. Lên xe -> Hướng dẫn Radio
     public void NotifyEnteredVehicle()
     {
         if (currentStage == TutorialStage.Quest4_1_EnterVehicle)
-            AdvanceToStage(TutorialStage.Quest4_2_DriveToShop);
+            AdvanceToStage(TutorialStage.Quest4_1_1_ToggleRadio);
     }
     public void NotifyEnterVehicle() => NotifyEnteredVehicle();
 
     // 12. Lái xe đến shop
     public void NotifyDriveToShop()
     {
-        if (currentStage == TutorialStage.Quest4_2_DriveToShop)
+        if (currentStage >= TutorialStage.Quest4_1_EnterVehicle && currentStage <= TutorialStage.Quest4_2_DriveToShop)
             AdvanceToStage(TutorialStage.Quest4_3_ExitVehicle);
     }
     public void NotifyReachedShop() => NotifyDriveToShop();
@@ -960,7 +1007,7 @@ public class ForcedTutorialManager : MonoBehaviour
     // 13. Xuống xe
     public void NotifyExitedVehicle()
     {
-        if (currentStage == TutorialStage.Quest4_2_DriveToShop || currentStage == TutorialStage.Quest4_3_ExitVehicle)
+        if (currentStage >= TutorialStage.Quest4_1_EnterVehicle && currentStage <= TutorialStage.Quest4_3_ExitVehicle)
             AdvanceToStage(TutorialStage.Quest5_1_OpenShopMenu);
     }
     public void NotifyExitVehicle() => NotifyExitedVehicle();
@@ -1135,7 +1182,14 @@ public class ForcedTutorialManager : MonoBehaviour
     public void NotifyWalkToLakeSide()
     {
         if (currentStage == TutorialStage.Map2_Quest3_WalkToLakeSide)
-            AdvanceToStage(TutorialStage.Map2_Quest4_1_WindUpRod);
+        {
+            var player = GetPlayerTransform();
+            FishingController fishingCtrl = player != null ? player.GetComponent<FishingController>() : Object.FindFirstObjectByType<FishingController>();
+            if (fishingCtrl != null && fishingCtrl.IsPlayerNearValidFishingWater())
+            {
+                AdvanceToStage(TutorialStage.Map2_Quest4_1_WindUpRod);
+            }
+        }
     }
     public void NotifyReachedLakeSide() => NotifyWalkToLakeSide();
     public void NotifyCanFishAtLake() => NotifyWalkToLakeSide();
@@ -1153,12 +1207,19 @@ public class ForcedTutorialManager : MonoBehaviour
     // 34. Map 2: NV 2 - Căn lực quăng cần
     public void NotifyRodCasted()
     {
-        if (currentStage == TutorialStage.Map2_Quest4_2_TimingPower)
-        {
-            // Cần đã quăng xuống nước, chờ cá cắn câu
-        }
+        // Khi bấm căn lực, phao bắt đầu bay qua không trung
     }
     public void NotifyCastPowerSelected() => NotifyRodCasted();
+
+    // 34.1. Map 2: Dây câu / Phao câu đã chạm nước -> Chuyển sang NV Canh phao & Giật cần
+    public void NotifyBobberLandedOnWater()
+    {
+        if (currentStage == TutorialStage.Map2_Quest4_2_TimingPower)
+        {
+            AdvanceToStage(TutorialStage.Map2_Quest4_3_ReelFish);
+        }
+    }
+    public void NotifyLineHitWater() => NotifyBobberLandedOnWater();
 
     // 35. Map 2: NV 3 - Cá cắn câu -> Hiện hướng dẫn giật cá
     public void NotifyFishBiting()
@@ -1231,29 +1292,29 @@ public class ForcedTutorialManager : MonoBehaviour
     }
     public void NotifyFishCooked() => NotifyCookFish();
 
-    // 42. Map 2: Ăn cá
+    // 42. Map 2: Ăn cá -> Chuyển sang Đặt đèn
     public void NotifyEatFish()
     {
         if (currentStage == TutorialStage.Map2_Quest5_5_EatFish)
-            AdvanceToStage(TutorialStage.Map2_Quest5_6_SleepInTent);
+            AdvanceToStage(TutorialStage.Map2_Quest5_6_PlaceLamp);
     }
     public void NotifyFishEaten() => NotifyEatFish();
 
-    // 43. Map 2: Ngủ trong lều
-    public void NotifySleepInTent()
-    {
-        if (currentStage == TutorialStage.Map2_Quest5_6_SleepInTent)
-            AdvanceToStage(TutorialStage.Map2_Quest5_7_PlaceLamp);
-    }
-    public void NotifySleptInTent() => NotifySleepInTent();
-
-    // 44. Map 2: Đặt đèn
+    // 43. Map 2: Đặt đèn -> Chuyển sang Ngủ trong lều
     public void NotifyPlaceLamp()
     {
-        if (currentStage == TutorialStage.Map2_Quest5_7_PlaceLamp)
-            AdvanceToStage(TutorialStage.Map2_Quest6_BackToTown);
+        if (currentStage == TutorialStage.Map2_Quest5_6_PlaceLamp)
+            AdvanceToStage(TutorialStage.Map2_Quest5_7_SleepInTent);
     }
     public void NotifyLampPlaced() => NotifyPlaceLamp();
+
+    // 44. Map 2: Ngủ trong lều -> Chuyển sang Về thị trấn
+    public void NotifySleepInTent()
+    {
+        if (currentStage == TutorialStage.Map2_Quest5_7_SleepInTent)
+            AdvanceToStage(TutorialStage.Map2_Quest6_BackToTown);
+    }
+    public void NotifySleptInTent() => NotifySleepInTent();
 
     // 44. Map 2: Về thị trấn
     public void NotifyBackToTown()
@@ -1521,6 +1582,33 @@ public class ForcedTutorialManager : MonoBehaviour
         completionCoroutine = StartCoroutine(CompleteAndAdvanceRoutine(nextStage));
     }
 
+    /// <summary>
+    /// Cho phép công cụ Tool Debugger ép chuyển trực tiếp sang bất kỳ nhiệm vụ nào ngay lập tức
+    /// </summary>
+    public void ForceSetStage(TutorialStage targetStage)
+    {
+        isTransitioning = false;
+        if (completionCoroutine != null) StopCoroutine(completionCoroutine);
+        if (typingCoroutine != null) StopCoroutine(typingCoroutine);
+
+        currentStage = targetStage;
+        PlayerPrefs.SetInt(TUTORIAL_SAVE_KEY, (int)currentStage);
+        PlayerPrefs.Save();
+
+        UpdateQuestUI();
+        Debug.Log($"<color=cyan>[Tutorial Tool] Đã chuyển trực tiếp sang nhiệm vụ: {currentStage}</color>");
+    }
+
+    /// <summary>
+    /// Reset toàn bộ tiến trình Tutorial về nhiệm vụ khởi đầu và xóa PlayerPrefs
+    /// </summary>
+    public void ResetTutorial()
+    {
+        PlayerPrefs.DeleteKey(TUTORIAL_SAVE_KEY);
+        PlayerPrefs.Save();
+        ForceSetStage(TutorialStage.Quest0_WelcomeGame);
+    }
+
     private IEnumerator CompleteAndAdvanceRoutine(TutorialStage nextStage)
     {
         isTransitioning = true;
@@ -1624,6 +1712,8 @@ public class ForcedTutorialManager : MonoBehaviour
 
     private void UpdateQuestUI()
     {
+        EnsureTutorialOnTop();
+
         if (currentStage == TutorialStage.Completed)
         {
             if (questUIPanel != null) questUIPanel.SetActive(false);
@@ -1690,40 +1780,49 @@ public class ForcedTutorialManager : MonoBehaviour
                 currentInstructionText = GetLocalizedText("TUT_Quest3_1_OpenMap", "Nhấn phím <color=#B388FF><b>N</b></color> để mở Bản đồ.");
                 break;
             case TutorialStage.Quest3_2_ClickShopIcon:
-                currentInstructionText = GetLocalizedText("TUT_Quest3_2_ClickShopIcon", "Nhấp vào <color=#B388FF><b>Icon Shop Đồ Câu</b></color> trên bản đồ để định vị đường đi.");
+                currentInstructionText = GetLocalizedText("TUT_Quest3_2_ClickShopIcon", "Nhấp vào <color=#B388FF><b>Anh Cần Thủ (Shop Đồ Câu)</b></color> trên bản đồ để định vị đường đi.");
                 break;
             case TutorialStage.Quest4_1_EnterVehicle:
                 currentInstructionText = GetLocalizedText("TUT_Quest4_1_EnterVehicle", "Đi đến cửa xe và nhấp <color=#B388FF><b>Chuột trái</b></color> để lên xe bán tải.");
                 break;
+            case TutorialStage.Quest4_1_1_ToggleRadio:
+                currentInstructionText = GetLocalizedText("TUT_Quest4_1_1_ToggleRadio", "Nhấn phím <color=#B388FF><b>L</b></color> để Bật / Tắt Radio trên xe.");
+                break;
+            case TutorialStage.Quest4_1_2_RadioControl:
+                currentInstructionText = GetLocalizedText("TUT_Quest4_1_2_RadioControl", "Nhấn phím <color=#B388FF><b>K</b></color> để Đổi bài hát, phím <color=#B388FF><b>[ ]</b></color> để Chỉnh âm lượng.");
+                break;
+            case TutorialStage.Quest4_1_3_Headlights:
+                currentInstructionText = GetLocalizedText("TUT_Quest4_1_3_Headlights", "Nhấn phím <color=#B388FF><b>G</b></color> để Bật / Tắt Đèn pha xe.");
+                break;
             case TutorialStage.Quest4_2_DriveToShop:
-                currentInstructionText = GetLocalizedText("TUT_Quest4_2_DriveToShop", "Lái xe đến chỗ <color=#B388FF><b>Anh Cần thủ</b></color> (Shop Đồ Câu) theo chỉ dẫn.\n(Radio: <color=#B388FF><b>L</b></color> Bật/Tắt | <color=#B388FF><b>K</b></color> Đổi bài | <color=#B388FF><b>[ ]</b></color> Âm lượng | <color=#B388FF><b>G</b></color> Đèn pha).");
+                currentInstructionText = GetLocalizedText("TUT_Quest4_2_DriveToShop", "Dùng phím <color=#B388FF><b>W, A, S, D</b></color> lái xe đến chỗ <color=#B388FF><b>Anh Cần Thủ</b></color> (Shop Đồ Câu) theo dấu chỉ dẫn.");
                 break;
             case TutorialStage.Quest4_3_ExitVehicle:
                 currentInstructionText = GetLocalizedText("TUT_Quest4_3_ExitVehicle", "Nhấn phím <color=#B388FF><b>E</b></color> để xuống xe.");
                 break;
             case TutorialStage.Quest5_1_OpenShopMenu:
-                currentInstructionText = GetLocalizedText("TUT_Quest5_1_OpenShopMenu", "Đến gần <color=#B388FF><b>Anh Cần thủ</b></color> và nhấp <color=#B388FF><b>Chuột trái</b></color> để mở cửa hàng.");
+                currentInstructionText = GetLocalizedText("TUT_Quest5_1_OpenShopMenu", "Đến gần <color=#B388FF><b>Anh Cần Thủ</b></color> và nhấp <color=#B388FF><b>Chuột trái</b></color> để mở cửa hàng đồ câu.");
                 break;
             case TutorialStage.Quest5_2_CloseShopMenu:
                 currentInstructionText = GetLocalizedText("TUT_Quest5_2_CloseShopMenu", "Nhấn phím <color=#B388FF><b>E</b></color> hoặc nút Đóng để thoát cửa hàng.");
                 break;
             case TutorialStage.Quest6_1_OpenMapUpgrade:
-                currentInstructionText = GetLocalizedText("TUT_Quest6_1_OpenMapUpgrade", "Nhấn phím <color=#B388FF><b>N</b></color> mở bản đồ để xem vị trí <color=#B388FF><b>Bác thợ máy</b></color>.");
+                currentInstructionText = GetLocalizedText("TUT_Quest6_1_OpenMapUpgrade", "Nhấn phím <color=#B388FF><b>N</b></color> mở bản đồ để xem vị trí <color=#B388FF><b>Bác Thợ Máy</b></color> (Gara Xe).");
                 break;
             case TutorialStage.Quest6_2_OpenUpgradeMenu:
-                currentInstructionText = GetLocalizedText("TUT_Quest6_2_OpenUpgradeMenu", "Tương tác với <color=#B388FF><b>Bác thợ máy</b></color> để mở menu nâng cấp xe.");
+                currentInstructionText = GetLocalizedText("TUT_Quest6_2_OpenUpgradeMenu", "Tương tác với <color=#B388FF><b>Bác Thợ Máy</b></color> để mở menu nâng cấp xe (Gara).");
                 break;
             case TutorialStage.Quest6_3_CloseUpgradeMenu:
                 currentInstructionText = GetLocalizedText("TUT_Quest6_3_CloseUpgradeMenu", "Nhấn phím <color=#B388FF><b>Z</b></color> hoặc nút Đóng để thoát giao diện nâng cấp.");
                 break;
             case TutorialStage.Quest8_1_DriveToGasStation:
-                currentInstructionText = GetLocalizedText("TUT_Quest8_1_DriveToGasStation", "Lái xe tìm đến <color=#B388FF><b>Cây Xăng</b></color> của thị trấn.");
+                currentInstructionText = GetLocalizedText("TUT_Quest8_1_DriveToGasStation", "Lái xe tìm đến chỗ <color=#B388FF><b>Chú Bán Xăng</b></color> (Cây Xăng thị trấn).");
                 break;
             case TutorialStage.Quest8_3_RefuelVehicle:
-                currentInstructionText = GetLocalizedText("TUT_Quest8_3_RefuelVehicle", "Đứng gần trụ xăng và nhấn phím <color=#B388FF><b>F</b></color> để đổ xăng cho xe.");
+                currentInstructionText = GetLocalizedText("TUT_Quest8_3_RefuelVehicle", "Đứng gần trụ xăng và nhấn phím <color=#B388FF><b>F</b></color> để nạp đầy xăng xe.");
                 break;
             case TutorialStage.Quest8_2_TalkToGasNPC:
-                currentInstructionText = GetLocalizedText("TUT_Quest8_2_TalkToGasNPC", "Xuống xe và đi đến <color=#B388FF><b>NPC Cây Xăng</b></color> để tương tác.");
+                currentInstructionText = GetLocalizedText("TUT_Quest8_2_TalkToGasNPC", "Xuống xe và đi đến nói chuyện với <color=#B388FF><b>Chú Bán Xăng</b></color> tại cây xăng.");
                 break;
             case TutorialStage.Quest8_4_BuyGasCanister:
                 currentInstructionText = GetLocalizedText("TUT_Quest8_4_BuyGasCanister", "Đi đến gần cột xăng và nhấn phím <color=#B388FF><b>F</b></color> để mua can xăng dự trữ.");
@@ -1767,7 +1866,7 @@ public class ForcedTutorialManager : MonoBehaviour
                 currentInstructionText = GetLocalizedText("TUT_Map2_Quest4_2_TimingPower", "Click <color=#B388FF><b>Chuột Trái</b></color> khi thanh lực chạy vào vùng <color=#69F0AE>Xanh</color> / <color=#FFD700>Vàng</color> / <color=#FF5252>Đỏ</color> để quăng phao xuống nước (Tránh ô trắng hụt).");
                 break;
             case TutorialStage.Map2_Quest4_3_ReelFish:
-                currentInstructionText = GetLocalizedText("TUT_Map2_Quest4_3_ReelFish", "Quan sát phao: Khi phao <b>chìm nghỉm</b> $\\rightarrow$ Click <color=#B388FF><b>Chuột Trái</b></color> ngay để <b>GIẬT CẦN</b>, sau đó nhấp nhả chuột giữ thanh an toàn đè lên con cá!");
+                currentInstructionText = GetLocalizedText("TUT_Map2_Quest4_3_ReelFish", "Quan sát phao: Khi phao <b>chìm nghỉm</b> -> Click <color=#B388FF><b>Chuột Trái</b></color> ngay để <b>GIẬT CẦN</b>, sau đó nhấp nhả chuột giữ thanh an toàn đè lên con cá!");
                 break;
             case TutorialStage.Map2_Quest4_4_KeepOrReleaseFish:
                 currentInstructionText = GetLocalizedText("TUT_Map2_Quest4_4_KeepOrReleaseFish", "Kéo chuột xoay xem mô hình 3D cá, click nút <color=#B388FF><b>[Cất vào Balo]</b></color> hoặc phím <color=#B388FF><b>Space</b></color> để thả cá.");
@@ -1793,11 +1892,11 @@ public class ForcedTutorialManager : MonoBehaviour
             case TutorialStage.Map2_Quest5_5_EatFish:
                 currentInstructionText = GetLocalizedText("TUT_Map2_Quest5_5_EatFish", "Lấy cá nướng chín trong balo và ăn để hồi phục sức lực.");
                 break;
-            case TutorialStage.Map2_Quest5_6_SleepInTent:
-                currentInstructionText = GetLocalizedText("TUT_Map2_Quest5_6_SleepInTent", "Đi vào bên trong lều trại và nhấp chuột trái để ngủ hồi phục sức lực.");
+            case TutorialStage.Map2_Quest5_6_PlaceLamp:
+                currentInstructionText = GetLocalizedText("TUT_Map2_Quest5_6_PlaceLamp", "Nhấn phím <color=#B388FF><b>B</b></color> chọn <color=#B388FF><b>Chiếc đèn</b></color> đặt tại vị trí thích hợp (có thể Bật/Tắt).");
                 break;
-            case TutorialStage.Map2_Quest5_7_PlaceLamp:
-                currentInstructionText = GetLocalizedText("TUT_Map2_Quest5_7_PlaceLamp", "Nhấn phím <color=#B388FF><b>B</b></color> chọn <color=#B388FF><b>Chiếc đèn</b></color> đặt tại vị trí thích hợp (có thể Bật/Tắt).");
+            case TutorialStage.Map2_Quest5_7_SleepInTent:
+                currentInstructionText = GetLocalizedText("TUT_Map2_Quest5_7_SleepInTent", "Đi vào bên trong lều trại và nhấp chuột trái để ngủ hồi phục sức lực.");
                 break;
             case TutorialStage.Map2_Quest6_BackToTown:
                 currentInstructionText = GetLocalizedText("TUT_Map2_Quest6_BackToTown", "Sau khi cắm trại, hãy lên xe và lái về lại <color=#B388FF><b>Thị trấn</b></color>.");
@@ -1868,11 +1967,17 @@ public class ForcedTutorialManager : MonoBehaviour
             case "TUT_Quest3_1_OpenMap":
                 return "Press <color=#B388FF><b>N</b></color> to open the Map.";
             case "TUT_Quest3_2_ClickShopIcon":
-                return "Click the <color=#B388FF><b>Fishing Shop Icon</b></color> on the map to set a navigation marker.";
+                return "Click the <color=#B388FF><b>Angler (Fishing Shop) Icon</b></color> on the map to set a navigation marker.";
             case "TUT_Quest4_1_EnterVehicle":
                 return "Walk to the driver door and click <color=#B388FF><b>Left Mouse</b></color> to enter the truck.";
+            case "TUT_Quest4_1_1_ToggleRadio":
+                return "Press <color=#B388FF><b>L</b></color> to Turn On / Off the Truck Radio.";
+            case "TUT_Quest4_1_2_RadioControl":
+                return "Press <color=#B388FF><b>K</b></color> to Next Song, press <color=#B388FF><b>[ ]</b></color> to Adjust Volume.";
+            case "TUT_Quest4_1_3_Headlights":
+                return "Press <color=#B388FF><b>G</b></color> to Turn On / Off Headlights.";
             case "TUT_Quest4_2_DriveToShop":
-                return "Drive to the <color=#B388FF><b>Angler's Shop</b></color> following the marker.\n(Radio: <color=#B388FF><b>L</b></color> On/Off | <color=#B388FF><b>K</b></color> Next Song | <color=#B388FF><b>[ ]</b></color> Volume | <color=#B388FF><b>G</b></color> Headlights).";
+                return "Use <color=#B388FF><b>W, A, S, D</b></color> to drive to the <color=#B388FF><b>Angler's Shop</b></color> following the marker.";
             case "TUT_Quest4_3_ExitVehicle":
                 return "Press <color=#B388FF><b>E</b></color> to exit the vehicle.";
             case "TUT_Quest5_1_OpenShopMenu":
@@ -1880,17 +1985,17 @@ public class ForcedTutorialManager : MonoBehaviour
             case "TUT_Quest5_2_CloseShopMenu":
                 return "Press <color=#B388FF><b>E</b></color> or click Close to exit the shop.";
             case "TUT_Quest6_1_OpenMapUpgrade":
-                return "Press <color=#B388FF><b>N</b></color> to open the map and locate the <color=#B388FF><b>Mechanic</b></color>.";
+                return "Press <color=#B388FF><b>N</b></color> to open the map and locate the <color=#B388FF><b>Mechanic (Garage)</b></color>.";
             case "TUT_Quest6_2_OpenUpgradeMenu":
                 return "Interact with the <color=#B388FF><b>Mechanic</b></color> to open the vehicle upgrade menu.";
             case "TUT_Quest6_3_CloseUpgradeMenu":
                 return "Press <color=#B388FF><b>Z</b></color> or click Close to exit upgrade menu.";
             case "TUT_Quest8_1_DriveToGasStation":
-                return "Drive your truck to the town's <color=#B388FF><b>Gas Station</b></color>.";
+                return "Drive your truck to the town's <color=#B388FF><b>Gas Station (Gas Attendant)</b></color>.";
             case "TUT_Quest8_3_RefuelVehicle":
                 return "Stand near the fuel pump and press <color=#B388FF><b>F</b></color> to refuel your vehicle.";
             case "TUT_Quest8_2_TalkToGasNPC":
-                return "Exit vehicle and approach the <color=#B388FF><b>Gas Station NPC</b></color> to interact.";
+                return "Exit vehicle and approach the <color=#B388FF><b>Gas Attendant</b></color> to interact.";
             case "TUT_Quest8_4_BuyGasCanister":
                 return "Stand near the fuel pump and press <color=#B388FF><b>F</b></color> to buy a spare fuel canister.";
             case "TUT_Quest8_5_CheckFuelInTrunk":
@@ -1919,7 +2024,7 @@ public class ForcedTutorialManager : MonoBehaviour
             case "TUT_Map2_Quest4_2_TimingPower":
                 return "Click <color=#B388FF><b>Left Mouse</b></color> when the power bar is in <color=#69F0AE>Green</color>, <color=#FFD700>Yellow</color>, or <color=#FF5252>Red</color> to cast into the water (Avoid white miss).";
             case "TUT_Map2_Quest4_3_ReelFish":
-                return "Watch bobber: When it plunges $\\rightarrow$ Click <color=#B388FF><b>Left Mouse</b></color> quickly to <b>HOOK</b>, then tap mouse to keep bar over fish!";
+                return "Watch bobber: When it plunges -> Click <color=#B388FF><b>Left Mouse</b></color> quickly to <b>HOOK</b>, then tap mouse to keep bar over fish!";
             case "TUT_Map2_Quest4_4_KeepOrReleaseFish":
                 return "Drag to inspect 3D fish, click <color=#B388FF><b>[Keep in Backpack]</b></color> or press <color=#B388FF><b>Space</b></color> to release.";
             case "TUT_Map2_Quest4_5_OpenBackpackAfterFish":
@@ -1936,10 +2041,10 @@ public class ForcedTutorialManager : MonoBehaviour
                 return "Interact with the cooking tripod and place fish onto the grill to cook.";
             case "TUT_Map2_Quest5_5_EatFish":
                 return "Take the cooked fish from your backpack and eat it to restore energy.";
-            case "TUT_Map2_Quest5_6_SleepInTent":
-                return "Go inside the tent and click left mouse to sleep and recover energy.";
-            case "TUT_Map2_Quest5_7_PlaceLamp":
+            case "TUT_Map2_Quest5_6_PlaceLamp":
                 return "Press <color=#B388FF><b>B</b></color> to place the <color=#B388FF><b>Lantern</b></color> (can toggle on/off).";
+            case "TUT_Map2_Quest5_7_SleepInTent":
+                return "Go inside the tent and click left mouse to sleep and recover energy.";
             case "TUT_Map2_Quest6_BackToTown":
                 return "After camping, enter your truck and drive back to <color=#B388FF><b>Town</b></color>.";
             case "TUT_Map2_Quest7_FishLog":
