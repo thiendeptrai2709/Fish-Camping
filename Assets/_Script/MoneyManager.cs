@@ -77,18 +77,20 @@ public class MoneyManager : MonoBehaviour
 
     private void Update()
     {
-        // Bấm F9 để Reset tiền về mặc định
+#if UNITY_EDITOR
+        // Bấm F9 để Reset tiền về mặc định (Chỉ trong Unity Editor)
         if (Input.GetKeyDown(phimResetTien))
         {
             ResetTien(soTienKhoiTaoChoUserMoi);
         }
 
-        // Bấm F10 để buff nhanh +5000 tiền test mua đồ
+        // Bấm F10 để buff nhanh +5000 tiền test mua đồ (Chỉ trong Unity Editor)
         if (Input.GetKeyDown(phimCongThemTien))
         {
             CongTien(5000);
             Debug.Log("<color=green>[Cheat] Đã cộng thêm 5000 Vàng!</color>");
         }
+#endif
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)

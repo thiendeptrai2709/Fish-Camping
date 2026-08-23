@@ -210,10 +210,12 @@ public class ForcedTutorialManager : MonoBehaviour
         cachedTypingWait = new WaitForSeconds(typingSpeed);
         mainCamera = Camera.main;
 
+#if UNITY_EDITOR
         if (GetComponent<TutorialInGameCheats>() == null)
         {
             gameObject.AddComponent<TutorialInGameCheats>();
         }
+#endif
 
         EnsureTutorialOnTop();
         LoadTutorialProgress();

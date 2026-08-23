@@ -24,14 +24,20 @@ public class TutorialInGameCheats : MonoBehaviour
 
     private void Awake()
     {
+#if !UNITY_EDITOR
+        Destroy(this);
+        return;
+#else
         // Đảm bảo không bị trùng lặp nếu scene reload
         TutorialInGameCheats[] existing = FindObjectsByType<TutorialInGameCheats>(FindObjectsSortMode.None);
         if (existing.Length > 1)
         {
             Destroy(gameObject);
         }
+#endif
     }
 
+#if UNITY_EDITOR
     private void Update()
     {
         if (Keyboard.current != null && Keyboard.current[toggleKey].wasPressedThisFrame)
@@ -254,4 +260,5 @@ public class TutorialInGameCheats : MonoBehaviour
             default: return stage.ToString();
         }
     }
+#endif
 }

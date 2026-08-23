@@ -529,6 +529,24 @@ public class FishingController : MonoBehaviour
         }
     }
 
+    public string GetSmartFishingWaterHint()
+    {
+        string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        if (sceneName.Contains("Map_1") || sceneName.Contains("Town") || sceneName.Contains("Map1"))
+        {
+            return GetLocalizedText("fish_hint_town", "Thị Trấn không có điểm câu cá!\nHãy lái xe đến Hồ Thông (Map 2) hoặc mở Bản Đồ Du Lịch để đi câu.");
+        }
+        if (sceneName.Contains("Map4") || sceneName.Contains("Ocean"))
+        {
+            return GetLocalizedText("fish_hint_ocean", "Hãy tiến lại gần mép Bờ Biển để câu cá!");
+        }
+        if (sceneName.Contains("Map3") || sceneName.Contains("Swamp"))
+        {
+            return GetLocalizedText("fish_hint_swamp", "Hãy tiến lại gần mép Đầm Lầy để câu cá!");
+        }
+        return GetLocalizedText("fish_hint_lake", "Hãy tiến lại gần mép Bờ Hồ Thông để câu cá!");
+    }
+
     private void HandleLeftClick()
     {
         // Giảm thời gian chống spam cực nhỏ để nhận click ngay lập tức mà không trễ 1s nào
@@ -537,7 +555,6 @@ public class FishingController : MonoBehaviour
 
         if (currentState == FishingState.Idle)
         {
-            if (ForcedTutorialManager.Instance != null && !ForcedTutorialManager.Instance.CanStartFishing()) return;
             if (playerInteraction != null && playerInteraction.HasActiveInteractable()) return;
 
             EnsureEquipmentSlots();
@@ -551,7 +568,30 @@ public class FishingController : MonoBehaviour
             currentBobber = (bobberSlot != null && bobberSlot.GetEquippedItem() != null)
                 ? bobberSlot.GetEquippedItem().GetItemShape() as BobberSO : null;
 
-            // 1. KIỂM TRA ĐIỀU KIỆN TRANG BỊ THEO MAP TRƯỚC (Cần câu, Mồi câu, Phao câu)
+            // Nếu người chơi chưa trang bị Cần câu trong ô Hotbar -> Click thông thường (không hiện báo lỗi câu)
+            if (currentRod == null)
+            {
+                return;
+            }
+
+            // 1. KIỂM TRA BẢN ĐỒ THÔNG MINH (Thị Trấn Map 1)
+            string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            bool isTown = sceneName.Contains("Map_1") || sceneName.Contains("Town") || sceneName.Contains("Map1");
+            if (isTown)
+            {
+                ShowFishingFeedback(GetLocalizedText("fish_err_town_nowater", "Thị Trấn không có điểm câu cá!\nHãy lái xe đến Hồ Thông (Map 2) hoặc mở Bản Đồ Du Lịch (M) để đi câu."), new Color(1f, 0.75f, 0.25f));
+                Debug.LogWarning("<color=yellow>[Fishing Controller] Khu vực Thị Trấn không có điểm câu cá!</color>");
+                return;
+            }
+
+            // 2. KIỂM TRA TIẾN TRÌNH TUTORIAL
+            if (ForcedTutorialManager.Instance != null && !ForcedTutorialManager.Instance.CanStartFishing())
+            {
+                ShowFishingFeedback(GetLocalizedText("fish_err_tut_locked", "Hãy làm theo hướng dẫn nhiệm vụ để đến điểm câu cá!"), new Color(1f, 0.85f, 0.3f));
+                return;
+            }
+
+            // 3. KIỂM TRA ĐIỀU KIỆN TRANG BỊ THEO MAP (Cần câu, Mồi câu, Phao câu)
             if (!ValidateFishingEquipment(out string errorReason))
             {
                 ShowFishingFeedback(errorReason, new Color(1f, 0.45f, 0.45f));
@@ -559,43 +599,36 @@ public class FishingController : MonoBehaviour
                 return;
             }
 
-            // 2. KIỂM TRA VỊ TRÍ: Người chơi phải đứng gần bờ hồ / hướng về phía mặt nước mới được vung cần câu
+            // 4. KIỂM TRA VỊ TRÍ MẶT NƯỚC THÔNG MINH
             if (!IsPlayerNearValidFishingWater())
             {
-                ShowFishingFeedback("Hãy tiến lại gần bờ hồ / bờ biển để câu cá!", new Color(1f, 0.75f, 0.25f));
-                Debug.LogWarning("<color=yellow>[Fishing Controller] Không thể vung cần khi đứng quá xa bờ hồ!</color>");
+                ShowFishingFeedback(GetSmartFishingWaterHint(), new Color(1f, 0.75f, 0.25f));
+                Debug.LogWarning("<color=yellow>[Fishing Controller] Không thể vung cần khi đứng quá xa bờ nước!</color>");
                 return;
             }
 
-            if (currentBait != null && currentBobber != null)
+            // 5. KIỂM TRA THỂ LỰC (ENERGY)
+            if (energyController != null)
             {
-                if (energyController != null)
+                CharacterStatsManager statsManager = energyController.statsManager;
+                if (statsManager != null && statsManager.GetStatValue(StatType.Energy) <= 0)
                 {
-                    CharacterStatsManager statsManager = energyController.statsManager;
-                    if (statsManager != null && statsManager.GetStatValue(StatType.Energy) <= 0)
-                    {
-                        ShowFishingFeedback("Bạn đã cạn kiệt thể lực! Hãy ăn uống hoặc nghỉ ngơi.", new Color(1f, 0.6f, 0.2f));
-                        Debug.Log("<color=red>[Fishing Controller] Bạn đã cạn kiệt thể lực, không thể tiếp tục câu!</color>");
-                        return;
-                    }
+                    ShowFishingFeedback(GetLocalizedText("fish_err_no_energy", "Bạn đã cạn kiệt thể lực! Hãy ăn cá nướng hoặc ngủ để hồi phục."), new Color(1f, 0.6f, 0.2f));
+                    Debug.Log("<color=red>[Fishing Controller] Bạn đã cạn kiệt thể lực, không thể tiếp tục câu!</color>");
+                    return;
                 }
-
-                Vector3 lookDir = Camera.main.transform.forward;
-                lookDir.y = 0f;
-                if (lookDir.sqrMagnitude > 0.01f)
-                {
-                    transform.forward = lookDir.normalized;
-                }
-
-                StartWindUp();
-                ForcedTutorialManager.Instance?.NotifyWalkToLakeSide();
-                ForcedTutorialManager.Instance?.NotifyWindUpRod();
             }
-            else
+
+            Vector3 lookDir = Camera.main.transform.forward;
+            lookDir.y = 0f;
+            if (lookDir.sqrMagnitude > 0.01f)
             {
-                ShowFishingFeedback("Bạn cần trang bị đầy đủ Mồi câu và Phao câu!", new Color(1f, 0.6f, 0.2f));
-                Debug.Log($"<color=yellow>[Fishing Controller] Đã cầm cần nhưng chưa thể quăng! Thiếu Mồi hoặc Phao.</color>");
+                transform.forward = lookDir.normalized;
             }
+
+            StartWindUp();
+            ForcedTutorialManager.Instance?.NotifyWalkToLakeSide();
+            ForcedTutorialManager.Instance?.NotifyWindUpRod();
         }
         else if (currentState == FishingState.WaitingForPower)
         {

@@ -41,9 +41,10 @@ public class FPSManager : MonoBehaviour
         }
     }
 
+#if UNITY_EDITOR
     void OnGUI()
     {
-        // Vẽ bộ đếm FPS lên góc trái màn hình khi chạy game
+        // Vẽ bộ đếm FPS lên góc trái màn hình khi chạy game trong Unity Editor
         if (showFPS)
         {
             int w = Screen.width, h = Screen.height;
@@ -65,4 +66,5 @@ public class FPSManager : MonoBehaviour
             GUI.Label(rect, text, style);
         }
     }
+#endif
 }

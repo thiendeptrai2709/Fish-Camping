@@ -59,12 +59,6 @@ public class CampingRadioController : MonoBehaviour
 
     private void Update()
     {
-        // Phím tắt R để Bật / Tắt / Đổi kênh Radio
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            ToggleOrNextStation();
-        }
-
         // Khi Radio đang phát: Tăng chỉ số Thoải mái (Comfort) và Thể lực (Energy) nhẹ nhàng
         if (isPlaying)
         {

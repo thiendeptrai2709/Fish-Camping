@@ -40,11 +40,13 @@ public class GameDataResetManager : MonoBehaviour
 
     private void Update()
     {
-        // Phím nóng F10 reset tức thì trong lúc test Play Mode
+#if UNITY_EDITOR
+        // Phím nóng F10 reset tức thì trong lúc test Play Mode (Chỉ hoạt động trong Unity Editor)
         if (Input.GetKeyDown(resetHotkey))
         {
             ResetAllGameData(reloadSceneAfterReset);
         }
+#endif
     }
 
     /// <summary>
