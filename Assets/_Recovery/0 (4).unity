@@ -1,4 +1,4 @@
-﻿%YAML 1.1
+%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!29 &1
 OcclusionCullingSettings:
@@ -23840,12 +23840,12 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1002503285}
     m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1347316168254804718, guid: 56e3f715ad78ae648aff217ab7ce7274, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1867682770}
     - targetCorrespondingSourceObject: {fileID: 4729892748706560518, guid: 56e3f715ad78ae648aff217ab7ce7274, type: 3}
       insertIndex: -1
       addedObject: {fileID: 148582321}
+    - targetCorrespondingSourceObject: {fileID: 1347316168254804718, guid: 56e3f715ad78ae648aff217ab7ce7274, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1867682770}
     - targetCorrespondingSourceObject: {fileID: 2145453336769945238, guid: 56e3f715ad78ae648aff217ab7ce7274, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1237769728}
@@ -32491,6 +32491,7 @@ MonoBehaviour:
   - {fileID: 883674294}
   notificationText: {fileID: 883674293}
   wheelRotationOffset: {x: 180, y: 90, z: 180}
+  customWheelScale: {x: 1, y: 1, z: 1}
   wheelScaleMultiplier: 2
 --- !u!4 &954025723 stripped
 Transform:
@@ -51971,6 +51972,10 @@ MonoBehaviour:
   questUIPanel: {fileID: 989107371}
   instructionTMP: {fileID: 915253905}
   progressTMP: {fileID: 2051752387}
+  completionIcon: {fileID: 0}
+  completionBadge: {fileID: 0}
+  completionDisplayDuration: 1.25
+  completionSFX: {fileID: 0}
   typingSpeed: 0.025
   audioSource: {fileID: 1689199058}
   typeSFX: {fileID: 8300000, guid: 2d660e4de1ff2a045bfd260552d9c4ea, type: 3}
@@ -58826,11 +58831,15 @@ MonoBehaviour:
   tppPlayerCamera: {fileID: 0}
   tppCarCamera: {fileID: 0}
   fppCamera: {fileID: 0}
-  eyeTransform: {fileID: 0}
-  carEyeTransform: {fileID: 0}
-  fppFov: 75
+  transitionDuration: 0
+  transitionStyle: 0
+  fppStandOffset: {x: 0, y: 1.58, z: 0.22}
+  fppCarOffset: {x: 0, y: 0.62, z: 0.2}
+  fppEyeTarget: {fileID: 0}
+  fppMouseSensitivity: 1.8
   fppTiltMin: -80
   fppTiltMax: 80
+  fppFov: 75
   priorityHigh: 20
   priorityLow: 0
   currentMode: 1
