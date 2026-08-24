@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class CookingUIManager : MonoBehaviour
@@ -23,7 +25,32 @@ public class CookingUIManager : MonoBehaviour
 
     private void Awake()
     {
-        Instance = this;
+        if (Instance == null) Instance = this;
+        else if (Instance != this)
+        {
+            // Cập nhật lại Instance mới nếu có đối tượng mới
+            Instance = this;
+        }
+    }
+
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+        if (IsOpen())
+        {
+            ForceResetAndCloseUI();
+        }
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // Khi chuyển Scene: Đóng toàn bộ bảng nấu ăn và dọn sạch dữ liệu cũ
+        ForceResetAndCloseUI();
     }
 
     private void OnDestroy()
@@ -40,18 +67,43 @@ public class CookingUIManager : MonoBehaviour
 
         if (startCookButton != null)
         {
+            startCookButton.onClick.RemoveAllListeners();
             startCookButton.onClick.AddListener(OnStartCookClicked);
         }
 
         if (closeButton != null)
         {
+            closeButton.onClick.RemoveAllListeners();
             closeButton.onClick.AddListener(CloseCookingUI);
         }
     }
+
+    private void Update()
+    {
+        if (IsOpen())
+        {
+            // Bấm Tab hoặc ESC khi đang mở bảng nấu ăn sẽ đóng toàn bộ ngay lập tức
+            if (Input.GetKeyDown(KeyCode.Tab) || Input.GetKeyDown(KeyCode.Escape))
+            {
+                CloseCookingUI();
+                return;
+            }
+
+            // Luôn đảm bảo chuột hiển thị khi bảng nấu ăn đang mở
+            if (Cursor.lockState != CursorLockMode.None || !Cursor.visible)
+            {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+                if (playerCursor != null) playerCursor.SetCursorState(false);
+            }
+        }
+    }
+
     public bool IsOpen()
     {
         return cookingPanel != null && cookingPanel.activeSelf;
     }
+
     public void OpenCookingUI(CookingRack rack)
     {
         currentRack = rack;
@@ -74,6 +126,8 @@ public class CookingUIManager : MonoBehaviour
 
         // Hiện chuột, Ẩn tâm ngắm
         if (playerCursor != null) playerCursor.SetCursorState(false);
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
 
         if (crosshairUI == null)
         {
@@ -109,19 +163,18 @@ public class CookingUIManager : MonoBehaviour
         // 3. SINH RA MÓN ĂN VÀ TRUYỀN DỮ LIỆU KÉO THẢ
         if (currentRack != null && currentRack.State == CookingRack.CookingState.Finished)
         {
-            if (startCookButton != null) startCookButton.gameObject.SetActive(false);
-
             ItemShapeSO finalFood = currentRack.GetCookedFood();
 
             if (finalFood != null && cookingSlots != null && cookingSlots.Length > 0 && BackpackMinigameUI.Instance != null)
             {
-                // DỌN SẠCH CÁI ẢNH NGUYÊN LIỆU CŨ TRONG SLOT ĐỂ TRÁNH CHẶN CHUỘT
+                if (startCookButton != null) startCookButton.gameObject.SetActive(false);
+
+                // DỌN SẠCH ẢNH NGUYÊN LIỆU CŨ TRONG SLOT ĐỂ TRÁNH CHẶN CHUỘT
                 cookingSlots[0].ClearSlot();
 
                 GameObject prefabToUse = itemUIPrefab;
                 if (prefabToUse == null)
                 {
-                    // Fallback prefab nếu bị rỗng do đổi scene
                     var anyItemUI = Object.FindFirstObjectByType<InventoryItemUI>(FindObjectsInactive.Include);
                     if (anyItemUI != null) prefabToUse = anyItemUI.gameObject;
                 }
@@ -142,6 +195,12 @@ public class CookingUIManager : MonoBehaviour
                     rect.pivot = new Vector2(0.5f, 0.5f);
                     rect.anchoredPosition = Vector2.zero;
                 }
+            }
+            else
+            {
+                // Nếu không có cá thành phẩm, reset lại CookingRack về trạng thái sẵn sàng
+                currentRack.ClearCookedFood();
+                UpdateCookButtonState();
             }
         }
         else
@@ -180,7 +239,7 @@ public class CookingUIManager : MonoBehaviour
                 if (slot != null && slot.CurrentItem != null)
                 {
                     ItemShapeSO itemToReturn = slot.CurrentItem;
-                    slot.ClearSlot(); // Xóa slot ngay lập tức trước khi Add để tránh lặp lại
+                    slot.ClearSlot();
 
                     if (BackpackMinigameUI.Instance != null)
                     {
@@ -227,6 +286,43 @@ public class CookingUIManager : MonoBehaviour
         if (BackpackController.Instance != null)
         {
             BackpackController.Instance.OpenForCooking(false);
+            if (BackpackController.Instance.IsOpen)
+            {
+                BackpackController.Instance.CloseBackpack();
+            }
+        }
+    }
+
+    public void ForceResetAndCloseUI()
+    {
+        if (spawnedResultItem != null)
+        {
+            if (cookingSlots != null && cookingSlots.Length > 0 && spawnedResultItem.transform.IsChildOf(cookingSlots[0].transform))
+            {
+                Destroy(spawnedResultItem.gameObject);
+            }
+            spawnedResultItem = null;
+        }
+
+        if (cookingSlots != null)
+        {
+            foreach (var slot in cookingSlots)
+            {
+                if (slot != null) slot.ClearSlot();
+            }
+        }
+
+        currentRack = null;
+
+        if (cookingPanel != null)
+        {
+            cookingPanel.SetActive(false);
+        }
+
+        if (startCookButton != null)
+        {
+            startCookButton.gameObject.SetActive(true);
+            startCookButton.interactable = true;
         }
     }
 
@@ -243,7 +339,7 @@ public class CookingUIManager : MonoBehaviour
             return;
         }
 
-        System.Collections.Generic.List<ItemShapeSO> ingredients = new System.Collections.Generic.List<ItemShapeSO>();
+        List<ItemShapeSO> ingredients = new List<ItemShapeSO>();
         if (cookingSlots != null)
         {
             foreach (var slot in cookingSlots)
@@ -282,19 +378,19 @@ public class CookingUIManager : MonoBehaviour
 
     public void OnFoodCollectedSuccessfully()
     {
+        // 1. Dọn sạch trạng thái đã nấu xong trên CookingRack
         if (currentRack != null)
         {
             currentRack.ClearCookedFood();
         }
-        else
+        
+        // Dọn tất cả các CookingRack khác nếu có trong scene
+        CookingRack[] allRacks = Object.FindObjectsByType<CookingRack>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        foreach (var r in allRacks)
         {
-            CookingRack[] allRacks = Object.FindObjectsByType<CookingRack>(FindObjectsInactive.Include, FindObjectsSortMode.None);
-            foreach (var r in allRacks)
+            if (r != null && r.State == CookingRack.CookingState.Finished)
             {
-                if (r != null && r.State == CookingRack.CookingState.Finished)
-                {
-                    r.ClearCookedFood();
-                }
+                r.ClearCookedFood();
             }
         }
 
@@ -308,6 +404,9 @@ public class CookingUIManager : MonoBehaviour
                 if (slot != null) slot.ClearSlot();
             }
         }
+
+        // Phục hồi nút nấu ăn cho lần nấu tiếp theo
+        UpdateCookButtonState();
 
         if (BackpackMinigameUI.Instance != null)
         {
@@ -323,10 +422,12 @@ public class CookingUIManager : MonoBehaviour
         {
             itemUI.transform.SetParent(cookingSlots[0].transform);
             RectTransform rect = itemUI.GetComponent<RectTransform>();
-
-            // Bay ngược về giữ đúng góc (0,1)
+            rect.anchorMin = new Vector2(0.5f, 0.5f);
+            rect.anchorMax = new Vector2(0.5f, 0.5f);
+            rect.pivot = new Vector2(0.5f, 0.5f);
             rect.anchoredPosition = Vector2.zero;
         }
     }
+
     public GameObject GetItemPrefab() => itemUIPrefab;
 }

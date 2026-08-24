@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 using Unity.Cinemachine;
@@ -12,6 +12,8 @@ public class EngineRepairMinigame : MonoBehaviour
 
     [Header("Link Người Chơi")]
     [SerializeField] private PlayerMovement playerMovement;
+    [SerializeField] private PlayerInputHandler playerInput;
+    [SerializeField] private PlayerCursor playerCursor;
     [SerializeField] private GameObject crosshairUI;
 
     [Header("Cinemachine Priority Override")]
@@ -35,11 +37,47 @@ public class EngineRepairMinigame : MonoBehaviour
 
     private void Awake()
     {
-        originalLocalPos = engineVisualMesh.localPosition;
-        originalLocalRot = engineVisualMesh.localRotation;
+        if (engineVisualMesh != null)
+        {
+            originalLocalPos = engineVisualMesh.localPosition;
+            originalLocalRot = engineVisualMesh.localRotation;
+        }
+        AutoFindReferences();
     }
 
-  
+    private void AutoFindReferences()
+    {
+        if (playerMovement == null) playerMovement = Object.FindFirstObjectByType<PlayerMovement>();
+        if (playerInput == null) playerInput = Object.FindFirstObjectByType<PlayerInputHandler>();
+        if (playerCursor == null) playerCursor = PlayerCursor.Instance ?? Object.FindFirstObjectByType<PlayerCursor>();
+        if (crosshairUI == null)
+        {
+            var pInteraction = Object.FindFirstObjectByType<PlayerInteraction>();
+            if (pInteraction != null) crosshairUI = pInteraction.gameObject;
+        }
+    }
+
+    private void Update()
+    {
+        if (isRepairing && !isAnimating)
+        {
+            // Phím tắt ESC hoặc E để thoát nhanh chế độ sửa xe
+            if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.E))
+            {
+                ExitRepairMode();
+                return;
+            }
+
+            // Luôn đảm bảo chuột hiển thị khi đang mở bảng sửa xe
+            if (Cursor.lockState != CursorLockMode.None || !Cursor.visible)
+            {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+                if (playerCursor != null) playerCursor.SetCursorState(false);
+            }
+        }
+    }
+
     public void TryToggleRepairMode()
     {
         if (hoodHinge == null || !hoodHinge.IsFullyOpen)
@@ -58,6 +96,7 @@ public class EngineRepairMinigame : MonoBehaviour
 
     private void EnterRepairMode()
     {
+        AutoFindReferences();
         isRepairing = true;
         isAnimating = true;
 
@@ -68,11 +107,20 @@ public class EngineRepairMinigame : MonoBehaviour
             inspectCam.Priority = activePriority;
 
         if (playerMovement != null) playerMovement.enabled = false;
+        if (playerInput != null) playerInput.IsUIOpen = true;
         if (crosshairUI != null) crosshairUI.SetActive(false);
 
         if (moveCoroutine != null) StopCoroutine(moveCoroutine);
-        moveCoroutine = StartCoroutine(AnimateEngineTo(inspectPoint.position, inspectPoint.rotation, true));
+        if (inspectPoint != null && engineVisualMesh != null)
+        {
+            moveCoroutine = StartCoroutine(AnimateEngineTo(inspectPoint.position, inspectPoint.rotation, true));
+        }
+        else
+        {
+            isAnimating = false;
+        }
 
+        if (playerCursor != null) playerCursor.SetCursorState(false);
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
@@ -88,25 +136,52 @@ public class EngineRepairMinigame : MonoBehaviour
             inspectCam.Priority = 1;
 
         if (playerMovement != null) playerMovement.enabled = true;
+        if (playerInput != null) playerInput.IsUIOpen = false;
         if (crosshairUI != null) crosshairUI.SetActive(true);
 
         if (hoodHinge != null)
             hoodHinge.IsLocked = false;
 
-        Vector3 dockWorldPos = engineVisualMesh.parent.TransformPoint(originalLocalPos);
-        Quaternion dockWorldRot = engineVisualMesh.parent.rotation * originalLocalRot;
+        if (engineVisualMesh != null && engineVisualMesh.parent != null)
+        {
+            Vector3 dockWorldPos = engineVisualMesh.parent.TransformPoint(originalLocalPos);
+            Quaternion dockWorldRot = engineVisualMesh.parent.rotation * originalLocalRot;
 
-        if (moveCoroutine != null) StopCoroutine(moveCoroutine);
-        moveCoroutine = StartCoroutine(AnimateEngineTo(dockWorldPos, dockWorldRot, false));
+            if (moveCoroutine != null) StopCoroutine(moveCoroutine);
+            moveCoroutine = StartCoroutine(AnimateEngineTo(dockWorldPos, dockWorldRot, false));
+        }
+        else
+        {
+            isAnimating = false;
+        }
 
+        if (playerCursor != null) playerCursor.SetCursorState(true);
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
         OnFinishedRepair?.Invoke();
     }
 
+    private void OnDisable()
+    {
+        if (isRepairing)
+        {
+            isRepairing = false;
+            isAnimating = false;
+            if (playerMovement != null) playerMovement.enabled = true;
+            if (playerInput != null) playerInput.IsUIOpen = false;
+            if (playerCursor != null) playerCursor.SetCursorState(true);
+        }
+    }
+
     private IEnumerator AnimateEngineTo(Vector3 targetPos, Quaternion targetRot, bool isEntering)
     {
+        if (engineVisualMesh == null)
+        {
+            isAnimating = false;
+            yield break;
+        }
+
         Vector3 startPos = engineVisualMesh.position;
         Quaternion startRot = engineVisualMesh.rotation;
         float t = 0f;
@@ -128,7 +203,6 @@ public class EngineRepairMinigame : MonoBehaviour
         {
             engineVisualMesh.localPosition = originalLocalPos;
             engineVisualMesh.localRotation = originalLocalRot;
-
         }
         isAnimating = false;
     }
