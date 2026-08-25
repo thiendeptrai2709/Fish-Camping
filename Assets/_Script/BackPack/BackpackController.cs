@@ -32,9 +32,10 @@ public class BackpackController : MonoBehaviour
     public void ToggleBackpack()
     {
         // Tối ưu UX: Nếu Nồi Nấu đang mở, bấm Tab sẽ gọi thẳng lệnh đóng Nồi (hàm này đã tự dọn dẹp và đóng cả Balo)
-        if (CookingUIManager.Instance != null && CookingUIManager.Instance.IsOpen())
+        CookingUIManager cookingUI = CookingUIManager.Instance ?? Object.FindFirstObjectByType<CookingUIManager>(FindObjectsInactive.Include);
+        if (cookingUI != null && cookingUI.IsOpen())
         {
-            CookingUIManager.Instance.CloseCookingUI();
+            cookingUI.CloseCookingUI();
             return;
         }
 

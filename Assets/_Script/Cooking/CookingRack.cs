@@ -324,6 +324,11 @@ public class CookingRack : MonoBehaviour, IInteractable
         {
             currentCampfire.SetFireActive(false);
         }
+        if (cookingProgressSlider != null)
+        {
+            cookingProgressSlider.gameObject.SetActive(false);
+            cookingProgressSlider.value = 0f;
+        }
     }
 
     public void OnFocus()
@@ -342,6 +347,12 @@ public class CookingRack : MonoBehaviour, IInteractable
             return;
         }
 
+        if (State == CookingState.Finished && currentCookedResult == null)
+        {
+            // Tự phục hồi trạng thái nếu trước đó đã lấy thức ăn
+            ClearCookedFood();
+        }
+
         if (!DetectCampfire())
         {
             Debug.Log("<color=yellow>[Cooking Rack] Hãy đặt một Lửa trại ở bên dưới trước khi nấu ăn.</color>");
@@ -354,17 +365,10 @@ public class CookingRack : MonoBehaviour, IInteractable
             return;
         }
 
-        if (CookingUIManager.Instance != null)
+        CookingUIManager ui = CookingUIManager.Instance ?? Object.FindFirstObjectByType<CookingUIManager>(FindObjectsInactive.Include);
+        if (ui != null)
         {
-            CookingUIManager.Instance.OpenCookingUI(this);
-        }
-        else
-        {
-            CookingUIManager ui = Object.FindFirstObjectByType<CookingUIManager>(FindObjectsInactive.Include);
-            if (ui != null)
-            {
-                ui.OpenCookingUI(this);
-            }
+            ui.OpenCookingUI(this);
         }
     }
 

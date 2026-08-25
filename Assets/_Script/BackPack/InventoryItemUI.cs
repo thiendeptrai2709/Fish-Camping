@@ -436,13 +436,15 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
                 if (isFromCooking)
                 {
                     isFromCooking = false;
-                    if (CookingUIManager.Instance != null) CookingUIManager.Instance.OnFoodCollectedSuccessfully();
+                    CookingUIManager ui = CookingUIManager.Instance ?? Object.FindFirstObjectByType<CookingUIManager>(FindObjectsInactive.Include);
+                    if (ui != null) ui.OnFoodCollectedSuccessfully();
                 }
                 originIngredientSlot = null;
             }
             else
             {
-                if (isFromCooking && CookingUIManager.Instance != null) CookingUIManager.Instance.ReturnFoodToSlot(this);
+                CookingUIManager ui = CookingUIManager.Instance ?? Object.FindFirstObjectByType<CookingUIManager>(FindObjectsInactive.Include);
+                if (isFromCooking && ui != null) ui.ReturnFoodToSlot(this);
                 else if (originIngredientSlot != null) originIngredientSlot.ReturnIngredient(this);
             }
 
@@ -586,9 +588,10 @@ public class InventoryItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             if (BackpackMinigameUI.Instance != null && BackpackMinigameUI.Instance.TryAutoAddFromCooking(this))
             {
                 isFromCooking = false;
-                if (CookingUIManager.Instance != null)
+                CookingUIManager ui = CookingUIManager.Instance ?? Object.FindFirstObjectByType<CookingUIManager>(FindObjectsInactive.Include);
+                if (ui != null)
                 {
-                    CookingUIManager.Instance.OnFoodCollectedSuccessfully();
+                    ui.OnFoodCollectedSuccessfully();
                 }
                 if (itemShape != null && QuestManager.Instance != null)
                 {
